@@ -1,0 +1,13 @@
+.big_arrow_top, .big_arrow_bottom{
+  width: 69px;
+  height: 92px;
+  position: absolute;
+}
+
+.big_arrow_top{
+  background: url('../images/big_arrow_top.svg') no-repeat 50% 50%;
+}
+
+.big_arrow_bottom{
+  background: url('../images/big_arrow_bottom.svg') no-repeat 50% 50%;
+}

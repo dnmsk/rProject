@@ -1,0 +1,65 @@
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Visual Studio files
+*.[Oo]bj
+*.user
+*.aps
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+ipch/
+obj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+Ankh.NoLoad
+nh_*.cfg
+
+#Tooling
+_ReSharper*/
+_TeamCity*/
+*.resharper
+[Tt]est[Rr]esult*
+nh_*.cfg
+
+#Project files
+[Bb]uild/
+
+#Subversion files
+.svn
+
+# Office Temp Files
+~$*
+*/App_Data/Mappings.xml
+Code/Hydra.sln.DotSettings
+Code/Lucinda/BusinessLogicLayer/App_Data/Mappings.xml
+Code/Lucinda/LucindaWeb/App_Data/Mappings.xml
+Code/Lucinda/Sandbox/Program.cs
+
+Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-Facebook-iOS-SDK.xcscheme
+Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-FlurrySDK.xcscheme
+Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-MBProgressHUD.xcscheme
+Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods.xcscheme
+Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/xcschememanagement.plist
+Mobile\iOs\Beegoodi.xcworkspace\xcuserdata\admin.xcuserdatad\UserInterfaceState.xcuserstate
+Mobile\iOs\.idea\workspace.xml
+
+
+
+**/.sonar/*
+**/sonar-*.properties
+**/packages/*
