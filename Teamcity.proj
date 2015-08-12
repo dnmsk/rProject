@@ -1,0 +1,106 @@
+<Project
+        DefaultTargets="Build,Zip"
+        InitialTargets="" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Template -->
+    <PropertyGroup>
+        <ZipFolder>c:\project\zip</ZipFolder>
+        <ConfigFolder>c:\configs</ConfigFolder>  
+        <TestPath>c:\Test</TestPath>
+    </PropertyGroup> 
+	
+    <!-- Solution Files -->
+    <PropertyGroup>
+        <SolutionName>Code/Project_R.sln</SolutionName>
+		
+        <BranchPrefix>$(Branch.Substring(0, $([MSBuild]::Add($(Branch.IndexOf('_')), 1))))</BranchPrefix>
+    </PropertyGroup>
+	
+    <!-- Misc Settings -->
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+        <ConnStr>Server=localhost%3BUser ID=sa%3BPassword=miss</ConnStr>
+    </PropertyGroup>
+	
+    <Import Project="C:\Program Files (x86)\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+	
+    <UsingTask TaskName="NUnit"
+               AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"/>
+	
+    <Target Name="Build">
+        <Message Text="Building branch: $(Branch)" />
+        <CallTarget Targets="BuildCode;PreTest;Test"/>
+    </Target>
+	
+    <!--Here need more practise shamanism with coverage-->
+    <Target Name="BuildCode">
+        <!-- Build the assemblies -->
+        <MSBuild Projects="$(MSBuildProjectDirectory)\$(SolutionName)"
+                 Properties="Configuration=$(Configuration);Platform=$(Platform);AllowUnsafeBlocks=true;">
+        </MSBuild>
+    </Target>   
+	
+    <!--PreTest-->
+    <Target Name="PreTest">
+        <!--CallTarget Targets="CopyTestConfigs" />
+        <CallTarget Targets="ReplaceRevisionInConfig" />
+        <CallTarget Targets="CopyTestFiles"/-->
+    </Target>   
+    
+    <Target Name="CopyTestConfigs">
+        <Exec Command="mkdir $(ConfigFolder)\" ContinueOnError="true"/>
+        <CreateItem Include="$(ConfigFolder)\**\*.*">
+            <Output TaskParameter="Include" ItemName="ExistingConfigContent"/>
+        </CreateItem>
+        <Delete Files="@(ExistingConfigContent)"/>
+        <Exec Command="mkdir $(ConfigFolder)\Test" ContinueOnError="true"/>
+        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(HydraConfigFolder)\Test $(ConfigFolder)\Test"/>
+        <Exec Command="copy /Y $(MSBuildProjectDirectory)\$(HydraConfigFolder)\NLog.config $(ConfigFolder)\NLog.config"/>
+    </Target>
+    
+    <Target Name="ReplaceRevisionInConfig">
+      <Message Text="Found database name: $(TEAMCITY_BUILDCONF_NAME)" />
+      <FileUpdate Files="$(ConfigFolder)\Test\RemotingMain.xml"
+                      Regex="\${Prefix}"
+                      ReplacementText="$(TEAMCITY_BUILDCONF_NAME)" />
+    </Target>   
+    
+    <Target Name="CopyTestFiles">
+        <Exec Command='mkdir "$(TestPath)"' ContinueOnError="true"/>
+        <CreateItem Include="$(TestPath)\**\*.*">
+            <Output TaskParameter="Include" ItemName="TestPathContent"/>
+        </CreateItem>
+        <Delete Files="@(TestPathContent)" ContinueOnError="true"/>
+        <CreateItem Include="$(MSBuildProjectDirectory)\Lucinda\bin\$(Configuration)\*.*">
+            <Output TaskParameter="Include" ItemName="TestContent"/>
+        </CreateItem>
+        <Copy SourceFiles="@(TestContent)" DestinationFolder="$(TestPath)" ContinueOnError="true"/>
+        <Delete Files="@(TestContent)" ContinueOnError="true"/>
+    </Target>
+
+    <!--Test-->
+    <Target Name="Test" DependsOnTargets="BuildCode">        
+      <CreateItem Include="$(TestPath)\*UnitTest*.dll">
+        <Output TaskParameter="Include" ItemName="TestAssembly" />
+      </CreateItem>
+      <NUnit Assemblies="@(TestAssembly)" platform="$(Platform)" NUnitVersion="NUnit-2.6.4"/>
+    </Target>
+	
+    <!-- Zipping, if you need to add something in archive of publisher, thats you are here -->
+    <Target Name="Zip" Condition="('1' != '')">
+      <Exec Command="rd /s /Q $(ZipFolder)\" ContinueOnError="true"/>
+      
+      <CreateItem Include="$(ZipFolder)\**\*.cs">
+        <Output TaskParameter="Include" ItemName="CsFiles"/>
+      </CreateItem>
+      <Delete Files="@(CsFiles)" ContinueOnError="true"/>
+
+      <Exec Command="$(ArchivatorPath)\7z.exe a -t7z $(PublishFolder)\$(BranchPrefix)$(BUILD_NUMBER).7z $(ZipFolder)\* > NUL"
+              ContinueOnError="true"/>
+    </Target>	
+	
+	<Target Name="Publish">
+		
+	</Target>	
+</Project>

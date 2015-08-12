@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="language" content="ru">
+    <title>@ViewBag.Title</title>
+    @RenderSection("css", required: false)
+
+@*    @Styles.Render("~/Content/css")*@
+@*    @Scripts.Render("~/bundles/modernizr")*@
+
+</head>
+<body>
+    @RenderBody()
+
+@*    @Scripts.Render("~/bundles/jquery")*@
+@*    @Scripts.Render("~/bundles/bootstrap")*@
+    @RenderSection("scripts", false)
+
+    @Html.Partial("Blocks/Statistics/YandexMetrika")
+    @Html.Partial("Blocks/Statistics/GoogleAnalytics")
+    @Html.Partial("Blocks/Statistics/TopMailru")
+</body>
+</html>

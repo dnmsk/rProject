@@ -21,6 +21,7 @@
 *.lib
 *.sbr
 *.sdf
+.vs/
 ipch/
 obj/
 [Bb]in
@@ -45,20 +46,6 @@ nh_*.cfg
 # Office Temp Files
 ~$*
 */App_Data/Mappings.xml
-Code/Hydra.sln.DotSettings
-Code/Lucinda/BusinessLogicLayer/App_Data/Mappings.xml
-Code/Lucinda/LucindaWeb/App_Data/Mappings.xml
-Code/Lucinda/Sandbox/Program.cs
-
-Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-Facebook-iOS-SDK.xcscheme
-Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-FlurrySDK.xcscheme
-Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods-MBProgressHUD.xcscheme
-Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/Pods.xcscheme
-Mobile\iOs\Pods/Pods.xcodeproj/xcuserdata/karatay.xcuserdatad/xcschemes/xcschememanagement.plist
-Mobile\iOs\Beegoodi.xcworkspace\xcuserdata\admin.xcuserdatad\UserInterfaceState.xcuserstate
-Mobile\iOs\.idea\workspace.xml
-
-
 
 **/.sonar/*
 **/sonar-*.properties
