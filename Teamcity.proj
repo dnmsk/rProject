@@ -44,8 +44,8 @@
     <!--PreTest-->
     <Target Name="PreTest">
         <!--CallTarget Targets="CopyTestConfigs" />
-        <CallTarget Targets="ReplaceRevisionInConfig" />
-        <CallTarget Targets="CopyTestFiles"/-->
+        <CallTarget Targets="ReplaceRevisionInConfig" /-->
+        <CallTarget Targets="CopyTestFiles"/>
     </Target>   
     
     <Target Name="CopyTestConfigs">
@@ -72,7 +72,7 @@
             <Output TaskParameter="Include" ItemName="TestPathContent"/>
         </CreateItem>
         <Delete Files="@(TestPathContent)" ContinueOnError="true"/>
-        <CreateItem Include="$(MSBuildProjectDirectory)\Lucinda\bin\$(Configuration)\*.*">
+        <CreateItem Include="$(MSBuildProjectDirectory)\UnitTestProject\bin\*.*">
             <Output TaskParameter="Include" ItemName="TestContent"/>
         </CreateItem>
         <Copy SourceFiles="@(TestContent)" DestinationFolder="$(TestPath)" ContinueOnError="true"/>
