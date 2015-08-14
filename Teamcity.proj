@@ -11,7 +11,7 @@
 	
     <!-- Solution Files -->
     <PropertyGroup>
-        <SolutionName>Code/Project_R.sln</SolutionName>
+        <SolutionName>Code\Project_R.sln</SolutionName>
 		
         <BranchPrefix>$(Branch.Substring(0, $([MSBuild]::Add($(Branch.IndexOf('_')), 1))))</BranchPrefix>
     </PropertyGroup>
@@ -72,7 +72,7 @@
             <Output TaskParameter="Include" ItemName="TestPathContent"/>
         </CreateItem>
         <Delete Files="@(TestPathContent)" ContinueOnError="true"/>
-        <CreateItem Include="$(MSBuildProjectDirectory)\UnitTestProject\bin\*.*">
+        <CreateItem Include="$(MSBuildProjectDirectory)\Code\UnitTestProject\bin\*.*">
             <Output TaskParameter="Include" ItemName="TestContent"/>
         </CreateItem>
         <Copy SourceFiles="@(TestContent)" DestinationFolder="$(TestPath)" ContinueOnError="true"/>
@@ -82,6 +82,7 @@
         <Message Text="TestPathContent: @(TestPathContent)" />
         <Message Text="TestPath: $(TestPath)" />
         <Message Text="Platform: $(Platform)" />
+        <Message Text="MSBuildProjectDirectory: $(MSBuildProjectDirectory)" />
     </Target>
 
     <!--Test-->
