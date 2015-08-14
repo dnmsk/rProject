@@ -77,6 +77,11 @@
         </CreateItem>
         <Copy SourceFiles="@(TestContent)" DestinationFolder="$(TestPath)" ContinueOnError="true"/>
         <Delete Files="@(TestContent)" ContinueOnError="true"/>
+		
+        <Message Text="TestContent: @(TestContent)" />
+        <Message Text="TestPathContent: @(TestPathContent)" />
+        <Message Text="TestPath: $(TestPath)" />
+        <Message Text="Platform: $(Platform)" />
     </Target>
 
     <!--Test-->
