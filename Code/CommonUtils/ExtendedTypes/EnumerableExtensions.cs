@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CommonUtils.Code {
+namespace CommonUtils.ExtendedTypes {
+    /// <summary>
+    /// Extension-методы для IEnumerable 
+    /// </summary>
     public static class EnumerableExtensions {
         /// <summary>
         /// Записывает коллекцию в виде строки: 1,2,3
@@ -37,8 +40,8 @@ namespace CommonUtils.Code {
         /// <param name="defaultValue">The default value.</param>
         /// <returns>The maximum value in the sequence or default value if sequence is empty.</returns>
         public static T MaxOrDefault<TSource, T>(this IEnumerable<TSource> source, Func<TSource, T> selector, T defaultValue) {
-            return !source.Any()
-                ? defaultValue
+            return !source.Any() 
+                ? defaultValue 
                 : source.Select(selector).Max();
         }
 
@@ -102,14 +105,14 @@ namespace CommonUtils.Code {
             return source
                 .GroupBy(selector)
                       .Select(g => g.First())
-                      .ToList();
+                      .ToList();            
         }
 
         public static void ForEachAsParallel<T>(this IEnumerable<T> source, Action<T> action, int degreeOfParallelism) {
             source
                 .AsParallel()
                 .WithDegreeOfParallelism(degreeOfParallelism)
-                .ForAll(action);
+                .ForAll(action);        
         }
     }
 }

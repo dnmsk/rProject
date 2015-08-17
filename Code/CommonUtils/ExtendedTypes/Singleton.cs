@@ -1,21 +1,20 @@
-﻿namespace CommonUtils.Code {
+﻿namespace CommonUtils.ExtendedTypes {
     /// <summary>
-    ///     Класс-singleton
+    /// Класс-singleton 
     /// </summary>
     /// <typeparam name="T">Тип, который лежит в Singleton</typeparam>
     public class Singleton<T> where T : class, new() {
         private static T _instance;
         private static readonly object _lock = new object();
 
-        protected Singleton() {
-        }
+        protected Singleton() {}
 
         /// <summary>
-        ///     Экземпляр объекта
+        /// Экземпляр объекта 
         /// </summary>
         public static T Instance {
             get {
-                var instance = _instance;
+                T instance = _instance;
                 if (instance == null) {
                     lock (_lock) {
                         instance = _instance ?? (_instance = new T());

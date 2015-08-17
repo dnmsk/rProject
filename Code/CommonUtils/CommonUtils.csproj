@@ -60,6 +60,9 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,19 +71,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\EnumerableExtensions.cs" />
+    <Compile Include="Code\FileMonitor.cs" />
     <Compile Include="Core\Logger\ILogActionRule.cs" />
     <Compile Include="Core\Logger\LogsActionProcessor.cs" />
     <Compile Include="Code\Mailer.cs" />
-    <Compile Include="Code\MaybeExtentions.cs" />
     <Compile Include="Core\Config\ApplicationConfigSrc.cs" />
     <Compile Include="Core\Config\ConfigHelper.cs" />
     <Compile Include="Core\Config\EnvironmentVariableSrc.cs" />
     <Compile Include="Core\Config\PathSrcBase.cs" />
     <Compile Include="Core\Logger\LoggerManager.cs" />
     <Compile Include="Core\Logger\LoggerWrapper.cs" />
+    <Compile Include="ExtendedTypes\BackwardCache.cs" />
+    <Compile Include="ExtendedTypes\BitExtention.cs" />
+    <Compile Include="ExtendedTypes\CollectionExtention.cs" />
+    <Compile Include="ExtendedTypes\DateTimeExtensions.cs" />
+    <Compile Include="ExtendedTypes\DictionaryExtension.cs" />
+    <Compile Include="ExtendedTypes\DIObjectAccessor.cs" />
+    <Compile Include="ExtendedTypes\EnumerableExtensions.cs" />
+    <Compile Include="ExtendedTypes\EvenExtentions.cs" />
+    <Compile Include="ExtendedTypes\IntExtentions.cs" />
+    <Compile Include="ExtendedTypes\MaybeExtentions.cs" />
+    <Compile Include="ExtendedTypes\NullableExtensions.cs" />
+    <Compile Include="ExtendedTypes\ObjectWrapper.cs" />
+    <Compile Include="ExtendedTypes\OrderByExtensions.cs" />
+    <Compile Include="ExtendedTypes\ReflectionExtensions.cs" />
+    <Compile Include="ExtendedTypes\SafeInvokerBase.cs" />
+    <Compile Include="ExtendedTypes\Singleton.cs" />
+    <Compile Include="ExtendedTypes\StringExtentions.cs" />
+    <Compile Include="ExtendedTypes\StringToMD5Extentions.cs" />
+    <Compile Include="ExtendedTypes\StringUrlExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Code\Singleton.cs" />
     <Compile Include="Core\Logger\UserActionLogger.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,9 @@
 ﻿using System;
 
-namespace CommonUtils.Code {
+namespace CommonUtils.ExtendedTypes {
+    /// <summary>
+    /// Методы расширения - монада Maybe.
+    /// </summary>
     public static class MaybeExtentions {
         /// <summary>
         /// Безопасное использование объекта, если объект не равен null, то будет выполнен <see cref="action"/>,

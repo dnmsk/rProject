@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
+using CommonUtils.ExtendedTypes;
 
 namespace Project_R.Code {
     public abstract class ApplicationControllerBase : Controller {

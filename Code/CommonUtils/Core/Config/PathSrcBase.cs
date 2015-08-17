@@ -6,8 +6,6 @@ namespace CommonUtils.Core.Config {
     public abstract class PathSrcBase {
         protected volatile bool _testMode;
         protected string _localConfigPath;
-        protected string _globalConfigPath;
-        protected const string DEFAULT_ENVIRONMENT_VARIABLE = "SiteConfig";
 
         public abstract string GetLocalPathValue { get; }
 
@@ -31,35 +29,20 @@ namespace CommonUtils.Core.Config {
                         } else {
                             _localConfigPath = GetLocalPathValue;
                         }
-                    }
+                    }/*
+                    if (_localConfigPath.StartsWith(".")) {
+                        _localConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _localConfigPath.Trim('.', '/', '\\'));
+                    }*/
                 }
                 return _localConfigPath;
             }
         }
-
-
-        /// <summary>
-        /// Путь к глобальным конфигам (с "\" в конце)
-        /// </summary>
-        public string GlobalConfigPath {
-            get {
-                if (_globalConfigPath == null) {
-                    if (_testMode) {
-                        _globalConfigPath = LocalConfigPath;
-                    } else {
-                        _globalConfigPath = NormalizePath(ConfigurationManager.AppSettings["ConfigPath"]);
-                    }
-                }
-                return _globalConfigPath;
-            }
-        }
-
+        
         public bool TestMode {
             get { return _testMode; }
             set {
                 _testMode = value;
                 _localConfigPath = null;
-                _globalConfigPath = null;
             }
         }
 

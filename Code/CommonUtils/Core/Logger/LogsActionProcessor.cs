@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Code;
+using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.Core.Logger {
     public class LogsActionProcessor : Singleton<LogsActionProcessor> {

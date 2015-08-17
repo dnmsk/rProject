@@ -7,7 +7,7 @@ namespace CommonUtils.Core.Config {
 
         public EnvironmentVariableSrc() {
             var fromConfig = ConfigurationManager.AppSettings["EnvironmentVariable"];
-            _environmentVariable = string.IsNullOrEmpty(fromConfig) ? DEFAULT_ENVIRONMENT_VARIABLE : fromConfig;
+            _environmentVariable = string.IsNullOrEmpty(fromConfig) ? null : fromConfig;
         }
 
         public override string GetLocalPathValue {

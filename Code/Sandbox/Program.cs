@@ -1,10 +1,16 @@
-﻿using CommonUtils.Code;
-using Project_R.Code;
+﻿using System;
+using System.Threading;
+using CommonUtils.Core.Config;
 
 namespace Sandbox {
     class Program {
         static void Main(string[] args) {
-            new Mailer().SendSafe("admin@re-dan.ru", "malhaz@list.ru", "test theme", "test subject");
+            ConfigHelper.RegisterConfigTarget("Application.xml", arg => {
+                Console.WriteLine(arg.ToString());
+            });
+            while (true) {
+                Thread.Sleep(1000);
+            }
         }
     }
 }
