@@ -69,6 +69,7 @@
     </Target> 
     
     <Target Name="CopyTestConfigs">
+		<Exec Command="md $(TestPath)\$(TargetLocalConfigFolder)" ContinueOnError="true"/>
         <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(TestPath)\$(TargetLocalConfigFolder)"/>
     </Target>
     
