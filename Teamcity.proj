@@ -5,7 +5,8 @@
     <!-- Template -->
     <PropertyGroup>
         <ZipFolder>c:\project\zip</ZipFolder>
-        <ConfigFolder>c:\configs</ConfigFolder>  
+        <ConfigFolder>c:\configs</ConfigFolder>          
+        <LocalConfigFolder>..\Configs</LocalConfigFolder> 
         <TestPath>c:\Test</TestPath>
     </PropertyGroup> 
 	
@@ -43,8 +44,8 @@
 	
     <!--PreTest-->
     <Target Name="PreTest">
-        <!--CallTarget Targets="CopyTestConfigs" />
-        <CallTarget Targets="ReplaceRevisionInConfig" /-->
+        <CallTarget Targets="CopyTestConfigs" />
+        <!--CallTarget Targets="ReplaceRevisionInConfig" /-->
         <CallTarget Targets="CopyTestFiles"/>
     </Target>   
     
@@ -55,8 +56,8 @@
         </CreateItem>
         <Delete Files="@(ExistingConfigContent)"/>
         <Exec Command="mkdir $(ConfigFolder)\Test" ContinueOnError="true"/>
-        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(HydraConfigFolder)\Test $(ConfigFolder)\Test"/>
-        <Exec Command="copy /Y $(MSBuildProjectDirectory)\$(HydraConfigFolder)\NLog.config $(ConfigFolder)\NLog.config"/>
+        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(ConfigFolder)\Test"/>
+        <Exec Command="copy /Y $(MSBuildProjectDirectory)\$(LocalConfigFolder)\NLog.config $(ConfigFolder)\NLog.config"/>
     </Target>
     
     <Target Name="ReplaceRevisionInConfig">
