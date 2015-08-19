@@ -4,10 +4,10 @@
 
     <!-- Template -->
     <PropertyGroup>
-        <ZipFolder>c:\project\zip</ZipFolder>
-        <ConfigFolder>c:\configs</ConfigFolder>          
+        <ZipFolder>c:\project\zip</ZipFolder>     
         <LocalConfigFolder>..\Configs</LocalConfigFolder> 
         <TestPath>c:\Test</TestPath>
+        <TargetLocalConfigFolder>Config</TargetLocalConfigFolder> 
     </PropertyGroup> 
 	
     <!-- Solution Files -->
@@ -44,27 +44,9 @@
 	
     <!--PreTest-->
     <Target Name="PreTest">
-        <CallTarget Targets="CopyTestConfigs" />
         <!--CallTarget Targets="ReplaceRevisionInConfig" /-->
         <CallTarget Targets="CopyTestFiles"/>
-    </Target>   
-    
-    <Target Name="CopyTestConfigs">
-        <Exec Command="mkdir $(ConfigFolder)\" ContinueOnError="true"/>
-        <CreateItem Include="$(ConfigFolder)\**\*.*">
-            <Output TaskParameter="Include" ItemName="ExistingConfigContent"/>
-        </CreateItem>
-        <Delete Files="@(ExistingConfigContent)"/>
-        <Exec Command="mkdir $(ConfigFolder)\Test" ContinueOnError="true"/>
-        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(ConfigFolder)\Test"/>
-        <Exec Command="copy /Y $(MSBuildProjectDirectory)\$(LocalConfigFolder)\NLog.config $(ConfigFolder)\NLog.config"/>
-    </Target>
-    
-    <Target Name="ReplaceRevisionInConfig">
-      <Message Text="Found database name: $(TEAMCITY_BUILDCONF_NAME)" />
-      <FileUpdate Files="$(ConfigFolder)\Test\RemotingMain.xml"
-                      Regex="\${Prefix}"
-                      ReplacementText="$(TEAMCITY_BUILDCONF_NAME)" />
+        <CallTarget Targets="CopyTestConfigs" />
     </Target>   
     
     <Target Name="CopyTestFiles">
@@ -84,7 +66,18 @@
         <Message Text="TestPath: $(TestPath)" />
         <Message Text="Platform: $(Platform)" />
         <Message Text="MSBuildProjectDirectory: $(MSBuildProjectDirectory)" />
+    </Target> 
+    
+    <Target Name="CopyTestConfigs">
+        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(TestPath)\$(TargetLocalConfigFolder)"/>
     </Target>
+    
+    <Target Name="ReplaceRevisionInConfig">
+      <Message Text="Found database name: $(TEAMCITY_BUILDCONF_NAME)" />
+      <FileUpdate Files="$(TestPath)\$(TargetLocalConfigFolder)\RemotingMain.xml"
+                      Regex="\${Prefix}"
+                      ReplacementText="$(TEAMCITY_BUILDCONF_NAME)" />
+    </Target>  
 
     <!--Test-->
     <Target Name="Test" DependsOnTargets="BuildCode">        
