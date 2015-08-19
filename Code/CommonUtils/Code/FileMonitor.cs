@@ -26,7 +26,7 @@ namespace CommonUtils.Code {
                 throw new ArgumentException("Файл не указан");
             }
             if (!Directory.Exists(_path)) {
-                throw new ArgumentException("Папка не существует");
+                throw new ArgumentException("Папка не существует: " + _path);
             }
 
             _watcher = new FileSystemWatcher(_path, _file);
