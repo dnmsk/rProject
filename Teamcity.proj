@@ -5,9 +5,8 @@
     <!-- Template -->
     <PropertyGroup>
         <ZipFolder>c:\project\zip</ZipFolder>     
-        <LocalConfigFolder>..\Config</LocalConfigFolder> 
+        <LocalConfigFolder>Config</LocalConfigFolder> 
         <TestPath>c:\Test</TestPath>
-        <TargetLocalConfigFolder>Config</TargetLocalConfigFolder> 
     </PropertyGroup> 
 	
     <!-- Solution Files -->
@@ -69,13 +68,13 @@
     </Target> 
     
     <Target Name="CopyTestConfigs">
-		<Exec Command="md $(TestPath)\$(TargetLocalConfigFolder)" ContinueOnError="true"/>
-        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(TestPath)\$(TargetLocalConfigFolder)"/>
+		<Exec Command="md $(TestPath)\$(LocalConfigFolder)" ContinueOnError="true"/>
+        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(TestPath)\$(LocalConfigFolder)"/>
     </Target>
     
     <Target Name="ReplaceRevisionInConfig">
       <Message Text="Found database name: $(TEAMCITY_BUILDCONF_NAME)" />
-      <FileUpdate Files="$(TestPath)\$(TargetLocalConfigFolder)\RemotingMain.xml"
+      <FileUpdate Files="$(TestPath)\$(LocalConfigFolder)\RemotingMain.xml"
                       Regex="\${Prefix}"
                       ReplacementText="$(TEAMCITY_BUILDCONF_NAME)" />
     </Target>  
