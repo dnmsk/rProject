@@ -20,7 +20,7 @@ namespace CommonUtils.ExtendedTypes {
         /// Указывает, является ли строка null или пустой строкой.
         /// </summary>
         /// <remarks>
-        /// Аналог есть в ServiceStack.Common.Extensions, но т.к. это внешняя библиотека лучше использовать нашу. / Калиничев /
+        /// Аналог есть в ServiceStack.Common.Extensions
         /// </remarks>
         /// <param name="str">Строка для проверки.</param>
         /// <returns>Возвращает true, если строка null, или пустая, иначе false.</returns>
