@@ -69,7 +69,7 @@
     
     <Target Name="CopyTestConfigs">
 		<Exec Command="md $(TestPath)\$(LocalConfigFolder)" ContinueOnError="true"/>
-        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder)\Test $(TestPath)\$(LocalConfigFolder)"/>
+        <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder) $(TestPath)\$(LocalConfigFolder)"/>
     </Target>
     
     <Target Name="ReplaceRevisionInConfig">
