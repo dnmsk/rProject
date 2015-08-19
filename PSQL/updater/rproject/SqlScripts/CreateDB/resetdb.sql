@@ -4,3 +4,4 @@ drop table if exists fieldinfodatatable;
 drop table if exists entityrowdatatable;
 drop table if exists othertestentity;
 drop table if exists testentity;
+drop table if exists schemachanges;
