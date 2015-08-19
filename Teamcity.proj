@@ -5,7 +5,7 @@
     <!-- Template -->
     <PropertyGroup>
         <ZipFolder>c:\project\zip</ZipFolder>     
-        <LocalConfigFolder>..\Configs</LocalConfigFolder> 
+        <LocalConfigFolder>..\Config</LocalConfigFolder> 
         <TestPath>c:\Test</TestPath>
         <TargetLocalConfigFolder>Config</TargetLocalConfigFolder> 
     </PropertyGroup> 
