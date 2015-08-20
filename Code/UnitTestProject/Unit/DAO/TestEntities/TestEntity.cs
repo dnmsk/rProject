@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 
@@ -15,7 +16,7 @@ namespace UnitTestProject.Unit.DAO.TestEntities {
         /// </summary>
     [Serializable]
     [DBTable("TestEntity")]
-    [TargetDb("Master")]
+    [TargetDb(TargetDB.MASTER)]
     public sealed class TestEntity : AbstractEntity<TestEntity> {
 
         public enum Fields {

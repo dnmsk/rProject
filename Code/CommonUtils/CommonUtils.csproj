@@ -102,6 +102,30 @@
     <Compile Include="ExtendedTypes\StringUrlExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Logger\UserActionLogger.cs" />
+    <Compile Include="TargetDB.cs" />
+    <Compile Include="WatchfulSloths\IWatch.cs" />
+    <Compile Include="WatchfulSloths\IWatchfulSloth.cs" />
+    <Compile Include="WatchfulSloths\KangooCache\KangarooCache.cs" />
+    <Compile Include="WatchfulSloths\KangooCache\KangooCacheElement.cs" />
+    <Compile Include="WatchfulSloths\KangooCache\ThriftyKangarooCache.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\ISlothMoveRule.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\KangarooFillmentRule.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveByFirstSuccess.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveByTime.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveByTimeEco.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveByTimeSingle.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInDay.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInDaySingle.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInTime.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInWeekSingle.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMovePlodding.cs" />
+    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveRule.cs" />
+    <Compile Include="WatchfulSloths\TimeComparer.cs" />
+    <Compile Include="WatchfulSloths\Watch.cs" />
+    <Compile Include="WatchfulSloths\WatchfulSloth.cs" />
+    <Compile Include="WatchfulSloths\WatchfulThreads\WatchfulHolder.cs" />
+    <Compile Include="WatchfulSloths\WatchfulThreads\WatchfulThread.cs" />
+    <Compile Include="WatchfulSloths\WatchTuned.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

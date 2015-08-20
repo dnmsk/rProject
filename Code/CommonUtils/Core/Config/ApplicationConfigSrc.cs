@@ -5,7 +5,7 @@ namespace CommonUtils.Core.Config {
 
         private readonly string _path;
         public ApplicationConfigSrc() {
-            _path = ConfigurationManager.AppSettings["ConfigSource"];
+            _path = ConfigurationManager.AppSettings["ConfigSource"] ?? ".\\Config\\";
         }
 
         public override string GetLocalPathValue {

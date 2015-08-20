@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Activation;
-using System.ServiceModel.Description;
 using System.Web.Script.Serialization;
 using CommonUtils.Core.Logger;
 
 namespace CommonUtils.ExtendedTypes {
-    public abstract class SafeInvokerBase : ServiceHostFactory {
-        private readonly Dictionary<string, object> _lockersByMethodName = new Dictionary<string, object>();
-        private readonly Dictionary<string, object> _lockersByMethodForAccount = new Dictionary<string, object>(); 
+    public class SafeInvokerBase {
+        private readonly static Dictionary<string, object> _lockersByMethodName = new Dictionary<string, object>();
+        private readonly static Dictionary<string, object> _lockersByMethodForAccount = new Dictionary<string, object>(); 
 
         /// <summary>
         /// Логгер.
@@ -146,26 +142,6 @@ namespace CommonUtils.ExtendedTypes {
         /// <returns>Возвращает значение функции, или null если было брошено исключение.</returns>
         protected T InvokeSafeSingleCallForAccount<T>(long accountID, Func<T> action) where T : class {
             return InvokeSafeSingleCallForAccount(accountID, action, null);
-        }
-
-        public override ServiceHostBase CreateServiceHost(string constructorString, Uri[] baseAddresses) {
-            var host = new ServiceHost(GetType(), baseAddresses);
-            var iface = GetType().GetInterfaces().First();
-            var attr = (ServiceContractAttribute)Attribute.GetCustomAttribute(iface, typeof(ServiceContractAttribute));
-            if (attr != null) {
-                host.AddServiceEndpoint(iface, new WSHttpBinding(), "");
-            }
-            ServiceMetadataBehavior metadataBehavior;
-            var currentDehaviors = host.Description.Behaviors;
-            if (currentDehaviors[typeof(ServiceMetadataBehavior)] == null) {
-                metadataBehavior = new ServiceMetadataBehavior();
-                host.Description.Behaviors.Add(metadataBehavior);
-            } else {
-                metadataBehavior = (ServiceMetadataBehavior) currentDehaviors[typeof(ServiceMetadataBehavior)];
-            }
-            metadataBehavior.HttpGetEnabled = true;
-
-            return host;
         }
     }
 }
