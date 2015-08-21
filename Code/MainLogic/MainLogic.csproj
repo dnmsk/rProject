@@ -30,8 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DAO">
+      <HintPath>..\..\Externals\IDEV_DAO\DAO.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,9 +44,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\UserAgentValidationPolicy.cs" />
+    <Compile Include="Entities\Guest.cs" />
+    <Compile Include="Entities\GuestActionLog.cs" />
+    <Compile Include="Entities\GuestExistsBrowser.cs" />
+    <Compile Include="Entities\GuestReferrer.cs" />
+    <Compile Include="Entities\GuestTechInfo.cs" />
+    <Compile Include="Entities\UtmGuestReferrer.cs" />
+    <Compile Include="Entities\UtmSubdomainRule.cs" />
     <Compile Include="MainLogicProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\UserProvider.cs" />
+    <Compile Include="Transport\GuestTechInfoTransport.cs" />
+    <Compile Include="Transport\UtmSubdomainRuleTransport.cs" />
+    <Compile Include="Wrapper\UtmParamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
@@ -50,9 +65,9 @@
       <Name>CommonUtils</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Code\" />
-    <Folder Include="Entities\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

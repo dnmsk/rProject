@@ -178,7 +178,6 @@
     <Compile Include="Code\Policy\ProductionPolicy.cs" />
     <Compile Include="Code\SessionDataManager.cs" />
     <Compile Include="Code\SiteConfiguration.cs" />
-    <Compile Include="Code\UtmParamWrapper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -248,6 +247,10 @@
     <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MainLogic\MainLogic.csproj">
+      <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
+      <Name>MainLogic</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

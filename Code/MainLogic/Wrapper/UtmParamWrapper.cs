@@ -1,6 +1,7 @@
 ﻿using System.Web;
+using CommonUtils.ExtendedTypes;
 
-namespace Project_R.Code {
+namespace MainLogic.Wrapper {
     public struct UtmParamWrapper {
         public string UtmSource { get; }
         public string UtmCampaign { get; }
@@ -25,6 +26,12 @@ namespace Project_R.Code {
                 }
             }
             return new UtmParamWrapper();
+        }
+
+        public bool Any() {
+            return !UtmMedium.IsNullOrWhiteSpace() || 
+                   !UtmCampaign.IsNullOrWhiteSpace() ||
+                   !UtmSource.IsNullOrWhiteSpace();
         }
     }
 }
