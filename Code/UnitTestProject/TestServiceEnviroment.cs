@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Reflection;
 using System.Xml;
 using CommonUtils.Core.Config;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
 using NUnit.Framework;
+using UnitTestProject.FactoryEntities;
 
 namespace UnitTestProject {
     [SetUpFixture]
     public class TestServiceEnviroment {
         [SetUp]
         public void SetUp() {
+            Factory.Init(Assembly.GetExecutingAssembly());
+
             ConfigHelper.TestMode = true;
             ConfigHelper.RegisterConfigTarget("Application.xml", xml => {
                 var xmlDoc = (XmlDocument) xml;

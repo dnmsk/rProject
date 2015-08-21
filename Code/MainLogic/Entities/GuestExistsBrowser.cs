@@ -25,14 +25,14 @@ namespace MainLogic.Entities {
         /// </summary>
             [DBField(DbType.String)] Browsertype,
 
-        /// <summary>
-        /// 
-        /// </summary>
-            [DBField(DbType.Decimal, 10, 8)] Version,
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.Decimal, 4, 2)] Version,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.String)] Os,
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace MainLogic.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public decimal? Version {
-            get { return (decimal?) this[Fields.Version]; }
+        public decimal Version {
+            get { return (decimal) this[Fields.Version]; }
             set { ForceSetData(Fields.Version, value); }
         }
 

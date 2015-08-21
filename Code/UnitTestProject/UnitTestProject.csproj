@@ -68,7 +68,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FactoryEntities\Factories\GuestActionLogCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\GuestCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\GuestExistBrowserCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\GuestReferrerCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\GuestTechInfoCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\UtmGuestReferrerCreator.cs" />
+    <Compile Include="FactoryEntities\Factories\UtmSubdomainRuleCreator.cs" />
+    <Compile Include="FactoryEntities\Factory.cs" />
+    <Compile Include="FactoryEntities\FactoryEntity.cs" />
+    <Compile Include="FactoryEntities\ICreator.cs" />
     <Compile Include="Helpers\AssertExtentions.cs" />
+    <Compile Include="Helpers\DbTestBase.cs" />
+    <Compile Include="Helpers\DbTestHelper.cs" />
     <Compile Include="TestServiceEnviroment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\DAO\DAO_Test.cs" />
@@ -78,6 +90,7 @@
     <Compile Include="Unit\DAO\SaveTests.cs" />
     <Compile Include="Unit\DAO\TestEntities\OtherTestEntity.cs" />
     <Compile Include="Unit\DAO\TestEntities\TestEntity.cs" />
+    <Compile Include="Unit\MainLogic\UserProviderTest.cs" />
     <Compile Include="Unit\Test1.cs" />
     <Compile Include="Unit\WatchfulSloths\SlothMoveByFirstSuccessTest.cs" />
     <Compile Include="Unit\WatchfulSloths\SlothMoveByTimeEcoTest.cs" />
@@ -93,7 +106,12 @@
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MainLogic\MainLogic.csproj">
+      <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
+      <Name>MainLogic</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

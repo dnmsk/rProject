@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MainLogic.Code {
-    internal static class UserAgentValidationPolicy {
+    public static class UserAgentValidationPolicy {
         /// <summary>
         /// Гуид ботов
         /// </summary>
