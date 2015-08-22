@@ -47,8 +47,7 @@ namespace UnitTestProject.Unit.MainLogic {
                 BrowserType = "Opr",
                 Os = "osX",
                 IsMobile = false,
-                UserAgent = "UA",
-                GuestId = guest.ID
+                UserAgent = "UA"
             };
             new UserProvider().SaveTechInfo(guest.ID, guestTechInfoTransport);
             Assert.AreEqual(1, GuestTechInfo.DataSource.Count());

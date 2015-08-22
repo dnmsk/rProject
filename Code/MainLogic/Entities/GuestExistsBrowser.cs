@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using MainLogic.Consts;
 
 namespace MainLogic.Entities {
         /// <summary>
@@ -80,7 +81,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Browsertype {
             get { return (string) this[Fields.Browsertype]; }
-            set { ForceSetData(Fields.Browsertype, value); }
+            set { ForceSetData(Fields.Browsertype, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_128)); }
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public decimal Version {
             get { return (decimal) this[Fields.Version]; }
-            set { ForceSetData(Fields.Version, value); }
+            set { ForceSetData(Fields.Version, DbRestrictions.RoundDecimal(value, 4, 2)); }
         }
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Os {
             get { return (string) this[Fields.Os]; }
-            set { ForceSetData(Fields.Os, value); }
+            set { ForceSetData(Fields.Os, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_128)); }
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Useragent {
             get { return (string) this[Fields.Useragent]; }
-            set { ForceSetData(Fields.Useragent, value); }
+            set { ForceSetData(Fields.Useragent, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_256)); }
         }
 
         /// <summary>

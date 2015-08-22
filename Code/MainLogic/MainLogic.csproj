@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\UserAgentValidationPolicy.cs" />
+    <Compile Include="Consts\DbRestrictions.cs" />
     <Compile Include="Entities\Guest.cs" />
     <Compile Include="Entities\GuestActionLog.cs" />
     <Compile Include="Entities\GuestExistsBrowser.cs" />

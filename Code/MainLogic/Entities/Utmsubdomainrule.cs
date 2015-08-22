@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using MainLogic.Consts;
 
 namespace MainLogic.Entities {
         /// <summary>
@@ -60,7 +61,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Subdomainname {
             get { return (string) this[Fields.Subdomainname]; }
-            set { ForceSetData(Fields.Subdomainname, value); }
+            set { ForceSetData(Fields.Subdomainname, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_128)); }
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Targetdomain {
             get { return (string) this[Fields.Targetdomain]; }
-            set { ForceSetData(Fields.Targetdomain, value); }
+            set { ForceSetData(Fields.Targetdomain, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_128)); }
         }
 
         /// <summary>

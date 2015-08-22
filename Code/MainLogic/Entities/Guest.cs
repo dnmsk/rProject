@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using MainLogic.Consts;
 
 namespace MainLogic.Entities {
         /// <summary>
@@ -63,7 +64,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Ip {
             get { return (string) this[Fields.Ip]; }
-            set { ForceSetData(Fields.Ip, value); }
+            set { ForceSetData(Fields.Ip, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_15)); }
         }
 
         public override Enum[] KeyFields {

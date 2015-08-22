@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using MainLogic.Consts;
 
 namespace MainLogic.Entities {
         /// <summary>
@@ -23,7 +24,7 @@ namespace MainLogic.Entities {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] GuestID,
+            [DBField(DbType.Int32)] GuestID,
 
         /// <summary>
         /// 
@@ -63,8 +64,8 @@ namespace MainLogic.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public long GuestID {
-            get { return (long) this[Fields.GuestID]; }
+        public int GuestID {
+            get { return (int) this[Fields.GuestID]; }
             set { ForceSetData(Fields.GuestID, value); }
         }
 
@@ -81,7 +82,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Urlreferrer {
             get { return (string) this[Fields.Urlreferrer]; }
-            set { ForceSetData(Fields.Urlreferrer, value); }
+            set { ForceSetData(Fields.Urlreferrer, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_512)); }
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace MainLogic.Entities {
         /// </summary>
         public string Urltarget {
             get { return (string) this[Fields.Urltarget]; }
-            set { ForceSetData(Fields.Urltarget, value); }
+            set { ForceSetData(Fields.Urltarget, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_512)); }
         }
 
         public override Enum[] KeyFields {

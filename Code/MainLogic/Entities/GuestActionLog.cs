@@ -23,7 +23,7 @@ namespace MainLogic.Entities {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] GuestID,
+            [DBField(DbType.Int32)] GuestID,
 
         /// <summary>
         /// 
@@ -68,8 +68,8 @@ namespace MainLogic.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public long GuestID {
-            get { return (long) this[Fields.GuestID]; }
+        public int GuestID {
+            get { return (int) this[Fields.GuestID]; }
             set { ForceSetData(Fields.GuestID, value); }
         }
 

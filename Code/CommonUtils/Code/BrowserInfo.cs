@@ -12,36 +12,25 @@ namespace CommonUtils.Code {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(BrowserInfo).FullName);
 
         public bool Mobile { get; private set; }
-        public string UserAgent {
-            get { return _userAgent; }
-            private set { _userAgent = value; }
-        }
-        public string Os {
-            get { return _os; }
-            private set { _os = value; }
-        }
-        public string Name {
-            get { return _name; }
-            private set { _name = value; }
-        }
+        public string UserAgent { get; private set; } = string.Empty;
+
+        public string Os { get; private set; } = string.Empty;
+
+        public string Name { get; private set; } = string.Empty;
 
         private readonly int _majorVersion;
         private readonly double _minorVersion;
-        private string _os = string.Empty;
-        private string _userAgent = string.Empty;
-        private string _name = string.Empty;
 
-        // Накостыленная регулярка для определения версии оперы.   .{5,10} убирать нельзя иначе некоторые оперы так и не узнают свою версию /Курсиков/
         private static readonly Regex _operaVersionRegex = new Regex(@"(?<=.{5,10}\s*(Version|Opera|OPR)/)(\d*)\.(\d*)", RegexOptions.IgnoreCase |
-                                                                                                              RegexOptions.Compiled |
-                                                                                                              RegexOptions.Singleline |
-                                                                                                              RegexOptions.Multiline |
-                                                                                                              RegexOptions.CultureInvariant);
+                                                                                                                         RegexOptions.Compiled |
+                                                                                                                         RegexOptions.Singleline |
+                                                                                                                         RegexOptions.Multiline |
+                                                                                                                         RegexOptions.CultureInvariant);
         private static readonly Regex _ie11 = new Regex(@"Trident/7\.0.*?rv:\s?11\.(\d*)", RegexOptions.IgnoreCase |
-                                                                                                RegexOptions.Compiled |
-                                                                                                RegexOptions.Singleline |
-                                                                                                RegexOptions.Multiline |
-                                                                                                RegexOptions.CultureInvariant);
+                                                                                           RegexOptions.Compiled |
+                                                                                           RegexOptions.Singleline |
+                                                                                           RegexOptions.Multiline |
+                                                                                           RegexOptions.CultureInvariant);
 
         public decimal CurrentVersion() {
             return _majorVersion + (decimal)_minorVersion;
@@ -49,14 +38,11 @@ namespace CommonUtils.Code {
 
         public BrowserInfo(HttpBrowserCapabilitiesBase browser, string userAgent) {
             try {
-
                 UserAgent = userAgent ?? string.Empty;
-
-
                 Name = browser.Browser;
+                Os = browser.Platform;
                 _majorVersion = browser.MajorVersion;
                 _minorVersion = browser.MinorVersion;
-                Os = browser.Platform;
                 float currentVervion = 0;
                 // Набор костылей для корректного определения параметров
                 // Этот для юзерагента дивного IE11
@@ -71,13 +57,12 @@ namespace CommonUtils.Code {
                     Mobile = true;
                 }
                 // У оперы тоже свой особенный юзерагент
-                Match match;
                 if (UserAgent.IndexOf("OPR") > -1) {
                     Name = "Opera";
                 }
                 if (Name == "Opera") {
-                    match = _operaVersionRegex.Match(UserAgent);
-                    Single.TryParse(match.Value, NumberStyles.Float, new CultureInfo("en-US"), out currentVervion);
+                    var match = _operaVersionRegex.Match(UserAgent);
+                    float.TryParse(match.Value, NumberStyles.Float, new CultureInfo("en-US"), out currentVervion);
                 }
                 if (currentVervion != 0) {
                     _majorVersion = (int)currentVervion;

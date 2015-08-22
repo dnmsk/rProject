@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MainLogic.Transport {
+﻿namespace MainLogic.Transport {
     public struct GuestTechInfoTransport {
-        public long GuestId { get; set; }
 
         public string BrowserType { get; set; }
 
