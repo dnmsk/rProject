@@ -1,5 +1,4 @@
-﻿using MainLogic.Code;
-using MainLogic.Entities;
+﻿using MainLogic.Entities;
 using MainLogic.Providers;
 using MainLogic.Transport;
 using MainLogic.Wrapper;

@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.SessionState;
 
-namespace Project_R.Code {
+namespace MainLogic.WebFiles {
     public static class SessionDataManager {
         public static T GetObject<T>() {
             var session = GetSessionState();

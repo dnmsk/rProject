@@ -6,7 +6,7 @@ using System.Threading;
 namespace CommonUtils.Code {
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public class FileMonitor {
-        private readonly string _path;
+        private string _path;
         private readonly string _file;
         private FileSystemWatcher _watcher;
         private DateTime _lastWrite;
@@ -25,8 +25,9 @@ namespace CommonUtils.Code {
             if (string.IsNullOrEmpty(_path) || string.IsNullOrEmpty(_file)) {
                 throw new ArgumentException("Файл не указан");
             }
-            if (!Directory.Exists(_path)) {
-                throw new ArgumentException("Папка не существует: " + _path);
+            var filePath = Path.Combine(_path, _file);
+            if (!File.Exists(filePath)) {
+                throw new ArgumentException("Файл не существует: " + filePath);
             }
 
             _watcher = new FileSystemWatcher(_path, _file);

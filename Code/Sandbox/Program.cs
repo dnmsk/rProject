@@ -21,7 +21,7 @@ namespace Sandbox {
                         "GuestTechInfo",
                         "UtmGuestReferrer",
                         "utmsubdomainrule",*/
-                        "guestactionlog"
+                        "AccountIdentity"
                     },
                     TargetDB.MASTER,
                     "e:\\"

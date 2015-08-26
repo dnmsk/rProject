@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.Core.Logger {
@@ -20,6 +19,8 @@ namespace CommonUtils.Core.Logger {
         /// Конструктор
         /// </summary>
         public LogsActionProcessor() {
+            _rulesMap = new Dictionary<Enum, ILogActionRule>();
+            return;
             var type = typeof(ILogActionRule);
             var rulesList = AppDomain.CurrentDomain
                     .GetAssemblies()
@@ -27,7 +28,6 @@ namespace CommonUtils.Core.Logger {
                     .Where(t => type.IsAssignableFrom(t) && t != type)
                     .ToList();
 
-            _rulesMap = new Dictionary<Enum, ILogActionRule>();
             foreach (var rule in rulesList) {
                 try {
                     var item = (ILogActionRule)Activator.CreateInstance((Type) rule);

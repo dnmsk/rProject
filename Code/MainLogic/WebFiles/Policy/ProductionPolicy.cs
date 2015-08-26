@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 
-namespace Project_R.Code.Policy {
+namespace MainLogic.WebFiles.Policy {
     public class ProductionPolicy {
         public static bool IsProduction() {
             return (SessionDataManager.GetObject<ProductionPolicy>()

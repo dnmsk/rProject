@@ -4,42 +4,69 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using MainLogic;
 using MainLogic.Transport;
 using MainLogic.Wrapper;
 
-namespace Project_R.Code {
+namespace MainLogic.WebFiles {
     public abstract class ApplicationControllerBase : Controller {
-        public const string GUID_COOKIE_NAME = "guid";
-
+        public const string GUEST_COOKIE_NAME = "guest";
         public const string UTM_COOKIE_NAME = "utm_data";
         public const string UTM_SOURCE_PARAM_NAME = "utm_source";
         public const string UTM_CAMPAIGN_PARAM_NAME = "utm_campaign";
         public const string UTM_MEDIUM_PARAM_NAME = "utm_medium";
-        public const string DATE_ARIVED_COOKIE_NAME = "date";
         private const string _urlReferrerCookieName = "prevUrl";
 
         private const string _domainPattern = "(?:https?://)?(?:www)?(.+?(?=/))";
         private static readonly Regex _domainRegex = new Regex(_domainPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        protected static MainLogicProvider BusinessLogic = new MainLogicProvider();
+        protected static readonly MainLogicProvider BusinessLogic = new MainLogicProvider();
 
         public UtmParamWrapper UtmParam { get; private set; }
 
-        private int _guid;
-        public int CurrentGuid {
-            get { return _guid; }
-            set {
-                Response.Cookies.Add(new HttpCookie(GUID_COOKIE_NAME, value.ToString(CultureInfo.InvariantCulture)) {
-                    Expires = DateTime.Today.AddYears(10),
-                });
-                _guid = value;
+
+        /// <summary>
+        /// базовая модель
+        /// </summary>
+        private BaseModel _baseModel;
+
+        protected internal BaseModel GetBaseModel() {
+            if (_baseModel == null) {
+                _baseModel = new BaseModel(CurrentUser, BusinessLogic);
             }
+            return _baseModel;
         }
 
+        private SessionModule _currentUser;
+        public SessionModule CurrentUser {
+            get {
+                if (_currentUser == null) {
+                    int guid;
+                    if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || !int.TryParse(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value, out guid)) {
+                         guid = CreateGuidInfo(HttpContext);
+                        LogAction(LogActionID.OpenSiteFirstTime, null);
+                    }
+                    _currentUser = SessionModule.CreateSessionModule(guid, HttpContext);
+
+                }
+                return _currentUser;
+            }
+            set {
+                if (value == null) {
+                    _currentUser = new SessionModule(CurrentUser.GuestID);
+                    FormsAuthentication.SignOut();
+                    return;
+                }
+                if (value.IsAthenticated()) {
+                    _currentUser = value;
+                    FormsAuthentication.SetAuthCookie(_currentUser.ModuleToString(), true);
+                }
+            }
+        }
+        
         protected override void ExecuteCore() {
             InitCookies(HttpContext);
             base.ExecuteCore();
@@ -48,18 +75,10 @@ namespace Project_R.Code {
         private void InitCookies(HttpContextBase httpContext) {
             InitUtmCookies(httpContext.Request, httpContext.Response);
 
-            if (httpContext.Request.Cookies[GUID_COOKIE_NAME] == null || !int.TryParse(httpContext.Request.Cookies[GUID_COOKIE_NAME].Value, out _guid)) {
-                CreateGuidInfo(httpContext);
-                httpContext.Response.Cookies.Add(
-                    new HttpCookie(DATE_ARIVED_COOKIE_NAME, DateTime.Now.ToString(CultureInfo.InvariantCulture)) {
-                        Expires = DateTime.Today.AddYears(5)
-                    }
-                );
-            }
-            BusinessLogic.UserProvider.SaveReferrer(CurrentGuid, httpContext.Request.UrlReferrer?.ToString() ?? string.Empty, httpContext.Request.Url?.ToString() ?? string.Empty);
-            BusinessLogic.UserProvider.SaveUtm(CurrentGuid, UtmParam);
+            BusinessLogic.UserProvider.SaveReferrer(CurrentUser.GuestID, httpContext.Request.UrlReferrer?.ToString() ?? string.Empty, httpContext.Request.Url?.ToString() ?? string.Empty);
+            BusinessLogic.UserProvider.SaveUtm(CurrentUser.GuestID, UtmParam);
             var browserInfo = new BrowserInfo(httpContext.Request.Browser, httpContext.Request.UserAgent);
-            BusinessLogic.UserProvider.SaveTechInfo(CurrentGuid, new GuestTechInfoTransport {
+            BusinessLogic.UserProvider.SaveTechInfo(CurrentUser.GuestID, new GuestTechInfoTransport {
                 Version = browserInfo.CurrentVersion(),
                 BrowserType = browserInfo.Name,
                 Os = browserInfo.Os,
@@ -68,7 +87,7 @@ namespace Project_R.Code {
             });
         }
 
-        protected void LogAction(LogActionID logID, long? objectID, Dictionary<string, string> additionalParams = null) {
+        protected void LogAction(Enum logID, long? objectID, Dictionary<string, string> additionalParams = null) {
             var pars = new Dictionary<string, string> {
                 {"utm_source", UtmParam.UtmSource},
                 {"utm_campaign", UtmParam.UtmCampaign},
@@ -79,7 +98,7 @@ namespace Project_R.Code {
                     pars[kv.Key] = kv.Value;
                 });
             }
-            UserActionLogger.Log(CurrentGuid, logID, objectID, pars);
+            UserActionLogger.Log(CurrentUser.GuestID, logID, objectID, pars);
         }
 
         private static string GetUserIp(HttpRequestBase requestContext) {
@@ -106,7 +125,7 @@ namespace Project_R.Code {
             return requestContext.UserHostAddress;
         }
 
-        protected string GetUrlReffererString(HttpRequestBase requestContext) {
+        protected static string GetUrlReffererString(HttpRequestBase requestContext) {
             var prevUri = requestContext.UrlReferrer;
             var refData = string.Empty;
 
@@ -119,22 +138,23 @@ namespace Project_R.Code {
             return refData;
         }
 
-        private void CreateGuidInfo(HttpContextBase context) {
+        private static int CreateGuidInfo(HttpContextBase context) {
             var requestContext = context.Request;
             var urlRefferer = GetUrlReffererString(requestContext);
             var guid = BusinessLogic.UserProvider.CreateNewGuid(urlRefferer, GetUserIp(requestContext));
 
-            CurrentGuid = guid;
-
-            LogAction(LogActionID.OpenSiteFirstTime, null);
+            context.Response.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
+                Expires = DateTime.Today.AddYears(10),
+            });
 
             if (!string.IsNullOrEmpty(urlRefferer)) {
                 context.Response.Cookies.Add(
                     new HttpCookie(_urlReferrerCookieName, HttpUtility.UrlEncode(urlRefferer)) {
-                        Expires = DateTime.Today.AddYears(1)
+                        Expires = DateTime.Today.AddYears(10)
                     }
                 );
             }
+            return guid;
         }
 
         private void InitUtmCookies(HttpRequestBase request, HttpResponseBase response) {

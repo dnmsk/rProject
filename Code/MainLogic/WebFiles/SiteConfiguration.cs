@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Project_R.Code {
+namespace MainLogic.WebFiles {
     public static class SiteConfiguration {
         public static string ProductionHostName { get; private set; }
         public static string YandexMetrikaID { get; private set; }

@@ -1,4 +1,5 @@
 ;
+drop table if exists AccountIdentity;
 drop table if exists UtmGuestReferrer;
 drop table if exists GuestReferrer;
 drop table if exists GuestActionLog;

@@ -9,8 +9,9 @@ using MainLogic.Providers;
 namespace MainLogic {
     public class MainLogicProvider : Singleton<MainLogicProvider> {
         public readonly UserProvider UserProvider = new UserProvider();
+        public readonly AccountProvider AccountProvider = new AccountProvider();
 
-        public MainLogicProvider() {
+        static MainLogicProvider() {
             RegisterDB();
         }
 

@@ -7,6 +7,7 @@ namespace UnitTestProject.Helpers {
 
         private const string DeleteTpl = "delete from {0};";
         static readonly string[] _tblNames = {
+            EntityDescriptor.GetDescriptor(typeof(AccountIdentity)).TableName,
             EntityDescriptor.GetDescriptor(typeof(UtmGuestReferrer)).TableName,
             EntityDescriptor.GetDescriptor(typeof(GuestReferrer)).TableName,
             EntityDescriptor.GetDescriptor(typeof(GuestActionLog)).TableName,

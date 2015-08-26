@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FactoryEntities\Factories\AccountIdentityCreator.cs" />
     <Compile Include="FactoryEntities\Factories\GuestActionLogCreator.cs" />
     <Compile Include="FactoryEntities\Factories\GuestCreator.cs" />
     <Compile Include="FactoryEntities\Factories\GuestExistBrowserCreator.cs" />
@@ -91,7 +92,9 @@
     <Compile Include="Unit\DAO\TestEntities\OtherTestEntity.cs" />
     <Compile Include="Unit\DAO\TestEntities\TestEntity.cs" />
     <Compile Include="Unit\DbRestrictionsTest.cs" />
+    <Compile Include="Unit\MainLogic\AccountProviderTest.cs" />
     <Compile Include="Unit\MainLogic\UserProviderTest.cs" />
+    <Compile Include="Unit\SessionModuleTest.cs" />
     <Compile Include="Unit\Test1.cs" />
     <Compile Include="Unit\WatchfulSloths\SlothMoveByFirstSuccessTest.cs" />
     <Compile Include="Unit\WatchfulSloths\SlothMoveByTimeEcoTest.cs" />

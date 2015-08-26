@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Code\" />
     <Folder Include="Content\Styles\" />
     <Folder Include="Models\" />
   </ItemGroup>
@@ -157,11 +158,6 @@
     <Compile Include="App_Start\SquishItLess.cs" />
     <Compile Include="App_Start\SquishItMsIeCoffeeScript.cs" />
     <Compile Include="App_Start\SquishItSass.cs" />
-    <Compile Include="Code\ApplicationControllerBase.cs" />
-    <Compile Include="Code\LogActionId.cs" />
-    <Compile Include="Code\Policy\ProductionPolicy.cs" />
-    <Compile Include="Code\SessionDataManager.cs" />
-    <Compile Include="Code\SiteConfiguration.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

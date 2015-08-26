@@ -110,7 +110,7 @@ namespace CommonUtils.ExtendedTypes {
             var parsStr = parsObj != null
                 ? new JavaScriptSerializer().Serialize(parsObj)
                 : "empty";
-            _logger.Error(string.Format("Ошибка при вызове метода {0}. Параметры: {1}", actionMethod, parsStr), e);
+            _logger.Error(string.Format("Ошибка при вызове метода {0}. Параметры: {1} {2}{3}", actionMethod, parsStr, Environment.NewLine, e));
         }
 
         /// <summary>

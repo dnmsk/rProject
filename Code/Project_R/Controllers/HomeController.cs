@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
 using CommonUtils.Code;
-using Project_R.Code;
+using MainLogic;
+using MainLogic.WebFiles;
 
 namespace Project_R.Controllers {
     public class HomeController : ApplicationControllerBase {

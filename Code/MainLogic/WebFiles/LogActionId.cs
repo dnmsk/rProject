@@ -1,4 +1,4 @@
-﻿namespace Project_R.Code {
+﻿namespace MainLogic.WebFiles {
     public enum LogActionID {
         OpenSiteFirstTime = 1
     }
