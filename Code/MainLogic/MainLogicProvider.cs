@@ -2,12 +2,14 @@
 using System.Xml;
 using CommonUtils.Core.Config;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
 using MainLogic.Providers;
 
 namespace MainLogic {
     public class MainLogicProvider : Singleton<MainLogicProvider> {
+        public static readonly  IWatchfulSloth WatchfulSloth = new WatchfulSloth(1000);
         public readonly UserProvider UserProvider = new UserProvider();
         public readonly AccountProvider AccountProvider = new AccountProvider();
 

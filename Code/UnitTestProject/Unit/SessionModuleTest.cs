@@ -29,7 +29,7 @@ namespace UnitTestProject.Unit {
         [Test]
         public void IsAthenticatedTest() {
             var actual = new SessionModule(13, 31);
-            Assert.True(actual.IsAthenticated());
+            Assert.True(actual.IsAuthenticated());
         }
     }
 }

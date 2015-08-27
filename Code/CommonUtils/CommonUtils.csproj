@@ -73,7 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\BrowserInfo.cs" />
+    <Compile Include="Code\EncodingDetector.cs" />
     <Compile Include="Code\FileMonitor.cs" />
+    <Compile Include="Code\WebRequestHelper.cs" />
     <Compile Include="Core\Logger\ILogActionRule.cs" />
     <Compile Include="Core\Logger\LogsActionProcessor.cs" />
     <Compile Include="Code\Mailer.cs" />

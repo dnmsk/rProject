@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DAO, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Externals\IDEV_DAO\DAO.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -123,12 +127,33 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Code\Algorithms\AlgoBase.cs" />
+    <Compile Include="Code\Algorithms\CollectEmailPhoneFromDomain.cs" />
+    <Compile Include="Code\Algorithms\CollectDomainsFromPhraseSpywords.cs" />
+    <Compile Include="Code\Algorithms\CollectDomainInfoSpywords.cs" />
+    <Compile Include="Code\Algorithms\CollectShowsDomainYadro.cs" />
+    <Compile Include="Code\Entities\DomainEntity.cs" />
+    <Compile Include="Code\Entities\Domainemail.cs" />
+    <Compile Include="Code\Entities\Domainphone.cs" />
+    <Compile Include="Code\Entities\Domainphrase.cs" />
+    <Compile Include="Code\Entities\Phrase.cs" />
+    <Compile Include="Code\Entities\Phraseaccount.cs" />
+    <Compile Include="Code\Providers\PhraseProvider.cs" />
+    <Compile Include="Code\SpywordsQueryWrapper.cs" />
+    <Compile Include="Code\Statuses\DomainStatus.cs" />
+    <Compile Include="Code\Statuses\PhraseStatus.cs" />
+    <Compile Include="Code\Statuses\SearchEngine.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PhraseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\DomainStatsModel.cs" />
+    <Compile Include="Models\EntityModel\DomainStatsEntityModel.cs" />
+    <Compile Include="Models\EntityModel\PhraseEntityModel.cs" />
+    <Compile Include="Models\PhraseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +189,8 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Phrase\Index.cshtml" />
+    <Content Include="Views\Phrase\PhraseDomains.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

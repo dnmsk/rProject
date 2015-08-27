@@ -1,0 +1,27 @@
+﻿@using CommonUtils.ExtendedTypes
+@model Spywords_Project.Models.DomainStatsModel
+
+@{
+    ViewBag.Title = string.Format("Продвигаемые домены в контексте по запросу '{0}'", Model.Phrase.Text);
+    //Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<br/>
+
+<table class="table table-hover">
+    <tr>
+        <th>Сайт</th>
+        <th>Визитов/мес</th>
+        <th>Emails</th>
+        <th>Телефоны</th>
+    </tr>
+    @foreach (var domain in Model.PhraseDomains) {
+        <tr>
+            <th><a target="_blank" href="@domain.Domain"><b>@domain.Domain</b></a></th>
+            <th>@domain.VisitsMonth</th>
+            <th>@domain.Emails.StrJoin(" ")</th>
+            <th>@domain.Phones.StrJoin(" ")</th>
+        </tr>
+    }
+</table>

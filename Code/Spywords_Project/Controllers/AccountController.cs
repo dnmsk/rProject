@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using MainLogic.WebFiles;
 using Spywords_Project.Models;
 
@@ -19,7 +18,7 @@ namespace Spywords_Project.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl) {
+        public ActionResult Login(LoginViewModel model, string returnUrl) {
             //ModelState.AddModelError("", error);
             if (!ModelState.IsValid) {
                 return View(model);
@@ -45,7 +44,7 @@ namespace Spywords_Project.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model) {
+        public ActionResult Register(RegisterViewModel model) {
             if (ModelState.IsValid) {
                 var result = BusinessLogic.AccountProvider.RegisterWithEmail(CurrentUser.GuestID, model.Email,
                     model.Password);

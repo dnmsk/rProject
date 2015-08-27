@@ -24,7 +24,7 @@ namespace MainLogic.WebFiles {
             GuestID = guestID;
         }
 
-        public bool IsAthenticated() {
+        public bool IsAuthenticated() {
             return AccountID != default(int);
         }
 

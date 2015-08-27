@@ -60,7 +60,7 @@ namespace MainLogic.WebFiles {
                     FormsAuthentication.SignOut();
                     return;
                 }
-                if (value.IsAthenticated()) {
+                if (value.IsAuthenticated()) {
                     _currentUser = value;
                     FormsAuthentication.SetAuthCookie(_currentUser.ModuleToString(), true);
                 }

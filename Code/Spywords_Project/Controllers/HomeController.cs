@@ -12,8 +12,6 @@ namespace Spywords_Project.Controllers {
         }
 
         public ActionResult Contact() {
-            ViewBag.Message = "Связь с разработчиком.";
-
             return View(GetBaseModel());
         }
     }

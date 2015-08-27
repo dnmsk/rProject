@@ -1,22 +1,22 @@
 ﻿@model MainLogic.WebFiles.BaseModel
 
-@if (Model.IsAthenticated()) {
+@if (Model.IsAгthenticated()) {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right"})) {
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                Ола, @Html.Raw(Model.Email)!
+                Ола, @Html.Raw(Model.AccountEmail)!
             </li>
             <li>
-                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                <a href="javascript:document.getElementById('logoutForm').submit()">Выход</a>
             </li>
         </ul>
     }
 }
 else {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", null, new {id = "registerLink"})</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", null, new {id = "loginLink"})</li>
+        <li>@Html.ActionLink("Регистрация", "Register", "Account", null, new {id = "registerLink"})</li>
+        <li>@Html.ActionLink("Вход", "Login", "Account", null, new {id = "loginLink"})</li>
     </ul>
 }

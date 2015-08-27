@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -80,6 +81,10 @@
     <ProjectReference Include="..\Project_R\Project_R.csproj">
       <Project>{CB274D1C-59A3-4F94-BEAB-76FFB50D5150}</Project>
       <Name>Project_R</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Spywords_Project\Spywords_Project.csproj">
+      <Project>{71D9C30A-FAE2-4ABB-BCD2-3CB80BC09D6E}</Project>
+      <Name>Spywords_Project</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

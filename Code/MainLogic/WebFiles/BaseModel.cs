@@ -3,18 +3,24 @@
         public readonly MainLogicProvider MainLogicProvider;
         public SessionModule SessionModule { get; private set; }
 
-        public bool IsAthenticated() {
-            return SessionModule.IsAthenticated();
+        public bool IsAгthenticated() {
+            return SessionModule.IsAuthenticated();
         }
 
-        public string Email { get; private set; }
+        public string AccountEmail { get; private set; }
+
+        public BaseModel(BaseModel baseModel) {
+            MainLogicProvider = baseModel.MainLogicProvider;
+            SessionModule = baseModel.SessionModule;
+            AccountEmail = baseModel.AccountEmail;
+        }
 
         public BaseModel(SessionModule session, MainLogicProvider mainLogicProvider) {
             MainLogicProvider = mainLogicProvider;
             SessionModule = session;
-            if (SessionModule.IsAthenticated()) {
+            if (SessionModule.IsAuthenticated()) {
                 var accountDetails = MainLogicProvider.AccountProvider.GetAccountDescription(SessionModule.AccountID);
-                Email = accountDetails.Email;
+                AccountEmail = accountDetails.Email;
             }
         }
     }
