@@ -50,7 +50,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
             int cnt = 0;
             int runnedTask = 0;
             const int millisecondsTimeout = 500;
-            const int traceValue = 60 * millisecondsTimeout / 1000;
+            const int traceValue = 60 * 4 * 10 * millisecondsTimeout / 1000;
 
             while (_canWork) {
                 cnt++;

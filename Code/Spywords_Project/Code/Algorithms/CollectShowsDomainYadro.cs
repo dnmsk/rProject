@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CommonUtils.Code;
 using IDEV.Hydra.DAO.MassTools;
 using Spywords_Project.Code.Entities;
-using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Algorithms {
     public class CollectShowsDomainYadro : AlgoBase {
@@ -17,9 +16,7 @@ namespace Spywords_Project.Code.Algorithms {
             }
             foreach (var domain in entitiesToCollect) {
                 domain.Visitsmonth = GetVisitsFromYadro(domain.Domain);
-                domain.Status |= DomainStatus.Loaded;
             }
-
             entitiesToCollect.Save<DomainEntity, int>();
         }
 

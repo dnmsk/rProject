@@ -40,12 +40,12 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Showsgoogle,
+            [DBField(DbType.Int32)] Showsgoogle,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Showsyandex,
+            [DBField(DbType.Int32)] Showsyandex,
 
         /// <summary>
         /// 
@@ -114,23 +114,23 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public short Showsgoogle {
-            get { return (short?) this[Fields.Showsgoogle] ?? default(short); }
+        public int? Showsgoogle {
+            get { return (int?) this[Fields.Showsgoogle] ?? default(int); }
             set { ForceSetData(Fields.Showsgoogle, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public short Showsyandex {
-            get { return (short?) this[Fields.Showsyandex] ?? default(short); }
+        public int? Showsyandex {
+            get { return (int?) this[Fields.Showsyandex] ?? default(int); }
             set { ForceSetData(Fields.Showsyandex, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public short Advertisersgoogle {
+        public short? Advertisersgoogle {
             get { return (short?) this[Fields.Advertisersgoogle] ?? default(short); }
             set { ForceSetData(Fields.Advertisersgoogle, value); }
         }
@@ -138,7 +138,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public short Advertisersyandex {
+        public short? Advertisersyandex {
             get { return (short?) this[Fields.Advertisersyandex] ?? default(short); }
             set { ForceSetData(Fields.Advertisersyandex, value); }
         }

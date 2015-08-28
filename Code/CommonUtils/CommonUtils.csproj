@@ -73,8 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\BrowserInfo.cs" />
+    <Compile Include="Code\DomainExtension.cs" />
     <Compile Include="Code\EncodingDetector.cs" />
     <Compile Include="Code\FileMonitor.cs" />
+    <Compile Include="Code\Punycode.cs" />
+    <Compile Include="Code\StringParser.cs" />
     <Compile Include="Code\WebRequestHelper.cs" />
     <Compile Include="Core\Logger\ILogActionRule.cs" />
     <Compile Include="Core\Logger\LogsActionProcessor.cs" />

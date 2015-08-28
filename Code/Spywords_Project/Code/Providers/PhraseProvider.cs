@@ -6,7 +6,6 @@ using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
-using Spywords_Project.Models;
 using Spywords_Project.Models.EntityModel;
 
 namespace Spywords_Project.Code.Providers {
@@ -50,8 +49,8 @@ namespace Spywords_Project.Code.Providers {
                                          .Select(ph => new PhraseEntityModel {
                                              PhraseID = ph.ID,
                                              Text = ph.Text,
-                                             AdvertsGoogle = ph.Advertisersgoogle,
-                                             AdvertsYandex = ph.Advertisersyandex,
+                                             AdvertsGoogle = ph.Advertisersgoogle.Value,
+                                             AdvertsYandex = ph.Advertisersyandex.Value,
                                              PhraseStatus = ph.Status,
                                              PhraseAccountID = ph.GetJoinedEntity<Phraseaccount>().ID,
                                              CollectedDomainsCount = 0,
@@ -78,8 +77,8 @@ namespace Spywords_Project.Code.Providers {
                 foreach (var phraseModel in phraseModels) {
                     GroupedEntity ge;
                     if (phraseStats.TryGetValue(phraseModel.PhraseID, out ge)) {
-                        phraseModel.DomainsCount = (int) ge[totalDomains];
-                        phraseModel.CollectedDomainsCount = (int) ge[collectedDomains];
+                        phraseModel.DomainsCount = (int) (long) ge[totalDomains];
+                        phraseModel.CollectedDomainsCount = (int)(long)ge[collectedDomains];
                     }
                 }
                 return phraseModels;
@@ -98,8 +97,8 @@ namespace Spywords_Project.Code.Providers {
                 return new PhraseEntityModel {
                     PhraseID = phrase.ID,
                     Text = phrase.Text,
-                    AdvertsGoogle = phrase.Advertisersgoogle,
-                    AdvertsYandex = phrase.Advertisersyandex,
+                    AdvertsGoogle = phrase.Advertisersgoogle.Value,
+                    AdvertsYandex = phrase.Advertisersyandex.Value,
                     PhraseStatus = phrase.Status,
                     PhraseAccountID = phrase.GetJoinedEntity<Phraseaccount>().ID
                 };
@@ -132,14 +131,14 @@ namespace Spywords_Project.Code.Providers {
                     .Select(d => new DomainStatsEntityModel {
                         DomainID = d.ID,
                         Domain = d.Domain,
-                        VisitsMonth = d.Visitsmonth,
-                        Advertsgoogle = d.Advertsgoogle,
-                        Advertsyandex = d.Advertsyandex,
-                        Budgetgoogle = d.Budgetgoogle,
-                        Budgetyandex = d.Budgetyandex,
+                        VisitsMonth = d.Visitsmonth.Value,
+                        Advertsgoogle = d.Advertsgoogle.Value,
+                        Advertsyandex = d.Advertsyandex.Value,
+                        Budgetgoogle = d.Budgetgoogle.Value,
+                        Budgetyandex = d.Budgetyandex.Value,
                         Datecollected = d.Datecollected,
-                        Phrasesgoogle = d.Phrasesgoogle,
-                        Phrasesyandex = d.Phrasesyandex,
+                        Phrasesgoogle = d.Phrasesgoogle.Value,
+                        Phrasesyandex = d.Phrasesyandex.Value,
                         Status = d.Status
                     })
                     .ToList();

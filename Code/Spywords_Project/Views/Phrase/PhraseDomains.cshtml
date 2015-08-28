@@ -18,10 +18,10 @@
     </tr>
     @foreach (var domain in Model.PhraseDomains) {
         <tr>
-            <th><a target="_blank" href="@domain.Domain"><b>@domain.Domain</b></a></th>
-            <th>@domain.VisitsMonth</th>
-            <th>@domain.Emails.StrJoin(" ")</th>
-            <th>@domain.Phones.StrJoin(" ")</th>
+            <td><a target="_blank" href="http://@domain.Domain"><b>@domain.Domain</b></a></td>
+            <td>@domain.VisitsMonth</td>
+            <td>@Html.Raw((domain.Emails ?? new string[0]).StrJoin("<br />"))</td>
+            <td>@Html.Raw((domain.Phones ?? new string[0]).StrJoin("<br />"))</td>
         </tr>
     }
 </table>

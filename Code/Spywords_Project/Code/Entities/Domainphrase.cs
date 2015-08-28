@@ -16,9 +16,9 @@ namespace Spywords_Project.Code.Entities {
     public sealed class Domainphrase : AbstractEntityTemplateKey<Domainphrase, int> {
 
         public enum Fields {
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.Int32)] DomainID,
 
         /// <summary>
@@ -26,9 +26,9 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
             [DBField(DbType.Int32)] PhraseID,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.Int16)] SE,
 
         }
@@ -63,12 +63,12 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
         public SearchEngine SE {
-            get { return (SearchEngine) (short) this[Fields.PhraseID]; }
+            get { return (SearchEngine) ((short?) this[Fields.PhraseID] ?? default(short)); }
             set { ForceSetData(Fields.PhraseID, value); }
         }
 
         public override Enum[] KeyFields {
-            get { return new Enum[] {}; }
+            get { return new Enum[] {Fields.DomainID}; }
         }
     }
 }

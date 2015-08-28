@@ -10,8 +10,7 @@ namespace MainLogic.WebFiles.Policy {
         }
 
         private ProductionPolicy() {
-            var session = SessionDataManager.GetSessionState();
-            IsProductionValue = session != null && SiteConfiguration.ProductionHostName.Equals(HttpContext.Current.Request.Url.Host,
+            IsProductionValue = SiteConfiguration.ProductionHostName.Equals(HttpContext.Current.Request.Url.Host,
                 StringComparison.InvariantCultureIgnoreCase);
         }
 

@@ -113,7 +113,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Phrasesgoogle {
+        public int? Phrasesgoogle {
             get { return (int?) this[Fields.Phrasesgoogle] ?? default(int); }
             set { ForceSetData(Fields.Phrasesgoogle, value); }
         }
@@ -121,7 +121,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Phrasesyandex {
+        public int? Phrasesyandex {
             get { return (int?) this[Fields.Phrasesyandex] ?? default(int); }
             set { ForceSetData(Fields.Phrasesyandex, value); }
         }
@@ -129,7 +129,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Advertsgoogle {
+        public int? Advertsgoogle {
             get { return (int?) this[Fields.Advertsgoogle] ?? default(int); }
             set { ForceSetData(Fields.Advertsgoogle, value); }
         }
@@ -137,7 +137,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Advertsyandex {
+        public int? Advertsyandex {
             get { return (int?) this[Fields.Advertsyandex] ?? default(int); }
             set { ForceSetData(Fields.Advertsyandex, value); }
         }
@@ -145,7 +145,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Budgetgoogle {
+        public int? Budgetgoogle {
             get { return (int?) this[Fields.Budgetgoogle] ?? default(int); }
             set { ForceSetData(Fields.Budgetgoogle, value); }
         }
@@ -153,7 +153,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Budgetyandex {
+        public int? Budgetyandex {
             get { return (int?) this[Fields.Budgetyandex] ?? default(int); }
             set { ForceSetData(Fields.Budgetyandex, value); }
         }
@@ -161,7 +161,7 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
-        public int Visitsmonth {
+        public int? Visitsmonth {
             get { return (int?) this[Fields.Visitsmonth] ?? default(int); }
             set { ForceSetData(Fields.Visitsmonth, value); }
         }

@@ -101,7 +101,7 @@ namespace MainLogic.WebFiles {
             UserActionLogger.Log(CurrentUser.GuestID, logID, objectID, pars);
         }
 
-        private static string GetUserIp(HttpRequestBase requestContext) {
+        public static string GetUserIp(HttpRequestBase requestContext) {
             var userIP = GetUnfilteredUserIP(requestContext);
             var indexOf = userIP.IndexOf(",", StringComparison.InvariantCulture);
             var filteredUserIP = userIP.Substring(0, indexOf > 0 ? indexOf : userIP.Length);
@@ -141,7 +141,7 @@ namespace MainLogic.WebFiles {
         private static int CreateGuidInfo(HttpContextBase context) {
             var requestContext = context.Request;
             var urlRefferer = GetUrlReffererString(requestContext);
-            var guid = BusinessLogic.UserProvider.CreateNewGuid(urlRefferer, GetUserIp(requestContext));
+            var guid = BusinessLogic.UserProvider.CreateNewGuid(GetUserIp(requestContext), context.Request.UserAgent);
 
             context.Response.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
                 Expires = DateTime.Today.AddYears(10),

@@ -12,7 +12,7 @@ namespace Spywords_Project.Code {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(SpywordsQueryWrapper).FullName);
 
-        private static Random _rnd = new Random();
+        private static readonly Random _rnd = new Random();
 
         private readonly string _login;
         private readonly string _password;
@@ -34,11 +34,14 @@ namespace Spywords_Project.Code {
         }
 
         private string LoadSpywordsContent(string url) {
+            _logger.Info("Пошли с запросом " + url);
             var pageContent = _requestHelper.GetContent(url);
+            _logger.Debug(string.Format("{0}\r\n{1}", url, pageContent.Item2));
             TryLogError(url, pageContent);
             if (IsAuthenticated(pageContent.Item2)) {
                 return pageContent.Item2;
             }
+            _logger.Info("Не авторизован" + url);
             Authenticate();
             pageContent = _requestHelper.GetContent(url);
 
@@ -52,10 +55,12 @@ namespace Spywords_Project.Code {
         }
 
         private static bool IsAuthenticated(string pageContent) {
+            _logger.Info("Проверяю авторизацию");
             return pageContent.IndexOf("Настройки аккаунта", StringComparison.InvariantCultureIgnoreCase) > 0;
         }
 
         private void Authenticate() {
+            _logger.Info("Авторизуюсь");
             var postData = string.Format("email_address={0}&password={1}&x={2}&y={3}", HttpUtility.UrlEncode(_login), HttpUtility.UrlEncode(_password), _rnd.Next(110), _rnd.Next(35));
 
             var loginPageContent = _requestHelper.GetContent("http://spywords.ru/login.php");
@@ -64,7 +69,7 @@ namespace Spywords_Project.Code {
             /*http://spywords.ru/login.php*/
             TryLogError("SendLogin", loginRequestContent);
             if (!IsAuthenticated(loginRequestContent.Item2)) {
-                _logger.Error("Не смогли авторизоваться \r\n {0}", loginPageContent.Item2);
+                _logger.Info("Не смогли авторизоваться \r\n {0}", loginPageContent.Item2);
             }
         }
     }

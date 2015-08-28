@@ -34,9 +34,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// </summary>
         public override void Move() {
             try {
-                _logger.Info("Выполняю для класса " + GetType().FullName);
                 Result = _move();
-                _logger.Info("Обновил класс " + GetType().FullName);
             } catch (Exception e) {
                 _logger.Error(e);
             }
