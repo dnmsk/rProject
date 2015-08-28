@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
@@ -16,8 +15,10 @@ namespace Spywords_Project.Code.Algorithms {
         private readonly static Regex _phraseStatsContainer =new Regex("(?s)data_table pre stat.*?</table", REGEX_OPTIONS);
         private readonly static Regex _containerSplitToTr =new Regex("(?s)<tr.*?</tr", REGEX_OPTIONS);
         private readonly static Regex _extractTdResult =new Regex("(?s)<td.*?>(?<td>.*?)</td", REGEX_OPTIONS);
+        
+        private static readonly Regex _allDomainsListYandexContainer = new Regex("(?s)data_table advSite.*?</table", REGEX_OPTIONS);
 
-        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 5)) {
+        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 15)) {
         }
 
         protected override void DoAction() {
@@ -38,9 +39,15 @@ namespace Spywords_Project.Code.Algorithms {
                     phrase.Advertisersyandex = StringParser.ToShort(yandexRowResult[2].Groups["td"].Value.Trim().Replace(" ", string.Empty), default(short));
                 } else {
                     Logger.Error("Нет трёх строк в таблице статистики запроса для {0} ID={1}", phrase.Text, phrase.ID);
+                    continue;
                 }
 
+                var domainsForPhraseYandex = SpywordsQueryWrapper.GetDomainsForPhraseYandex(phrase.Text);
+
                 var yandexDomains = GetDomains(_yandexDomainBlockRegex.Match(domains).Value);
+                var advancedYandexDomains = GetDomains(_allDomainsListYandexContainer.Match(domainsForPhraseYandex).Value);
+                yandexDomains = new HashSet<string>(yandexDomains.Union(advancedYandexDomains).Distinct());
+
                 var googleDomains = GetDomains(_googleDomainBlockRegex.Match(domains).Value);
                 var domainEntities = new List<DomainEntity>();
                 try {

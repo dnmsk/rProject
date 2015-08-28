@@ -67,8 +67,7 @@ namespace CommonUtils.Core.Config {
                 fileMonitor.Changed += () => { actionOnChange(); };
                 actionOnChange();
                 fileMonitor.Start();
-            }
-            else {
+            } else {
                 object actionArg = targetMonitor.Item3.Obj;
                 if (targetMonitor.Item4) {
                     var configXml = new XmlDocument();

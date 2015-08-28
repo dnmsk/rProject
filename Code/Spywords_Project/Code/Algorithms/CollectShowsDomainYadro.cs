@@ -6,7 +6,7 @@ using Spywords_Project.Code.Entities;
 
 namespace Spywords_Project.Code.Algorithms {
     public class CollectShowsDomainYadro : AlgoBase {
-        public CollectShowsDomainYadro() : base(new TimeSpan(0, 0, 10)) {
+        public CollectShowsDomainYadro() : base(new TimeSpan(0, 0, 30)) {
         }
 
         protected override void DoAction() {

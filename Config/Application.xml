@@ -4,7 +4,7 @@
     <Host>192.168.0.100</Host>
     <Port>25</Port>
   </Mailer>
-    
+  <LemmatizerDict>..\..\..\Externals\Lemmatizer</LemmatizerDict>
   <ConnectionStrings>
     <ConnectionString name="Master" connectionString="Server=localhost;Port=5432;Database=rproject_db;User ID=postgres;Password=Ingate2009;" dbServerType="PostgreSql" maxRetries="0" maxConnCount="10"/>	
   </ConnectionStrings>  

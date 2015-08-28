@@ -48,6 +48,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Externals\IDEV_DAO\DAO.dll</HintPath>
     </Reference>
+    <Reference Include="Lemmatizer">
+      <HintPath>..\..\Externals\Lemmatizer\Lemmatizer.dll</HintPath>
+    </Reference>
+    <Reference Include="LemmatizerNET, Version=0.1.4895.34570, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Externals\Lemmatizer\LemmatizerNET.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -131,6 +138,7 @@
     <Compile Include="Code\Algorithms\CollectEmailPhoneFromDomain.cs" />
     <Compile Include="Code\Algorithms\CollectDomainsFromPhraseSpywords.cs" />
     <Compile Include="Code\Algorithms\CollectDomainInfoSpywords.cs" />
+    <Compile Include="Code\Algorithms\CollectPhrasesForDomain.cs" />
     <Compile Include="Code\Algorithms\CollectShowsDomainYadro.cs" />
     <Compile Include="Code\Entities\DomainEntity.cs" />
     <Compile Include="Code\Entities\Domainemail.cs" />
@@ -139,6 +147,8 @@
     <Compile Include="Code\Entities\Phrase.cs" />
     <Compile Include="Code\Entities\Phraseaccount.cs" />
     <Compile Include="Code\Providers\PhraseProvider.cs" />
+    <Compile Include="Code\QueryBaseForm.cs" />
+    <Compile Include="Code\QueryProcessor.cs" />
     <Compile Include="Code\SpywordsQueryWrapper.cs" />
     <Compile Include="Code\Statuses\DomainStatus.cs" />
     <Compile Include="Code\Statuses\PhraseStatus.cs" />

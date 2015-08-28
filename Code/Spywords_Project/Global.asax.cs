@@ -7,7 +7,6 @@ using System.Web.Routing;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
-using MainLogic.WebFiles.Policy;
 using Spywords_Project.Code.Algorithms;
 
 namespace Spywords_Project {
@@ -19,19 +18,19 @@ namespace Spywords_Project {
         private static AlgoBase[] _phraseAlgos;
         
         protected void Application_Start() {
-            var isProduction = ProductionPolicy.IsProduction();
-            _logger.Info("Web start, Production mode: " + isProduction);
+            _logger.Info("Web start, RunTask mode: " + SiteConfiguration.NeedRunTask);
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             ModelBinders.Binders.DefaultBinder = new ExtendedModelBinder();
-            if (isProduction) {
+            if (SiteConfiguration.NeedRunTask) {
                 _phraseAlgos = new[] {
                     (AlgoBase) new CollectDomainInfoSpywords(),
                     new CollectDomainsFromPhraseSpywords(),
                     new CollectEmailPhoneFromDomain(),
-                    new CollectShowsDomainYadro()
+                    new CollectShowsDomainYadro(),
+                    new CollectPhrasesForDomain()
                 };
             }
         }

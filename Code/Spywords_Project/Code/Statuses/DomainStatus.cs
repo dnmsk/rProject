@@ -7,5 +7,6 @@ namespace Spywords_Project.Code.Statuses {
         Loaded = 1,
         SpywordsCollected = 2,
         EmailPhoneCollected = 4,
+        PhrasesCollected = 8,
     }
 }

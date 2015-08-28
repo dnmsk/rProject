@@ -19,7 +19,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         public override bool IsNeedMove {
             get {
                 if (_isRunning) {
-                    _logger.Info("Отказался выполнять таск, предыдущий не завершен.");
+                    _logger.Info("Отказался выполнять таск, предыдущий не завершен." + MoveName);
                 }
                 return !_isRunning && base.IsNeedMove;
             }
@@ -28,7 +28,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         public override void Move() {
             lock (_lockObj) {
                 if (_isRunning) {
-                    _logger.Info("Отменил таск, предыдущий не завершен.");
+                    _logger.Info("Отменил таск, предыдущий не завершен. " + MoveName);
                     return;
                 }
                 _isRunning = true;

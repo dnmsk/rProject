@@ -60,10 +60,10 @@ namespace Spywords_Project.Code.Providers {
                 var totalDomains = DomainEntity.DataSource.AggrCount(DomainEntity.Fields.ID);
                 var collectedDomains = DomainEntity.DataSource.AggrString(
                     string.Format("count(distinct case when {0}.{1} = {2} then {0}.{3} else null end)",
-                        DomainEntity.Descriptor.TableName, DomainEntity.Fields.Status,
-                        (short)
-                            (DomainStatus.EmailPhoneCollected | DomainStatus.EmailPhoneCollected |
-                             DomainStatus.SpywordsCollected), DomainEntity.Fields.ID), "collectedDomains");
+                        DomainEntity.Descriptor.TableName, 
+                        DomainEntity.Fields.Status,
+                        (short) (DomainStatus.EmailPhoneCollected | DomainStatus.EmailPhoneCollected | DomainStatus.SpywordsCollected), 
+                        DomainEntity.Fields.ID), "collectedDomains");
 
                 var phraseStats = DomainEntity.DataSource
                                               .Join(JoinType.Inner, Domainphrase.Fields.DomainID, DomainEntity.Fields.ID, RetrieveMode.NotRetrieve)

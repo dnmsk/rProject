@@ -38,6 +38,7 @@ namespace Spywords_Project.Code.Algorithms {
                     domainEntity.Phrasesyandex = StringParser.ToInt(yandexRowResult[1].Groups["td"].Value.Trim().Replace(" ", string.Empty), default(int));
                 } else {
                     Logger.Error("Нет трёх строк в таблице статистики запроса для {0} ID={1}", domainEntity.Domain, domainEntity.ID);
+                    continue;
                 }
                 domainEntity.Save();
             }

@@ -92,7 +92,10 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
         public string Text {
             get { return (string) this[Fields.Text]; }
-            set { ForceSetData(Fields.Text, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_512)); }
+            set {
+                ForceSetData(Fields.Text, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_512));
+                Textbaseform = QueryProcessor.Instance.ProcessQuery(value).ToString();
+            }
         }
 
         /// <summary>

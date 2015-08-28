@@ -19,6 +19,12 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
             _watch = watch ?? new Watch();
         }
 
+        protected string MoveName {
+            get {
+                return _move.Method.Name;
+            }
+        }
+
         /// <summary>
         /// Нужно двигаться.
         /// </summary>
