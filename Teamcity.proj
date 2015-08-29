@@ -15,7 +15,6 @@
     <!-- Solution Files -->
     <PropertyGroup>
         <SolutionName>Code\Project_R.sln</SolutionName>
-		
         <BranchPrefix>$(Branch.Substring(0, $([MSBuild]::Add($(Branch.IndexOf('_')), 1))))</BranchPrefix>
     </PropertyGroup>
 	
@@ -25,11 +24,6 @@
         <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
         <ConnStr>Server=localhost%3BUser ID=sa%3BPassword=miss</ConnStr>
     </PropertyGroup>
-
-  <!--Import Project="C:\Program Files (x86)\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
-	
-    <UsingTask TaskName="NUnit"
-               AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"/-->
 	
     <Target Name="Build">
         <Message Text="Building branch: $(Branch)" />
@@ -75,13 +69,6 @@
         <Exec Command="xcopy /E $(MSBuildProjectDirectory)\$(LocalConfigFolder) $(TestPath)\$(LocalConfigFolder)"/>
     </Target>
     
-    <Target Name="ReplaceRevisionInConfig">
-      <Message Text="Found database name: $(TEAMCITY_BUILDCONF_NAME)" />
-      <FileUpdate Files="$(TestPath)\$(LocalConfigFolder)\RemotingMain.xml"
-                      Regex="\${Prefix}"
-                      ReplacementText="$(TEAMCITY_BUILDCONF_NAME)" />
-    </Target>  
-
     <!--Test-->
     <Target Name="Test" DependsOnTargets="BuildCode">        
       <CreateItem Include="$(TestPath)\*UnitTest*.dll">
@@ -94,6 +81,15 @@
     <Target Name="Zip" Condition="('1' != '')">
       <Exec Command="rd /s /Q $(ZipFolder)\" ContinueOnError="true"/>
       
+      <Exec Command="md $(ZipFolder)\Project_R" ContinueOnError="true"/>
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Project_R $(ZipFolder)\Project_R"/>	 
+      
+      <Exec Command="md $(ZipFolder)\Project_Tracker" ContinueOnError="true"/>
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Project_Tracker $(ZipFolder)\Project_Tracker"/>	 
+      
+      <Exec Command="md $(ZipFolder)\Spywords_Project" ContinueOnError="true"/>
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Spywords_Project $(ZipFolder)\Spywords_Project"/>	 
+      
       <CreateItem Include="$(ZipFolder)\**\*.cs">
         <Output TaskParameter="Include" ItemName="CsFiles"/>
       </CreateItem>
@@ -101,9 +97,9 @@
 
       <Exec Command="$(ArchivatorPath)\7z.exe a -t7z $(PublishFolder)\$(BranchPrefix)$(BUILD_NUMBER).7z $(ZipFolder)\* > NUL"
               ContinueOnError="true"/>
+      <Exec Command="forfiles -p '$(ZipFolder)' -s -m *.* -d 21 -c 'cmd /c del @path'"/>
     </Target>	
 	
 	<Target Name="Publish">
-		
 	</Target>	
 </Project>
