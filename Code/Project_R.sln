@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{70F45616-A617-4949-8CE8-DD02C33B0D3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUtils", "CommonUtils\CommonUtils.csproj", "{AD204EB5-8F95-4EA5-AC28-059F5757516C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUtils", "CommonProjects\CommonUtils\CommonUtils.csproj", "{AD204EB5-8F95-4EA5-AC28-059F5757516C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF0FE7C2-B320-43F5-8325-27754D1E809A}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,9 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project_Tracker", "Project_Tracker\Project_Tracker.csproj", "{54A4108D-6604-4FB1-8FCB-432A911F22EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainLogic", "MainLogic\MainLogic.csproj", "{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainLogic", "CommonProjects\MainLogic\MainLogic.csproj", "{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spywords_Project", "Spywords_Project\Spywords_Project.csproj", "{71D9C30A-FAE2-4ABB-BCD2-3CB80BC09D6E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonProjects", "CommonProjects", "{C5FC4B9D-CBD9-4FCC-B1B6-EDAD0CBDF8ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,5 +91,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD204EB5-8F95-4EA5-AC28-059F5757516C} = {C5FC4B9D-CBD9-4FCC-B1B6-EDAD0CBDF8ED}
+		{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE} = {C5FC4B9D-CBD9-4FCC-B1B6-EDAD0CBDF8ED}
 	EndGlobalSection
 EndGlobal

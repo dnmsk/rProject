@@ -74,7 +74,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
+    <ProjectReference Include="..\CommonProjects\CommonUtils\CommonUtils.csproj">
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
     </ProjectReference>

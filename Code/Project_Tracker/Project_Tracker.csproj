@@ -120,7 +120,7 @@
     <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MainLogic\MainLogic.csproj">
+    <ProjectReference Include="..\CommonProjects\MainLogic\MainLogic.csproj">
       <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
       <Name>MainLogic</Name>
     </ProjectReference>
