@@ -97,7 +97,6 @@
 
       <Exec Command="$(ArchivatorPath)\7z.exe a -t7z $(PublishFolder)\$(BranchPrefix)$(BUILD_NUMBER).7z $(ZipFolder)\* > NUL"
               ContinueOnError="true"/>
-      <Exec Command="forfiles -p '$(ZipFolder)' -s -m *.* -d 21 -c 'cmd /c del @path'"/>
     </Target>	
 	
 	<Target Name="Publish">
