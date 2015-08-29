@@ -82,13 +82,13 @@
       <Exec Command="rd /s /Q $(ZipFolder)\" ContinueOnError="true"/>
       
       <Exec Command="md $(ZipFolder)\Project_R" ContinueOnError="true"/>
-      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Project_R $(ZipFolder)\Project_R"/>	 
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Code\Project_R $(ZipFolder)\Project_R"/>	 
       
       <Exec Command="md $(ZipFolder)\Project_Tracker" ContinueOnError="true"/>
-      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Project_Tracker $(ZipFolder)\Project_Tracker"/>	 
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Code\Project_Tracker $(ZipFolder)\Project_Tracker"/>	 
       
       <Exec Command="md $(ZipFolder)\Spywords_Project" ContinueOnError="true"/>
-      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Spywords_Project $(ZipFolder)\Spywords_Project"/>	 
+      <Exec Command="xcopy /E /Y /Q $(MSBuildProjectDirectory)\Code\Spywords_Project $(ZipFolder)\Spywords_Project"/>	 
       
       <CreateItem Include="$(ZipFolder)\**\*.cs">
         <Output TaskParameter="Include" ItemName="CsFiles"/>
