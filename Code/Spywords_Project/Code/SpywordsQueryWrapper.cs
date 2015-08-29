@@ -35,12 +35,12 @@ namespace Spywords_Project.Code {
         }
 
         public string GetDomainInfo(string domain) {
-            return LoadSpywordsContent("http://spywords.ru/sword.php?site=" + HttpUtility.UrlEncode(domain, _encoding));
+            return LoadSpywordsContent("http://spywords.ru/sword.php?site=" + DomainExtension.PunycodeDomain(domain));
         }
 
         /*http://spywords.ru/sword.php?do=advWord&site=oknastroypro.ru&tot=200&page=1*/
         public string GetQueriesForDomain(string domain, int page = 1) {
-            return LoadSpywordsContent(string.Format("http://spywords.ru/sword.php?do=advWord&site={0}&tot=200&page={1}", HttpUtility.UrlEncode(domain), page));
+            return LoadSpywordsContent(string.Format("http://spywords.ru/sword.php?do=advWord&site={0}&tot=200&page={1}", DomainExtension.PunycodeDomain(domain), page));
         }
 
         private string LoadSpywordsContent(string url) {

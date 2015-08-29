@@ -7,6 +7,9 @@
         <ZipFolder>c:\project\zip</ZipFolder>     
         <LocalConfigFolder>Config</LocalConfigFolder> 
         <TestPath>c:\Test</TestPath>
+
+        <ArchivatorPath>C:\buildtools\7-zip</ArchivatorPath>
+        <PublishFolder>C:\Builds</PublishFolder>
     </PropertyGroup> 
 	
     <!-- Solution Files -->
@@ -22,11 +25,11 @@
         <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
         <ConnStr>Server=localhost%3BUser ID=sa%3BPassword=miss</ConnStr>
     </PropertyGroup>
-	
-    <Import Project="C:\Program Files (x86)\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+
+  <!--Import Project="C:\Program Files (x86)\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
 	
     <UsingTask TaskName="NUnit"
-               AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"/>
+               AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"/-->
 	
     <Target Name="Build">
         <Message Text="Building branch: $(Branch)" />

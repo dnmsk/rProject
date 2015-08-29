@@ -13,7 +13,7 @@ namespace Sandbox {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(Program).FullName);
         static void Main(string[] args) {
             try {
-                var algo = new CollectEmailPhoneFromDomain();
+                var res = QueryProcessor.Instance.ProcessQuery("sdfgsdfgdsgsd");
                 while (true) {
                     Thread.Sleep(1000);
                 }

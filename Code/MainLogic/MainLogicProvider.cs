@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Xml;
 using CommonUtils.Core.Config;
+using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
+using IDEV.Hydra.DAO.DbConfig.InternalLogger;
 using MainLogic.Providers;
 
 namespace MainLogic {
@@ -18,6 +20,26 @@ namespace MainLogic {
         }
 
         static void RegisterDB() {
+            DatabaseActions.SetLoggerBuilder(s => {
+                var daoLogger = LoggerManager.GetLogger("DAO");
+                return new LoggerObj(
+                    (s1, exception) => {
+                        return;
+                        daoLogger.Info(s1 + exception);
+                    },
+                    (s1, objects) => {
+                        return;
+                        daoLogger.Info(s1, objects);
+                    },
+                    exception => daoLogger.Error(exception),
+                    (s1, objects) => daoLogger.Error(s1, objects),
+                    (s1, objects) => {
+                        return;
+                        daoLogger.Debug(s1, objects);
+                    },
+                    false
+                );
+            });
             ConfigHelper.RegisterConfigTarget("Application.xml", xml => {
                 var xmlDoc = (XmlDocument)xml;
                 var container = xmlDoc.GetElementsByTagName("ConnectionStrings");

@@ -40,21 +40,25 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
+        [Nullable]
             [DBField(DbType.Int32)] Showsgoogle,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Showsyandex,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int16)] Advertisersgoogle,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int16)] Advertisersyandex,
 
         /// <summary>
@@ -62,9 +66,10 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
             [DBField(DbType.DateTime)] Datecreated,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.DateTime)] Datecollected,
 
         }

@@ -27,39 +27,46 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
             [DBField(DbType.String)] Domain,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Phrasesgoogle,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Phrasesyandex,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Advertsgoogle,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Advertsyandex,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Budgetgoogle,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Budgetyandex,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Int32)] Visitsmonth,
 
         /// <summary>
@@ -67,9 +74,10 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
             [DBField(DbType.DateTime)] Datecreated,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.DateTime)] Datecollected,
 
         /// <summary>
@@ -77,9 +85,10 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
             [DBField(DbType.Int16)] Status,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.String)] Content,
 
         }
@@ -195,7 +204,7 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
         public string Content {
             get { return (string)this[Fields.Content]; }
-            set { ForceSetData(Fields.Content, value); }
+            set { ForceSetData(Fields.Content, value.Replace("\0", string.Empty)); }
         }
 
         public override Enum[] KeyFields {

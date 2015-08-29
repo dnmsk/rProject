@@ -38,7 +38,7 @@ namespace Spywords_Project.Code.Algorithms {
                     domainEntity.Phrasesyandex = StringParser.ToInt(yandexRowResult[1].Groups["td"].Value.Trim().Replace(" ", string.Empty), default(int));
                 } else {
                     Logger.Error("Нет трёх строк в таблице статистики запроса для {0} ID={1}", domainEntity.Domain, domainEntity.ID);
-                    continue;
+                    domainEntity.Status |= DomainStatus.SpywordsCollectedError;
                 }
                 domainEntity.Save();
             }
@@ -47,7 +47,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.SpywordsCollected), Oper.Eq, 0)
-                .AsList();
+                .AsList(0, 15);
         }
     }
 }

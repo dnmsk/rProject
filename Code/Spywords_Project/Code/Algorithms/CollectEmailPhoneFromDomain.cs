@@ -17,11 +17,11 @@ namespace Spywords_Project.Code.Algorithms {
         protected override void DoAction() {
             var entityToProcess = GetEntitiesToProcess();
             foreach (var domainEntity in entityToProcess) {
+                domainEntity.Status |= DomainStatus.Loaded;
+                domainEntity.Datecollected = DateTime.Now;
                 try {
                     var siteContent = WebRequestHelper.GetContentWithStatus("http://" + DomainExtension.PunycodeDomain(domainEntity.Domain));
                     domainEntity.Content = siteContent.Item2;
-                    domainEntity.Datecollected = DateTime.Now;
-                    domainEntity.Status |= DomainStatus.Loaded;
 
                     var emails = GetEmailFromContent(siteContent.Item2);
                     if (emails != null) {
@@ -45,10 +45,11 @@ namespace Spywords_Project.Code.Algorithms {
                               .Save<Domainphone, int>();
                         domainEntity.Status |= DomainStatus.EmailPhoneCollected;
                     }
-                    domainEntity.Save();
                 } catch (Exception ex) {
                     Logger.Error(ex);
+                    domainEntity.Status |= DomainStatus.LoadedError;
                 }
+                domainEntity.Save();
             }
         }
 

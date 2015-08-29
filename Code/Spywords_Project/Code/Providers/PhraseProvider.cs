@@ -115,6 +115,7 @@ namespace Spywords_Project.Code.Providers {
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
+                    .Sort(Phraseaccount.Fields.Datecreated, SortDirection.Desc)
                     .AsList(
                         DomainEntity.Fields.ID,
                         DomainEntity.Fields.Domain,
