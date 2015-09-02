@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Web.Configuration;
 using CommonUtils.Code;
 
 namespace MainLogic.WebFiles {
@@ -18,6 +19,22 @@ namespace MainLogic.WebFiles {
             if (runTaskProperty != null) {
                 NeedRunTask = StringParser.ToBool(runTaskProperty.ToLower());
             }
+        }
+
+        public static string GetConfigurationProperty(string configurationProperty) {
+            return ConfigurationManager.AppSettings[configurationProperty];
+        }
+
+        public static void ModifyConfigurationProperty(string key, string value) {
+            var configuration = WebConfigurationManager.OpenWebConfiguration("~");
+            var section = (AppSettingsSection)configuration.GetSection("appSettings");
+            var keyValueConfigurationElement = section.Settings[key];
+            if(keyValueConfigurationElement == null) {
+                keyValueConfigurationElement = new KeyValueConfigurationElement(key, string.Empty);
+                section.Settings.Add(keyValueConfigurationElement);
+            }
+            keyValueConfigurationElement.Value = value;
+            configuration.Save();
         }
     }
 }

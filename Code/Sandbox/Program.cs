@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Threading;
 using System.Xml;
+using AutoPublication.Code;
 using CommonUtils.Core.Config;
 using CommonUtils.Core.Logger;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
-using Spywords_Project.Code;
-using Spywords_Project.Code.Algorithms;
 
 namespace Sandbox {
     class Program {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(Program).FullName);
         static void Main(string[] args) {
             try {
-                var res = QueryProcessor.Instance.ProcessQuery("sdfgsdfgdsgsd");
-                while (true) {
-                    Thread.Sleep(1000);
-                }
                 Console.ReadLine();
             }
             catch (Exception ex) {

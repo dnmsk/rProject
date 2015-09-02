@@ -74,6 +74,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonProjects\AutoPublication\AutoPublication.csproj">
+      <Project>{F8A8FC73-17FB-469D-83BB-C85981E1803A}</Project>
+      <Name>AutoPublication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonProjects\CommonUtils\CommonUtils.csproj">
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
