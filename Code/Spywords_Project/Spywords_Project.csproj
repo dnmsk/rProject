@@ -163,7 +163,9 @@
     <Compile Include="Models\DomainStatsModel.cs" />
     <Compile Include="Models\EntityModel\DomainStatsEntityModel.cs" />
     <Compile Include="Models\EntityModel\PhraseEntityModel.cs" />
+    <Compile Include="Models\EntityModel\ProgressStatusSummary.cs" />
     <Compile Include="Models\PhraseModel.cs" />
+    <Compile Include="Models\StatusModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

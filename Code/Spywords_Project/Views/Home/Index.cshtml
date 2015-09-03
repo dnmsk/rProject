@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Spywords_Project.Models.StatusModel
+@{
     ViewBag.Title = "Главная страница";
 }
 
@@ -11,11 +12,31 @@
 <div class="row">
     <div class="col-md-4">
         <h2>Рекламные запросы</h2>
+        <dl class="dl-horizontal">
+            <dt>@Model.ServerProgress.PhrasesCount.ToString("N0")</dt>
+            <dd>фраз в системе</dd>
+            <dt>@Model.ServerProgress.PhrasesLast30MinCount.ToString("N0")</dt>
+            <dd>новых фраз за последние 30 мин</dd>
+            <dt>@Model.ServerProgress.UserQueriesCount.ToString("N0")</dt>
+            <dd>добавленных пользователями фраз</dd>
+        </dl>
     </div>
     <div class="col-md-4">
         <h2>Актуальные домены</h2>
+        <dl class="dl-horizontal">
+            <dt>@Model.ServerProgress.DomainsCount.ToString("N0")</dt>
+            <dd>сайтов в системе</dd>
+            <dt>@Model.ServerProgress.DomainsLast30MinCount.ToString("N0")</dt>
+            <dd>новых сайтов за последние 30 мин</dd>
+        </dl>
     </div>
     <div class="col-md-4">
         <h2>Контакты сайтов</h2>
+        <dl class="dl-horizontal">
+            <dt>@Model.ServerProgress.EmailCount.ToString("N0")</dt>
+            <dd>Email для <b>@Model.ServerProgress.EmailCountDistinctDomain.ToString("N0")</b> сайтов</dd>
+            <dt>@Model.ServerProgress.PhoneCount.ToString("N0")</dt>
+            <dd>телефонов для <b>@Model.ServerProgress.PhoneCountDistinct.ToString("N0")</b> сайтов</dd>
+        </dl>
     </div>
 </div>

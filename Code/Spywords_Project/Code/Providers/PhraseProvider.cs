@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.Filters;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
 using Spywords_Project.Models.EntityModel;
@@ -59,10 +60,10 @@ namespace Spywords_Project.Code.Providers {
                                          .ToList();
                 var totalDomains = DomainEntity.DataSource.AggrCount(DomainEntity.Fields.ID);
                 var collectedDomains = DomainEntity.DataSource.AggrString(
-                    string.Format("count(distinct case when {0}.{1} = {2} then {0}.{3} else null end)",
+                    string.Format("count(distinct case when {0}.{1} & {2} = {2} then {0}.{3} else null end)",
                         DomainEntity.Descriptor.TableName, 
                         DomainEntity.Fields.Status,
-                        (short) (DomainStatus.EmailPhoneCollected | DomainStatus.EmailPhoneCollected | DomainStatus.SpywordsCollected), 
+                        (short) (DomainStatus.Loaded | DomainStatus.EmailPhoneCollected | DomainStatus.SpywordsCollected), 
                         DomainEntity.Fields.ID), "collectedDomains");
 
                 var phraseStats = DomainEntity.DataSource
@@ -162,6 +163,23 @@ namespace Spywords_Project.Code.Providers {
                 }
                 return domainsStats;
             }, new List<DomainStatsEntityModel>());
+        }
+
+        public ProgressStatusSummary GetProgress() {
+            return InvokeSafe(() => {
+                var last30Min = DateTime.Now.AddMinutes(-30);
+                var result = new ProgressStatusSummary();
+                result.DomainsCount = (int) (DomainEntity.DataSource.Max(DomainEntity.Fields.ID) ?? default(decimal));
+                result.PhrasesCount = (int) (Phrase.DataSource.Max(Phrase.Fields.ID) ?? default(decimal));
+                result.EmailCount = (int) (Domainemail.DataSource.Max(Domainemail.Fields.ID) ?? default(decimal));
+                result.PhoneCount = (int) (Domainphone.DataSource.Max(Domainphone.Fields.ID) ?? default(decimal));
+                result.DomainsLast30MinCount = DomainEntity.DataSource.Where(DomainEntity.Fields.Datecollected, Oper.GreaterOrEq, last30Min).Count();
+                result.PhrasesLast30MinCount = Phrase.DataSource.Where(Phrase.Fields.Datecollected, Oper.GreaterOrEq, last30Min).Count();
+                result.EmailCountDistinctDomain = Domainemail.DataSource.Count(Domainemail.Fields.DomainID);
+                result.PhoneCountDistinct = Domainphone.DataSource.Count(Domainphone.Fields.DomainID);
+                result.UserQueriesCount = (int)(Phraseaccount.DataSource.Max(Phraseaccount.Fields.ID) ?? default(decimal));
+                return result;
+            }, new ProgressStatusSummary());
         }
     }
 }
