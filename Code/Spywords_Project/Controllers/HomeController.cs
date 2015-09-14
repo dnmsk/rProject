@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using MainLogic.WebFiles;
+using Spywords_Project.Code.Algorithms;
 using Spywords_Project.Code.Providers;
 using Spywords_Project.Models;
 using Spywords_Project.Models.EntityModel;
@@ -26,6 +27,11 @@ namespace Spywords_Project.Controllers {
 
         public ActionResult Contact() {
             return View(GetBaseModel());
+        }
+
+        public ActionResult PushConfig() {
+            AlgoBase.PushConfiguration();
+            return RedirectToAction("Index");
         }
     }
 }

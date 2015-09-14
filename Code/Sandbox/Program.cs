@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Web.Script.Serialization;
 using System.Xml;
 using AutoPublication.Code;
 using CommonUtils.Core.Config;
@@ -12,6 +13,7 @@ namespace Sandbox {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(Program).FullName);
         static void Main(string[] args) {
             try {
+                var res = new JavaScriptSerializer().Deserialize<bool>("true");
                 Console.ReadLine();
             }
             catch (Exception ex) {

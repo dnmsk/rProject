@@ -24,7 +24,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static readonly Regex _allDomainsListYandexContainer = new Regex("(?s)data_table advSite.*?</table",
             REGEX_OPTIONS);
 
-        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 30)) {
+        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 10)) {
         }
 
         protected override void DoAction() {
@@ -131,7 +131,7 @@ namespace Spywords_Project.Code.Algorithms {
                 ? phrases 
                 : Phrase.DataSource
                          .WhereEquals(Phrase.Fields.Status, (short) PhraseStatus.NotCollected)
-                         .AsList(0, 15);
+                         .AsList(0, 20);
         }
     }
 }

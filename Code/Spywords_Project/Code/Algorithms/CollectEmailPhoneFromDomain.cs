@@ -12,7 +12,7 @@ using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Algorithms {
     public class CollectEmailPhoneFromDomain : AlgoBase {
-        public CollectEmailPhoneFromDomain() : base(new TimeSpan(0, 0, 30)) { }
+        public CollectEmailPhoneFromDomain() : base(new TimeSpan(0, 0, 15)) { }
 
         protected override void DoAction() {
             var entityToProcess = GetEntitiesToProcess();

@@ -16,12 +16,13 @@ namespace Spywords_Project.Code {
 
         private readonly string _login;
         private readonly string _password;
-        private static readonly WebRequestHelper _requestHelper = new WebRequestHelper();
+        private readonly WebRequestHelper _requestHelper;
         private static readonly Encoding  _encoding = Encoding.GetEncoding(1251);
 
-        public SpywordsQueryWrapper(string login, string password) {
+        public SpywordsQueryWrapper(string login, string password, WebRequestHelper requestHelper) {
             _login = login;
             _password = password;
+            _requestHelper = requestHelper;
             Authenticate();
         }
 

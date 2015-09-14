@@ -10,7 +10,7 @@ using Spywords_Project.Code.Statuses;
 namespace Spywords_Project.Code.Algorithms {
     public class CollectPhrasesForDomain : AlgoBase {
         private readonly static Regex _siteSpywordsExpractor = new Regex("(?s)sword\\.php\\?word=(?<word>.*?)\"", REGEX_OPTIONS);
-        public CollectPhrasesForDomain() : base(new TimeSpan(0, 5, 0)) {
+        public CollectPhrasesForDomain() : base(new TimeSpan(0, 1, 0)) {
         }
 
         protected override void DoAction() {

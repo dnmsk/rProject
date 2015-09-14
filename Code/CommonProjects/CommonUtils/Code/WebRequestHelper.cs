@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 
 namespace CommonUtils.Code {
-    public class WebRequestHelper {
+    public class WebRequestHelper : IDisposable {
         /// <summary>
         ///     Юзер-агенты для подставновкив запросы
         /// </summary>
@@ -43,10 +43,13 @@ namespace CommonUtils.Code {
             ServicePointManager.Expect100Continue = false;
         }
 
-        private readonly CookieContainer _cookies = new CookieContainer();
+        private readonly CookieContainer _cookies;
         private readonly string _userAgent;
-        public WebRequestHelper() {
-            _userAgent = RandomUserAgent();
+        private readonly Action<string, CookieContainer> _onDispose;
+        public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
+            _userAgent = userAgent ?? RandomUserAgent();
+            _cookies = cookies ?? new CookieContainer();
+            _onDispose = onDispose;
         }
 
         public Tuple<HttpStatusCode, string> GetContent(string url, string postData = null, string contentType = "application/x-www-form-urlencoded", Encoding encoding = null) {
@@ -150,6 +153,16 @@ namespace CommonUtils.Code {
             catch (Exception e) {
                 return null;
             }
+        }
+
+        public void PushToConfigurationFile() {
+            if(_onDispose != null) {
+                _onDispose(_userAgent, _cookies);
+            }
+        }
+
+        public void Dispose() {
+            PushToConfigurationFile();
         }
     }
 }
