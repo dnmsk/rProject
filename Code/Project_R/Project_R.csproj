@@ -82,10 +82,6 @@
       <HintPath>..\packages\SquishIt.Mvc.0.9.8\lib\SquishIt.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SquishIt.Sass, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SquishIt.Sass.0.9.8\lib\SquishIt.Sass.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -161,7 +157,6 @@
     <Compile Include="App_Start\SquishItCoffeeScript.cs" />
     <Compile Include="App_Start\SquishItLess.cs" />
     <Compile Include="App_Start\SquishItMsIeCoffeeScript.cs" />
-    <Compile Include="App_Start\SquishItSass.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
