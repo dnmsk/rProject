@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
@@ -17,12 +18,15 @@ namespace Spywords_Project.Code {
         private readonly string _login;
         private readonly string _password;
         private readonly WebRequestHelper _requestHelper;
+        private readonly TimeSpan _minRequestDelay;
         private static readonly Encoding  _encoding = Encoding.GetEncoding(1251);
+        private DateTime _lastQueryTime = DateTime.MinValue;
 
-        public SpywordsQueryWrapper(string login, string password, WebRequestHelper requestHelper) {
+        public SpywordsQueryWrapper(string login, string password, WebRequestHelper requestHelper, TimeSpan minRequestDelay) {
             _login = login;
             _password = password;
             _requestHelper = requestHelper;
+            _minRequestDelay = minRequestDelay;
             Authenticate();
         }
 
@@ -45,18 +49,25 @@ namespace Spywords_Project.Code {
         }
 
         private string LoadSpywordsContent(string url) {
-            _logger.Info("Пошли с запросом " + url);
-            var pageContent = _requestHelper.GetContent(url);
-            _logger.Debug(string.Format("{0}\r\n{1}", url, pageContent.Item2));
-            TryLogError(url, pageContent);
-            if (IsAuthenticated(pageContent.Item2)) {
+            lock (this) {
+                _logger.Info("Пошли с запросом " + url);
+                var requestDealy = DateTime.Now - _lastQueryTime;
+                if (_minRequestDelay > requestDealy) {
+                    Thread.Sleep(_minRequestDelay - requestDealy);
+                }
+                var pageContent = _requestHelper.GetContent(url);
+                _lastQueryTime = DateTime.Now;
+                _logger.Debug(string.Format("{0}\r\n{1}", url, pageContent.Item2));
+                TryLogError(url, pageContent);
+                if (IsAuthenticated(pageContent.Item2)) {
+                    return pageContent.Item2;
+                }
+                _logger.Info("Не авторизован" + url);
+                Authenticate();
+                pageContent = _requestHelper.GetContent(url);
+
                 return pageContent.Item2;
             }
-            _logger.Info("Не авторизован" + url);
-            Authenticate();
-            pageContent = _requestHelper.GetContent(url);
-
-            return pageContent.Item2;
         }
 
         private static void TryLogError(string msg, Tuple<HttpStatusCode, string> pageContent) {

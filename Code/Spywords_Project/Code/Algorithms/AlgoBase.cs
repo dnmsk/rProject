@@ -21,7 +21,7 @@ namespace Spywords_Project.Code.Algorithms {
         /// </summary>
         protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof(AlgoBase).FullName);
         protected static readonly SpywordsQueryWrapper SpywordsQueryWrapper;
-        private static WebRequestHelper _webRequestHelper;
+        private static readonly WebRequestHelper _webRequestHelper;
 
         static AlgoBase() {
             var cookiesInit = new CookieContainer();
@@ -52,7 +52,8 @@ namespace Spywords_Project.Code.Algorithms {
             SpywordsQueryWrapper = new SpywordsQueryWrapper(
                 SiteConfiguration.GetConfigurationProperty("spywordsLogin"),
                 SiteConfiguration.GetConfigurationProperty("spywordsPassword"),
-                _webRequestHelper
+                _webRequestHelper,
+                new TimeSpan(0, 0, 1)
             );
         }
 

@@ -78,18 +78,28 @@ namespace Spywords_Project.Code.Algorithms {
                             domainEntities.Add(domainEntity);
                         }
                         foreach (var domainEntity in domainEntities) {
-                            var domainphrase = new Domainphrase {
-                                DomainID = domainEntity.ID,
-                                PhraseID = phrase.ID
-                            };
-                            domainphrase[Domainphrase.Fields.SE] = (short) (
+                            var seType = (short)(
                                 (yandexDomains.Contains(domainEntity.Domain)
                                     ? SearchEngine.Yandex
                                     : SearchEngine.Default) |
                                 (googleDomains.Contains(domainEntity.Domain)
                                     ? SearchEngine.Google
                                     : SearchEngine.Default));
-                            domainphrase.Insert();
+                            var domainPhraseDs = Domainphrase.DataSource
+                                .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
+                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID);
+                            if (domainPhraseDs.IsExists()) {
+                                domainPhraseDs
+                                    .Update(Domainphrase.Fields.SE, seType);
+                            }
+                            else {
+                                var domainphrase = new Domainphrase {
+                                    DomainID = domainEntity.ID,
+                                    PhraseID = phrase.ID
+                                };
+                                domainphrase[Domainphrase.Fields.SE] = seType;
+                                domainphrase.Insert();
+                            }
                         }
                     }
                     catch (Exception ex) {

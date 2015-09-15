@@ -29,14 +29,28 @@ namespace Spywords_Project.Code.Algorithms {
                             }
                             queriesForDomain.Add(word);
                             hasUnique = true;
-                            if (Phrase.DataSource.WhereEquals(Phrase.Fields.Text, word).IsExists()) {
-                                continue;
+                            var phrase = Phrase.DataSource
+                                .WhereEquals(Phrase.Fields.Text, word)
+                                .First();
+                            if (phrase == null) {
+                                phrase = new Phrase {
+                                    Datecreated = DateTime.Now,
+                                    Status = PhraseStatus.NotCollected,
+                                    Text = word
+                                };
+                                phrase.Save();
                             }
-                            new Phrase {
-                                Datecreated = DateTime.Now,
-                                Status = PhraseStatus.NotCollected,
-                                Text = word
-                            }.Save();
+                            if (!Domainphrase.DataSource
+                                .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
+                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
+                                .IsExists()) {
+                                var domainphrase = new Domainphrase {
+                                    DomainID = entity.ID,
+                                    PhraseID = phrase.ID
+                                };
+                                domainphrase[Domainphrase.Fields.SE] = 0;
+                                domainphrase.Insert();
+                            }
                         }
                         if (!hasUnique) {
                             break;
