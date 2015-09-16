@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
@@ -29,28 +30,30 @@ namespace Spywords_Project.Code.Algorithms {
                             }
                             queriesForDomain.Add(word);
                             hasUnique = true;
-                            var phrase = Phrase.DataSource
-                                .WhereEquals(Phrase.Fields.Text, word)
-                                .First();
-                            if (phrase == null) {
-                                phrase = new Phrase {
-                                    Datecreated = DateTime.Now,
-                                    Status = PhraseStatus.NotCollected,
-                                    Text = word
-                                };
-                                phrase.Save();
-                            }
-                            if (!Domainphrase.DataSource
-                                .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
-                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
-                                .IsExists()) {
-                                var domainphrase = new Domainphrase {
-                                    DomainID = entity.ID,
-                                    PhraseID = phrase.ID
-                                };
-                                domainphrase[Domainphrase.Fields.SE] = 0;
-                                domainphrase.Insert();
-                            }
+                            SlothMovePlodding.AddAction(() => {
+                                var phrase = Phrase.DataSource
+                                    .WhereEquals(Phrase.Fields.Text, word)
+                                    .First();
+                                if(phrase == null) {
+                                    phrase = new Phrase {
+                                        Datecreated = DateTime.Now,
+                                        Status = PhraseStatus.NotCollected,
+                                        Text = word
+                                    };
+                                    phrase.Save();
+                                }
+                                if(!Domainphrase.DataSource
+                                    .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
+                                    .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
+                                    .IsExists()) {
+                                    var domainphrase = new Domainphrase {
+                                        DomainID = entity.ID,
+                                        PhraseID = phrase.ID
+                                    };
+                                    domainphrase[Domainphrase.Fields.SE] = 0;
+                                    domainphrase.Insert();
+                                }
+                            });
                         }
                         if (!hasUnique) {
                             break;

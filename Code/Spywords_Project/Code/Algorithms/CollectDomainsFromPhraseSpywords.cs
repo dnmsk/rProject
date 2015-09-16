@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
@@ -26,7 +27,7 @@ namespace Spywords_Project.Code.Algorithms {
 
                 var statsContainer = _domainStatsContainer.Match(spywordInfo).Value;
                 var resultRows = _containerSplitToTr.Matches(statsContainer);
-                if (resultRows.Count == 3) {
+                if(resultRows.Count == 3) {
                     var yandexRowResult = _extractTdResult.Matches(resultRows[1].Value);
                     var googleRowResult = _extractTdResult.Matches(resultRows[2].Value);
 

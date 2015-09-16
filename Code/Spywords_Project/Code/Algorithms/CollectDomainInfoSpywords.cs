@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
@@ -77,30 +78,31 @@ namespace Spywords_Project.Code.Algorithms {
                             }
                             domainEntities.Add(domainEntity);
                         }
-                        foreach (var domainEntity in domainEntities) {
-                            var seType = (short)(
-                                (yandexDomains.Contains(domainEntity.Domain)
-                                    ? SearchEngine.Yandex
-                                    : SearchEngine.Default) |
-                                (googleDomains.Contains(domainEntity.Domain)
-                                    ? SearchEngine.Google
-                                    : SearchEngine.Default));
-                            var domainPhraseDs = Domainphrase.DataSource
-                                .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
-                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID);
-                            if (domainPhraseDs.IsExists()) {
-                                domainPhraseDs
-                                    .Update(Domainphrase.Fields.SE, seType);
+                        SlothMovePlodding.AddAction(() => {
+                            foreach(var domainEntity in domainEntities) {
+                                var seType = (short)(
+                                    (yandexDomains.Contains(domainEntity.Domain)
+                                        ? SearchEngine.Yandex
+                                        : SearchEngine.Default) |
+                                    (googleDomains.Contains(domainEntity.Domain)
+                                        ? SearchEngine.Google
+                                        : SearchEngine.Default));
+                                var domainPhraseDs = Domainphrase.DataSource
+                                    .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
+                                    .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID);
+                                if(domainPhraseDs.IsExists()) {
+                                    domainPhraseDs
+                                        .Update(Domainphrase.Fields.SE, seType);
+                                } else {
+                                    var domainphrase = new Domainphrase {
+                                        DomainID = domainEntity.ID,
+                                        PhraseID = phrase.ID
+                                    };
+                                    domainphrase[Domainphrase.Fields.SE] = seType;
+                                    domainphrase.Insert();
+                                }
                             }
-                            else {
-                                var domainphrase = new Domainphrase {
-                                    DomainID = domainEntity.ID,
-                                    PhraseID = phrase.ID
-                                };
-                                domainphrase[Domainphrase.Fields.SE] = seType;
-                                domainphrase.Insert();
-                            }
-                        }
+                        });
                     }
                     catch (Exception ex) {
                         phrase.Status = PhraseStatus.Error;

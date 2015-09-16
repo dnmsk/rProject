@@ -43,7 +43,7 @@ namespace CommonUtils.WatchfulSloths {
             _wakeUpInterval = wakeUpInterval;
             _stopEvent = new ManualResetEvent(false);
             WakeUp();
-            _holder = new WatchfulHolder(8); //научить владыке хомяков самому создавать их. 
+            _holder = new WatchfulHolder(12); //научить владыке хомяков самому создавать их. 
             new Thread(() => {
                 while (!_stopEvent.WaitOne(_wakeUpInterval)) {
                     WakeUp();
