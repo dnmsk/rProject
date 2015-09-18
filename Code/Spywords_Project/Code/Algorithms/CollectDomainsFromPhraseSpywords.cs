@@ -48,6 +48,7 @@ namespace Spywords_Project.Code.Algorithms {
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.SpywordsCollected), Oper.Eq, 0)
                 .AsList(0, 20,
                     DomainEntity.Fields.ID,
+                    DomainEntity.Fields.Domain,
                     DomainEntity.Fields.Status,
                     DomainEntity.Fields.Datecollected,
                     DomainEntity.Fields.Advertsgoogle,
