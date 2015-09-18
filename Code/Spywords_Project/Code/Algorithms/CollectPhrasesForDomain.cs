@@ -32,29 +32,27 @@ namespace Spywords_Project.Code.Algorithms {
                             }
                             queriesForDomain.Add(word);
                             hasUnique = true;
-                            SlothMovePlodding.AddAction(() => {
-                                var phrase = Phrase.DataSource
-                                    .WhereEquals(Phrase.Fields.Text, word)
-                                    .First();
-                                if(phrase == null) {
-                                    phrase = new Phrase {
-                                        Datecreated = DateTime.Now,
-                                        Status = PhraseStatus.NotCollected,
-                                        Text = word
-                                    };
-                                    phrase.Save();
-                                }
-                                if(!Domainphrase.DataSource
-                                    .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
-                                    .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
-                                    .IsExists()) {
-                                    var domainphrase = new Domainphrase {
-                                        DomainID = entity.ID,
-                                        PhraseID = phrase.ID
-                                    };
-                                    listLinksToInsert.Add(domainphrase);
-                                }
-                            });
+                            var phrase = Phrase.DataSource
+                                .WhereEquals(Phrase.Fields.Text, word)
+                                .First(Phrase.Fields.ID);
+                            if(phrase == null) {
+                                phrase = new Phrase {
+                                    Datecreated = DateTime.Now,
+                                    Status = PhraseStatus.NotCollected,
+                                    Text = word
+                                };
+                                phrase.Save();
+                            }
+                            if(!Domainphrase.DataSource
+                                .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
+                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
+                                .IsExists()) {
+                                var domainphrase = new Domainphrase {
+                                    DomainID = entity.ID,
+                                    PhraseID = phrase.ID
+                                };
+                                listLinksToInsert.Add(domainphrase);
+                            }
                         }
                         SlothMovePlodding.AddAction(() => {
                             listLinksToInsert.Save<Domainphrase, int>();
