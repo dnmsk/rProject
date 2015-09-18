@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
@@ -15,7 +13,7 @@ namespace Spywords_Project.Code.Algorithms {
         private readonly static Regex _domainStatsContainer = new Regex("(?s)data_table stat.*?</table", REGEX_OPTIONS);
         private readonly static Regex _containerSplitToTr = new Regex("(?s)<tr.*?</tr", REGEX_OPTIONS);
         private readonly static Regex _extractTdResult = new Regex("<td.*?>(?<td>.*?)</td", REGEX_OPTIONS);
-        public CollectDomainsFromPhraseSpywords() : base(new TimeSpan(0, 0, 10)) {
+        public CollectDomainsFromPhraseSpywords() : base(new TimeSpan(0, 0, 20)) {
         }
 
         protected override void DoAction() {
@@ -48,7 +46,17 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.SpywordsCollected), Oper.Eq, 0)
-                .AsList(0, 20);
+                .AsList(0, 20,
+                    DomainEntity.Fields.ID,
+                    DomainEntity.Fields.Status,
+                    DomainEntity.Fields.Datecollected,
+                    DomainEntity.Fields.Advertsgoogle,
+                    DomainEntity.Fields.Advertsyandex,
+                    DomainEntity.Fields.Budgetgoogle,
+                    DomainEntity.Fields.Budgetyandex,
+                    DomainEntity.Fields.Phrasesgoogle,
+                    DomainEntity.Fields.Phrasesyandex
+                );
         }
     }
 }

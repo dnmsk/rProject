@@ -12,7 +12,7 @@ using Spywords_Project.Code.Statuses;
 namespace Spywords_Project.Code.Algorithms {
     public class CollectPhrasesForDomain : AlgoBase {
         private readonly static Regex _siteSpywordsExpractor = new Regex("(?s)sword\\.php\\?word=(?<word>.*?)\"", REGEX_OPTIONS);
-        public CollectPhrasesForDomain() : base(new TimeSpan(0, 1, 0)) {
+        public CollectPhrasesForDomain() : base(new TimeSpan(0, 0, 30)) {
         }
 
         protected override void DoAction() {
@@ -74,7 +74,10 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.PhrasesCollected), Oper.Eq, 0)
-                .AsList(0, 15);
+                .AsList(0, 15,
+                    DomainEntity.Fields.ID,
+                    DomainEntity.Fields.Status
+                );
         }
     }
 }

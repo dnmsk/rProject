@@ -25,7 +25,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static readonly Regex _allDomainsListYandexContainer = new Regex("(?s)data_table advSite.*?</table",
             REGEX_OPTIONS);
 
-        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 10)) {
+        public CollectDomainInfoSpywords() : base(new TimeSpan(0, 0, 20)) {
         }
 
         protected override void DoAction() {
@@ -63,22 +63,22 @@ namespace Spywords_Project.Code.Algorithms {
                     var googleDomains = GetDomains(_googleDomainBlockRegex.Match(domains).Value);
                     var domainEntities = new List<DomainEntity>();
                     try {
-                        foreach (var domain in yandexDomains.Union(googleDomains).Distinct()) {
-                            var d = DomainExtension.DePunycodeDomain(domain);
-                            var domainEntity = DomainEntity.DataSource
-                                                           .WhereEquals(DomainEntity.Fields.Domain, d)
-                                                           .First();
-                            if (domainEntity == null) {
-                                domainEntity = new DomainEntity {
-                                    Datecreated = DateTime.Now,
-                                    Domain = d,
-                                    Status = DomainStatus.Default
-                                };
-                                domainEntity.Save();
-                            }
-                            domainEntities.Add(domainEntity);
-                        }
                         SlothMovePlodding.AddAction(() => {
+                            foreach (var domain in yandexDomains.Union(googleDomains).Distinct()) {
+                                var d = DomainExtension.DePunycodeDomain(domain);
+                                var domainEntity = DomainEntity.DataSource
+                                                               .WhereEquals(DomainEntity.Fields.Domain, d)
+                                                               .First();
+                                if (domainEntity == null) {
+                                    domainEntity = new DomainEntity {
+                                        Datecreated = DateTime.Now,
+                                        Domain = d,
+                                        Status = DomainStatus.Default
+                                    };
+                                    domainEntity.Save();
+                                }
+                                domainEntities.Add(domainEntity);
+                            }
                             foreach(var domainEntity in domainEntities) {
                                 var seType = (short)(
                                     (yandexDomains.Contains(domainEntity.Domain)
@@ -135,15 +135,26 @@ namespace Spywords_Project.Code.Algorithms {
         }
 
         private static List<Phrase> GetEntitiesToProcess() {
+            var fieldsToRetrive = new Enum[] {
+                Phrase.Fields.ID,
+                Phrase.Fields.Advertisersgoogle,
+                Phrase.Fields.Advertisersyandex,
+                Phrase.Fields.Showsgoogle,
+                Phrase.Fields.Showsgoogle,
+                Phrase.Fields.Status,
+                Phrase.Fields.Text
+            };
             var phrases = Phrase.DataSource
                 .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.NotRetrieve)
                 .WhereEquals(Phrase.Fields.Status, (short)PhraseStatus.NotCollected)
-                .AsList();
+                .AsList(
+                    fieldsToRetrive
+                );
             return phrases.Any() 
                 ? phrases 
                 : Phrase.DataSource
                          .WhereEquals(Phrase.Fields.Status, (short) PhraseStatus.NotCollected)
-                         .AsList(0, 20);
+                         .AsList(0, 20, fieldsToRetrive);
         }
     }
 }
