@@ -5,6 +5,7 @@ using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using IDEV.Hydra.DAO.MassTools;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
 
@@ -23,6 +24,7 @@ namespace Spywords_Project.Code.Algorithms {
                     for (var page = 1;; page++) {
                         var hasUnique = false;
                         var content = SpywordsQueryWrapper.GetQueriesForDomain(entity.Domain, page);
+                        var listLinksToInsert = new List<Domainphrase>();
                         foreach (Match wordMatch in _siteSpywordsExpractor.Matches(content)) {
                             var word = wordMatch.Groups["word"].Value.ToLower();
                             if (queriesForDomain.Contains(word)) {
@@ -48,13 +50,16 @@ namespace Spywords_Project.Code.Algorithms {
                                     .IsExists()) {
                                     var domainphrase = new Domainphrase {
                                         DomainID = entity.ID,
-                                        PhraseID = phrase.ID
+                                        PhraseID = phrase.ID,
+                                        SE = SearchEngine.Default
                                     };
-                                    domainphrase[Domainphrase.Fields.SE] = 0;
-                                    domainphrase.Insert();
+                                    listLinksToInsert.Add(domainphrase);
                                 }
                             });
                         }
+                        SlothMovePlodding.AddAction(() => {
+                            listLinksToInsert.Save<Domainphrase, int>();
+                        });
                         if (!hasUnique) {
                             break;
                         }

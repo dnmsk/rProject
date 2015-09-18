@@ -19,6 +19,10 @@ namespace Spywords_Project.Code.Entities {
             /// <summary>
             /// 
             /// </summary>
+            [DBField(DbType.Int32)] ID,
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.Int32)] DomainID,
 
         /// <summary>
@@ -46,6 +50,14 @@ namespace Spywords_Project.Code.Entities {
         /// <summary>
         /// 
         /// </summary>
+        public int ID {
+            get { return (int) this[Fields.ID]; }
+            set { ForceSetData(Fields.ID, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int DomainID {
             get { return (int) this[Fields.DomainID]; }
             set { ForceSetData(Fields.DomainID, value); }
@@ -68,7 +80,7 @@ namespace Spywords_Project.Code.Entities {
         }
 
         public override Enum[] KeyFields {
-            get { return new Enum[] {Fields.DomainID}; }
+            get { return new Enum[] {Fields.ID}; }
         }
     }
 }
