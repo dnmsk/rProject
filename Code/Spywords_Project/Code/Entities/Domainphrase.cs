@@ -33,6 +33,7 @@ namespace Spywords_Project.Code.Entities {
             /// <summary>
             /// 
             /// </summary>
+            [Nullable]
             [DBField(DbType.Int16)] SE,
 
         }

@@ -50,8 +50,7 @@ namespace Spywords_Project.Code.Algorithms {
                                     .IsExists()) {
                                     var domainphrase = new Domainphrase {
                                         DomainID = entity.ID,
-                                        PhraseID = phrase.ID,
-                                        SE = SearchEngine.Default
+                                        PhraseID = phrase.ID
                                     };
                                     listLinksToInsert.Add(domainphrase);
                                 }
