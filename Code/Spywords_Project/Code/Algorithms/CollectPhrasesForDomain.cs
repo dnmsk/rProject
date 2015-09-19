@@ -76,7 +76,8 @@ namespace Spywords_Project.Code.Algorithms {
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.PhrasesCollected), Oper.Eq, 0)
                 .AsList(0, 15,
                     DomainEntity.Fields.ID,
-                    DomainEntity.Fields.Status
+                    DomainEntity.Fields.Status,
+                    DomainEntity.Fields.Domain
                 );
         }
     }
