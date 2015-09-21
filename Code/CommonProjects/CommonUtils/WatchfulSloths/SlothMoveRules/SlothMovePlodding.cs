@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonUtils.Core.Config;
 using CommonUtils.Core.Logger;
 
 namespace CommonUtils.WatchfulSloths.SlothMoveRules {
@@ -20,8 +21,13 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         }
 
         public static void AddAction(Action act) {
-            lock (_actionsToDo) {
-                _actionsToDo.Add(act);
+            if (ConfigHelper.TestMode) {
+                act();
+            }
+            else {
+                lock (_actionsToDo) {
+                    _actionsToDo.Add(act);
+                }
             }
         }
 
