@@ -60,7 +60,7 @@ namespace MainLogic.Providers {
                     .WhereEquals(GuestTechInfo.Fields.GuestID, guestID)
                     .Sort(GuestTechInfo.Fields.Datecreated, SortDirection.Desc)
                     .First(GuestTechInfo.Fields.GuestexistsbrowserID);
-                return techInfo.GuestexistsbrowserID;
+                return techInfo != null ? techInfo.GuestexistsbrowserID : default(int);
             }, new TimeSpan(7, 0, 0));
 
         public void SaveTechInfo(int guestid, GuestTechInfoTransport techInfo) {
