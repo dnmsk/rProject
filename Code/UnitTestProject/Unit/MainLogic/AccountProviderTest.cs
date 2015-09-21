@@ -30,7 +30,7 @@ namespace UnitTestProject.Unit.MainLogic {
             });
             var loginResult = new AccountProvider()
                 .LoginWithEmail(email, password);
-            Assert.AreEqual(accountIdentity.ID, loginResult);
+            Assert.AreEqual(accountIdentity.ID, loginResult.Item2);
         }
     }
 }

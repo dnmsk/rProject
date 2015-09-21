@@ -36,7 +36,7 @@ namespace MainLogic.Providers {
 
         public void SaveReferrer(int guestid, string referrer, string target) {
             InvokeSafe(() => {
-                if (referrer.Contains(SiteConfiguration.ProductionHostName, StringComparison.InvariantCultureIgnoreCase)) {
+                if (!SiteConfiguration.ProductionHostName.IsNullOrWhiteSpace() && referrer.Contains(SiteConfiguration.ProductionHostName, StringComparison.InvariantCultureIgnoreCase)) {
                     return;
                 }
                 new GuestReferrer {
