@@ -12,10 +12,12 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
-    public abstract class KangarooCache<K, V> where V : class {
+    public class KangarooCache<K, V> {
         
         private readonly TimeSpan _keyActualTime;
         private readonly V _defValue;
+        private readonly Func<K, V> _valueGetter;
+
         /// <summary>
         /// Объект для логирования ошибок и отладочной информации.
         /// </summary>
@@ -23,9 +25,10 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
 
         private readonly ConcurrentDictionary<K, KangooCacheElement<V>> _cache;
 
-        protected KangarooCache(V defValue, IWatchfulSloth sloth, TimeSpan? keyActualTime = null) {
+        public KangarooCache(V defValue, IWatchfulSloth sloth, Func<K, V> valueGetter, TimeSpan? keyActualTime = null) {
             _keyActualTime = keyActualTime ?? new TimeSpan(1, 0, 0);
-            _defValue = defValue; 
+            _defValue = defValue;
+            _valueGetter = valueGetter;
             var comparer = GetComparer();
             _cache = comparer == null 
                 ? new ConcurrentDictionary<K, KangooCacheElement<V>>()
@@ -55,15 +58,15 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                 }
 
                 KangooCacheElement<V> cacheElement;
-                if (!_cache.TryGetValue(key, out cacheElement) || cacheElement.LastActualDate < DateTime.Now || cacheElement.Element == _defValue) {
+                if (!_cache.TryGetValue(key, out cacheElement) || cacheElement.LastActualDate < DateTime.Now || cacheElement.Element.Equals(_defValue)) {
                     if (ConfigHelper.TestMode) {
-                        return GetVal(key);
+                        return _valueGetter(key);
                     }
                     if (_cache.TryGetValue(key, out cacheElement)) {
                         return cacheElement.Element;
                     }
                     cacheElement = new KangooCacheElement<V> {
-                        Element = GetVal(key),
+                        Element = _valueGetter(key),
                         LastActualDate = DateTime.Now.Add(_keyActualTime)
 
                     };                            
@@ -71,19 +74,18 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                 }
                 return cacheElement.Element;
             }
+            set {
+                _cache[key] = new KangooCacheElement<V> {
+                    Element = value,
+                    LastActualDate = DateTime.Now.Add(_keyActualTime)
+                };
+            }
         }
 
         protected virtual IEqualityComparer<K> GetComparer() {
             return null;
         }
-
-        /// <summary>
-        /// Правило получения ключа
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected abstract V GetVal(K key);
-
+        
         private object SelfClean() {
             ICollection<K> keys = _cache.Keys.ToArray();
             var now = DateTime.Now;
