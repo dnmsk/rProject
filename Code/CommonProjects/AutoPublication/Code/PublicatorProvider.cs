@@ -60,6 +60,9 @@ namespace AutoPublication.Code {
                 //CmdCommandExecutor.Run("cmd.exe", string.Format("/c mkdir {0}", destPath));
                 Directory.CreateDirectory(destPath);
             }
+            if (sourcePath.Trim('\\').EndsWith("log", StringComparison.InvariantCultureIgnoreCase)) {
+                return;
+            }
 
             //CmdCommandExecutor.Run("cmd.exe", string.Format("/c copy \"{0}\" {1} /Y /Z", sourcePath, destPath));
             foreach(string file in Directory.GetFiles(sourcePath)) {

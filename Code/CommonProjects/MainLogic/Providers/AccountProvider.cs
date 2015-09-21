@@ -33,7 +33,7 @@ namespace MainLogic.Providers {
             }, false);
         }
 
-        public int LoginWithEmail(string email, string password) {
+        public Tuple<long, int> LoginWithEmail(string email, string password) {
             return InvokeSafeSingleCall(() => {
                 email = email.ToLower();
                 var identity = AccountIdentity.DataSource
@@ -41,13 +41,13 @@ namespace MainLogic.Providers {
                                               .WhereEquals(AccountIdentity.Fields.Password, password.GetMD5())
                                               .First(AccountIdentity.Fields.ID);
                 if (identity == null) {
-                    return default(int);
+                    return null;
                 }
                 AccountIdentity.DataSource
                                .WhereEquals(AccountIdentity.Fields.ID, identity.ID)
                                .Update(AccountIdentity.Fields.Datelastlogin, DateTime.Now);
-                return identity.ID;
-            }, default(int));
+                return new Tuple<long, int>(identity.GuestID, identity.ID);
+            }, null);
         }
 
         public AccountDetailsTransport GetAccountDescription(int account) {

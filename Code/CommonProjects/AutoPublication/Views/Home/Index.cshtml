@@ -8,6 +8,8 @@
         })
         .OrderByDescending(zbp => zbp.Text)
         .ToList();
+    var publishItems = Model.BuildPublishItems
+                            .OrderBy(n => n.ProjectName);
 }
 
 <div class="jumbotron">
@@ -45,7 +47,7 @@
             </div>
         </th>
     </tr>
-    @foreach (var buildPublishItem in Model.BuildPublishItems) {
+    @foreach (var buildPublishItem in publishItems) {
         <tr>
             <td>@buildPublishItem.ProjectName</td>
             <td>@buildPublishItem.ProjectPath</td>

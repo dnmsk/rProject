@@ -34,6 +34,7 @@ namespace MainLogic.WebFiles {
             }
             if (typeof (T).IsEquivalentTo(typeof (string)) && appSetting[0] != '"') {
                 appSetting = "\"" + appSetting + "\"";
+                appSetting = appSetting.Replace("\\", "\\\\");
             }
             return _javaScriptSerializer.Deserialize<T>(appSetting);
         }

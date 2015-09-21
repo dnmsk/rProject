@@ -19,12 +19,9 @@ namespace AutoPublication.Code {
         private readonly List<BuildPublishItem> _buildPublishItems;
         private const string _configurationProperty = "PublishItemSerialized";
         private const string _publishDesciptionFile = "publishinfo.txt";
-
-        public BuildPublishProvider() : this(SiteConfiguration.GetConfigurationProperty(_configurationProperty)) {
-        }
-
-        public BuildPublishProvider(string publishItemSerialized) {
-            _buildPublishItems = new JavaScriptSerializer().Deserialize<List<BuildPublishItem>>(publishItemSerialized) ?? new List<BuildPublishItem>();
+        
+        public BuildPublishProvider() {
+            _buildPublishItems = SiteConfiguration.GetConfigurationProperty<List<BuildPublishItem>>(_configurationProperty) ?? new List<BuildPublishItem>();
             SlothMovePlodding.AddAction(() => {
                 ReadFileDescriptions();
             });

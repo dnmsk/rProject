@@ -24,9 +24,9 @@ namespace Spywords_Project.Controllers {
                 return View(model);
             }
             
-            var accountID = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
-            if (accountID != default(int)) {
-                CurrentUser = new SessionModule(CurrentUser.GuestID, accountID);
+            var guestAndAccount = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
+            if (guestAndAccount != null) {
+                CurrentUser = new SessionModule((int) guestAndAccount.Item1, guestAndAccount.Item2);
                 return RedirectToLocal(returnUrl);
             }
             ModelState.AddModelError("", "Неверный логин/пароль.");
@@ -50,7 +50,7 @@ namespace Spywords_Project.Controllers {
                     model.Password);
                 if (result) {
                     var accountID = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
-                    CurrentUser = new SessionModule(CurrentUser.GuestID, accountID);
+                    CurrentUser = new SessionModule(CurrentUser.GuestID, accountID.Item2);
                     return RedirectToAction("Index", "Home");
                 }
             }

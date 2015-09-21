@@ -5,6 +5,7 @@ using CommonUtils.ExtendedTypes;
 using MainLogic.Code;
 using MainLogic.Entities;
 using MainLogic.Transport;
+using MainLogic.WebFiles;
 using MainLogic.Wrapper;
 
 namespace MainLogic.Providers {
@@ -35,6 +36,9 @@ namespace MainLogic.Providers {
 
         public void SaveReferrer(int guestid, string referrer, string target) {
             InvokeSafe(() => {
+                if (referrer.Contains(SiteConfiguration.ProductionHostName, StringComparison.InvariantCultureIgnoreCase)) {
+                    return;
+                }
                 new GuestReferrer {
                     Datecreated = DateTime.Now,
                     GuestID = guestid,
