@@ -39,7 +39,10 @@ namespace MainLogic.Providers {
                 var identity = AccountIdentity.DataSource
                                               .WhereEquals(AccountIdentity.Fields.Email, email)
                                               .WhereEquals(AccountIdentity.Fields.Password, password.GetMD5())
-                                              .First(AccountIdentity.Fields.ID);
+                                              .First(
+                                                    AccountIdentity.Fields.ID,
+                                                    AccountIdentity.Fields.GuestID
+                                                );
                 if (identity == null) {
                     return null;
                 }
