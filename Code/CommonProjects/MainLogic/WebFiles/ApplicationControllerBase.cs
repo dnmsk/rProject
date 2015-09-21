@@ -13,6 +13,10 @@ using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {
     public abstract class ApplicationControllerBase : Controller {
+        protected override bool DisableAsyncSupport {
+            get { return true; }
+        }
+
         public const string GUEST_COOKIE_NAME = "guest";
         public const string UTM_COOKIE_NAME = "utm_data";
         public const string UTM_SOURCE_PARAM_NAME = "utm_source";
