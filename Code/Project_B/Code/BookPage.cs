@@ -24,7 +24,7 @@ namespace Project_B.Code {
                 .Where(type => typeof(BrokerBase).IsAssignableFrom(type) && !type.IsAbstract)
                 .Distinct();
 
-            var globalConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Unknown];
+            var globalConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default];
             var webRequestHelper = new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]) {
                 Proxy = globalConfiguration.StringArray[SectionName.ArrayProxy].First()
             };
