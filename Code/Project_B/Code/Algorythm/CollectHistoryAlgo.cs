@@ -8,7 +8,7 @@ namespace Project_B.Code.Algorythm {
     public class CollectHistoryAlgo {
         const SportType _sportType = SportType.Basketball | SportType.Football | SportType.IceHockey | SportType.Tennis | SportType.Volleyball;
 
-        public CollectHistoryAlgo() : this(new TimeSpan(0, 0, 2), new TimeSpan(0, 1, 0)) { }
+        public CollectHistoryAlgo() : this(new TimeSpan(0, 1, 0), new TimeSpan(1, 0, 0)) { }
 
         public CollectHistoryAlgo(TimeSpan pastCollectRepeatDelay, TimeSpan todayCollectRepeatDealy) {
             MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => {
