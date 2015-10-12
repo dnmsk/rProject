@@ -56,7 +56,7 @@ namespace Project_B.Code.Entity {
         /// </summary>
         public SystemStateResultType Stateresult {
             get { return (SystemStateResultType) (short) this[Fields.Stateresult]; }
-            set { ForceSetData(Fields.Stateresult, value); }
+            set { ForceSetData(Fields.Stateresult, (short) value); }
         }
 
         /// <summary>

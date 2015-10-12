@@ -115,16 +115,16 @@ namespace Project_B.Code.Entity {
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
                         newBet.Win1win2 = (double)odd.Factor;
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.DrawWin2:
                         newBet.Drawwin2 = (double)odd.Factor;
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.Win1Draw:
                         newBet.Win1draw = (double)odd.Factor;
+                        hasAnyFactor = true;
                         break;
-                }
-                if (odd.Factor > 0) {
-                    hasAnyFactor = true;
                 }
             }
             return hasAnyFactor ? newBet : null;

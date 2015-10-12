@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
@@ -36,12 +37,12 @@ namespace Project_B.Code.DataProvider {
             });
         }
 
-        public void AddBetParsed(int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> oddsParsed) {
+        private void AddBetParsed(int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> oddsParsed) {
             InvokeSafeSingleCall(() => {
                 var betWithAdvancedDb = Bet.DataSource
                     .Join(JoinType.Left, BetAdvanced.Fields.BetID, Bet.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Bet.Fields.CompetitionitemID, competitionItemID)
-                    .WhereEquals(Bet.Fields.BrokerID, brokerType)
+                    .WhereEquals(Bet.Fields.BrokerID, (short) brokerType)
                     .Sort(Bet.Fields.ID, SortDirection.Desc)
                     .First();
                 var betAdvancedDb = betWithAdvancedDb != null ? betWithAdvancedDb.GetJoinedEntity<BetAdvanced>() : null;
@@ -49,15 +50,86 @@ namespace Project_B.Code.DataProvider {
                 var bet = Bet.GetBetFromOdds(oddsParsed);
                 var betAdvanced = BetAdvanced.GetBetFromOdds(oddsParsed);
 
-                if (betWithAdvancedDb == null || !betWithAdvancedDb.IsEqualsTo(bet) || 
-                        _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && betAdvanced != null && !betAdvancedDb.IsEqualsTo(betAdvanced)) {
-                    bet.CompetitionitemID = competitionItemID;
-                    bet.Save();
-                    if (_sportWithAdvancedDetail.Contains(sportType) && betAdvanced != null) {
-                        betAdvanced.BetID = bet.ID;
-                        betAdvanced.Save();
+                if (bet != null) {
+                    if (betWithAdvancedDb == null || !betWithAdvancedDb.IsEqualsTo(bet) ||
+                            _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && betAdvanced != null && !betAdvancedDb.IsEqualsTo(betAdvanced)) {
+                        bet.CompetitionitemID = competitionItemID;
+                        bet.BrokerID = brokerType;
+                        bet.Datecreatedutc = DateTime.UtcNow;
+                        bet.Save();
+                        if (_sportWithAdvancedDetail.Contains(sportType) && betAdvanced != null) {
+                            betAdvanced.BetID = bet.ID;
+                            betAdvanced.Save();
+                        }
                     }
                 }
+
+                return null;
+            }, (object) null);
+        }
+
+        private static readonly Dictionary<short, SystemStateBetType> _betTypeByHour = new Dictionary<short, SystemStateBetType> {
+            { 0, SystemStateBetType.BetFor0_1 },
+            { 1, SystemStateBetType.BetFor1_2 },
+            { 2, SystemStateBetType.BetFor2_3 },
+            { 3, SystemStateBetType.BetFor3_4 },
+            { 4, SystemStateBetType.BetFor4_5 },
+            { 5, SystemStateBetType.BetFor5_6 },
+            { 6, SystemStateBetType.BetFor6_7 },
+            { 7, SystemStateBetType.BetFor7_8 },
+            { 8, SystemStateBetType.BetFor8_9 },
+            { 9, SystemStateBetType.BetFor9_10 },
+            { 10, SystemStateBetType.BetFor10_11 },
+            { 11, SystemStateBetType.BetFor11_12 },
+            { 12, SystemStateBetType.BetFor12_13 },
+            { 13, SystemStateBetType.BetFor13_14 },
+            { 14, SystemStateBetType.BetFor14_15 },
+            { 15, SystemStateBetType.BetFor15_16 },
+            { 16, SystemStateBetType.BetFor16_17 },
+            { 17, SystemStateBetType.BetFor17_18 },
+            { 18, SystemStateBetType.BetFor18_19 },
+            { 19, SystemStateBetType.BetFor19_20 },
+            { 20, SystemStateBetType.BetFor20_21 },
+            { 21, SystemStateBetType.BetFor21_22 },
+            { 22, SystemStateBetType.BetFor22_23 },
+            { 23, SystemStateBetType.BetFor23_24 },
+        }; 
+
+        public SystemStateBetType GetStateRegular(BrokerType brokerType, DateTime dateUtc) {
+            return InvokeSafe(() => {
+                var state = _betTypeByHour[(short)dateUtc.Hour];
+                var systemState = SystemStateBet.DataSource
+                    .WhereEquals(SystemStateBet.Fields.Dateutc, dateUtc.Date)
+                    .WhereEquals(SystemStateBet.Fields.Brokerid, (short) brokerType)
+                    .First();
+                if (systemState == null) {
+                    systemState = new SystemStateBet {
+                        Dateutc = dateUtc.Date,
+                        BrokerID = brokerType,
+                        Statebet = SystemStateBetType.Unknown
+                    };
+                    systemState.Save();
+                }
+                return (systemState.Statebet & state) != 0 ? SystemStateBetType.Unknown : state;
+            }, SystemStateBetType.Unknown);
+        }
+
+        public void SetStateRegular(BrokerType brokerType, DateTime dateUtc) {
+            InvokeSafe(() => {
+                var state = _betTypeByHour[(short)dateUtc.Hour];
+                var systemState = SystemStateBet.DataSource
+                    .WhereEquals(SystemStateBet.Fields.Dateutc, dateUtc.Date)
+                    .WhereEquals(SystemStateBet.Fields.Brokerid, (short) brokerType)
+                    .First();
+                if (systemState == null) {
+                    systemState = new SystemStateBet {
+                        Dateutc = dateUtc.Date,
+                        BrokerID = brokerType,
+                        Statebet = SystemStateBetType.Unknown
+                    };
+                }
+                systemState.Statebet |= state;
+                systemState.Save();
                 return null;
             }, (object) null);
         }

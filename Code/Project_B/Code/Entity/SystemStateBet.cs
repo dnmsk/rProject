@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.Code.Enums;
 
 namespace Project_B.Code.Entity {
         /// <summary>
@@ -24,6 +25,11 @@ namespace Project_B.Code.Entity {
         /// 
         /// </summary>
             [DBField(DbType.Int32)] Statebet,
+
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.Int16)] Brokerid,
 
         /// <summary>
         /// 
@@ -53,9 +59,17 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public int Statebet {
-            get { return (int) this[Fields.Statebet]; }
-            set { ForceSetData(Fields.Statebet, value); }
+        public SystemStateBetType Statebet {
+            get { return (SystemStateBetType) (int) this[Fields.Statebet]; }
+            set { ForceSetData(Fields.Statebet, (int) value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BrokerType BrokerID {
+            get { return (BrokerType) (short) this[Fields.Brokerid]; }
+            set { ForceSetData(Fields.Brokerid, (short) value); }
         }
 
         /// <summary>

@@ -117,8 +117,8 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public short BrokerID {
-            get { return (short) this[Fields.BrokerID]; }
+        public BrokerType BrokerID {
+            get { return (BrokerType) (short) this[Fields.BrokerID]; }
             set { ForceSetData(Fields.BrokerID, value); }
         }
 
@@ -211,33 +211,40 @@ namespace Project_B.Code.Entity {
 
         public static Bet GetBetFromOdds(List<OddParsed> odds) {
             var newBet = new Bet();
+            var hasAnyFactor = false;
             foreach (var odd in odds) {
                 switch (odd.Type) {
                     case BetOddType.Win1:
                         newBet.Win1 = (double)odd.Factor;
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.Win2:
                         newBet.Win2 = (double)odd.Factor;
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap1:
                         newBet.Hcap1 = (double)odd.Factor;
                         newBet.Hcapdetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap2:
                         newBet.Hcap2 = (double)odd.Factor;
                         newBet.Hcapdetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.TotalUnder:
                         newBet.Totalunder = (double)odd.Factor;
                         newBet.Totaldetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        hasAnyFactor = true;
                         break;
                     case BetOddType.TotalOver:
                         newBet.Totalover = (double)odd.Factor;
                         newBet.Totaldetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        hasAnyFactor = true;
                         break;
                 }
             }
-            return newBet;
+            return hasAnyFactor ? newBet : null;
         }
     }
 }

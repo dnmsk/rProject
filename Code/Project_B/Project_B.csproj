@@ -104,7 +104,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Code\Algorythm\CollectHistoryAlgo.cs" />
-    <Compile Include="Code\Algorythm\CollectRegularOddAlgo.cs" />
+    <Compile Include="Code\Algorythm\CollectOddsAlgo.cs" />
     <Compile Include="Code\BookPage.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceBase.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceOddsProvider.cs" />
