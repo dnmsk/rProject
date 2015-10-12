@@ -50,7 +50,7 @@ namespace MainLogic.WebFiles {
                 if (_currentUser == null) {
                     int guid;
                     if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || !int.TryParse(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value, out guid)) {
-                         guid = CreateGuidInfo(HttpContext);
+                         guid = CreateGuidInfo(System.Web.HttpContext.Current);
                         LogAction(LogActionID.OpenSiteFirstTime, null);
                     }
                     _currentUser = SessionModule.CreateSessionModule(guid, HttpContext);
@@ -105,14 +105,14 @@ namespace MainLogic.WebFiles {
             UserActionLogger.Log(CurrentUser.GuestID, logID, objectID, pars);
         }
 
-        public static string GetUserIp(HttpRequestBase requestContext) {
+        public static string GetUserIp(HttpRequest requestContext) {
             var userIP = GetUnfilteredUserIP(requestContext);
             var indexOf = userIP.IndexOf(",", StringComparison.InvariantCulture);
             var filteredUserIP = userIP.Substring(0, indexOf > 0 ? indexOf : userIP.Length);
             return filteredUserIP;
         }
 
-        private static string GetUnfilteredUserIP(HttpRequestBase requestContext) {
+        private static string GetUnfilteredUserIP(HttpRequest requestContext) {
             if (requestContext == null) {
                 return string.Empty;
             }
@@ -129,7 +129,7 @@ namespace MainLogic.WebFiles {
             return requestContext.UserHostAddress;
         }
 
-        protected static string GetUrlReffererString(HttpRequestBase requestContext) {
+        protected static string GetUrlReffererString(HttpRequest requestContext) {
             var prevUri = requestContext.UrlReferrer;
             var refData = string.Empty;
 
@@ -142,7 +142,7 @@ namespace MainLogic.WebFiles {
             return refData;
         }
 
-        private static int CreateGuidInfo(HttpContextBase context) {
+        private static int CreateGuidInfo(HttpContext context) {
             var requestContext = context.Request;
             var urlRefferer = GetUrlReffererString(requestContext);
             var guid = BusinessLogic.UserProvider.CreateNewGuid(GetUserIp(requestContext), context.Request.UserAgent);

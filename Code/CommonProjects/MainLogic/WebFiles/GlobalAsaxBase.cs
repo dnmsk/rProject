@@ -35,16 +35,17 @@ namespace MainLogic.WebFiles {
             var refferer = Request.UrlReferrer.Return(m => m.ToString(), "null");
             var guidCookie = Request.Cookies["guid"];
             var guid = guidCookie != null ? guidCookie.Value : string.Empty;
-            var ip = "66.66";
+            var ip = ApplicationControllerBase.GetUserIp(Request);
 
-            if (!guid.IsNullOrWhiteSpace() && guid != "-1") {
+            //if (!guid.IsNullOrWhiteSpace() && guid != "-1") {
                 if (!Request.Url.PathAndQuery.Contains("apple-touch-icon", StringComparison.InvariantCultureIgnoreCase)) {
                     Logger.Error(
                         "В Global.asax поймано исключение.\nGuestID: {0}\nБраузер: {1}\nUrl: {2}\n Пред.Урл: {3}\n IP: {4}\nException: {5}",
                         guid, browser, Request.Url, refferer, ip, exception);
                 }
-            } else {
+            /*} else {
             }
+           */
 
             var httpException = exception as HttpException;
             var routeData = new RouteData();
