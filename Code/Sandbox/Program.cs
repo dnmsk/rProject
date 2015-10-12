@@ -1,19 +1,27 @@
 ﻿using System;
+using System.CodeDom;
+using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Xml;
 using AutoPublication.Code;
+using CommonUtils.Code;
 using CommonUtils.Core.Config;
 using CommonUtils.Core.Logger;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
+using Project_B.Code;
+using Project_B.Code.Algorythm;
+using Project_B.Code.DataProvider.DataHelper;
+using Project_B.Code.Enums;
 
 namespace Sandbox {
     class Program {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(Program).FullName);
         static void Main(string[] args) {
             try {
-                var res = new JavaScriptSerializer().Deserialize<bool>("true");
+                RegisterDB();
                 Console.ReadLine();
             }
             catch (Exception ex) {
