@@ -75,6 +75,9 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             dateTime = dateTime == DateTime.MinValue
                 ? StringParser.ToDateTime(date, DateTime.MinValue, CurrentConfiguration.StringSimple[SectionName.StringDateTimeFormat])
                 : dateTime;
+            dateTime = dateTime == DateTime.MinValue
+                ? StringParser.ToDateTime(date, DateTime.MinValue, CurrentConfiguration.StringSimple[SectionName.StringDateTimeShortTimeFormat])
+                : dateTime;
             return dateTime;
         }
     }

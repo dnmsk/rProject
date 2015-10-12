@@ -24,7 +24,7 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] CompetitionuniqueID,
+            [DBField(DbType.Int32)] CompetitionuniqueID,
 
         /// <summary>
         /// 

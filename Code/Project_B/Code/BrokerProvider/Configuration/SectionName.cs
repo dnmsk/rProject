@@ -34,6 +34,7 @@
         StringOddConfirmation = 10004,
         StringOddBrokerID = 10005,
         StringDateTimeShortFormat = 10006,
+        StringDateTimeShortTimeFormat = 10007,
 
         //Array Reserve from 15000 to 19999
         ArrayParticipantsSplitter = 15000,
