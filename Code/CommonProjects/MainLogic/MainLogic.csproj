@@ -83,6 +83,7 @@
     <Compile Include="Entities\UtmSubdomainRule.cs" />
     <Compile Include="WebFiles\BaseModel.cs" />
     <Compile Include="WebFiles\ExtendedModelBinder.cs" />
+    <Compile Include="WebFiles\GlobalAsaxBase.cs" />
     <Compile Include="WebFiles\LogActionId.cs" />
     <Compile Include="MainLogicProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

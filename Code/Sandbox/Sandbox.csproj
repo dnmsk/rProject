@@ -83,6 +83,10 @@
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Project_B\Project_B.csproj">
+      <Project>{4B7FEAC2-B9EA-49DD-A459-5393CE350ED8}</Project>
+      <Name>Project_B</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project_R\Project_R.csproj">
       <Project>{CB274D1C-59A3-4F94-BEAB-76FFB50D5150}</Project>
       <Name>Project_R</Name>

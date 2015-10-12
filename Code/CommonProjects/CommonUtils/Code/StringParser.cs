@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.Code {
     public class StringParser {
@@ -160,9 +161,9 @@ namespace CommonUtils.Code {
         /// <param name="strDate">Дата в виде строки.</param>
         /// <param name="def">Значение по умолчанию.</param>
         /// <returns>В случае успеха возвращает сконвертируемую дату, иначе значение по умолчанию.</returns>
-        public static DateTime ToDateTime(string strDate, DateTime def) {
+        public static DateTime ToDateTime(string strDate, DateTime def, string format = null) {
             DateTime date;
-            return DateTime.TryParse(strDate, out date)
+            return (format.IsNullOrWhiteSpace() ? DateTime.TryParse(strDate, out date) : DateTime.TryParseExact(strDate, format, CultureInfo.InvariantCulture, DateTimeStyles.AllowInnerWhite | DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AllowTrailingWhite, out date)) 
                 ? date
                 : def;
         }

@@ -7,6 +7,8 @@ using System.Text;
 
 namespace CommonUtils.Code {
     public class WebRequestHelper : IDisposable {
+        public string Proxy { get; set; }
+
         /// <summary>
         ///     Юзер-агенты для подставновкив запросы
         /// </summary>
@@ -43,17 +45,18 @@ namespace CommonUtils.Code {
             ServicePointManager.Expect100Continue = false;
         }
 
-        private readonly CookieContainer _cookies;
+        public readonly CookieContainer Cookies;
         private readonly string _userAgent;
         private readonly Action<string, CookieContainer> _onDispose;
         public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
+            Proxy = null;
             _userAgent = userAgent ?? RandomUserAgent();
-            _cookies = cookies ?? new CookieContainer();
+            Cookies = cookies ?? new CookieContainer();
             _onDispose = onDispose;
         }
 
         public Tuple<HttpStatusCode, string> GetContent(string url, string postData = null, string contentType = "application/x-www-form-urlencoded", Encoding encoding = null) {
-            var webResponse = GetResponse(url, _cookies, postData, encoding, contentType, _userAgent);
+            var webResponse = GetResponse(url, Cookies, postData, encoding, contentType, _userAgent, Proxy);
             return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
         }
 
@@ -117,7 +120,7 @@ namespace CommonUtils.Code {
             return result;
         }
 
-        private static WebResponse GetResponse(string url, CookieContainer cookieContainer = null,  string postData = null, Encoding encoding = null, string contentType = "text/xml", string userAgent = null) {
+        private static WebResponse GetResponse(string url, CookieContainer cookieContainer = null, string postData = null, Encoding encoding = null, string contentType = "text/xml", string userAgent = null, string proxy = null) {
             var readWriteTimeout = 15000;
             var request = (HttpWebRequest) WebRequest.Create(url);
             request.Accept =
@@ -131,6 +134,9 @@ namespace CommonUtils.Code {
             request.UserAgent = userAgent ?? RandomUserAgent();
             request.AllowAutoRedirect = true;
             request.CookieContainer = cookieContainer ?? new CookieContainer();
+            if (proxy != null) {
+                request.Proxy = new WebProxy(new Uri(proxy.StartsWith("http") ? proxy : "http://" + proxy));
+            }
             if (!string.IsNullOrEmpty(postData)) {
                 encoding = encoding ?? Encoding.UTF8;
                 request.Method = "POST";
@@ -157,7 +163,7 @@ namespace CommonUtils.Code {
 
         public void PushToConfigurationFile() {
             if(_onDispose != null) {
-                _onDispose(_userAgent, _cookies);
+                _onDispose(_userAgent, Cookies);
             }
         }
 

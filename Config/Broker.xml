@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+	<Broker name="">
+		<Url>
+			<StringSimple key=""></StringSimple>
+		</Url>
+		<XPath>
+			<XPathNode key=""></XPathNode>
+		</XPath>
+		<Strings>
+			<Format>
+				<StringSimple key=""></StringSimple>
+			</Format>
+			<ArrayString key="">
+				<Item></Item>
+			</ArrayString>
+		</Strings>
+	</Broker>
+</Config>

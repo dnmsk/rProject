@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Text;
 
 namespace CommonUtils.ExtendedTypes {
@@ -71,6 +72,27 @@ namespace CommonUtils.ExtendedTypes {
         public static string GetUtf8String(this string str) {
             byte[] bytes = Encoding.Default.GetBytes(str);
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        public static string RemoveAllTags(this string stringWithTags) {
+            const char START_TAG = '<';
+            const char END_TAG = '>';
+            var startTagFound = false;
+            var result = string.Empty;
+            for (var i = 0; i < stringWithTags.Length; i++) {
+                if (startTagFound) {
+                    if (stringWithTags[i] == END_TAG) {
+                        startTagFound = false;
+                    }
+                    continue;
+                }
+                if (stringWithTags[i] == START_TAG) {
+                    startTagFound = true;
+                    continue;
+                }
+                result += stringWithTags[i];
+            }
+            return result;
         }
     }
 }
