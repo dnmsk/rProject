@@ -11,17 +11,11 @@ namespace Project_B.Code.Algorythm {
         public CollectHistoryAlgo() : this(new TimeSpan(0, 1, 0), new TimeSpan(1, 0, 0)) { }
 
         public CollectHistoryAlgo(TimeSpan pastCollectRepeatDelay, TimeSpan todayCollectRepeatDealy) {
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => {
-                CollectForPastDate();
-                return null;
-            }, pastCollectRepeatDelay, null));
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => {
-                CollectForToday();
-                return null;
-            }, todayCollectRepeatDealy, null));
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForPastDate, pastCollectRepeatDelay, null));
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForToday, todayCollectRepeatDealy, null));
         }
         
-        private void CollectForPastDate() {
+        private object CollectHistoryForPastDate() {
             var minDateToCollect = MainProvider.Instance.HistoryProvider.GetPastDateToCollect();
             if (minDateToCollect != null) {
                 var historyData = BookPage.Instance
@@ -30,15 +24,17 @@ namespace Project_B.Code.Algorythm {
                 MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
                 MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
             }
+            return null;
         }
 
-        private void CollectForToday() {
+        private object CollectHistoryForToday() {
             var todayUtc = DateTime.UtcNow.Date;
             var historyData = BookPage.Instance
                 .GetHistoryProvider(BrokerType.RedBlue)
                 .Load(todayUtc, _sportType);
             MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
             MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(todayUtc, SystemStateResultType.CollectForToday);
+            return null;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
@@ -107,8 +108,9 @@ namespace Project_B.Code.Entity {
                 && Drawwin2 == betAdvanced.Drawwin2;
         }
 
-        public static BetAdvanced GetBetFromOdds(OddParsed[] odds) {
+        public static BetAdvanced GetBetFromOdds(List<OddParsed> odds) {
             var newBet = new BetAdvanced();
+            var hasAnyFactor = false;
             foreach (var odd in odds) {
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
@@ -121,8 +123,11 @@ namespace Project_B.Code.Entity {
                         newBet.Win1draw = (double)odd.Factor;
                         break;
                 }
+                if (odd.Factor > 0) {
+                    hasAnyFactor = true;
+                }
             }
-            return newBet;
+            return hasAnyFactor ? newBet : null;
         }
     }
 }

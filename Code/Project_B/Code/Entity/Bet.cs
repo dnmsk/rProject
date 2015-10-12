@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
@@ -208,7 +209,7 @@ namespace Project_B.Code.Entity {
                    && Totaldetail == bet.Totaldetail;
         }
 
-        public static Bet GetBetFromOdds(OddParsed[] odds) {
+        public static Bet GetBetFromOdds(List<OddParsed> odds) {
             var newBet = new Bet();
             foreach (var odd in odds) {
                 switch (odd.Type) {

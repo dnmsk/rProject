@@ -118,10 +118,13 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             }
         }
 
-        public List<CompetitionParsed> Load(bool isLive, SportType sportType) {
-            var url = isLive
-                ? CurrentConfiguration.StringSimple[SectionName.UrlLiveTarget]
-                : string.Format(CurrentConfiguration.StringSimple[SectionName.UrlOddsTarget], 
+        public List<CompetitionParsed> LoadLive(SportType sportType) {
+            var url = CurrentConfiguration.StringSimple[SectionName.UrlLiveTarget];
+            return BuildCompetitions(LoadPage(url));
+        }
+
+        public List<CompetitionParsed> LoadRegular(SportType sportType) {
+            var url = string.Format(CurrentConfiguration.StringSimple[SectionName.UrlOddsTarget], 
                     GetParamValueForCompetition(sportType, CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam], 
                     CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]));
             return BuildCompetitions(LoadPage(url));

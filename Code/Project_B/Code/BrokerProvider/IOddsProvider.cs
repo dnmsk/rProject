@@ -4,6 +4,7 @@ using Project_B.Code.Enums;
 
 namespace Project_B.Code.BrokerProvider {
     public interface IOddsProvider {
-        List<CompetitionParsed> Load(bool isLive, SportType sportType);
+        List<CompetitionParsed> LoadLive(SportType sportType);
+        List<CompetitionParsed> LoadRegular(SportType sportType);
     }
 }

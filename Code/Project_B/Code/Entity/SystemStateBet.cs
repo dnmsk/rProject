@@ -12,18 +12,18 @@ namespace Project_B.Code.Entity {
     [Serializable]
     [DBTable("SystemStateBet")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SystemStateBet : AbstractEntityTemplateKey<SystemStateBet, short> {
+    public sealed class SystemStateBet : AbstractEntityTemplateKey<SystemStateBet, int> {
 
         public enum Fields {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] ID,
+            [DBField(DbType.Int32)] ID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Statebet,
+            [DBField(DbType.Int32)] Statebet,
 
         /// <summary>
         /// 
@@ -45,16 +45,16 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public short ID {
-            get { return (short) this[Fields.ID]; }
+        public int ID {
+            get { return (int) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public short Statebet {
-            get { return (short) this[Fields.Statebet]; }
+        public int Statebet {
+            get { return (int) this[Fields.Statebet]; }
             set { ForceSetData(Fields.Statebet, value); }
         }
 

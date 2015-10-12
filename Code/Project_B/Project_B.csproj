@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Code\Algorythm\CollectHistoryAlgo.cs" />
+    <Compile Include="Code\Algorythm\CollectRegularOddAlgo.cs" />
     <Compile Include="Code\BookPage.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceBase.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceOddsProvider.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Code\Enums\LanguageType.cs" />
     <Compile Include="Code\Enums\ResultModeType.cs" />
     <Compile Include="Code\Enums\ResultType.cs" />
+    <Compile Include="Code\Enums\SystemStateBetType.cs" />
     <Compile Include="Code\Enums\SystemStateResultType.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Global.asax.cs">

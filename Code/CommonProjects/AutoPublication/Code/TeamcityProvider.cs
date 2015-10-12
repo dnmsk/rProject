@@ -29,10 +29,7 @@ namespace AutoPublication.Code {
             _teamcityTarget = teamcityTarget;
             _requestHelper = new WebRequestHelper();
 
-            WatchfulSloth.Instance.SetMove(new SlothMoveByTimeSingle<object>(() => {
-                UpdateBuildCache();
-                return null;
-            }, new TimeSpan(0, 30, 0), null));
+            WatchfulSloth.Instance.SetMove(new SlothMoveByTimeSingle<object>(UpdateBuildCache, new TimeSpan(0, 30, 0), null));
         }
 
         public TeamcityProvider() : this(SiteConfiguration.GetConfigurationProperty("TeamcityTarget"), SiteConfiguration.GetConfigurationProperty("PathToShare")) { }
@@ -51,7 +48,7 @@ namespace AutoPublication.Code {
             return result.Distinct().ToArray();
         }
 
-        public void UpdateBuildCache() {
+        public object UpdateBuildCache() {
             var result = new List<ZipBuildItem>();
             foreach(var server in GetBuildServers()) {
                 try {
@@ -64,6 +61,7 @@ namespace AutoPublication.Code {
                 }
             }
             _buildItems = result;
+            return null;
         }
 
         public List<ZipBuildItem> GetBuilds() {

@@ -11,11 +11,11 @@ namespace Project_B.Code.DataProvider.DataHelper {
         private Dictionary<string, ResultModeType> _nameToGender = new Dictionary<string, ResultModeType>();
 
         public ScoreHelper() {
-            UpdateSportMap();
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(UpdateSportMap, new TimeSpan(0, 30, 0), null));
+            UpdateResultModeMap();
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(UpdateResultModeMap, new TimeSpan(0, 30, 0), null));
         }
 
-        private object UpdateSportMap() {
+        private object UpdateResultModeMap() {
             var genders = ResultModeAdvanced.DataSource.AsList();
             var newMap = new Dictionary<string, ResultModeType>();
             foreach (var genderAdvanced in genders) {
