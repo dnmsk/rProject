@@ -125,64 +125,64 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public double? Win1 {
-            get { return (double?) this[Fields.Win1]; }
+        public float? Win1 {
+            get { return (float?) this[Fields.Win1]; }
             set { ForceSetData(Fields.Win1, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Win2 {
-            get { return (double?) this[Fields.Win2]; }
+        public float? Win2 {
+            get { return (float?) this[Fields.Win2]; }
             set { ForceSetData(Fields.Win2, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Hcap1 {
-            get { return (double?) this[Fields.Hcap1]; }
+        public float? Hcap1 {
+            get { return (float?) this[Fields.Hcap1]; }
             set { ForceSetData(Fields.Hcap1, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Hcap2 {
-            get { return (double?) this[Fields.Hcap2]; }
+        public float? Hcap2 {
+            get { return (float?) this[Fields.Hcap2]; }
             set { ForceSetData(Fields.Hcap2, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Hcapdetail {
-            get { return (double?) this[Fields.Hcapdetail]; }
+        public float? Hcapdetail {
+            get { return (float?) this[Fields.Hcapdetail]; }
             set { ForceSetData(Fields.Hcapdetail, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Totalunder {
-            get { return (double?) this[Fields.Totalunder]; }
+        public float? Totalunder {
+            get { return (float?) this[Fields.Totalunder]; }
             set { ForceSetData(Fields.Totalunder, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Totalover {
-            get { return (double?) this[Fields.Totalover]; }
+        public float? Totalover {
+            get { return (float?) this[Fields.Totalover]; }
             set { ForceSetData(Fields.Totalover, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Totaldetail {
-            get { return (double?) this[Fields.Totaldetail]; }
+        public float? Totaldetail {
+            get { return (float?) this[Fields.Totaldetail]; }
             set { ForceSetData(Fields.Totaldetail, value); }
         }
 
@@ -215,31 +215,31 @@ namespace Project_B.Code.Entity {
             foreach (var odd in odds) {
                 switch (odd.Type) {
                     case BetOddType.Win1:
-                        newBet.Win1 = (double)odd.Factor;
+                        newBet.Win1 = (float)odd.Factor;
                         hasAnyFactor = true;
                         break;
                     case BetOddType.Win2:
-                        newBet.Win2 = (double)odd.Factor;
+                        newBet.Win2 = (float)odd.Factor;
                         hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap1:
-                        newBet.Hcap1 = (double)odd.Factor;
-                        newBet.Hcapdetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        newBet.Hcap1 = (float)odd.Factor;
+                        newBet.Hcapdetail = (float)(odd.AdvancedParam ?? default(decimal));
                         hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap2:
-                        newBet.Hcap2 = (double)odd.Factor;
-                        newBet.Hcapdetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        newBet.Hcap2 = (float)odd.Factor;
+                        newBet.Hcapdetail = (float)(odd.AdvancedParam ?? default(decimal));
                         hasAnyFactor = true;
                         break;
                     case BetOddType.TotalUnder:
-                        newBet.Totalunder = (double)odd.Factor;
-                        newBet.Totaldetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        newBet.Totalunder = (float)odd.Factor;
+                        newBet.Totaldetail = (float)(odd.AdvancedParam ?? default(decimal));
                         hasAnyFactor = true;
                         break;
                     case BetOddType.TotalOver:
-                        newBet.Totalover = (double)odd.Factor;
-                        newBet.Totaldetail = (double)(odd.AdvancedParam ?? default(decimal));
+                        newBet.Totalover = (float)odd.Factor;
+                        newBet.Totaldetail = (float)(odd.AdvancedParam ?? default(decimal));
                         hasAnyFactor = true;
                         break;
                 }

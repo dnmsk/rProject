@@ -77,24 +77,24 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public double? Win1draw {
-            get { return (double?) this[Fields.Win1draw]; }
+        public float? Win1draw {
+            get { return (float?) this[Fields.Win1draw]; }
             set { ForceSetData(Fields.Win1draw, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Win1win2 {
-            get { return (double?) this[Fields.Win1win2]; }
+        public float? Win1win2 {
+            get { return (float?) this[Fields.Win1win2]; }
             set { ForceSetData(Fields.Win1win2, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public double? Drawwin2 {
-            get { return (double?) this[Fields.Drawwin2]; }
+        public float? Drawwin2 {
+            get { return (float?) this[Fields.Drawwin2]; }
             set { ForceSetData(Fields.Drawwin2, value); }
         }
 
@@ -114,15 +114,15 @@ namespace Project_B.Code.Entity {
             foreach (var odd in odds) {
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
-                        newBet.Win1win2 = (double)odd.Factor;
+                        newBet.Win1win2 = (float)odd.Factor;
                         hasAnyFactor = true;
                         break;
                     case BetOddType.DrawWin2:
-                        newBet.Drawwin2 = (double)odd.Factor;
+                        newBet.Drawwin2 = (float)odd.Factor;
                         hasAnyFactor = true;
                         break;
                     case BetOddType.Win1Draw:
-                        newBet.Win1draw = (double)odd.Factor;
+                        newBet.Win1draw = (float)odd.Factor;
                         hasAnyFactor = true;
                         break;
                 }
