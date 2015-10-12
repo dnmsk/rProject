@@ -91,7 +91,7 @@
       <Exec Command="xcopy /E /Y /Q /EXCLUDE:$(ArchivatorPath)\ExcludeList.txt $(MSBuildProjectDirectory)\Code\Spywords_Project $(ZipFolder)\Spywords_Project"/>	 
       
       <Exec Command="md $(ZipFolder)\Project_B" ContinueOnError="true"/>
-      <Exec Command="xcopy /E /Y /Q /EXCLUDE:$(ArchivatorPath)\ExcludeList.txt $(MSBuildProjectDirectory)\Code\Spywords_Project $(ZipFolder)\Project_B"/>	 
+      <Exec Command="xcopy /E /Y /Q /EXCLUDE:$(ArchivatorPath)\ExcludeList.txt $(MSBuildProjectDirectory)\Code\Project_B $(ZipFolder)\Project_B"/>	 
       
       <CreateItem Include="$(ZipFolder)\**\*.cs">
         <Output TaskParameter="Include" ItemName="CsFiles"/>
