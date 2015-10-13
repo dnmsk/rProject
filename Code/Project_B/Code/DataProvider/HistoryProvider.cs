@@ -38,7 +38,7 @@ namespace Project_B.Code.DataProvider {
             return InvokeSafe(() => {
                 var systemState = SystemStateResult.DataSource
                     .Where(new DbFnSimpleOp(SystemStateResult.Fields.Stateresult, FnMathOper.BitwiseAnd, (short) SystemStateResultType.CollectForYesterday), Oper.Eq, default(short))
-                    .Where(SystemStateResult.Fields.Dateutc, Oper.Less, DateTime.UtcNow)
+                    .Where(SystemStateResult.Fields.Dateutc, Oper.Less, DateTime.UtcNow.Date.AddDays(-1))
                     .Sort(SystemStateResult.Fields.Dateutc, SortDirection.Asc)
                     .First();
                 return systemState != null ? systemState.Dateutc : (DateTime?) null;
