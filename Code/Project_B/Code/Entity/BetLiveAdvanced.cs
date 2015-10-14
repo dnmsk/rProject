@@ -1,50 +1,44 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
-using Project_B.Code.Data;
 using Project_B.Code.Entity.Interface;
-using Project_B.Code.Enums;
 
 namespace Project_B.Code.Entity {
-    /// <summary>
+        /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("BetAdvanced")]
+    [DBTable("BetLiveAdvanced")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class BetAdvanced : AbstractEntityTemplateKey<BetAdvanced, int>, IBetAdvanced<int> {
+    public sealed class BetLiveAdvanced : AbstractEntityTemplateKey<BetLiveAdvanced, long>, IBetAdvanced<long> {
 
         public enum Fields {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] ID,
+            [DBField(DbType.Int64)] ID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] BetID,
+            [DBField(DbType.Int64)] BetliveID,
 
         /// <summary>
         /// 
         /// </summary>
-        [Nullable]
             [DBField(DbType.Single)] Win1draw,
 
-            /// <summary>
-            /// 
-            /// </summary>
-            [Nullable]
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.Single)] Win1win2,
 
-            /// <summary>
-            /// 
-            /// </summary>
-            [Nullable]
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.Single)] Drawwin2,
 
         }
@@ -52,27 +46,36 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public BetAdvanced() {
+        public BetLiveAdvanced() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public BetAdvanced(Hashtable ht) : base(ht) {}
+        public BetLiveAdvanced(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
-        public int ID {
-            get { return (int) this[Fields.ID]; }
+        public long ID {
+            get { return (long) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
-        public int BetID {
-            get { return (int) this[Fields.BetID]; }
-            set { ForceSetData(Fields.BetID, value); }
+        public long BetliveID {
+            get { return (long) this[Fields.BetliveID]; }
+            set { ForceSetData(Fields.BetliveID, value); }
+        }
+
+        public long BetID {
+            get {
+                return BetliveID;
+            }
+            set {
+                BetliveID = value;
+            }
         }
 
         /// <summary>

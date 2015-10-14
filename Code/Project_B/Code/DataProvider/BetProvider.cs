@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using Project_B.Code.Data;
 using Project_B.Code.Entity;
+using Project_B.Code.Entity.Interface;
 using Project_B.Code.Enums;
 
 namespace Project_B.Code.DataProvider {
@@ -14,10 +14,6 @@ namespace Project_B.Code.DataProvider {
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (BetProvider).FullName);
-
-        private static readonly SportType[] _sportWithAdvancedDetail = {
-            SportType.Football, SportType.IceHockey,
-        };
 
         public BetProvider() : base(_logger) { }
 
@@ -47,25 +43,12 @@ namespace Project_B.Code.DataProvider {
                     .First();
                 var betAdvancedDb = betWithAdvancedDb != null ? betWithAdvancedDb.GetJoinedEntity<BetAdvanced>() : null;
 
-                var bet = Bet.GetBetFromOdds(oddsParsed);
-                var betAdvanced = BetAdvanced.GetBetFromOdds(oddsParsed);
+                var bet = BetHelper.GetBetFromOdds(new Bet(), oddsParsed);
+                var betAdvanced = BetHelper.GetBetFromOdds(new BetAdvanced(), oddsParsed);
 
-                if (bet != null) {
-                    if (betWithAdvancedDb == null || !betWithAdvancedDb.IsEqualsTo(bet) ||
-                            _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && betAdvanced != null && !betAdvancedDb.IsEqualsTo(betAdvanced)) {
-                        bet.CompetitionitemID = competitionItemID;
-                        bet.BrokerID = brokerType;
-                        bet.Datecreatedutc = DateTime.UtcNow;
-                        bet.Save();
-                        if (_sportWithAdvancedDetail.Contains(sportType) && betAdvanced != null) {
-                            betAdvanced.BetID = bet.ID;
-                            betAdvanced.Save();
-                        }
-                    }
-                }
-
-                return null;
-            }, (object) null);
+                BetHelper.SaveBetIfChanged(competitionItemID, brokerType, sportType, bet, betAdvanced, betWithAdvancedDb, betAdvancedDb);
+                return (object)null;
+            });
         }
 
         private static readonly Dictionary<short, SystemStateBetType> _betTypeByHour = new Dictionary<short, SystemStateBetType> {
@@ -93,7 +76,7 @@ namespace Project_B.Code.DataProvider {
             { 21, SystemStateBetType.BetFor21_22 },
             { 22, SystemStateBetType.BetFor22_23 },
             { 23, SystemStateBetType.BetFor23_24 },
-        }; 
+        };
 
         public SystemStateBetType GetStateRegular(BrokerType brokerType, DateTime dateUtc) {
             return InvokeSafe(() => {

@@ -94,6 +94,7 @@
     <Compile Include="Unit\DbRestrictionsTest.cs" />
     <Compile Include="Unit\MainLogic\AccountProviderTest.cs" />
     <Compile Include="Unit\MainLogic\UserProviderTest.cs" />
+    <Compile Include="Unit\ProjectB\GetMinimalAdvanceParamForScoreTest.cs" />
     <Compile Include="Unit\SessionModuleTest.cs" />
     <Compile Include="Unit\Test1.cs" />
     <Compile Include="Unit\WatchfulSloths\SlothMoveByFirstSuccessTest.cs" />
@@ -113,6 +114,10 @@
     <ProjectReference Include="..\CommonProjects\MainLogic\MainLogic.csproj">
       <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
       <Name>MainLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project_B\Project_B.csproj">
+      <Project>{4B7FEAC2-B9EA-49DD-A459-5393CE350ED8}</Project>
+      <Name>Project_B</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

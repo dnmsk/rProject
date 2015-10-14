@@ -13,6 +13,7 @@ namespace Project_B {
                 _taskObjects = new object[] {
                     new CollectHistoryAlgo(),
                     new CollectOddsAlgo(), 
+                    new CollectLiveOddsWithResultAlgo()
                 };
             }
         }

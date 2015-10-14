@@ -39,11 +39,11 @@ namespace CommonUtils.WatchfulSloths {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(WatchfulSloth).FullName);
 
 
-        public WatchfulSloth(int wakeUpInterval) {
+        public WatchfulSloth(int wakeUpInterval, string holderName) {
             _wakeUpInterval = wakeUpInterval;
             _stopEvent = new ManualResetEvent(false);
             WakeUp();
-            _holder = new WatchfulHolder(12); //научить владыке хомяков самому создавать их. 
+            _holder = new WatchfulHolder(12, holderName); //научить владыке хомяков самому создавать их. 
             new Thread(() => {
                 while (!_stopEvent.WaitOne(_wakeUpInterval)) {
                     WakeUp();
@@ -51,7 +51,7 @@ namespace CommonUtils.WatchfulSloths {
             }).Start();
         }
 
-        public WatchfulSloth() : this(WAKE_UP_INTERVAL_DEFAULT) {}
+        public WatchfulSloth() : this(WAKE_UP_INTERVAL_DEFAULT, "DefaultName") {}
 
         /// <summary>
         /// Установка правила, по которому будет производится контроль данных и их актуальности.

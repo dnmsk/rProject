@@ -7,5 +7,6 @@ namespace Project_B.Code.DataProvider {
         public readonly CompetitorProvider CompetitorProvider =  new CompetitorProvider();
         public readonly HistoryProvider HistoryProvider = new HistoryProvider();
         public readonly ResultProvider ResultProvider = new ResultProvider();
+        public readonly LiveProvider LiveProvider = new LiveProvider();
     }
 }

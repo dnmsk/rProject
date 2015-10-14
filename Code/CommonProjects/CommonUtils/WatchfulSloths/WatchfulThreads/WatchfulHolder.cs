@@ -6,6 +6,7 @@ using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.WatchfulSloths.WatchfulThreads {
     public class WatchfulHolder {
+        private readonly string _holderName;
         private bool _canWork = true;
         private readonly object _lockObject = new object();
         private readonly Queue<WatchfulThread> _watchfulThreadsInSleep;
@@ -17,7 +18,8 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(WatchfulHolder).FullName);
 
-        public WatchfulHolder(int minWatchfulCount) {
+        public WatchfulHolder(int minWatchfulCount, string holderName) {
+            _holderName = holderName;
             _watchfulThreadsInSleep = new Queue<WatchfulThread>(minWatchfulCount);
             _watchfulThreadsInProgress = new HashSet<WatchfulThread>();
             _actionsToExecute = new Queue<Action>();
@@ -46,7 +48,6 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
         }
 
         private void RunHolder() {
-            var myID = this.GetHashCode();
             int cnt = 0;
             int runnedTask = 0;
             const int millisecondsTimeout = 500;
@@ -85,7 +86,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                         waitTasks = _actionsToExecute.Count;
                     }
 
-                    _logger.Info("Статистика хомяков ({0}): занято={1} отдыхают={2} задач_в_ожидании={3} задач_выполнено={4}", myID, inProgressSloths, freeSloths, waitTasks, runnedTask);
+                    _logger.Info("Статистика хомяков ({0}): занято={1} отдыхают={2} задач_в_ожидании={3} задач_выполнено={4}", _holderName, inProgressSloths, freeSloths, waitTasks, runnedTask);
                     cnt = 0;
                     runnedTask = 0;
                 }
