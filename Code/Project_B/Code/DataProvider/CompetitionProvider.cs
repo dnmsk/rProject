@@ -98,6 +98,7 @@ namespace Project_B.Code.DataProvider {
                     .WhereEquals(CompetitionItem.Fields.Competitoruniqueid1, competitor1Transport.UniqueID)
                     .WhereEquals(CompetitionItem.Fields.Competitoruniqueid2, competitor2Transport.UniqueID)
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionTransport.SportType)
+                    .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionTransport.UniqueID)
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
                     .First();
                 if (competitionItem != null) {
