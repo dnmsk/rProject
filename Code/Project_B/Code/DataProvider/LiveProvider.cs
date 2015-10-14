@@ -70,6 +70,9 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static void ProcessLiveOdds(int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> odds) {
+            if (odds == null || odds.Count == 0) {
+                return;
+            }
             var betWithAdvancedDb = BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
                 .WhereEquals(BetLive.Fields.BrokerID, (short) brokerType)

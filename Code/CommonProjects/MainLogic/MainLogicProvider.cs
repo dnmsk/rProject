@@ -24,17 +24,14 @@ namespace MainLogic {
                 var daoLogger = LoggerManager.GetLogger("DAO");
                 return new LoggerObj(
                     (s1, exception) => {
-                        return;
                         daoLogger.Info(s1 + exception);
                     },
                     (s1, objects) => {
-                        return;
                         daoLogger.Info(s1, objects);
                     },
                     exception => daoLogger.Error(exception),
                     (s1, objects) => daoLogger.Error(s1, objects),
                     (s1, objects) => {
-                        return;
                         daoLogger.Debug(s1, objects);
                     },
                     false
