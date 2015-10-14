@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonUtils.Code;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using Project_B.Code.DataProvider;
@@ -14,13 +15,15 @@ namespace Project_B.Code.Algorythm {
         }
 
         public object CollectRegularOdds() {
-            var utcNow = DateTime.UtcNow;
-            if (MainProvider.Instance.BetProvider.GetStateRegular(BrokerType.RedBlue, utcNow) != SystemStateBetType.Unknown) {
-                var regularOdds = BookPage.Instance.GetOddsProvider(BrokerType.RedBlue).LoadRegular(_sportType);
-                MainProvider.Instance.BetProvider.SaveRegular(LanguageType.English, BrokerType.RedBlue, regularOdds);
-                MainProvider.Instance.BetProvider.SetStateRegular(BrokerType.RedBlue, utcNow);
+            using (var sw = new MiniProfiler("CollectRegularOdds")) {
+                var utcNow = DateTime.UtcNow;
+                if (MainProvider.Instance.BetProvider.GetStateRegular(BrokerType.RedBlue, utcNow) != SystemStateBetType.Unknown) {
+                    var regularOdds = BookPage.Instance.GetOddsProvider(BrokerType.RedBlue).LoadRegular(_sportType);
+                    MainProvider.Instance.BetProvider.SaveRegular(LanguageType.English, BrokerType.RedBlue, regularOdds);
+                    MainProvider.Instance.BetProvider.SetStateRegular(BrokerType.RedBlue, utcNow);
+                }
+                return null;
             }
-            return null;
         }
     }
 }

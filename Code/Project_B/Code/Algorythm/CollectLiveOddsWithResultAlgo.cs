@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonUtils.Code;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using Project_B.Code.DataProvider;
@@ -14,14 +15,13 @@ namespace Project_B.Code.Algorythm {
         }
 
         public object CollectLiveOddsWithResult() {
-            var minDateToCollect = MainProvider.Instance.HistoryProvider.GetPastDateToCollect();
-            if (minDateToCollect != null) {
+            using (var sw = new MiniProfiler("CollectLiveOddsWithResult")) {
                 var liveData = BookPage.Instance
                     .GetOddsProvider(BrokerType.RedBlue)
                     .LoadLive(_sportType);
                 MainProvider.Instance.LiveProvider.ProcessdLiveParsed(BrokerType.RedBlue, LanguageType.English, liveData);
+                return null;
             }
-            return null;
         }
     }
 }

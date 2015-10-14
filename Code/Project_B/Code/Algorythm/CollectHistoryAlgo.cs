@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonUtils.Code;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using Project_B.Code.DataProvider;
@@ -16,25 +17,30 @@ namespace Project_B.Code.Algorythm {
         }
         
         private object CollectHistoryForPastDate() {
-            var minDateToCollect = MainProvider.Instance.HistoryProvider.GetPastDateToCollect();
-            if (minDateToCollect != null) {
-                var historyData = BookPage.Instance
-                    .GetHistoryProvider(BrokerType.RedBlue)
-                    .Load(minDateToCollect.Value, _sportType);
-                MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
-                MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
+            using (var sw = new MiniProfiler("CollectHistoryForPastDate")) {
+                var minDateToCollect = MainProvider.Instance.HistoryProvider.GetPastDateToCollect();
+                if (minDateToCollect != null) {
+                    var historyData = BookPage.Instance
+                                              .GetHistoryProvider(BrokerType.RedBlue)
+                                              .Load(minDateToCollect.Value, _sportType);
+                    MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
+                    MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(minDateToCollect.Value,
+                        SystemStateResultType.CollectForYesterday);
+                }
+                return null;
             }
-            return null;
         }
 
         private object CollectHistoryForToday() {
-            var todayUtc = DateTime.UtcNow.Date;
-            var historyData = BookPage.Instance
-                .GetHistoryProvider(BrokerType.RedBlue)
-                .Load(todayUtc, _sportType);
-            MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
-            MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(todayUtc, SystemStateResultType.CollectForToday);
-            return null;
+            using (var sw = new MiniProfiler("CollectHistoryForToday")) {
+                var todayUtc = DateTime.UtcNow.Date;
+                var historyData = BookPage.Instance
+                    .GetHistoryProvider(BrokerType.RedBlue)
+                    .Load(todayUtc, _sportType);
+                MainProvider.Instance.HistoryProvider.SaveResult(LanguageType.English, historyData);
+                MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(todayUtc, SystemStateResultType.CollectForToday);
+                return null;
+            }
         }
     }
 }
