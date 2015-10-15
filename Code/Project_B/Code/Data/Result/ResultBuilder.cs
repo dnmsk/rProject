@@ -8,7 +8,20 @@ namespace Project_B.Code.Data.Result {
             FullResult result ;
             switch (sportType) {
                 case SportType.Tennis:
-                    result = BuildTennisResult(resString);
+                    var buildTennisResult = BuildTennisResult(resString);
+                    if (buildTennisResult.SubResult.Count == 1) {
+                        var tempTennisResult = new FullResult {
+                            CompetitorResultOne = 0,
+                            CompetitorResultTwo = 0
+                        };
+                        tempTennisResult.SubResult.Add(new SimpleResult {
+                            CompetitorResultOne = buildTennisResult.CompetitorResultOne,
+                            CompetitorResultTwo = buildTennisResult.CompetitorResultTwo
+                        });
+                        tempTennisResult.SubResult.AddRange(buildTennisResult.SubResult);
+                        buildTennisResult = tempTennisResult;
+                    }
+                    result = buildTennisResult;
                     break;
                 case SportType.IceHockey:
                     result = BuildIceHockeyResult(resString);
