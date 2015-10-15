@@ -2,6 +2,7 @@
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
 using Project_B.Code.Entity;
 using Project_B.Code.Enums;
@@ -24,10 +25,14 @@ namespace Project_B.Code.DataProvider {
                     .WhereEquals(Competitor.Fields.Languagetype, (short)languageType)
                     .WhereEquals(Competitor.Fields.Sporttype, (short) sportType)
                     .Where(new DaoFilterOr(
-                        new DaoFilter(Competitor.Fields.NameShort, Oper.Ilike, nameShort), 
-                        new DaoFilter(Competitor.Fields.NameFull, Oper.Ilike, nameFull))
+                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameShort.ToLower(), Competitor.Fields.NameFull),
+                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameFull.ToLower(), Competitor.Fields.NameShort))
                     )
-                    .AsList();
+                    .AsList(
+                        Competitor.Fields.CompetitoruniqueID,
+                        Competitor.Fields.NameFull,
+                        Competitor.Fields.NameShort
+                    );
                 Competitor competitor = null;
                 if (competitors.Count > 1) {
                     _logger.Error("{0} Competitors for nameShort='{1}' and nameFull='{2}', sport={3}, gender={4}. Take first", competitors.Count, nameShort, nameFull, sportType, genderType);
@@ -61,8 +66,7 @@ namespace Project_B.Code.DataProvider {
                     NameShort = competitor.NameShort,
                     GenderType = genderType,
                     SportType = sportType,
-                    LanguageType = languageType,
-                    DateCreatedUtc = competitor.Datecreatedutc
+                    LanguageType = languageType
                 };
             }, null);
         }

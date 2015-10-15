@@ -8,6 +8,7 @@ using Project_B.Code.Enums;
 namespace Project_B.Code.Algorythm {
     public class CollectLiveOddsWithResultAlgo {
         const SportType _sportType = SportType.Basketball | SportType.Football | SportType.IceHockey | SportType.Tennis | SportType.Volleyball;
+
         public CollectLiveOddsWithResultAlgo() : this(new TimeSpan(0, 0, 15)) {}
 
         public CollectLiveOddsWithResultAlgo(TimeSpan intervalAlgo) {

@@ -28,7 +28,10 @@ namespace Project_B.Code.DataProvider {
                                              .WhereEquals(Competition.Fields.Languagetype, (short)language)
                                              .WhereEquals(Competition.Fields.Sporttype, (short)sportType)
                                              .Where(QueryHelper.GetFilterByWordsForField(nameOrigin, Competition.Fields.Name))
-                                             .First();
+                                             .First(
+                                                Competition.Fields.CompetitionuniqueID,
+                                                Competition.Fields.Name
+                    );
                 if (competition == null) {
                     return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin);
                 }
@@ -37,7 +40,6 @@ namespace Project_B.Code.DataProvider {
                     GenderType = genderDetected,
                     SportType = sportType,
                     LanguageType = language,
-                    DateCreatedUtc = competition.Datecreatedutc,
                     UniqueID = competition.CompetitionuniqueID
                 };
             }, null);
@@ -50,7 +52,9 @@ namespace Project_B.Code.DataProvider {
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Languagetype, (short)language)
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Sporttype, (short)sportType)
                                          .Where(QueryHelper.GetFilterByWordsForField(nameOriginShort, CompetitionUniqueAdvanced.Fields.Name))
-                                         .First();
+                                         .First(
+                                            CompetitionUniqueAdvanced.Fields.CompetitionuniqueID
+                );
             if (competitionUniqueAdvanced == null) {
                 var uniqueID = new CompetitionUnique {
                     IsUsed = true
@@ -83,7 +87,6 @@ namespace Project_B.Code.DataProvider {
                 GenderType = genderDetected,
                 SportType = sportType,
                 LanguageType = language,
-                DateCreatedUtc = competition.Datecreatedutc,
                 UniqueID = competition.CompetitionuniqueID
             };
         }
@@ -100,7 +103,7 @@ namespace Project_B.Code.DataProvider {
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionTransport.SportType)
                     .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionTransport.UniqueID)
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
-                    .First();
+                    .First(CompetitionItem.Fields.ID);
                 if (competitionItem != null) {
                     if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
                         competitionItem = null;

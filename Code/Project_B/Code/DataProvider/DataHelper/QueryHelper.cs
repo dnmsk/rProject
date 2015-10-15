@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.ExtendedTypes;
+using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.Code.Entity;
 
 namespace Project_B.Code.DataProvider.DataHelper {
     public static class QueryHelper {
@@ -16,6 +18,10 @@ namespace Project_B.Code.DataProvider.DataHelper {
                                            : filters[0];
 
             return allFilters;
+        }
+
+        public static DaoFilterBase GetIndexedFilterByWordIgnoreCase(string word, Enum field, bool fullyEq = true) {
+            return new DaoFilter(new DbFnSimpleFieldOp("lower", field), Oper.Like, string.Format(fullyEq ? "{0}" : "%{0}%", word.ToLower()));
         }
 
         public static string[] StringToArray(string str) {

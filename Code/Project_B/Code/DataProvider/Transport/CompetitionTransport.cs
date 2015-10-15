@@ -8,6 +8,5 @@ namespace Project_B.Code.DataProvider.Transport {
         public string Name { get; set; }
         public SportType SportType { get; set; }
         public GenderType GenderType { get; set; }
-        public DateTime DateCreatedUtc { get; set; }
     }
 }
