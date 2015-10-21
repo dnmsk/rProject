@@ -9,6 +9,7 @@ using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
 using Project_B.Code.Entity;
 using Project_B.Code.Enums;
+using Project_B.Models;
 
 namespace Project_B.Code.DataProvider {
     public class CompetitionProvider : SafeInvokerBase {
@@ -105,7 +106,7 @@ namespace Project_B.Code.DataProvider {
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID);
                 if (competitionItem != null) {
-                    if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
+                    if (eventDateUtc != DateTime.MinValue && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
                         competitionItem = null;
                     }
                 }
@@ -122,6 +123,17 @@ namespace Project_B.Code.DataProvider {
                 }
                 return competitionItem.ID;
             }, default(int));
+        }
+
+        public CompetitionItemModel GetFullCompetitionItemInfo(LanguageType languageType, int competitionItemID) {
+            return InvokeSafe(() => {
+                var competitionItem = CompetitionItem.DataSource.GetByKey(competitionItemID);
+                var competition = CompetitionUniqueAdvanced.DataSource
+                    .WhereEquals(CompetitionUniqueAdvanced.Fields.Languagetype, languageType)
+                    .WhereEquals(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionItem.CompetitionuniqueID)
+                    .First();
+                return (CompetitionItemModel)null;
+            }, null);
         }
     }
 }

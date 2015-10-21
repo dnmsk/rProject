@@ -8,6 +8,7 @@ namespace Project_B.Code.Data.Result {
             FullResult result ;
             switch (sportType) {
                 case SportType.Tennis:
+                case SportType.Volleyball:
                     var buildTennisResult = BuildTennisResult(resString);
                     if (buildTennisResult.SubResult.Count == 1) {
                         var tempTennisResult = new FullResult {
@@ -32,20 +33,13 @@ namespace Project_B.Code.Data.Result {
                 case SportType.Football:
                     result = BuildFootballResult(resString);
                     break;
-                case SportType.Volleyball:
-                    result = BuildVolleyballResult(resString);
-                    break;
                 default:
                     result = null;
                     break;
             }
             return result;
         }
-
-        private static FullResult BuildVolleyballResult(string resString) {
-            return BuildFullResult(resString);
-        }
-
+        
         private static FullResult BuildFootballResult(string resString) {
             return BuildFullResult(resString);
         }

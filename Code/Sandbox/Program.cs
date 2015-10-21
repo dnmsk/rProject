@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -22,14 +23,19 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                Console.ReadLine();
+                //var start = Stopwatch.StartNew();
+                Console.WriteLine("CollectOddsAlgo");
+                var algo = new CollectOddsAlgo();
+                algo.CollectRegularOdds();
+                //Console.WriteLine(start.ElapsedMilliseconds);
+                //Console.ReadLine();
             }
             catch (Exception ex) {
                 Console.WriteLine(ex);
                 _logger.Error(ex);
             }
             Console.WriteLine("Success");
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         static void RegisterDB() {

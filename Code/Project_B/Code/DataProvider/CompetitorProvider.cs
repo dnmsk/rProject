@@ -6,6 +6,7 @@ using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
 using Project_B.Code.Entity;
 using Project_B.Code.Enums;
+using Project_B.Models;
 
 namespace Project_B.Code.DataProvider {
     public class CompetitorProvider : SafeInvokerBase {
@@ -67,6 +68,16 @@ namespace Project_B.Code.DataProvider {
                     GenderType = genderType,
                     SportType = sportType,
                     LanguageType = languageType
+                };
+            }, null);
+        }
+
+        public CompetitorModel GetCompetitorModel(int competitorID) {
+            return InvokeSafe(() => {
+                var competitor = Competitor.DataSource.GetByKey(competitorID, Competitor.Fields.NameFull);
+                return new CompetitorModel {
+                    Name = competitor.NameFull,
+                    ID = competitorID
                 };
             }, null);
         }
