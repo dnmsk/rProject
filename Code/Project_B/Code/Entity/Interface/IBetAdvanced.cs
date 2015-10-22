@@ -8,6 +8,11 @@
         /// <summary>
         /// 
         /// </summary>
+        float? Draw { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         float? Win1draw { get; set; }
 
         /// <summary>

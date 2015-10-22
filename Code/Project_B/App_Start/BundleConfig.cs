@@ -12,7 +12,7 @@ namespace Project_B {
             SquishItMinifierStatic.Css
                                   .AddMinified("~/Content/bootstrap.min.css")
                                   .Add("~/Content/site.css")
-                                  .Add("~/Content/Less/test.less")
+                                  //.Add("~/Content/Less/test.less")
                                   .AsCached();
             SquishItMinifierStatic.JavaScript
                                   .AddMinified("~/Scripts/jquery-2.1.4.min.js")

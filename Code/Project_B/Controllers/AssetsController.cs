@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Configuration;
-using System.Web.Configuration;
 using System.Web.Mvc;
 using SquishIt.Framework;
 using SquishIt.Framework.Base;
@@ -8,7 +6,6 @@ using SquishIt.Framework.Base;
 namespace Project_B.Controllers {
     public class AssetsController : Controller {
         private readonly TimeSpan _fromDays = TimeSpan.FromDays(365);
-        public readonly bool IsDebug = ((CompilationSection)ConfigurationManager.GetSection("system.web/compilation")).Debug;
 
         public ActionResult Js(string id) {
             return Content(GetContent(Bundle.JavaScript(), id), "text/javascript");

@@ -90,13 +90,13 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
                         .Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddConfirmation]]
                         .Value;
                 }
-                decimal? advancedParam = null;
+                float? advancedParam = null;
                 var numberMatched = _numberExtractorRegex.Match(betBlock.InnerText);
                 if (numberMatched.Success && numberMatched.Groups.Count > 0) {
-                    advancedParam = StringParser.ToDecimal(numberMatched.Groups["number"].Value, null);
+                    advancedParam = StringParser.ToFloat(numberMatched.Groups["number"].Value);
                 }
                 var odd = new OddParsed {
-                    Factor = StringParser.ToDecimal(prices["1"].ToString()),
+                    Factor = StringParser.ToFloat(prices["1"].ToString()),
                     AdvancedParam = advancedParam,
                     OddStringConfirmation = confirmation
                 };

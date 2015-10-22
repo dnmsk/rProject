@@ -29,10 +29,16 @@ namespace Project_B.Code.Entity {
         /// </summary>
             [DBField(DbType.Int32)] BetID,
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [Nullable]
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
+            [DBField(DbType.Single)] Draw,
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Win1draw,
 
             /// <summary>
@@ -97,6 +103,14 @@ namespace Project_B.Code.Entity {
         public float? Drawwin2 {
             get { return (float?) this[Fields.Drawwin2]; }
             set { ForceSetData(Fields.Drawwin2, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public float? Draw {
+            get { return (float?) this[Fields.Draw]; }
+            set { ForceSetData(Fields.Draw, value); }
         }
 
         public override Enum[] KeyFields {

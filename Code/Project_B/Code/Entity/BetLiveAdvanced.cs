@@ -29,6 +29,11 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
+            [DBField(DbType.Single)] Draw,
+
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.Single)] Win1draw,
 
         /// <summary>
@@ -77,6 +82,15 @@ namespace Project_B.Code.Entity {
                 BetliveID = value;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public float? Draw {
+            get { return (float?) this[Fields.Draw]; }
+            set { ForceSetData(Fields.Draw, value); }
+        }
+
 
         /// <summary>
         /// 

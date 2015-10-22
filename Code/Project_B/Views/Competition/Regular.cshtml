@@ -1,0 +1,36 @@
+﻿@using Project_B.Code.Entity.Interface
+@using Project_B.Models
+@model CompetitionRegularModel
+
+@{
+    ViewBag.Title = "Competitions for " + Model.DateUtc.ToString("dd.MM.yyyy");
+}
+
+@foreach (var bySportTypes in Model.CompetitionModel.GroupBy(c => c.SportType)) {
+    <H2>@bySportTypes.Key.ToString()</H2>
+    foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID)) {
+        <H3>@groupedCompetitions.First().Competition.Name</H3>
+        <table class="table">
+            @foreach (var competition in groupedCompetitions.OrderBy(gc => gc.DateUtc)) {
+                <tr>
+                    <td>@competition.DateUtc.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <a>@competition.Competitor1.Name</a>
+                        <br/>
+                        <a>@competition.Competitor2.Name</a>
+                    </td>
+                    @foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
+                        var currentBet = competition.CurrentBets[oddType];
+                        var maxBet = competition.HistoryMaxBets[oddType];
+                        var minBet = competition.HistoryMinBets[oddType];
+                        <td>
+                            <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
+                            <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")"><b>@currentBet.Odd</b></div>
+                            <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    }
+}
