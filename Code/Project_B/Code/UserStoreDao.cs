@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Project_B.Code {
-    public class UserStoreDao<TUser> : IUserStore<TUser> where TUser : IdentityUser {
+    public class UserStoreDao<TUser> : IUserStore<TUser> where TUser : class, IUser<string> {
         public Task CreateAsync(TUser user) {
             throw new NotImplementedException();
         }

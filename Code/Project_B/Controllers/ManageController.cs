@@ -254,7 +254,7 @@ namespace Project_B.Controllers {
                 AuthenticationManager.GetExternalAuthenticationTypes()
                                      .Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider))
                                      .ToList();
-            ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
+            ViewBag.ShowRemoveButton = /*user.PasswordHash != null || */userLogins.Count > 1;
             return View(new ManageLoginsViewModel {
                 CurrentLogins = userLogins,
                 OtherLogins = otherLogins
@@ -311,7 +311,7 @@ namespace Project_B.Controllers {
         private bool HasPassword() {
             var user = UserManager.FindById(User.Identity.GetUserId());
             if (user != null) {
-                return user.PasswordHash != null;
+                return false;// user.PasswordHash != null;
             }
             return false;
         }
@@ -319,7 +319,7 @@ namespace Project_B.Controllers {
         private bool HasPhoneNumber() {
             var user = UserManager.FindById(User.Identity.GetUserId());
             if (user != null) {
-                return user.PhoneNumber != null;
+                return false; //user.PhoneNumber != null;
             }
             return false;
         }

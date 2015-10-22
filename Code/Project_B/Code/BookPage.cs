@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
@@ -24,6 +25,12 @@ namespace Project_B.Code {
                     try {
                         var type = assembly.GetTypes();
                         return type;
+                    }
+                    catch (ReflectionTypeLoadException ex) {
+                        _logger.Error(ex);
+                        foreach (var loaderException in ex.LoaderExceptions) {
+                            _logger.Error(loaderException);
+                        }
                     }
                     catch (Exception ex) {
                         _logger.Error(ex);
