@@ -20,8 +20,17 @@ namespace Project_B.Code {
 
         public BookPage() {
             var currentBrokerProviderTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => typeof(BrokerBase).IsAssignableFrom(type) && !type.IsAbstract)
+                .SelectMany(assembly => {
+                    try {
+                        var type = assembly.GetTypes();
+                        return type;
+                    }
+                    catch (Exception ex) {
+                        _logger.Error(ex);
+                    }
+                    return null;
+                })
+                .Where(type => type != null && typeof(BrokerBase).IsAssignableFrom(type) && !type.IsAbstract)
                 .Distinct();
 
             var globalConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default];
