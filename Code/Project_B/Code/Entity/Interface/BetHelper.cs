@@ -61,6 +61,7 @@ namespace Project_B.Code.Entity.Interface {
 
         public static bool IsEqualsTo<T>(this IBetAdvanced<T> t, IBetAdvanced<T> betAdvanced) {
             return t.Win1draw == betAdvanced.Win1draw
+                   && t.Draw == betAdvanced.Draw
                    && t.Win1win2 == betAdvanced.Win1win2
                    && t.Drawwin2 == betAdvanced.Drawwin2;
         }

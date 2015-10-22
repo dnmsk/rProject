@@ -13,8 +13,8 @@
         <table class="table">
             @foreach (var competition in groupedCompetitions.OrderBy(gc => gc.DateUtc)) {
                 <tr>
-                    <td>@competition.DateUtc.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>
+                    <td class="col-md-1 text-right">@competition.DateUtc.ToString("dd.MM.yyyy")<br/>@competition.DateUtc.ToString("HH:mm")</td>
+                    <td class="col-md-2">
                         <a>@competition.Competitor1.Name</a>
                         <br/>
                         <a>@competition.Competitor2.Name</a>
