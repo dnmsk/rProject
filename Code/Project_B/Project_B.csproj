@@ -317,6 +317,7 @@
     <Compile Include="Code\Entity\Gender.cs" />
     <Compile Include="Code\Entity\GenderAdvanced.cs" />
     <Compile Include="Code\Entity\Interface\BetHelper.cs" />
+    <Compile Include="Code\Entity\Interface\BetMappingHelper.cs" />
     <Compile Include="Code\Entity\Interface\IBet.cs" />
     <Compile Include="Code\Entity\Interface\IBetAdvanced.cs" />
     <Compile Include="Code\Entity\Language.cs" />
@@ -350,7 +351,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BetItem.cs" />
-    <Compile Include="Models\CompetitionItemRegilarModel.cs" />
+    <Compile Include="Models\CompetitionItemBetModel.cs" />
     <Compile Include="Models\CompetitionItemShortModel.cs" />
     <Compile Include="Models\CompetitionModel.cs" />
     <Compile Include="Models\CompetitionRegularModel.cs" />
@@ -434,6 +435,7 @@
     <Content Include="Views\Competition\Regular.cshtml" />
     <Content Include="Views\History\Index.cshtml" />
     <Content Include="Views\Competition\Live.cshtml" />
+    <Content Include="Views\Competition\_ListCompetitionWriter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -64,5 +64,6 @@ namespace Project_B.Code.Entity.Interface {
         DateTime Datecreatedutc { get; set; }
 
         bool Save();
+        TE GetJoinedEntity<TE>();
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
-using Project_B.Code.Data;
 using Project_B.Code.Entity.Interface;
 using Project_B.Code.Enums;
 
