@@ -100,8 +100,16 @@ namespace Project_B.Code.DataProvider {
         public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc) {
             return InvokeSafeSingleCall(() => {
                 var competitionItem = CompetitionItem.DataSource
-                    .WhereEquals(CompetitionItem.Fields.Competitoruniqueid1, competitor1Transport.UniqueID)
-                    .WhereEquals(CompetitionItem.Fields.Competitoruniqueid2, competitor2Transport.UniqueID)
+                    .Where(new DaoFilterOr(
+                        new DaoFilterAnd(
+                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor1Transport.UniqueID),
+                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor2Transport.UniqueID)
+                        ),
+                        new DaoFilterAnd(
+                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor1Transport.UniqueID),
+                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor2Transport.UniqueID)
+                        )
+                    ))
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionTransport.SportType)
                     .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionTransport.UniqueID)
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
@@ -134,7 +142,7 @@ namespace Project_B.Code.DataProvider {
         public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBet(LanguageType languageType, SportType sportType, DateTime date) {
             return InvokeSafe(() => {
                 var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
-                return GetCompetitiontItemBetModel(shortModels, GetBetMap);
+                return GetCompetitiontItemBetModel(shortModels, true, GetBetMap);
             }, null);
         }
 
@@ -151,7 +159,7 @@ namespace Project_B.Code.DataProvider {
             return BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
                 .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, BetLive.Fields.CompetitionitemID, RetrieveMode.NotRetrieve)
-                .WhereNull(CompetitionResult.Fields.ID)
+                //.WhereNull(CompetitionResult.Fields.ID)
                 .WhereIn(BetLive.Fields.CompetitionitemID, ints)
                 .AsList()
                 .GroupBy(e => e.CompetitionitemID)
@@ -162,35 +170,35 @@ namespace Project_B.Code.DataProvider {
         public List<CompetitionItemBetShortModel> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType, DateTime date) {
             return InvokeSafe(() => {
                 var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
-                return GetCompetitiontItemBetModel(shortModels, GetLiveBetMap);
+                return GetCompetitiontItemBetModel(shortModels, false, GetLiveBetMap);
             }, null);
         }
 
         public CompetitionItemBetShortModel GetCompetitionItemRegularBet(LanguageType languageType, int competitionItemID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
-                return GetCompetitiontItemBetModel(competition, GetBetMap).FirstOrDefault();
+                return GetCompetitiontItemBetModel(competition, true, GetBetMap).FirstOrDefault();
             }, null);
         }
         
         public CompetitionItemBetShortModel GetCompetitionItemLiveBet(LanguageType languageType, int competitionItemID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
-                return GetCompetitiontItemBetModel(competition, GetLiveBetMap).FirstOrDefault();
+                return GetCompetitiontItemBetModel(competition, false, GetLiveBetMap).FirstOrDefault();
             }, null);
         }
 
         public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBetForCompetition(LanguageType languageType, int competitionID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
-                return GetCompetitiontItemBetModel(competition, GetBetMap);
+                return GetCompetitiontItemBetModel(competition, true, GetBetMap);
             }, null);
         }
         
         public List<CompetitionItemBetShortModel> GetCompetitionItemLiveBetForCompetition(LanguageType languageType, int competitionID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
-                return GetCompetitiontItemBetModel(competition, GetLiveBetMap);
+                return GetCompetitiontItemBetModel(competition, false, GetLiveBetMap);
             }, null);
         }
 
@@ -201,7 +209,7 @@ namespace Project_B.Code.DataProvider {
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
                     )));
-                return GetCompetitiontItemBetModel(competition, GetBetMap);
+                return GetCompetitiontItemBetModel(competition, true, GetBetMap);
             }, null);
         }
         
@@ -212,18 +220,19 @@ namespace Project_B.Code.DataProvider {
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
                     )));
-                return GetCompetitiontItemBetModel(competition, GetLiveBetMap);
+                return GetCompetitiontItemBetModel(competition, false, GetLiveBetMap);
             }, null);
         }
         
-        private static List<CompetitionItemBetShortModel> GetCompetitiontItemBetModel<T>(List<CompetitionItemShortModel> competitionItemShortModels, Func<IEnumerable<int>, Dictionary<int, List<IBet<T>>>> getBetMap) {
-            var betGrouped = getBetMap(competitionItemShortModels.Select(c => c.ID));
-
+        private static List<CompetitionItemBetShortModel> GetCompetitiontItemBetModel<T>(List<CompetitionItemShortModel> competitionItemShortModels, bool addEmptyBets, Func<IEnumerable<int>, Dictionary<int, List<IBet<T>>>> getBetMap) {
+            var betGrouped = getBetMap(competitionItemShortModels.Select(c => c.CompetitionID));
             var result = new List<CompetitionItemBetShortModel>();
             foreach (var competitionItem in competitionItemShortModels) {
-                var betsForCompetition = betGrouped.TryGetValueOrDefaultStruct(competitionItem.ID);
+                var betsForCompetition = betGrouped.TryGetValueOrDefaultStruct(competitionItem.CompetitionID);
                 if (betsForCompetition == null) {
-                    result.Add(new CompetitionItemBetShortModel(competitionItem));
+                    if (addEmptyBets) {
+                        result.Add(new CompetitionItemBetShortModel(competitionItem));
+                    }
                     continue;
                 }
                 var itemModel = new CompetitionItemBetShortModel(competitionItem) {
@@ -286,19 +295,16 @@ namespace Project_B.Code.DataProvider {
                 .GroupBy(e => e.CompetitoruniqueID)
                 .ToDictionary(e => e.Key, e => e.First());
 
-            var result = new List<CompetitionItemShortModel>();
-            foreach (var competitionItem in competitionItemForDate) {
-                var itemModel = new CompetitionItemShortModel {
-                    ID = competitionItem.ID,
-                    DateUtc = competitionItem.Dateeventutc,
-                    SportType = competitionItem.SportType,
-                    Competitor1 = ExtractNameFromCompetitor(competitionItem.Competitoruniqueid1, competitorNameMap),
-                    Competitor2 = ExtractNameFromCompetitor(competitionItem.Competitoruniqueid2, competitorNameMap),
-                    Competition = ExtractNameFromCompetition(competitionItem.CompetitionuniqueID, competitionNameMap)
-                };
-                result.Add(itemModel);
-            }
-            return result;
+            return competitionItemForDate
+                .Select(ci => new CompetitionItemShortModel {
+                    CompetitionID = ci.ID,
+                    DateUtc = ci.Dateeventutc,
+                    SportType = ci.SportType,
+                    Competitor1 = ExtractNameFromCompetitor(ci.Competitoruniqueid1, competitorNameMap),
+                    Competitor2 = ExtractNameFromCompetitor(ci.Competitoruniqueid2, competitorNameMap),
+                    Competition = ExtractNameFromCompetition(ci.CompetitionuniqueID, competitionNameMap)
+                })
+                .ToList();
         }
 
         private static CompetitorModel ExtractNameFromCompetitor(int competitorID, Dictionary<int, Competitor> competitorNameMap) {

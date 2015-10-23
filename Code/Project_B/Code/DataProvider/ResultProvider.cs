@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO.MassTools;
@@ -7,6 +8,7 @@ using Project_B.Code.Data.Result;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.Entity;
 using Project_B.Code.Enums;
+using Project_B.Models;
 
 namespace Project_B.Code.DataProvider {
     public class ResultProvider : SafeInvokerBase {
@@ -47,5 +49,34 @@ namespace Project_B.Code.DataProvider {
                 return (object) null;
             }, null);
         }
+
+        public Dictionary<int, ResultModel> GetResultForCompetitions(int[] competitionIDs) {
+            return InvokeSafe(() => {
+                var results = CompetitionResult.DataSource
+                    .WhereIn(CompetitionResult.Fields.CompetitionitemID, competitionIDs)
+                    .AsList(
+                        CompetitionResult.Fields.CompetitionitemID,
+                        CompetitionResult.Fields.Resulttype,
+                        CompetitionResult.Fields.ScoreID
+                    );
+                var mapSubresult = CompetitionResultAdvanced.DataSource
+                    .WhereIn(CompetitionResultAdvanced.Fields.CompetitionresultID, results.Select(r => r.ID))
+                    .AsMapByField<int>(CompetitionResultAdvanced.Fields.CompetitionresultID,
+                        CompetitionResultAdvanced.Fields.ScoreID
+                    );
+                var result = new Dictionary<int, ResultModel>();
+                foreach (var r in results) {
+                    var competitionID = r.CompetitionitemID;
+                    var subresult = mapSubresult.TryGetValueOrDefault(r.ID) ?? new List<CompetitionResultAdvanced>();
+                    result[competitionID] = new ResultModel {
+                        CompetitionID = competitionID,
+                        ScoreID = r.ScoreID,
+                        ResultType = r.Resulttype,
+                        SubScore = subresult.Select(s => s.ScoreID).ToArray()
+                    };
+                }
+                return result;
+            }, null);
+        } 
     }
 }

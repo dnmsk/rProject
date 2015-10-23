@@ -93,8 +93,8 @@ namespace Project_B.Code.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public ResultType Resulttype {
-            get { return (ResultType) (short) this[Fields.Resulttype]; }
+        public BetOddType Resulttype {
+            get { return (BetOddType) (short) this[Fields.Resulttype]; }
             set { ForceSetData(Fields.Resulttype, (short) value); }
         }
 

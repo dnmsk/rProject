@@ -28,15 +28,21 @@ namespace Project_B.Code.DataProvider.DataHelper {
         public short GenerateScoreID(short score1, short score2) {
             return (short) (((short) (score1 << 8)) | score2);
         }
+        
+        public Tuple<short, short> GenerateScore(short scoreID) {
+            var score1 = (byte) (scoreID >> 8);
+            var score2 = (byte) (((short)(scoreID << 8)) >> 8);
+            return new Tuple<short, short>(score1, score2);
+        }
 
-        public ResultType GetResultType(short score1, short score2) {
+        public BetOddType GetResultType(short score1, short score2) {
             if (score1 > score2) {
-                return ResultType.Win1;
+                return BetOddType.Win1;
             }
             if (score1 < score2) {
-                return ResultType.Win2;
+                return BetOddType.Win2;
             }
-            return ResultType.Draw;
+            return BetOddType.Draw;
         }
 
         public ResultModeType GetResultModeType(SportType sportType, int subResultIndex, string modeTypeString) {

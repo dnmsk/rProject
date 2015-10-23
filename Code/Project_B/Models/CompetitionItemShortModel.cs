@@ -6,7 +6,7 @@ namespace Project_B.Models {
         public CompetitionItemShortModel() {}
 
         protected CompetitionItemShortModel(CompetitionItemShortModel competitionItemShortModel) {
-            ID = competitionItemShortModel.ID;
+            CompetitionID = competitionItemShortModel.CompetitionID;
             DateUtc = competitionItemShortModel.DateUtc;
             Competitor1 = competitionItemShortModel.Competitor1;
             Competitor2 = competitionItemShortModel.Competitor2;
@@ -14,7 +14,7 @@ namespace Project_B.Models {
             Competition = competitionItemShortModel.Competition;
         }
 
-        public int ID { get; set; }
+        public int CompetitionID { get; set; }
         public DateTime DateUtc { get; set; }
         public CompetitorModel Competitor1 { get; set; }
         public CompetitorModel Competitor2 { get; set; }

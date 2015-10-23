@@ -1,7 +1,9 @@
-﻿@using Project_B.Code.Entity.Interface
+﻿@using CommonUtils.ExtendedTypes
+@using Project_B.Code.DataProvider.DataHelper
+@using Project_B.Code.Entity.Interface
 @using Project_B.Code.Enums
 @using Project_B.Models
-@model List<CompetitionItemBetShortModel>
+@model CompetitionRegularModel
 @functions{
     static readonly Dictionary<LanguageType, string[]> _shortHeaders = new Dictionary<LanguageType, string[]> {
         {LanguageType.English, new[] {
@@ -67,11 +69,61 @@
             }
             odds[i] = 1 / odd;
         }
-        return haveZero ? 0 : (int) (1 / odds.Sum() * 100);
+        return haveZero ? default(int) : (int) (1 / odds.Sum() * 100);
+    }
+
+    static List<BetOddType> GetSuccessOddTypes(ResultModel resultModel, Dictionary<BetOddType, BetItem> currentBets) {
+        var successActs = new List<BetOddType> {resultModel.ResultType};
+        if (currentBets != null) {
+            var score = ScoreHelper.Instance.GenerateScore(resultModel.ScoreID);
+            BetItem betItem;
+            if (currentBets.TryGetValue(BetOddType.Handicap1, out betItem)) {
+                var advancedParam = betItem.AdvancedParam;
+                successActs.Add(advancedParam <= score.Item1 - score.Item2 ? BetOddType.Handicap1 : BetOddType.Handicap2);
+                successActs.Add(advancedParam >= score.Item1 - score.Item2 ? BetOddType.Handicap2 : BetOddType.Handicap1);
+            }
+            if (currentBets.TryGetValue(BetOddType.TotalUnder, out betItem)) {
+                successActs.Add(betItem.AdvancedParam >= score.Item1 + score.Item2 ? BetOddType.TotalUnder : BetOddType.TotalOver);
+                successActs.Add(betItem.AdvancedParam <= score.Item1 + score.Item2 ? BetOddType.TotalOver : BetOddType.TotalUnder);
+            }
+        }
+        return successActs;
+    }
+
+    private static readonly BetOddType[] _oddsWithAdvanced = {
+        BetOddType.Handicap1,
+        BetOddType.Handicap2,
+        BetOddType.TotalUnder,
+        BetOddType.TotalOver,
+    };
+
+    private static readonly BetOddType[] _oddsToInvertAdvanced = {
+        BetOddType.Handicap1
+    };
+
+    private static readonly BetOddType[] _oddsWithSymbol = {
+        BetOddType.Handicap1,
+        BetOddType.Handicap2,
+    };
+
+}
+
+@helper RenderAdvancedParam(BetOddType oddType, float advanced){
+    if (_oddsWithAdvanced.Contains(oddType)) {
+        advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
+        if (_oddsWithSymbol.Contains(oddType)) {
+            @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
+        } else {
+           @Html.Raw(string.Format("({0})", advanced)) 
+        }
     }
 }
 
-@foreach (var bySportTypes in Model.GroupBy(c => c.SportType)) {
+@{
+    Model.ResultMap = Model.ResultMap ?? new Dictionary<int, ResultModel>();
+}
+
+@foreach (var bySportTypes in Model.CompetitionModel.GroupBy(c => c.SportType)) {
     var headers = _tableHeaders[LanguageType.English][bySportTypes.Key];
     <H2><a href="@Url.Action("Regular", new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
     foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID)) {
@@ -79,42 +131,58 @@
         <H3><a href="@Url.Action("Game", new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         <table class="table">
             <thead>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                @foreach (var header in headers) {
-                    <td><strong>@header</strong></td>
-                }
-            </tr>
+                <tr>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-2"></td>
+                    <td></td>
+                    @foreach (var header in headers) {
+                        <td><strong>@header</strong></td>
+                    }
+                    <td class="col-md-1"></td>
+                </tr>
             </thead>
             @foreach (var competition in groupedCompetitions) {
-                <tr>
-                    <td class="col-md-1 text-right"><a href="@Url.Action("Regular", new {id = bySportTypes.Key, date = competition.DateUtc.ToString("dd.MM.yyyy") })">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</a></td>
-                    <td class="col-md-2">
+                ResultModel resultModel;
+                var successActs = new List<BetOddType>();
+                if (Model.ResultMap.TryGetValue(competition.CompetitionID, out resultModel)) {
+                    successActs.AddRange(GetSuccessOddTypes(resultModel, competition.CurrentBets));
+                }
+                <tr @if(resultModel != null) {@Html.Raw("class=\"active\"")}>
+                    <td class="text-right"><a href="@Url.Action("Regular", new {id = bySportTypes.Key, date = competition.DateUtc.ToString("dd.MM.yyyy") })">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</a></td>
+                    <td>
                         <a href="@Url.Action("Competitor", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
-                        <br/>
+                        <br />
                         <a href="@Url.Action("Competitor", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
                     </td>
                     @if (competition.CurrentBets != null && competition.HistoryMaxBets != null && competition.HistoryMinBets != null) {
-                        <td>
-                            <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMaxBets)%</small>
-                            <div>
-                                <b>@GetBetPercentile(bySportTypes.Key, competition.CurrentBets)%</b>
-                            </div>
-                            <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMinBets)%</small>
-                        </td>
+                        var currentPercentile = GetBetPercentile(bySportTypes.Key, competition.CurrentBets);
+                        if (currentPercentile != default(int)) {
+                            <td>
+                                <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMaxBets)%</small>
+                                <div>
+                                    <b>@currentPercentile%</b>
+                                </div>
+                                <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMinBets)%</small>
+                            </td>
+                        } else {
+                            <td>&mdash;</td>
+                        }
                         foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
                             var currentBet = competition.CurrentBets[oddType];
-                            var maxBet = competition.HistoryMaxBets[oddType];
-                            var minBet = competition.HistoryMinBets[oddType];
-                            <td>
-                                <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
-                                <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
-                                    <b>@currentBet.Odd</b>
-                                </div>
-                                <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
-                            </td>
+                            if (currentBet.Odd != default(float)) {
+                                var maxBet = competition.HistoryMaxBets[oddType];
+                                var minBet = competition.HistoryMinBets[oddType];
+                                <td @if(successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>
+                                    <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
+                                    <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
+                                        <b>@currentBet.Odd</b>
+                                        @RenderAdvancedParam(oddType, currentBet.AdvancedParam)
+                                    </div>
+                                    <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                                </td>
+                            } else {
+                                <td>&mdash;</td>
+                            }
                         }
                     } else {
                         <td>&mdash;</td>
@@ -122,6 +190,20 @@
                             <td>&mdash;</td>
                         }
                     }
+                    <td class="text-center">
+                        @if (resultModel != null) {
+                            var score = ScoreHelper.Instance.GenerateScore(resultModel.ScoreID);
+                            <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
+                            if (resultModel.SubScore != null && resultModel.SubScore.Length > 0) {
+                                <br />
+                                <small>
+                                    @resultModel.SubScore.Select(s => { var sc = ScoreHelper.Instance.GenerateScore(s); return string.Format("{0}:{1}", sc.Item1, sc.Item2); }).StrJoin(", ")
+                                </small>
+                            }
+                        } else {
+                            @Html.Raw("&mdash;");
+                        }
+                    </td>
                 </tr>
             }
         </table>
