@@ -1,0 +1,3 @@
+﻿User-agent:* 
+Host: www.richbet.ru
+Sitemap: http://www.richbet.ru/Sitemap.xml

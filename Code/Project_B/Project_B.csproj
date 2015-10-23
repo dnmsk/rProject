@@ -336,10 +336,14 @@
     <Compile Include="Code\Enums\SystemStateBetType.cs" />
     <Compile Include="Code\Enums\SystemStateResultType.cs" />
     <Compile Include="Code\SquishItMinifier.cs" />
+    <Compile Include="Code\TransportType\SiteMapChangeFreq.cs" />
+    <Compile Include="Code\TransportType\SiteMapItem.cs" />
     <Compile Include="Code\UserStoreDao.cs" />
+    <Compile Include="Code\VirtualFile\SiteMapVirtual.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssetsController.cs" />
     <Compile Include="Controllers\CompetitionController.cs" />
+    <Compile Include="Controllers\CompetitionLiveController.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -379,6 +383,7 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include=".bin\node.cmd" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -433,14 +438,14 @@
     <Content Include="Views\Shared\_MainMenu.cshtml" />
     <Content Include="Views\Competition\Regular.cshtml" />
     <Content Include="Views\History\Index.cshtml" />
-    <Content Include="Views\Competition\Live.cshtml" />
-    <Content Include="Views\Competition\_ListCompetitionWriter.cshtml" />
+    <Content Include="Views\Shared\Element\_ListCompetitionWriter.cshtml" />
     <Content Include="Views\Competition\Item.cshtml" />
-    <Content Include="Views\Competition\ItemLive.cshtml" />
     <Content Include="Views\Competition\Game.cshtml" />
-    <Content Include="Views\Competition\GameLive.cshtml" />
     <Content Include="Views\Competition\Competitor.cshtml" />
-    <Content Include="Views\Competition\CompetitorLive.cshtml" />
+    <Content Include="Views\CompetitionLive\Regular.cshtml" />
+    <Content Include="Views\CompetitionLive\Item.cshtml" />
+    <Content Include="Views\CompetitionLive\Game.cshtml" />
+    <Content Include="Views\CompetitionLive\Competitor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

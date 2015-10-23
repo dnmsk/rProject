@@ -1,5 +1,7 @@
-﻿using System.Web.Mvc;
+﻿using System.Web.Hosting;
+using System.Web.Mvc;
 using System.Web.Routing;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic.WebFiles;
 using Project_B.Code.Algorythm;
 
@@ -18,6 +20,7 @@ namespace Project_B {
                     new CollectLiveOddsWithResultAlgo()
                 };
             }
+            SlothMovePlodding.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
         }
     }
 }

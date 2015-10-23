@@ -82,8 +82,10 @@
     <Compile Include="Entities\UtmGuestReferrer.cs" />
     <Compile Include="Entities\UtmSubdomainRule.cs" />
     <Compile Include="WebFiles\BaseModel.cs" />
+    <Compile Include="WebFiles\ExpectedValuesConstraint.cs" />
     <Compile Include="WebFiles\ExtendedModelBinder.cs" />
     <Compile Include="WebFiles\GlobalAsaxBase.cs" />
+    <Compile Include="WebFiles\IVirtualFile.cs" />
     <Compile Include="WebFiles\LogActionId.cs" />
     <Compile Include="MainLogicProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +97,8 @@
     <Compile Include="Transport\GuestTechInfoTransport.cs" />
     <Compile Include="Transport\UtmSubdomainRuleTransport.cs" />
     <Compile Include="WebFiles\SubdomainRoute.cs" />
+    <Compile Include="WebFiles\WebVirtualFile.cs" />
+    <Compile Include="WebFiles\WebVirtualFileManager.cs" />
     <Compile Include="Wrapper\UtmParamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>

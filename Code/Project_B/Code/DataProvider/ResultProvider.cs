@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
+using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.MassTools;
 using Project_B.Code.Data.Result;
 using Project_B.Code.DataProvider.DataHelper;
@@ -56,7 +57,6 @@ namespace Project_B.Code.DataProvider {
                     .WhereIn(CompetitionResult.Fields.CompetitionitemID, competitionIDs)
                     .AsList(
                         CompetitionResult.Fields.CompetitionitemID,
-                        CompetitionResult.Fields.Resulttype,
                         CompetitionResult.Fields.ScoreID
                     );
                 var mapSubresult = CompetitionResultAdvanced.DataSource
@@ -71,7 +71,37 @@ namespace Project_B.Code.DataProvider {
                     result[competitionID] = new ResultModel {
                         CompetitionID = competitionID,
                         ScoreID = r.ScoreID,
-                        ResultType = r.Resulttype,
+                        SubScore = subresult.Select(s => s.ScoreID).ToArray()
+                    };
+                }
+                return result;
+            }, null);
+        } 
+
+        public Dictionary<int, ResultModel> GetResultLiveForCompetitions(int[] competitionIDs) {
+            return InvokeSafe(() => {
+                var results = CompetitionResultLive.DataSource
+                    .WhereIn(CompetitionResultLive.Fields.CompetitionitemID, competitionIDs)
+                    .Sort(CompetitionResultLive.Fields.ID, SortDirection.Desc)
+                    .AsList(
+                        CompetitionResultLive.Fields.CompetitionitemID,
+                        CompetitionResultLive.Fields.ScoreID
+                    );
+                var mapSubresult = CompetitionResultLiveAdvanced.DataSource
+                    .WhereIn(CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, results.Select(r => r.ID))
+                    .AsMapByField<long>(CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID,
+                        CompetitionResultLiveAdvanced.Fields.ScoreID
+                    );
+                var result = new Dictionary<int, ResultModel>();
+                foreach (var r in results) {
+                    var competitionID = r.CompetitionitemID;
+                    var subresult = mapSubresult.TryGetValueOrDefault(r.ID) ?? new List<CompetitionResultLiveAdvanced>();
+                    if (result.ContainsKey(competitionID)) {
+                        continue;
+                    }
+                    result[competitionID] = new ResultModel {
+                        CompetitionID = competitionID,
+                        ScoreID = r.ScoreID,
                         SubScore = subresult.Select(s => s.ScoreID).ToArray()
                     };
                 }
