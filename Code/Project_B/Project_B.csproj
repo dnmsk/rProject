@@ -348,7 +348,8 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BetItem.cs" />
-    <Compile Include="Models\CompetitionItemBetModel.cs" />
+    <Compile Include="Models\CompetitionItemBetShortModel.cs" />
+    <Compile Include="Models\CompetitionitemButFullModel.cs" />
     <Compile Include="Models\CompetitionItemShortModel.cs" />
     <Compile Include="Models\CompetitionModel.cs" />
     <Compile Include="Models\CompetitionRegularModel.cs" />
@@ -433,6 +434,12 @@
     <Content Include="Views\History\Index.cshtml" />
     <Content Include="Views\Competition\Live.cshtml" />
     <Content Include="Views\Competition\_ListCompetitionWriter.cshtml" />
+    <Content Include="Views\Competition\Item.cshtml" />
+    <Content Include="Views\Competition\ItemLive.cshtml" />
+    <Content Include="Views\Competition\Game.cshtml" />
+    <Content Include="Views\Competition\GameLive.cshtml" />
+    <Content Include="Views\Competition\Competitor.cshtml" />
+    <Content Include="Views\Competition\CompetitorLive.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

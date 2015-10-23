@@ -3,6 +3,17 @@ using Project_B.Code.Enums;
 
 namespace Project_B.Models {
     public class CompetitionItemShortModel {
+        public CompetitionItemShortModel() {}
+
+        protected CompetitionItemShortModel(CompetitionItemShortModel competitionItemShortModel) {
+            ID = competitionItemShortModel.ID;
+            DateUtc = competitionItemShortModel.DateUtc;
+            Competitor1 = competitionItemShortModel.Competitor1;
+            Competitor2 = competitionItemShortModel.Competitor2;
+            SportType = competitionItemShortModel.SportType;
+            Competition = competitionItemShortModel.Competition;
+        }
+
         public int ID { get; set; }
         public DateTime DateUtc { get; set; }
         public CompetitorModel Competitor1 { get; set; }

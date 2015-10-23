@@ -5,7 +5,7 @@ using MainLogic.WebFiles;
 namespace Project_B.Models {
     public class CompetitionRegularModel : BaseModel {
         public DateTime DateUtc { get; set; }
-        public List<CompetitionItemBetModel> CompetitionModel { get; set; }
+        public List<CompetitionItemBetShortModel> CompetitionModel { get; set; }
         public CompetitionRegularModel(BaseModel baseModel) : base(baseModel) {
         }
     }

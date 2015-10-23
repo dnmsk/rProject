@@ -107,8 +107,13 @@ namespace Project_B.Code.DataProvider {
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID);
                 if (competitionItem != null) {
-                    if (eventDateUtc != DateTime.MinValue && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
-                        competitionItem = null;
+                    if (eventDateUtc != DateTime.MinValue) {
+                        if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
+                            competitionItem = null;
+                        } else {
+                            competitionItem.Dateeventutc = eventDateUtc;
+                            competitionItem.Save();
+                        }
                     }
                 }
                 if (competitionItem == null) {
@@ -126,46 +131,131 @@ namespace Project_B.Code.DataProvider {
             }, default(int));
         }
 
-        public List<CompetitionItemBetModel> GetCompetitionItemRegularBet(LanguageType languageType, SportType sportType, DateTime date) {
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBet(LanguageType languageType, SportType sportType, DateTime date) {
             return InvokeSafe(() => {
-                return GetCompetitiontItemModel(languageType, sportType, date, ints => Bet.DataSource
-                                                                                          .Join(JoinType.Left, BetAdvanced.Fields.BetID, Bet.Fields.ID, RetrieveMode.Retrieve)
-                                                                                          .WhereIn(Bet.Fields.CompetitionitemID, ints)
-                                                                                          .AsList()
-                                                                                          .GroupBy(e => e.CompetitionitemID)
-                                                                                          .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>)t).ToList()));
-            }, null);
-        }
-        public List<CompetitionItemBetModel> GetCompetitionItemLiveBet(LanguageType languageType, SportType sportType, DateTime date) {
-            return InvokeSafe(() => {
-                return GetCompetitiontItemModel(languageType, sportType, date, ints => BetLive.DataSource
-                                                                                          .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
-                                                                                          .WhereIn(BetLive.Fields.CompetitionitemID, ints)
-                                                                                          .AsList()
-                                                                                          .GroupBy(e => e.CompetitionitemID)
-                                                                                          .ToDictionary(e => e.Key, e => e.Select(t => (IBet<long>)t).ToList()));
+                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
+                return GetCompetitiontItemBetModel(shortModels, GetBetMap);
             }, null);
         }
 
-        private static List<CompetitionItemBetModel> GetCompetitiontItemModel<T>(LanguageType languageType, SportType sportType, DateTime date, Func<IEnumerable<int>, Dictionary<int, List<IBet<T>>>> getBetMap) {
+        private Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> ints) {
+            return Bet.DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.BetID, Bet.Fields.ID, RetrieveMode.Retrieve).WhereIn(Bet.Fields.CompetitionitemID, ints)
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>) t)
+                .ToList());
+        }
+
+        private Dictionary<int, List<IBet<long>>> GetLiveBetMap(IEnumerable<int> ints) {
+            return BetLive.DataSource
+                .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
+                .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, BetLive.Fields.CompetitionitemID, RetrieveMode.NotRetrieve)
+                .WhereNull(CompetitionResult.Fields.ID)
+                .WhereIn(BetLive.Fields.CompetitionitemID, ints)
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<long>)t)
+                .ToList());
+        }
+
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType, DateTime date) {
+            return InvokeSafe(() => {
+                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
+                return GetCompetitiontItemBetModel(shortModels, GetLiveBetMap);
+            }, null);
+        }
+
+        public CompetitionItemBetShortModel GetCompetitionItemRegularBet(LanguageType languageType, int competitionItemID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
+                return GetCompetitiontItemBetModel(competition, GetBetMap).FirstOrDefault();
+            }, null);
+        }
+        
+        public CompetitionItemBetShortModel GetCompetitionItemLiveBet(LanguageType languageType, int competitionItemID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
+                return GetCompetitiontItemBetModel(competition, GetLiveBetMap).FirstOrDefault();
+            }, null);
+        }
+
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBetForCompetition(LanguageType languageType, int competitionID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
+                return GetCompetitiontItemBetModel(competition, GetBetMap);
+            }, null);
+        }
+        
+        public List<CompetitionItemBetShortModel> GetCompetitionItemLiveBetForCompetition(LanguageType languageType, int competitionID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
+                return GetCompetitiontItemBetModel(competition, GetLiveBetMap);
+            }, null);
+        }
+
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBetForCompetitor(LanguageType languageType, int competitorID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource
+                    .Where(new DaoFilterOr(
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
+                    )));
+                return GetCompetitiontItemBetModel(competition, GetBetMap);
+            }, null);
+        }
+        
+        public List<CompetitionItemBetShortModel> GetCompetitionItemLiveBetForCompetitor(LanguageType languageType, int competitorID) {
+            return InvokeSafe(() => {
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource
+                    .Where(new DaoFilterOr(
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
+                    )));
+                return GetCompetitiontItemBetModel(competition, GetLiveBetMap);
+            }, null);
+        }
+        
+        private static List<CompetitionItemBetShortModel> GetCompetitiontItemBetModel<T>(List<CompetitionItemShortModel> competitionItemShortModels, Func<IEnumerable<int>, Dictionary<int, List<IBet<T>>>> getBetMap) {
+            var betGrouped = getBetMap(competitionItemShortModels.Select(c => c.ID));
+
+            var result = new List<CompetitionItemBetShortModel>();
+            foreach (var competitionItem in competitionItemShortModels) {
+                var betsForCompetition = betGrouped.TryGetValueOrDefaultStruct(competitionItem.ID);
+                if (betsForCompetition == null) {
+                    result.Add(new CompetitionItemBetShortModel(competitionItem));
+                    continue;
+                }
+                var itemModel = new CompetitionItemBetShortModel(competitionItem) {
+                    CurrentBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, true, (cur, next) => cur < next),
+                    HistoryMaxBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, false, (cur, next) => cur < next),
+                    HistoryMinBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, false, (cur, next) => cur > next && next != default(float)),
+                };
+                result.Add(itemModel);
+            }
+            return result;
+        }
+
+        private static List<CompetitionItemShortModel> GetCompetitionItemShortModelByDate(LanguageType languageType, SportType sportType, DateTime date) {
             var competitionItemForDateQuery = CompetitionItem.DataSource
                 .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, date.Date)
                 .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, date.Date.AddDays(1));
-            var competitionNameMapQuery = Competition.DataSource
-                .WhereEquals(Competition.Fields.Languagetype, (short)languageType);
-            var competitorNameMapQuery = Competitor.DataSource
-                .WhereEquals(Competitor.Fields.Languagetype, (short)languageType);
             if (sportType != SportType.Unknown) {
                 competitionItemForDateQuery = competitionItemForDateQuery
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
-                competitionNameMapQuery = competitionNameMapQuery
-                    .WhereEquals(Competition.Fields.Sporttype, (short)sportType);
-                competitorNameMapQuery = competitorNameMapQuery
-                    .WhereEquals(Competitor.Fields.Sporttype, (short)sportType);
             }
-            var competitionItemForDate = competitionItemForDateQuery
+            return GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
+        }
+
+        private static List<CompetitionItemShortModel> GetCompetitionItemShortModel(LanguageType languageType, DbDataSource<CompetitionItem, int> competitionItemQuery) {
+            var competitionNameMapQuery = CompetitionUniqueAdvanced.DataSource
+                .WhereEquals(CompetitionUniqueAdvanced.Fields.Languagetype, (short)languageType);
+            var competitorNameMapQuery = Competitor.DataSource
+                .WhereEquals(Competitor.Fields.Languagetype, (short)languageType);
+            var competitionItemForDate = competitionItemQuery
+               .WhereNotEquals(CompetitionItem.Fields.Dateeventutc, DateTime.MinValue)
                .Sort(CompetitionItem.Fields.Sporttype)
-               .Sort(CompetitionItem.Fields.Dateeventutc)
+               .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
                .AsList(
                     CompetitionItem.Fields.ID,
                     CompetitionItem.Fields.Dateeventutc,
@@ -175,11 +265,11 @@ namespace Project_B.Code.DataProvider {
                     CompetitionItem.Fields.CompetitionuniqueID
                 );
             var competitionNameMap = competitionNameMapQuery
-                .WhereIn(Competition.Fields.CompetitionuniqueID, competitionItemForDate.Select(c => c.CompetitionuniqueID))
-                .Sort(Competition.Fields.ID, SortDirection.Asc)
+                .WhereIn(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionItemForDate.Select(c => c.CompetitionuniqueID))
+                .Sort(CompetitionUniqueAdvanced.Fields.ID, SortDirection.Asc)
                 .AsList(
-                    Competition.Fields.CompetitionuniqueID,
-                    Competition.Fields.Name
+                    CompetitionUniqueAdvanced.Fields.CompetitionuniqueID,
+                    CompetitionUniqueAdvanced.Fields.Name
                 )
                 .GroupBy(e => e.CompetitionuniqueID)
                 .ToDictionary(e => e.Key, e => e.First());
@@ -195,23 +285,15 @@ namespace Project_B.Code.DataProvider {
                 )
                 .GroupBy(e => e.CompetitoruniqueID)
                 .ToDictionary(e => e.Key, e => e.First());
-            var betGrouped = getBetMap(competitionItemForDate.Select(c => c.ID));
 
-            var result = new List<CompetitionItemBetModel>();
+            var result = new List<CompetitionItemShortModel>();
             foreach (var competitionItem in competitionItemForDate) {
-                var betsForCompetition = betGrouped.TryGetValueOrDefaultStruct(competitionItem.ID);
-                if (betsForCompetition == null) {
-                    continue;
-                }
-                var itemModel = new CompetitionItemBetModel {
+                var itemModel = new CompetitionItemShortModel {
                     ID = competitionItem.ID,
                     DateUtc = competitionItem.Dateeventutc,
                     SportType = competitionItem.SportType,
                     Competitor1 = ExtractNameFromCompetitor(competitionItem.Competitoruniqueid1, competitorNameMap),
                     Competitor2 = ExtractNameFromCompetitor(competitionItem.Competitoruniqueid2, competitorNameMap),
-                    CurrentBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, true, (cur, next) => cur < next),
-                    HistoryMaxBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, false, (cur, next) => cur < next),
-                    HistoryMinBets = BuildCurrentOddsMap(competitionItem.SportType, betsForCompetition, false, (cur, next) => cur > next && next != default(float)),
                     Competition = ExtractNameFromCompetition(competitionItem.CompetitionuniqueID, competitionNameMap)
                 };
                 result.Add(itemModel);
@@ -229,9 +311,9 @@ namespace Project_B.Code.DataProvider {
             };
         }
 
-        private static CompetitionModel ExtractNameFromCompetition(int competitionID, Dictionary<int, Competition> competitionNameMap) {
-            var competition = competitionNameMap.TryGetValueOrDefault(competitionID) ?? Competition.DataSource
-                .WhereEquals(Competition.Fields.CompetitionuniqueID, competitionID)
+        private static CompetitionModel ExtractNameFromCompetition(int competitionID, Dictionary<int, CompetitionUniqueAdvanced> competitionNameMap) {
+            var competition = competitionNameMap.TryGetValueOrDefault(competitionID) ?? CompetitionUniqueAdvanced.DataSource
+                .WhereEquals(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionID)
                 .First();
             return new CompetitionModel {
                 ID = competitionID,
@@ -245,10 +327,12 @@ namespace Project_B.Code.DataProvider {
             var result = new Dictionary<BetOddType, BetItem>();
             var currentFoundBrokerType = new List<BrokerType>();
             foreach (var bet in betsForCompetition) {
-                if (onlyCurrentOdds && currentFoundBrokerType.Contains(bet.BrokerID)) {
-                    continue;
+                if (onlyCurrentOdds) {
+                    if (currentFoundBrokerType.Contains(bet.BrokerID)) {
+                        continue;
+                    }
+                    currentFoundBrokerType.Add(bet.BrokerID);
                 }
-                currentFoundBrokerType.Add(bet.BrokerID);
                 foreach (var betOddType in odds) {
                     var betItemCreated = BetMappingHelper<T>.OddsGetterMap[betOddType](bet);
                     BetItem betItemInMap;

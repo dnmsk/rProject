@@ -1,28 +1,126 @@
 ﻿@using Project_B.Code.Entity.Interface
-@model List<Project_B.Models.CompetitionItemBetModel>
+@using Project_B.Code.Enums
+@using Project_B.Models
+@model List<CompetitionItemBetShortModel>
+@functions{
+    static readonly Dictionary<LanguageType, string[]> _shortHeaders = new Dictionary<LanguageType, string[]> {
+        {LanguageType.English, new[] {
+            "1",
+            "2",
+            "Hcap1",
+            "Hcap2",
+            "Under",
+            "Over",
+        } }
+    };
+    static readonly Dictionary<LanguageType, string[]> _fullHeaders = new Dictionary<LanguageType, string[]> {
+        {LanguageType.English, new[] {
+            "1",
+            "X",
+            "2",
+            "1X",
+            "12",
+            "X2",
+            "Hcap1",
+            "Hcap2",
+            "Under",
+            "Over",
+        } }
+    };
+
+    static readonly Dictionary<LanguageType, Dictionary<SportType, string[]>> _tableHeaders = new Dictionary<LanguageType, Dictionary<SportType, string[]>> {
+        {LanguageType.English, new Dictionary<SportType, string[]> {
+            {SportType.Basketball, _shortHeaders[LanguageType.English] },
+            {SportType.Football, _fullHeaders[LanguageType.English] },
+            {SportType.IceHockey, _fullHeaders[LanguageType.English] },
+            {SportType.Tennis, _shortHeaders[LanguageType.English] },
+            {SportType.Volleyball, _shortHeaders[LanguageType.English] },
+        } }
+    };
+
+    private static readonly BetOddType[] _shortPercentile = {
+        BetOddType.Win1,
+        BetOddType.Win2
+    };
+    private static readonly BetOddType[] _fullPercentile = {
+        BetOddType.Win1,
+        BetOddType.Draw,
+        BetOddType.Win2
+    };
+    private static readonly Dictionary<SportType, BetOddType[]> _percentileMap = new Dictionary<SportType, BetOddType[]> {
+        {SportType.Basketball, _shortPercentile },
+        {SportType.Football, _fullPercentile },
+        {SportType.IceHockey, _fullPercentile },
+        {SportType.Tennis, _shortPercentile },
+        {SportType.Volleyball, _shortPercentile },
+    };
+
+    static int GetBetPercentile(SportType sportType, Dictionary<BetOddType, BetItem> bets) {
+        var percentileMap = _percentileMap[sportType];
+        var odds = new float[percentileMap.Length];
+        var haveZero = false;
+        for (int i = 0; i < percentileMap.Length; i++) {
+            var odd = bets[percentileMap[i]].Odd;
+            if (odd == default(float)) {
+                haveZero = true;
+                continue;
+            }
+            odds[i] = 1 / odd;
+        }
+        return haveZero ? 0 : (int) (1 / odds.Sum() * 100);
+    }
+}
 
 @foreach (var bySportTypes in Model.GroupBy(c => c.SportType)) {
-    <H2>@bySportTypes.Key.ToString()</H2>
+    var headers = _tableHeaders[LanguageType.English][bySportTypes.Key];
+    <H2><a href="@Url.Action("Regular", new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
     foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID)) {
-        <H3>@groupedCompetitions.First().Competition.Name</H3>
+        var competitionModel = groupedCompetitions.First().Competition;
+        <H3><a href="@Url.Action("Game", new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         <table class="table">
+            <thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                @foreach (var header in headers) {
+                    <td><strong>@header</strong></td>
+                }
+            </tr>
+            </thead>
             @foreach (var competition in groupedCompetitions) {
                 <tr>
-                    <td class="col-md-1 text-right">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</td>
+                    <td class="col-md-1 text-right"><a href="@Url.Action("Regular", new {id = bySportTypes.Key, date = competition.DateUtc.ToString("dd.MM.yyyy") })">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</a></td>
                     <td class="col-md-2">
-                        <a>@competition.Competitor1.Name</a>
-                        <br />
-                        <a>@competition.Competitor2.Name</a>
+                        <a href="@Url.Action("Competitor", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
+                        <br/>
+                        <a href="@Url.Action("Competitor", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
                     </td>
-                    @foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
-                        var currentBet = competition.CurrentBets[oddType];
-                        var maxBet = competition.HistoryMaxBets[oddType];
-                        var minBet = competition.HistoryMinBets[oddType];
+                    @if (competition.CurrentBets != null && competition.HistoryMaxBets != null && competition.HistoryMinBets != null) {
                         <td>
-                            <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
-                            <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")"><b>@currentBet.Odd</b></div>
-                            <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                            <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMaxBets)%</small>
+                            <div>
+                                <b>@GetBetPercentile(bySportTypes.Key, competition.CurrentBets)%</b>
+                            </div>
+                            <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMinBets)%</small>
                         </td>
+                        foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
+                            var currentBet = competition.CurrentBets[oddType];
+                            var maxBet = competition.HistoryMaxBets[oddType];
+                            var minBet = competition.HistoryMinBets[oddType];
+                            <td>
+                                <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
+                                <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
+                                    <b>@currentBet.Odd</b>
+                                </div>
+                                <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                            </td>
+                        }
+                    } else {
+                        <td>&mdash;</td>
+                        foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
+                            <td>&mdash;</td>
+                        }
                     }
                 </tr>
             }
