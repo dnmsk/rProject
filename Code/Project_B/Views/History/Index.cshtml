@@ -1,7 +1,7 @@
-﻿@model dynamic
+﻿@using Project_B.Models
+@model CompetitionRegularModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Competitions for " + Model.DateUtc.ToString("dd.MM.yyyy");
 }
-
-<h2>title</h2>
+@Html.Partial("Element/_ListCompetitionWriter", Model)

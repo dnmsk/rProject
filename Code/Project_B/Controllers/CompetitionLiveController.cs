@@ -10,19 +10,13 @@ using Project_B.Models;
 namespace Project_B.Controllers {
     public class CompetitionLiveController : ApplicationControllerBase {
         // GET: CompetitionLive
-        public ActionResult Index() {
-            return RedirectToAction("Regular");
-        }
-
-        // GET: Competition
-        public ActionResult Regular(SportType id = SportType.Unknown) {
-            var dateConverted = DateTime.UtcNow.Date;
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsLiveBet(LanguageType.English, id,
-                dateConverted);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+        public ActionResult Index(SportType id = SportType.Unknown) {
+            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsLiveBet(LanguageType.English, id);
+            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+            itemData = itemData.Where(i => resultData.ContainsKey(i.CompetitionID)).ToList();
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,
-                DateUtc = dateConverted,
+                DateUtc = DateTime.Today,
                 ResultMap = resultData
             });
         }
@@ -40,15 +34,6 @@ namespace Project_B.Controllers {
             var itemData =
                 MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(LanguageType.English,
                     id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new CompetitionRegularModel(GetBaseModel()) {
-                CompetitionModel = itemData,
-                ResultMap = resultData
-            });
-        }
-
-        public ActionResult Competitor(int id) {
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetitor(LanguageType.English, id);
             var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,

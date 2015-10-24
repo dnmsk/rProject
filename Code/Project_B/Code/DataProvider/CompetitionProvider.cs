@@ -139,9 +139,9 @@ namespace Project_B.Code.DataProvider {
             }, default(int));
         }
 
-        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBet(LanguageType languageType, SportType sportType, DateTime date) {
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBet(LanguageType languageType, SportType sportType, DateTime fromDate, DateTime toDate) {
             return InvokeSafe(() => {
-                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
+                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, fromDate, toDate);
                 return GetCompetitiontItemBetModel(shortModels, true, GetBetMap);
             }, null);
         }
@@ -167,10 +167,12 @@ namespace Project_B.Code.DataProvider {
                 .ToList());
         }
 
-        public List<CompetitionItemBetShortModel> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType, DateTime date) {
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType) {
             return InvokeSafe(() => {
-                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, date);
-                return GetCompetitiontItemBetModel(shortModels, false, GetLiveBetMap);
+                var fromDate = DateTime.UtcNow.AddHours(-3);
+                var toDate = DateTime.UtcNow.AddHours(1);
+                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, fromDate, toDate);
+                return GetCompetitiontItemBetModel(shortModels, true, GetLiveBetMap);
             }, null);
         }
 
@@ -245,10 +247,10 @@ namespace Project_B.Code.DataProvider {
             return result;
         }
 
-        private static List<CompetitionItemShortModel> GetCompetitionItemShortModelByDate(LanguageType languageType, SportType sportType, DateTime date) {
+        private static List<CompetitionItemShortModel> GetCompetitionItemShortModelByDate(LanguageType languageType, SportType sportType, DateTime fromDate, DateTime toDate) {
             var competitionItemForDateQuery = CompetitionItem.DataSource
-                .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, date.Date)
-                .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, date.Date.AddDays(1));
+                .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
+                .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate);
             if (sportType != SportType.Unknown) {
                 competitionItemForDateQuery = competitionItemForDateQuery
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
@@ -264,7 +266,7 @@ namespace Project_B.Code.DataProvider {
             var competitionItemForDate = competitionItemQuery
                .WhereNotEquals(CompetitionItem.Fields.Dateeventutc, DateTime.MinValue)
                .Sort(CompetitionItem.Fields.Sporttype)
-               .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
+               .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc)
                .AsList(
                     CompetitionItem.Fields.ID,
                     CompetitionItem.Fields.Dateeventutc,

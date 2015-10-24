@@ -436,16 +436,16 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_MainMenu.cshtml" />
-    <Content Include="Views\Competition\Regular.cshtml" />
-    <Content Include="Views\History\Index.cshtml" />
+    <Content Include="Views\Competition\Index.cshtml" />
     <Content Include="Views\Shared\Element\_ListCompetitionWriter.cshtml" />
     <Content Include="Views\Competition\Item.cshtml" />
     <Content Include="Views\Competition\Game.cshtml" />
-    <Content Include="Views\Competition\Competitor.cshtml" />
-    <Content Include="Views\CompetitionLive\Regular.cshtml" />
-    <Content Include="Views\CompetitionLive\Item.cshtml" />
+    <Content Include="Views\CompetitionLive\Index.cshtml" />
     <Content Include="Views\CompetitionLive\Game.cshtml" />
-    <Content Include="Views\CompetitionLive\Competitor.cshtml" />
+    <Content Include="Views\History\Index.cshtml" />
+    <Content Include="Views\History\Game.cshtml" />
+    <Content Include="Views\History\Competitor.cshtml" />
+    <Content Include="Views\CompetitionLive\Item.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,6 +1,10 @@
 ﻿@using Project_B.Code.Enums
 @model MainLogic.WebFiles.BaseModel
 
+@{
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+}
+
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -16,7 +20,7 @@
             <ul class="nav navbar-nav">
                 <li>@Html.ActionLink("Featured", "Index", "Competition")</li>
                 <li>@Html.ActionLink("Live", "Index", "CompetitionLive")</li>
-                <li>@Html.ActionLink("History", "Contact", "Home")</li>
+                <li>@Html.ActionLink("History", "Index", "History")</li>
             </ul>
             @Html.Partial("_LoginPartial")
         </div>
@@ -26,12 +30,12 @@
     <div class="container">
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="@Url.Action("Regular", "Competition", new {id = string.Empty})">All</a></li>
-                <li><a href="@Url.Action("Regular", "Competition", new {id = SportType.Football})">Football</a></li>
-                <li><a href="@Url.Action("Regular", "Competition", new {id = SportType.Tennis})">Tennis</a></li>
-                <li><a href="@Url.Action("Regular", "Competition", new {id = SportType.Basketball})">Basketball</a></li>
-                <li><a href="@Url.Action("Regular", "Competition", new {id = SportType.Volleyball})">Volleyball</a></li>
-                <li><a href="@Url.Action("Regular", "Competition", new {id = SportType.IceHockey})">Hockey</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})">All</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Football})">Football</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Tennis})">Tennis</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Basketball})">Basketball</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Volleyball})">Volleyball</a></li>
+                <li><a href="@Url.Action("Index", currentController, new {id = SportType.IceHockey})">Hockey</a></li>
             </ul>
         </div>
     </div>

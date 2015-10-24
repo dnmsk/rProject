@@ -126,7 +126,7 @@
 
 @foreach (var bySportTypes in Model.CompetitionModel.GroupBy(c => c.SportType)) {
     var headers = _tableHeaders[LanguageType.English][bySportTypes.Key];
-    <H2><a href="@Url.Action("Regular", currentController, new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
+    <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
     foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID)) {
         var competitionModel = groupedCompetitions.First().Competition;
         <H3><a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
@@ -140,7 +140,6 @@
                         <td><strong>@header</strong></td>
                     }
                     <td class="col-md-1"></td>
-                    <td></td>
                 </tr>
             </thead>
             @foreach (var competition in groupedCompetitions) {
@@ -150,11 +149,11 @@
                     successActs.AddRange(GetSuccessOddTypes(resultModel, competition.CurrentBets));
                 }
                 <tr @if(resultModel != null) {@Html.Raw("class=\"active\"")}>
-                    <td class="text-right"><a href="@Url.Action("Regular", currentController, new {id = bySportTypes.Key, date = competition.DateUtc.ToString("dd.MM.yyyy") })">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</a></td>
+                    <td class="text-right"><a href="@Url.Action("Item", currentController, new {id = competition.CompetitionID})">@competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")</a></td>
                     <td>
-                        <a href="@Url.Action("Competitor", currentController, new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
+                        <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
                         <br />
-                        <a href="@Url.Action("Competitor", currentController, new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
+                        <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
                     </td>
                     @if (competition.CurrentBets != null && competition.HistoryMaxBets != null && competition.HistoryMinBets != null) {
                         var currentPercentile = GetBetPercentile(bySportTypes.Key, competition.CurrentBets);
@@ -208,9 +207,6 @@
                             @Html.Raw("&mdash;")
                             ;
                         }
-                    </td>
-                    <td>
-                        <a href="@Url.Action("Item", currentController, new {id = competition.CompetitionID})">O</a>
                     </td>
                 </tr>
             }
