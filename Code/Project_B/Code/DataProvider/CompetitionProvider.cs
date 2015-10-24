@@ -158,7 +158,7 @@ namespace Project_B.Code.DataProvider {
         private Dictionary<int, List<IBet<long>>> GetLiveBetMap(IEnumerable<int> ints) {
             return BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
-                .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, BetLive.Fields.CompetitionitemID, RetrieveMode.NotRetrieve)
+                //.Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, BetLive.Fields.CompetitionitemID, RetrieveMode.NotRetrieve)
                 //.WhereNull(CompetitionResult.Fields.ID)
                 .WhereIn(BetLive.Fields.CompetitionitemID, ints)
                 .AsList()
@@ -170,7 +170,7 @@ namespace Project_B.Code.DataProvider {
         public List<CompetitionItemBetShortModel> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType) {
             return InvokeSafe(() => {
                 var fromDate = DateTime.UtcNow.AddHours(-3);
-                var toDate = DateTime.UtcNow.AddHours(1);
+                var toDate = DateTime.UtcNow.AddHours(24);
                 var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, fromDate, toDate);
                 return GetCompetitiontItemBetModel(shortModels, true, GetLiveBetMap);
             }, null);

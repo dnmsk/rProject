@@ -127,7 +127,7 @@
 @foreach (var bySportTypes in Model.CompetitionModel.GroupBy(c => c.SportType)) {
     var headers = _tableHeaders[LanguageType.English][bySportTypes.Key];
     <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
-    foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID).ToArray()) {
+    foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID).OrderBy(c => c.First().Competition.Name).ToArray()) {
         var competitionModel = groupedCompetitions.First().Competition;
         var itemBetShortModels = groupedCompetitions.ToArray();
         var appendSeeAllLink = false;
@@ -159,7 +159,7 @@
                         @Html.Raw("class=\"active\"")
                     }>
                     <td class="text-right">
-                        <a href="@Url.Action("Item", currentController, new {id = competition.CompetitionID})">
+                        <a href="@Url.Action("Item", "Competition", new {id = competition.CompetitionID})">
                             @competition.DateUtc.ToString("dd.MM.yyyy")<br/>@competition.DateUtc.ToString("HH:mm")</a>
                     </td>
                     <td>

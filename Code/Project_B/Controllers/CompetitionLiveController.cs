@@ -12,7 +12,7 @@ namespace Project_B.Controllers {
         // GET: CompetitionLive
         public ActionResult Index(SportType id = SportType.Unknown) {
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsLiveBet(LanguageType.English, id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Where(i => i.CurrentBets != null).Select(i => i.CompetitionID).ToArray());
             itemData = itemData.Where(i => resultData.ContainsKey(i.CompetitionID)).ToList();
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,
@@ -31,9 +31,7 @@ namespace Project_B.Controllers {
         }
 
         public ActionResult Game(int id) {
-            var itemData =
-                MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(LanguageType.English,
-                    id);
+            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(LanguageType.English, id);
             var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,
