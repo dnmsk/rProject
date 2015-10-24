@@ -190,9 +190,15 @@ namespace Project_B.Code.DataProvider {
             }, null);
         }
 
-        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBetForCompetition(LanguageType languageType, int competitionID) {
+        public List<CompetitionItemBetShortModel> GetCompetitionItemsRegularBetForCompetition(LanguageType languageType, int competitionID, bool takeOnlyInFutured) {
             return InvokeSafe(() => {
-                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
+                var competitionItemQuery = CompetitionItem.DataSource
+                    .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID);
+                if (takeOnlyInFutured) {
+                    competitionItemQuery = competitionItemQuery
+                        .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow);
+                }
+                var competition = GetCompetitionItemShortModel(languageType, competitionItemQuery);
                 return GetCompetitiontItemBetModel(competition, true, GetBetMap);
             }, null);
         }

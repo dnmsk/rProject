@@ -15,7 +15,8 @@ namespace Project_B.Controllers {
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,
                 DateUtc = DateTime.Today,
-                ResultMap = resultData
+                ResultMap = resultData,
+                LimitToDisplayInGroup = 4
             });
         }
 
@@ -29,7 +30,7 @@ namespace Project_B.Controllers {
         }
 
         public ActionResult Game(int id) {
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(LanguageType.English, id);
+            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(LanguageType.English, id, true);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,

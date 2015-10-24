@@ -35,7 +35,7 @@ namespace Project_B.Controllers {
         }
         
         public ActionResult Game(int id) {
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(LanguageType.English, id);
+            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(LanguageType.English, id, false);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new CompetitionRegularModel(GetBaseModel()) {
                 CompetitionModel = itemData,
