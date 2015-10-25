@@ -1,4 +1,5 @@
-﻿using System.Web.Hosting;
+﻿using System;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
@@ -15,9 +16,9 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new object[] {
-                    new CollectHistoryAlgo(),
-                    new CollectOddsAlgo(),
-                    new CollectLiveOddsWithResultAlgo()
+                    new CollectHistoryAlgo(new TimeSpan(4, 0, 0), new TimeSpan(1, 0, 0)),
+                    new CollectOddsAlgo(new TimeSpan(0, 5, 0)),
+                    new CollectLiveOddsWithResultAlgo(new TimeSpan(0, 0, 15))
                 };
             }
             SlothMovePlodding.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));

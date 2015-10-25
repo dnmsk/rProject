@@ -27,38 +27,53 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             var result = new List<MatchParsed>();
             var listMatchBlocks = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventInList]);
             foreach (var matchBlock in listMatchBlocks) {
-                var participants = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsParticipants]);
-                if (participants.Count != 2) {
-                    Logger.Error("participants count = " + participants.Count);
-                }
-                string date = null;
-                var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsDate]);
-                if (dateBlock.Any()) {
-                    date = dateBlock.First().InnerText.Trim();
-                }
-                var match = new MatchParsed {
-                    CompetitorNameShortOne = participants[0].InnerText,
-                    CompetitorNameShortTwo = participants[1].InnerText,
-                    DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
-                    Odds = ExtractOddsFromMatchBlock(type, matchBlock),
-                    Result = ExtractResultFromMatchBlock(matchBlock, type),
-                    BrokerMatchID = StringParser.ToInt(matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
-                };
-                if (match.Odds.Any() || match.Result != null) {
-                    result.Add(match);
+                try {
+                    var participantsShortName = matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddCompetitorsShortName]].Value
+                        .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
+                    var participantsFullName = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsParticipants]);
+                    if (participantsFullName.Count != 2) {
+                        Logger.Error("participants full name count = " + participantsFullName.Count);
+                    }
+                    if (participantsShortName.Length != 2) {
+                        Logger.Error("participants full name count = " + participantsFullName.Count);
+                    }
+                    string date = null;
+                    var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsDate]);
+                    if (dateBlock.Any()) {
+                        date = dateBlock.First().InnerText.Trim();
+                    }
+                    var match = new MatchParsed {
+                        CompetitorNameFullOne = participantsFullName[0].InnerText,
+                        CompetitorNameFullTwo = participantsFullName[1].InnerText,
+                        CompetitorNameShortOne = participantsShortName[0],
+                        CompetitorNameShortTwo = participantsShortName[1],
+                        DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
+                        Odds = ExtractOddsFromMatchBlock(type, matchBlock),
+                        Result = ExtractResultFromMatchBlock(matchBlock, type),
+                        BrokerMatchID = StringParser.ToInt(matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
+                    };
+                    if (match.Odds.Any() || match.Result != null) {
+                        result.Add(match);
+                    }
+                } catch (Exception ex) {
+                    Logger.Error(ex);
                 }
             }
             foreach (var additionalMatchBlock in HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventResult])) {
-                var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultParticipants])[0].InnerText
-                    .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-                var match = new MatchParsed {
-                    CompetitorNameShortOne = participants[0],
-                    CompetitorNameShortTwo = participants[1],
-                    Result = ExtractResultFromMatchBlock(additionalMatchBlock, type),
-                    BrokerMatchID = StringParser.ToInt(additionalMatchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
-                };
-                if (match.Odds.Any() || match.Result != null) {
-                    result.Add(match);
+                try {
+                    var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultParticipants])[0].InnerText
+                        .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
+                    var match = new MatchParsed {
+                        CompetitorNameShortOne = participants[0],
+                        CompetitorNameShortTwo = participants[1],
+                        Result = ExtractResultFromMatchBlock(additionalMatchBlock, type),
+                        BrokerMatchID = StringParser.ToInt(additionalMatchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
+                    };
+                    if (match.Odds.Any() || match.Result != null) {
+                        result.Add(match);
+                    }
+                } catch (Exception ex) {
+                    Logger.Error(ex);
                 }
             }
             return result;

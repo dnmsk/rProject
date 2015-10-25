@@ -61,8 +61,6 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             return result;
         }
 
-        protected abstract List<MatchParsed> ExtractMatchesFromMatchesBlock(HtmlNode node, SportType type, DateTimeToGmtFixer dateTimeFixer);
-
         private static DateTimeToGmtFixer GetGmtFixer(string htmlContent) {
             var idx = htmlContent.IndexOf("\"gmt", StringComparison.InvariantCultureIgnoreCase);
             var num = htmlContent.Substring(idx + 4);
@@ -71,14 +69,16 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
         }
 
         protected DateTime ParseDateTime(string date) {
-            var dateTime = StringParser.ToDateTime(date, DateTime.MinValue, CurrentConfiguration.StringSimple[SectionName.StringDateTimeShortFormat]);
-            dateTime = dateTime == DateTime.MinValue
-                ? StringParser.ToDateTime(date, DateTime.MinValue, CurrentConfiguration.StringSimple[SectionName.StringDateTimeFormat])
-                : dateTime;
-            dateTime = dateTime == DateTime.MinValue
-                ? StringParser.ToDateTime(date, DateTime.MinValue, CurrentConfiguration.StringSimple[SectionName.StringDateTimeShortTimeFormat])
-                : dateTime;
-            return dateTime;
+            var defaultDateTime = DateTime.MinValue;
+            foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]) {
+                var dateTime = StringParser.ToDateTime(date, defaultDateTime, dateTimeFormat);
+                if (!dateTime.Equals(defaultDateTime)) {
+                    return dateTime;
+                }
+            }
+            return defaultDateTime;
         }
+
+        protected abstract List<MatchParsed> ExtractMatchesFromMatchesBlock(HtmlNode node, SportType type, DateTimeToGmtFixer dateTimeFixer);
     }
 }

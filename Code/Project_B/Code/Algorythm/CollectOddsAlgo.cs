@@ -9,7 +9,7 @@ namespace Project_B.Code.Algorythm {
     public class CollectOddsAlgo {
         const SportType _sportType = SportType.Basketball | SportType.Football | SportType.IceHockey | SportType.Tennis | SportType.Volleyball;
 
-        public CollectOddsAlgo() : this(new TimeSpan(0, 5, 0)) {}
+        public CollectOddsAlgo() {}
 
         public CollectOddsAlgo(TimeSpan regularOddsDelay) {
             MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectRegularOdds, regularOddsDelay, null));

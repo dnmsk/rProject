@@ -29,7 +29,7 @@ namespace Project_B.Code.DataProvider {
                             .GetCompetitor(languageType, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne);
                         var competitor2 = MainProvider.Instance.CompetitorProvider
                             .GetCompetitor(languageType, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo);
-                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc);
+                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, DateTime.MinValue);
                         AddLive(competitionItem, brokerType, competitionParsed.Type, matchParsed);
                     }
                 }

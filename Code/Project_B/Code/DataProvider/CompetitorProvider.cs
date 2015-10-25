@@ -26,8 +26,8 @@ namespace Project_B.Code.DataProvider {
                     .WhereEquals(Competitor.Fields.Languagetype, (short)languageType)
                     .WhereEquals(Competitor.Fields.Sporttype, (short) sportType)
                     .Where(new DaoFilterOr(
-                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameShort.ToLower(), Competitor.Fields.NameFull),
-                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameFull.ToLower(), Competitor.Fields.NameShort))
+                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameShort.ToLower(), Competitor.Fields.NameShort),
+                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameFull.ToLower(), Competitor.Fields.NameFull))
                     )
                     .AsList(
                         Competitor.Fields.CompetitoruniqueID,
@@ -40,10 +40,6 @@ namespace Project_B.Code.DataProvider {
                     competitor = competitors[0];
                 } else if (competitors.Count == 1) {
                     competitor = competitors[0];
-                }
-                if (competitor != null && nameFull.Length > nameShort.Length && competitor.NameFull.Length == competitor.NameShort.Length && competitor.NameShort.Equals(nameShort, StringComparison.InvariantCultureIgnoreCase)) {
-                    competitor.NameFull = nameFull;
-                    competitor.Save();
                 }
                 if (competitor == null) {
                     var uniqueID = new CompetitorUnique {
@@ -60,6 +56,17 @@ namespace Project_B.Code.DataProvider {
                         Gendertype = genderType
                     };
                     competitor.Save();
+                } else {
+                    if (nameFull.Length != nameShort.Length) {
+                        if (competitor.NameShort.Equals(nameShort, StringComparison.InvariantCultureIgnoreCase)) {
+                            competitor.NameFull = nameFull;
+                        } else if (competitor.NameFull.Equals(nameFull, StringComparison.InvariantCultureIgnoreCase)) {
+                            competitor.NameShort = nameShort;
+                        }
+                    }
+                    if (competitor.Changes.Count > 0) {
+                        competitor.Save();
+                    }
                 }
                 return new CompetitorTransport {
                     UniqueID = competitor.CompetitoruniqueID,

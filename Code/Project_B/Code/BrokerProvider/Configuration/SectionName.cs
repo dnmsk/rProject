@@ -27,19 +27,19 @@
         XPathToOddsConfirmation = 1013,
 
         //StringSimple Reserve from 10000 to 14999
-        StringDateTimeFormat = 10000,
+        // = 10000,
         StringDateQueryFormat = 10001,
         StringMapStringsOddsParamJoin = 10002,
         StringMapStringsResultsParamJoin = 10003,
         StringOddConfirmation = 10004,
         StringOddBrokerID = 10005,
-        StringDateTimeShortFormat = 10006,
-        StringDateTimeShortTimeFormat = 10007,
+        StringOddCompetitorsShortName = 10006,
 
         //Array Reserve from 15000 to 19999
         ArrayParticipantsSplitter = 15000,
         ArrayCookie = 15001,
         ArrayProxy = 15002,
+        ArrayDateTimeFormat = 15003,
 
         //Map Reserve from 30000 to Max
         MapStringsOddsParam = 30000,

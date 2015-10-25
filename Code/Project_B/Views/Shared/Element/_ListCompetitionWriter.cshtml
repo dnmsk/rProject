@@ -67,9 +67,9 @@
                 haveZero = true;
                 continue;
             }
-            odds[i] = 1 / odd;
+            odds[i] = 1 / (odd);
         }
-        return haveZero ? default(int) : (int) (1 / odds.Sum() * 100);
+        return haveZero ? default(int) : (int) (100 / odds.Sum() - 100);
     }
 
     static List<BetOddType> GetSuccessOddTypes(ResultModel resultModel, Dictionary<BetOddType, BetItem> currentBets) {

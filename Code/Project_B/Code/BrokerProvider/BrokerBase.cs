@@ -30,8 +30,7 @@ namespace Project_B.Code.BrokerProvider {
         public BrokerBase(WebRequestHelper requestHelper) {
             _requestHelper = requestHelper;
         }
-
-        //protected HtmlBlockHelper HtmlBlock;
+        
         protected string LoadPage(string url, string postData = null, string contentType = null) {
             try {
                 Url = url;
@@ -40,7 +39,6 @@ namespace Project_B.Code.BrokerProvider {
                     Logger.Error("status = " + loadResult.Item1);
                 }
                 return loadResult.Item2;
-                //HtmlBlock = new HtmlBlockHelper(loadResult.Item2);
 
             }
             catch (Exception ex) {
