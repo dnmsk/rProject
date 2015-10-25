@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
+using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
@@ -29,6 +31,7 @@ namespace Project_B.Code.DataProvider {
                         QueryHelper.GetIndexedFilterByWordIgnoreCase(nameShort.ToLower(), Competitor.Fields.NameShort),
                         QueryHelper.GetIndexedFilterByWordIgnoreCase(nameFull.ToLower(), Competitor.Fields.NameFull))
                     )
+                    .Sort(Competitor.Fields.ID, SortDirection.Asc)
                     .AsList(
                         Competitor.Fields.CompetitoruniqueID,
                         Competitor.Fields.NameFull,
@@ -36,7 +39,7 @@ namespace Project_B.Code.DataProvider {
                     );
                 Competitor competitor = null;
                 if (competitors.Count > 1) {
-                    _logger.Error("{0} Competitors for nameShort='{1}' and nameFull='{2}', sport={3}, gender={4}. Take first", competitors.Count, nameShort, nameFull, sportType, genderType);
+                    _logger.Error("{0} Competitors for nameShort='{1}' and nameFull='{2}', sport={3}, gender={4}. IDs={5}. Take first", competitors.Count, nameShort, nameFull, sportType, genderType, competitors.Select(c => c.ID).StrJoin(", "));
                     competitor = competitors[0];
                 } else if (competitors.Count == 1) {
                     competitor = competitors[0];
