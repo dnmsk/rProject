@@ -109,11 +109,13 @@ namespace Project_B.Code.DataProvider {
                 .GroupBy(cr => cr.CompetitionitemID)
                 .ToDictionary(cr=> cr.Key, cr => {
                     var competitionResultAdvanceds = cr
-                        .Select(cra => cra.GetJoinedEntity<CompetitionResultAdvanced>());
-                    var resultAdvanceds = competitionResultAdvanceds.Any() ? competitionResultAdvanceds.ToArray() : null;
+                        .Select(cra => cra.GetJoinedEntity<CompetitionResultAdvanced>())
+                        .Where(je => je != null);
+                    var enumerable = competitionResultAdvanceds as CompetitionResultAdvanced[] ?? competitionResultAdvanceds.ToArray();
+                    var resultAdvanceds = enumerable.Any() ? enumerable.ToArray() : null;
                     return new ResultModel {
                         ScoreID = cr.First().ScoreID,
-                        SubScore = resultAdvanceds != null ? resultAdvanceds.Select(cra => cra.ScoreID).ToArray() : null
+                        SubScore = resultAdvanceds != null && resultAdvanceds.Any() ? resultAdvanceds.Select(cra => cra.ScoreID).ToArray() : null
                     };
                 });
             var currentResultModel = new ResultModel {
