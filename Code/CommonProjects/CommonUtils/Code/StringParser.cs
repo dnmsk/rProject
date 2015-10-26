@@ -155,6 +155,11 @@ namespace CommonUtils.Code {
             return result;
         }
 
+        private readonly static CultureInfo[] _cultureToParseDateTime = {
+            CultureInfo.InvariantCulture,
+            CultureInfo.GetCultureInfo("ru-RU")
+        };
+
         /// <summary>
         /// Конвертируем строку в дату со значением по умолчанию.
         /// </summary>
@@ -163,9 +168,15 @@ namespace CommonUtils.Code {
         /// <returns>В случае успеха возвращает сконвертируемую дату, иначе значение по умолчанию.</returns>
         public static DateTime ToDateTime(string strDate, DateTime def, string format = null) {
             DateTime date;
-            return (format.IsNullOrWhiteSpace() ? DateTime.TryParse(strDate, out date) : DateTime.TryParseExact(strDate, format, CultureInfo.InvariantCulture, DateTimeStyles.AllowInnerWhite | DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AllowTrailingWhite, out date)) 
-                ? date
-                : def;
+            if (format.IsNullOrWhiteSpace()) {
+                return DateTime.TryParse(strDate, out date) ? date : def;
+            }
+            foreach (var culture in _cultureToParseDateTime) {
+                if (DateTime.TryParseExact(strDate, format, culture, DateTimeStyles.AllowInnerWhite | DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AllowTrailingWhite, out date)) {
+                    return date;
+                }
+            }
+            return def;
         }
         /// <summary>
         /// Парсим в byte со значением по умолчанию

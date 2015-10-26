@@ -252,9 +252,7 @@
     <Compile Include="App_Start\ReactConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Code\Algorythm\CollectHistoryAlgo.cs" />
-    <Compile Include="Code\Algorythm\CollectLiveOddsWithResultAlgo.cs" />
-    <Compile Include="Code\Algorythm\CollectOddsAlgo.cs" />
+    <Compile Include="Code\Algorythm\BrokerAlgoLauncher.cs" />
     <Compile Include="Code\BookPage.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceBase.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceOddsProvider.cs" />
@@ -288,6 +286,7 @@
     <Compile Include="Code\DataProvider\ResultProvider.cs" />
     <Compile Include="Code\DataProvider\Transport\CompetitionTransport.cs" />
     <Compile Include="Code\DataProvider\Transport\CompetitorTransport.cs" />
+    <Compile Include="Code\Data\BrokerData.cs" />
     <Compile Include="Code\Data\CompetitionParsed.cs" />
     <Compile Include="Code\Data\MatchParsed.cs" />
     <Compile Include="Code\Data\OddParsed.cs" />

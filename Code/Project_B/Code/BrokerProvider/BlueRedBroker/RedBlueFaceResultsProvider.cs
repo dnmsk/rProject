@@ -50,14 +50,26 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
                 : null;
         }
 
-        public List<CompetitionParsed> Load(DateTime date, SportType sportType) {
-            var url = string.Format(CurrentConfiguration.StringSimple[SectionName.UrlResultTarget], 
+        public BrokerData Load(DateTime date, SportType sportType, LanguageType language) {
+            var url = FormatUrl(SectionName.UrlResultTarget, new {
+                query = GetParamValueForCompetition(sportType,
+                                            CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsResultsParam],
+                                            CurrentConfiguration.StringSimple[SectionName.StringMapStringsResultsParamJoin]),
+                date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
+                lang = GetLanguageParam(language)
+            });
+                /*string.Format(CurrentConfiguration.StringSimple[SectionName.UrlResultTarget], 
                                         GetParamValueForCompetition(
                                             sportType, 
                                             CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsResultsParam], 
                                             CurrentConfiguration.StringSimple[SectionName.StringMapStringsResultsParamJoin]), 
                                         date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]));
-            return BuildCompetitions(LoadPage(url));
+            */
+            return new BrokerData {
+                Competitions = BuildCompetitions(LoadPage(url)),
+                Broker = BrokerType,
+                Language = language
+            };
         }
     }
 }

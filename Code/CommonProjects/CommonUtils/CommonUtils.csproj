@@ -98,6 +98,7 @@
     <Compile Include="ExtendedTypes\DIObjectAccessor.cs" />
     <Compile Include="ExtendedTypes\EnumerableExtensions.cs" />
     <Compile Include="ExtendedTypes\EvenExtentions.cs" />
+    <Compile Include="ExtendedTypes\HaackFormatter.cs" />
     <Compile Include="ExtendedTypes\IntExtentions.cs" />
     <Compile Include="ExtendedTypes\MaybeExtentions.cs" />
     <Compile Include="ExtendedTypes\NullableExtensions.cs" />

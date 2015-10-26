@@ -9,7 +9,7 @@ using Project_B.Code.Enums;
 
 namespace Project_B.Code.DataProvider.DataHelper {
     public class SportTypeHelper : Singleton<SportTypeHelper> {
-        private Dictionary<string, SportType> _nameToGender = new Dictionary<string, SportType>();
+        private Dictionary<string, SportType> _nameToSportType = new Dictionary<string, SportType>();
 
         public SportTypeHelper() {
             UpdateSportMap();
@@ -17,25 +17,25 @@ namespace Project_B.Code.DataProvider.DataHelper {
         }
 
         private object UpdateSportMap() {
-            var genders = SportName.DataSource.AsList();
+            var sportNames = SportName.DataSource.AsList();
             var newMap = new Dictionary<string, SportType>();
-            foreach (var genderAdvanced in genders) {
-                newMap[genderAdvanced.Name.ToLower()] = genderAdvanced.SportType;
+            foreach (var sportName in sportNames) {
+                newMap[sportName.Name.ToLower()] = sportName.SportType;
             }
-            _nameToGender = newMap;
+            _nameToSportType = newMap;
             return null;
         }
 
         public List<string> ExcludeSportTypeFromList(List<string> strings) {
             return strings
-                .Where(s => !_nameToGender.ContainsKey(s.ToLower()))
+                .Where(s => !_nameToSportType.ContainsKey(s.ToLower()))
                 .ToList();
         } 
 
         public SportType this[IEnumerable<string> strToDetect] {
             get {
-                var genderType = SportType.Unknown;
-                return strToDetect.Any(s => _nameToGender.TryGetValue(s.ToLower(), out genderType)) ? genderType : genderType;
+                var sportType = SportType.Unknown;
+                return strToDetect.Any(s => _nameToSportType.TryGetValue(s.ToLower().Trim(), out sportType)) ? sportType : SportType.Unknown;
             }
         }
     }

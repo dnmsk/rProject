@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml;
 using CommonUtils.Core.Logger;
 using Project_B.Code.BrokerProvider.HtmlDataExtractor;
-using Project_B.Code.Enums;
 
 namespace Project_B.Code.BrokerProvider.Configuration {
     public class BrokerConfiguration {
@@ -15,7 +14,7 @@ namespace Project_B.Code.BrokerProvider.Configuration {
         public SimpleConfiguration<SectionName, XPathQuery> XPath;
         public SimpleConfiguration<SectionName, string> StringSimple;
         public SimpleConfiguration<SectionName, string[]> StringArray;
-        public SimpleConfiguration<SectionName, SimpleConfiguration<SportType, string>> CompetitionConfiguration;
+        public SimpleConfiguration<SectionName, SimpleConfiguration<string, string>> CompetitionConfiguration;
 
         public BrokerConfiguration(XmlNode configNode) {
             BuildXPathMap(configNode.SelectNodes(".//XPathNode"));
@@ -25,10 +24,10 @@ namespace Project_B.Code.BrokerProvider.Configuration {
         }
 
         private void BuildCompetitionConfigurationMap(XmlNodeList selectNodes) {
-            CompetitionConfiguration = new SimpleConfiguration<SectionName, SimpleConfiguration<SportType, string>>();
+            CompetitionConfiguration = new SimpleConfiguration<SectionName, SimpleConfiguration<string, string>>();
             BuildItem(selectNodes, CompetitionConfiguration, node => {
-                var item = new SimpleConfiguration<SportType, string>();
-                BuildItem(node.SelectNodes(".//Item"), item, nodeItem => nodeItem.InnerText);
+                var item = new SimpleConfiguration<string, string>();
+                BuildItemMap(node.SelectNodes(".//Item"), item, nodeItem => nodeItem.InnerText);
                 return item;
             });
         }
@@ -57,6 +56,12 @@ namespace Project_B.Code.BrokerProvider.Configuration {
                     continue;
                 }
                 targetMap[sectionName] = nodeToValueFunc(xmlNode);
+            }
+        }
+        private static void BuildItemMap(XmlNodeList xPathNodeList, SimpleConfiguration<string, string> targetMap, Func<XmlNode, string> nodeToValueFunc) {
+            foreach (XmlNode xmlNode in xPathNodeList) {
+                var key = xmlNode.Attributes["Key"].InnerText;
+                targetMap[key] = nodeToValueFunc(xmlNode);
             }
         }
     }

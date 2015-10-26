@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using Project_B.Code.BrokerProvider.Configuration;
 using Project_B.Code.BrokerProvider.HtmlDataExtractor;
 using Project_B.Code.Data;
+using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.Enums;
 
 namespace Project_B.Code.BrokerProvider.BlueRedBroker {
@@ -46,7 +47,7 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
                 if (nameBlock.Count > 0) {
                     competiton.Name.AddRange(nameBlock[0].InnerText.RemoveAllTags().Replace("&nbsp;", " ").Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
                 }
-                if (type != SportType.Unknown || type == SportType.Unknown && Enum.TryParse(competiton.Name.First().Replace(" ", string.Empty), out type)) {
+                if (type != SportType.Unknown || type == SportType.Unknown && (type = SportTypeHelper.Instance[competiton.Name]) != SportType.Unknown) { 
                     competiton.Type = type;
                 }
                 if (type == SportType.Unknown) {

@@ -93,7 +93,7 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             foreach (var betBlock in betBlocks) {
                 var attrValue = betBlock.Attributes["data-sel"];
                 if (attrValue == null) {
-                    Logger.Error("attrValue == null ");
+                    odds.Add(new OddParsed());
                     continue;
                 }
                 var dataDict = JavaScriptSerializer.Deserialize<Dictionary<string, object>>(attrValue.Value);
@@ -133,16 +133,31 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
             }
         }
 
-        public List<CompetitionParsed> LoadLive(SportType sportType) {
-            var url = CurrentConfiguration.StringSimple[SectionName.UrlLiveTarget];
-            return BuildCompetitions(LoadPage(url));
+        public BrokerData LoadLive(SportType sportType, LanguageType language) {
+            var url = FormatUrl(SectionName.UrlLiveTarget, new {
+                lang = GetLanguageParam(language)
+            });//CurrentConfiguration.StringSimple[SectionName.UrlLiveTarget];
+            return new BrokerData {
+                Competitions = BuildCompetitions(LoadPage(url)),
+                Broker = BrokerType,
+                Language = language
+            };
         }
 
-        public List<CompetitionParsed> LoadRegular(SportType sportType) {
-            var url = string.Format(CurrentConfiguration.StringSimple[SectionName.UrlOddsTarget], 
+        public BrokerData LoadRegular(SportType sportType, LanguageType language) {
+            var url = FormatUrl(SectionName.UrlOddsTarget,  new {
+                param = GetParamValueForCompetition(sportType, CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam],
+                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]),
+                lang = GetLanguageParam(language)
+            });
+                /*string.Format(CurrentConfiguration.StringSimple[SectionName.UrlOddsTarget], 
                     GetParamValueForCompetition(sportType, CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam], 
-                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]));
-            return BuildCompetitions(LoadPage(url));
+                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]));*/
+            return new BrokerData {
+                Competitions = BuildCompetitions(LoadPage(url)),
+                Broker = BrokerType,
+                Language = language
+            };
         }
     }
 }

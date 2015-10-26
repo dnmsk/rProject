@@ -25,8 +25,8 @@ namespace Sandbox {
                 RegisterDB();
                 //var start = Stopwatch.StartNew();
                 Console.WriteLine("CollectOddsAlgo");
-                var algo = new CollectLiveOddsWithResultAlgo();
-                algo.CollectLiveOddsWithResult();
+                var algo = new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English);
+                algo.CollectRegularOdds();
                 //Console.WriteLine(start.ElapsedMilliseconds);
                 //Console.ReadLine();
             }

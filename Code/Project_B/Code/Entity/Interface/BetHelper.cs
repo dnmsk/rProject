@@ -24,6 +24,9 @@ namespace Project_B.Code.Entity.Interface {
         public static IBet<T> GetBetFromOdds<T>(IBet<T> newBet, List<OddParsed> odds) {
             var hasAnyFactor = false;
             foreach (var odd in odds) {
+                if (odd.Factor == default(float)) {
+                    continue;
+                }
                 switch (odd.Type) {
                     case BetOddType.Win1:
                         newBet.Win1 = odd.Factor;
@@ -68,6 +71,9 @@ namespace Project_B.Code.Entity.Interface {
         public static IBetAdvanced<T> GetBetFromOdds<T>(IBetAdvanced<T> newBet, List<OddParsed> odds) {
             var hasAnyFactor = false;
             foreach (var odd in odds) {
+                if (odd.Factor == default(int)) {
+                    continue;
+                }
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
                         newBet.Win1win2 = odd.Factor;

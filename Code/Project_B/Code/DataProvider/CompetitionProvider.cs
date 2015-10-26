@@ -5,6 +5,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.Code.Data;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
 using Project_B.Code.Entity;
@@ -21,7 +22,7 @@ namespace Project_B.Code.DataProvider {
         
         public CompetitionProvider() : base(_logger) {}
 
-        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin) {
+        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
             return InvokeSafeSingleCall(() => {
                 nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
@@ -35,7 +36,7 @@ namespace Project_B.Code.DataProvider {
                                                 Competition.Fields.Name
                     );
                 if (competition == null) {
-                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin);
+                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave);
                 }
                 return new CompetitionTransport {
                     Name = competition.Name,
@@ -47,22 +48,22 @@ namespace Project_B.Code.DataProvider {
             }, null);
         }
 
-        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin) {
+        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave) {
             var nameOriginShort = CompetitionHelper.GetShortCompetitionName(nameOrigin);
             var competitionUniqueAdvanced = CompetitionUniqueAdvanced.DataSource
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Gendertype, (short)genderDetected)
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Languagetype, (short)language)
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Sporttype, (short)sportType)
                                          .Where(QueryHelper.GetFilterByWordsForField(nameOriginShort, CompetitionUniqueAdvanced.Fields.Name))
-                                         .First(
-                                            CompetitionUniqueAdvanced.Fields.CompetitionuniqueID
-                );
+                                         .First(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID);
             if (competitionUniqueAdvanced == null) {
-                var uniqueID = new CompetitionUnique {
-                    IsUsed = true
-                };
-                uniqueID.Save();
-
+                var uniqueID = TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
+                if (uniqueID == null) {
+                    uniqueID = new CompetitionUnique {
+                        IsUsed = true
+                    };
+                    uniqueID.Save();
+                }
                 competitionUniqueAdvanced = new CompetitionUniqueAdvanced {
                     Datecreatedutc = DateTime.UtcNow,
                     Languagetype = language,
@@ -93,36 +94,117 @@ namespace Project_B.Code.DataProvider {
             };
         }
 
+        private static CompetitionUnique TryDetectCompetitionUniqueFromMatches(SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
+            var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
+            var minDate = dates.Any() ? dates.Min().Date : DateTime.MinValue;
+            var maxate = dates.Any() ? dates.Max().Date : DateTime.MinValue;
+            var suitableСompetitionItems = CompetitionItem.DataSource
+                .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxate.AddDays(1), BetweenType.Inclusive)
+                .AsMapByField<int>(CompetitionItem.Fields.CompetitionuniqueID, CompetitionItem.Fields.ID);
+            if (minDate < DateTime.UtcNow.Date) {
+                var mapResults = CompetitionResult.DataSource
+                    .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
+                    .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
+                    .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, suitableСompetitionItems.Keys)
+                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxate.AddDays(1), BetweenType.Inclusive)
+                    .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
+                    .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
+                    .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
+                        ScoreID = gr.First().ScoreID,
+                        SubScore = gr.Select(gra => gra.GetJoinedEntity<CompetitionResultAdvanced>().ScoreID).ToArray()
+                    }).ToList());
+                var mapCoefficients = new Dictionary<int, float>();
+                var hashResults = competitionToSave.Matches
+                    .Select(m => new ResultModel {
+                        ScoreID = ScoreHelper.Instance.GenerateScoreID(m.Result.CompetitorResultOne, m.Result.CompetitorResultTwo),
+                        SubScore = m.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
+                    })
+                    .ToArray();
+                foreach (var suitableСompetitionItem in suitableСompetitionItems) {
+                    List<ResultModel> resultsForCompetition;
+                    if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition) || resultsForCompetition.Count == 0) {
+                        mapCoefficients[suitableСompetitionItem.Key] = 0;
+                        continue;
+                    }
+                    var successMatches = resultsForCompetition.Count(res => hashResults.Any(h => {
+                        if (h.ScoreID != res.ScoreID) {
+                            return false;
+                        }
+                        if (h.SubScore.Length == 0 || res.SubScore.Length == 0) {
+                            return true;
+                        }
+                        if (h.SubScore.Length != res.SubScore.Length) {
+                            return false;
+                        }
+                        for (var i = 0; i < h.SubScore.Length; i++) {
+                            if (h.SubScore[i] != res.SubScore[i]) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }));
+                    mapCoefficients[suitableСompetitionItem.Key] = successMatches/(float)hashResults.Length;
+                }
+                var orderedCompetitionCoeffs = mapCoefficients.OrderByDescending(kv => kv.Value).ToList();
+                if (orderedCompetitionCoeffs.Count == 0) {
+                    return null;
+                }
+                if (orderedCompetitionCoeffs.First().Value > .3 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .1)) {
+                    var key = orderedCompetitionCoeffs.First().Key;
+                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), key, 
+                        Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name);
+                    return CompetitionUnique.DataSource.GetByKey(key);
+                }
+                return null;
+            }
+            var counts = suitableСompetitionItems.Where(sit => sit.Value.Count == competitionToSave.Matches.Count).ToArray();
+            if (counts.Length == 1) {
+                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), counts[0].Key,
+                    Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, counts[0].Key).Sort(Competition.Fields.ID).First().Name);
+                return CompetitionUnique.DataSource.GetByKey(counts[0].Key);
+            }
+            return null;
+        }
+
         private static string ListStringToName(List<string> names) {
             return names.StrJoin(". ");
         }
 
         public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc) {
             return InvokeSafeSingleCall(() => {
-                var competitionItem = CompetitionItem.DataSource
-                    .Where(new DaoFilterOr(
-                        new DaoFilterAnd(
-                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor1Transport.UniqueID),
-                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor2Transport.UniqueID)
-                        ),
-                        new DaoFilterAnd(
-                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor1Transport.UniqueID),
-                            new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor2Transport.UniqueID)
-                        )
-                    ))
-                    .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionTransport.SportType)
-                    .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionTransport.UniqueID)
-                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
-                    .First(CompetitionItem.Fields.ID);
-                if (competitionItem != null) {
-                    if (eventDateUtc != DateTime.MinValue) {
-                        if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) > 2) {
-                            competitionItem = null;
-                        } else {
-                            competitionItem.Dateeventutc = eventDateUtc;
-                            competitionItem.Save();
-                        }
-                    }
+                var source = CompetitionItem.DataSource
+                        .Where(new DaoFilterOr(
+                            new DaoFilterAnd(
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor1Transport.UniqueID),
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor2Transport.UniqueID)
+                                ),
+                            new DaoFilterAnd(
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor1Transport.UniqueID),
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor2Transport.UniqueID)
+                                )
+                            ))
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionTransport.SportType)
+                        .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionTransport.UniqueID);
+                if (eventDateUtc > DateTime.MinValue) {
+                    source = source
+                        .Where(new DaoFilterOr(
+                            new DaoFilterAnd(
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1)),
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(1))
+                            ),
+                            new DaoFilterAnd(
+                                new DaoFilter(CompetitionItem.Fields.Datecreatedutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1)),
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(1))
+                            )
+                        ));
+                }
+                var competitionItem = source
+                    .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
+                    .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
+                if (competitionItem != null && eventDateUtc != DateTime.MinValue && competitionItem.Dateeventutc != eventDateUtc) {
+                    competitionItem.Dateeventutc = eventDateUtc;
+                    competitionItem.Save();
                 }
                 if (competitionItem == null) {
                     competitionItem = new CompetitionItem {

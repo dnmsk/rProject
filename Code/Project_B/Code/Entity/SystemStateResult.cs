@@ -31,6 +31,17 @@ namespace Project_B.Code.Entity {
         /// </summary>
             [DBField(DbType.DateTime)] Dateutc,
 
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.Int16)]
+            BrokerID,
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.Int16)]
+            Languagetype,
         }
 
         /// <summary>
@@ -65,6 +76,22 @@ namespace Project_B.Code.Entity {
         public DateTime Dateutc {
             get { return (DateTime) this[Fields.Dateutc]; }
             set { ForceSetData(Fields.Dateutc, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public LanguageType Languagetype {
+            get { return (LanguageType)(short)this[Fields.Languagetype]; }
+            set { ForceSetData(Fields.Languagetype, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BrokerType BrokerID {
+            get { return (BrokerType)(short)this[Fields.BrokerID]; }
+            set { ForceSetData(Fields.BrokerID, value); }
         }
 
         public override Enum[] KeyFields {

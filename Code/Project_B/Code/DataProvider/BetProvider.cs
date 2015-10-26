@@ -17,17 +17,17 @@ namespace Project_B.Code.DataProvider {
 
         public BetProvider() : base(_logger) { }
 
-        public void SaveRegular(LanguageType languageType, BrokerType brokerType, List<CompetitionParsed> competitionToSave) {
+        public void SaveRegular(BrokerData brokerData) {
             InvokeSafe(() => {
-                foreach (var competitionParsed in competitionToSave) {
-                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(languageType, competitionParsed.Type, competitionParsed.Name);
+                foreach (var competitionParsed in brokerData.Competitions) {
+                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed);
                     foreach (var matchParsed in competitionParsed.Matches) {
                         var competitor1 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(languageType, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed);
                         var competitor2 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(languageType, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed);
                         var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc);
-                        AddBetParsed(competitionItem, brokerType, competitionParsed.Type, matchParsed.Odds);
+                        AddBetParsed(competitionItem, brokerData.Broker, competitionParsed.Type, matchParsed.Odds);
                     }
                 }
             });

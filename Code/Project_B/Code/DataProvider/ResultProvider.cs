@@ -61,6 +61,7 @@ namespace Project_B.Code.DataProvider {
                     );
                 var mapSubresult = CompetitionResultAdvanced.DataSource
                     .WhereIn(CompetitionResultAdvanced.Fields.CompetitionresultID, results.Select(r => r.ID))
+                    .Sort(CompetitionResultAdvanced.Fields.ID, SortDirection.Asc)
                     .AsMapByField<int>(CompetitionResultAdvanced.Fields.CompetitionresultID,
                         CompetitionResultAdvanced.Fields.ScoreID
                     );
@@ -89,6 +90,7 @@ namespace Project_B.Code.DataProvider {
                     );
                 var mapSubresult = CompetitionResultLiveAdvanced.DataSource
                     .WhereIn(CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, results.Select(r => r.ID))
+                    .Sort(CompetitionResultLiveAdvanced.Fields.ID, SortDirection.Asc)
                     .AsMapByField<long>(CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID,
                         CompetitionResultLiveAdvanced.Fields.ScoreID
                     );

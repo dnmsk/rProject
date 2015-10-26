@@ -52,6 +52,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                         _action = null;
                     }
                     _onWorkDoneAction(this);
+                    continue;
                 }
                 Thread.Sleep(1000);
             }

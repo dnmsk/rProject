@@ -186,9 +186,7 @@
                             if (currentBet.Odd != default(float)) {
                                 var maxBet = competition.HistoryMaxBets[oddType];
                                 var minBet = competition.HistoryMinBets[oddType];
-                                <td @if (successActs.Contains(oddType)) {
-                                        @Html.Raw("class=\"success\"")
-                                    }>
+                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>
                                     <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
                                     <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
                                         <small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
@@ -197,14 +195,14 @@
                                 </td>
                             }
                             else {
-                                <td>&mdash;</td>
+                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
                             }
                         }
                     }
                     else {
                         <td>&mdash;</td>
                         foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
-                            <td>&mdash;</td>
+                            <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
                         }
                     }
                     <td class="text-center">

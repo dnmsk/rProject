@@ -49,14 +49,28 @@ namespace Project_B.Code.BrokerProvider {
 
         public abstract List<CompetitionParsed> BuildCompetitions(string htmlContent);
 
-        protected static string GetParamValueForCompetition(SportType sportType, Dictionary<SportType, string> srcDict, string strJoinDelim) {
+        protected static string GetParamValueForCompetition(SportType sportType, Dictionary<string, string> srcDict, string strJoinDelim) {
             var listParams = new List<string>();
             foreach (var competition in srcDict) {
-                if ((sportType & competition.Key) > 0) {
+                if ((sportType & ((SportType)Enum.Parse(typeof(SportType), competition.Key))) > 0) {
                     listParams.Add(competition.Value);
                 }
             }
             return listParams.Count > 0 ? listParams.StrJoin(strJoinDelim) : string.Empty;
+        }
+
+        protected string FormatUrl(SectionName urlTargetSection, object obj) {
+            return CurrentConfiguration.StringSimple[urlTargetSection].HaackFormat(obj);
+        }
+
+        protected string GetLanguageParam(LanguageType language) {
+            var languageParams = CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsLanguageUrlParam];
+            string languageParam;
+            if (!languageParams.TryGetValue(language.ToString(), out languageParam) &&
+                !languageParams.TryGetValue(LanguageType.Default.ToString(), out languageParam)) {
+                languageParam = "en";
+            }
+            return languageParam;
         }
     }
 }
