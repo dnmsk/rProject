@@ -116,9 +116,12 @@ namespace Project_B.Code.DataProvider {
                     }).ToList());
                 var mapCoefficients = new Dictionary<int, float>();
                 var hashResults = competitionToSave.Matches
+                    .Where(m => m.Result != null)
                     .Select(m => new ResultModel {
                         ScoreID = ScoreHelper.Instance.GenerateScoreID(m.Result.CompetitorResultOne, m.Result.CompetitorResultTwo),
-                        SubScore = m.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
+                        SubScore = m.Result.SubResult.Any() 
+                            ? m.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
+                            : new short[0]
                     })
                     .ToArray();
                 foreach (var suitableСompetitionItem in suitableСompetitionItems) {

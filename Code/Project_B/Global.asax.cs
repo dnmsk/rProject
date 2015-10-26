@@ -26,7 +26,7 @@ namespace Project_B {
                     },
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian) {
                         RunPastDateHistoryTask = true,
-                        PastDateHistoryTaskTimespan = new TimeSpan(0, 2, 0)
+                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
                     },
                 };
                 _taskObjects.Each(t => t.Schedule());
