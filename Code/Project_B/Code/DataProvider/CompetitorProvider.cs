@@ -43,8 +43,6 @@ namespace Project_B.Code.DataProvider {
                 Competitor competitor = null;
                 if (competitors.Count > 1) {
                     competitor = competitors[0];
-                    _logger.Error("{0} Competitors for nameShort='{1}' and nameFull='{2}', sport={3}, gender={4}. IDs={5}. Take first = {6}", 
-                        competitors.Count, nameShort, nameFull, sportType, genderType, competitors.Select(c => c.ID).StrJoin(", "), competitor.ID);
                 } else if (competitors.Count == 1) {
                     competitor = competitors[0];
                 }
@@ -157,6 +155,9 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static CompetitorUnique TryGetCompetitorUniqueByName(string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed) {
+            if (matchParsed.DateUtc == DateTime.MinValue) {
+                return null;
+            }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
                 .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)

@@ -52,7 +52,7 @@ namespace Project_B.Code.BrokerProvider.Configuration {
                 var key = xmlNode.Attributes["Key"].InnerText;
                 E sectionName;
                 if (!Enum.TryParse<E>(key, out sectionName) || sectionName.Equals(default(E))) {
-                    _logger.Error("section key={0} contains={1}", key, xmlNode.InnerXml);
+                    _logger.Error("section key={0} contains={1} sectionName={3}", key, xmlNode.InnerXml, sectionName);
                     continue;
                 }
                 targetMap[sectionName] = nodeToValueFunc(xmlNode);
