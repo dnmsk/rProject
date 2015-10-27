@@ -334,6 +334,7 @@
     <Compile Include="Code\Enums\SportType.cs" />
     <Compile Include="Code\Enums\SystemStateBetType.cs" />
     <Compile Include="Code\Enums\SystemStateResultType.cs" />
+    <Compile Include="Code\ProjectControllerBase.cs" />
     <Compile Include="Code\SquishItMinifier.cs" />
     <Compile Include="Code\TransportType\SiteMapChangeFreq.cs" />
     <Compile Include="Code\TransportType\SiteMapItem.cs" />

@@ -350,10 +350,8 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static List<CompetitionItemShortModel> GetCompetitionItemShortModel(LanguageType languageType, DbDataSource<CompetitionItem, int> competitionItemQuery) {
-            var competitionNameMapQuery = CompetitionUniqueAdvanced.DataSource
-                .WhereEquals(CompetitionUniqueAdvanced.Fields.Languagetype, (short)languageType);
-            var competitorNameMapQuery = Competitor.DataSource
-                .WhereEquals(Competitor.Fields.Languagetype, (short)languageType);
+            var competitionNameMapQuery = CompetitionUniqueAdvanced.DataSource;
+            var competitorNameMapQuery = Competitor.DataSource;
             var competitionItemForDate = competitionItemQuery
                .WhereNotEquals(CompetitionItem.Fields.Dateeventutc, DateTime.MinValue)
                .Sort(CompetitionItem.Fields.Sporttype)
@@ -371,22 +369,32 @@ namespace Project_B.Code.DataProvider {
                 .Sort(CompetitionUniqueAdvanced.Fields.ID, SortDirection.Asc)
                 .AsList(
                     CompetitionUniqueAdvanced.Fields.CompetitionuniqueID,
-                    CompetitionUniqueAdvanced.Fields.Name
+                    CompetitionUniqueAdvanced.Fields.Name,
+                    CompetitionUniqueAdvanced.Fields.Languagetype
                 )
                 .GroupBy(e => e.CompetitionuniqueID)
-                .ToDictionary(e => e.Key, e => e.First());
+                .ToDictionary(e => e.Key, e => {
+                    var withCurrentLanguage = e.Where(i => i.Languagetype == languageType);
+                    var competitionUniqueAdvanceds = withCurrentLanguage as CompetitionUniqueAdvanced[] ?? withCurrentLanguage.ToArray();
+                    return competitionUniqueAdvanceds.Any() ? competitionUniqueAdvanceds.First() : e.First();
+                });
             var competitorNameMap = competitorNameMapQuery
                 .WhereIn(Competitor.Fields.CompetitoruniqueID, competitionItemForDate.Select(c => c.Competitoruniqueid1)
                                                                                      .Union(competitionItemForDate.Select(c => c.Competitoruniqueid2))
                                                                                      .Distinct())
                 .Sort(Competitor.Fields.ID, SortDirection.Asc)
                 .AsList(
+                    Competitor.Fields.Languagetype,
                     Competitor.Fields.CompetitoruniqueID,
                     Competitor.Fields.NameShort,
                     Competitor.Fields.NameFull
                 )
                 .GroupBy(e => e.CompetitoruniqueID)
-                .ToDictionary(e => e.Key, e => e.First());
+                .ToDictionary(e => e.Key, e => {
+                    var withCurrentLanguage = e.Where(i => i.Languagetype == languageType);
+                    var competitors = withCurrentLanguage as Competitor[] ?? withCurrentLanguage.ToArray();
+                    return competitors.Any() ? competitors.First() : e.First();
+                });
 
             return competitionItemForDate
                 .Select(ci => new CompetitionItemShortModel {
@@ -401,9 +409,12 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static CompetitorModel ExtractNameFromCompetitor(int competitorID, Dictionary<int, Competitor> competitorNameMap) {
-            var competitor = competitorNameMap.TryGetValueOrDefault(competitorID) ?? Competitor.DataSource
+            Competitor competitor;
+            if (!competitorNameMap.TryGetValue(competitorID, out competitor)) {
+                competitor = Competitor.DataSource
                 .WhereEquals(Competitor.Fields.CompetitoruniqueID, competitorID)
                 .First();
+            }
             return new CompetitorModel {
                 ID = competitorID,
                 Name = competitor.NameFull ?? competitor.NameShort
@@ -411,9 +422,12 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static CompetitionModel ExtractNameFromCompetition(int competitionID, Dictionary<int, CompetitionUniqueAdvanced> competitionNameMap) {
-            var competition = competitionNameMap.TryGetValueOrDefault(competitionID) ?? CompetitionUniqueAdvanced.DataSource
-                .WhereEquals(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionID)
-                .First();
+            CompetitionUniqueAdvanced competition;
+            if (!competitionNameMap.TryGetValue(competitionID, out competition)){
+                competition = CompetitionUniqueAdvanced.DataSource
+                    .WhereEquals(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionID)
+                    .First();
+            }
             return new CompetitionModel {
                 ID = competitionID,
                 Name = competition.Name
