@@ -166,7 +166,7 @@ namespace Project_B.Code.DataProvider {
                 return null;
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
-                .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, mathedCompetitionItemsByResult.Select(ci => ci.Key))
+                .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, mathedCompetitionItemsByResult.Select(ci => ci.Key))
                 .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
                 .AsList(
                     CompetitionItem.Fields.ID,
