@@ -22,6 +22,7 @@ namespace Project_B {
                         RunLiveOddsTask = true,
                         RunRegularOddsTask = true,
                         RunPastDateHistoryTask = true,
+                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
                         RunTodayHistoryTask = true
                     },
                     new BrokerAlgoLauncher(BrokerType.RedBlue, false, LanguageType.Russian) {

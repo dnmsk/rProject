@@ -433,6 +433,9 @@ namespace Project_B.Code.DataProvider {
                 competition = CompetitionUniqueAdvanced.DataSource
                     .WhereEquals(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID, competitionID)
                     .First();
+                competition = competition ?? new CompetitionUniqueAdvanced {
+                    Name = "DELETED"
+                };
             }
             return new CompetitionModel {
                 ID = competitionID,

@@ -3,17 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Project_B.Code.DataProvider.DataHelper {
-    public class CompetitionHelper {
+    internal static class CompetitionHelper {
         private static readonly List<string> _stopListWithInclude = new List<string> {
             "cup",
+            "кубок",
         }; 
         private static readonly List<string> _stopList = new List<string> {
             "pool ",
+            "группа ",
+
             "singles",
             "doubles",
+            "разряд",
+
             "stage",
+            "этап",
+
             "round",
+            "финал",
+
             "play-off",
+            "плей-офф",
+            "плэй-оф",
+
             "play-out"
         };
 
