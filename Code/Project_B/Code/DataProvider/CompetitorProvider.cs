@@ -22,7 +22,7 @@ namespace Project_B.Code.DataProvider {
 
         public CompetitorProvider() : base(_logger) { }
 
-        public CompetitorTransport GetCompetitor(LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, bool canCreateIfNew) {
+        public CompetitorTransport GetCompetitor(LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, bool canCreateIfNew, bool canAutodetect) {
             return InvokeSafeSingleCall(() => {
                 nameFull = (nameFull ?? nameShort).Trim();
                 nameShort = (nameShort ?? nameFull).Trim();
@@ -47,7 +47,10 @@ namespace Project_B.Code.DataProvider {
                     competitor = competitors[0];
                 }
                 if (competitor == null) {
-                    var uniqueID = TryGetCompetitorUniqueByResult(nameFull, nameShort, competitionUnique, matchParsed);
+                    CompetitorUnique uniqueID = null;
+                    if (canAutodetect) {
+                        uniqueID = TryGetCompetitorUniqueByResult(nameFull, nameShort, competitionUnique, matchParsed);
+                    }
                     if (uniqueID == null) {
                         if (!canCreateIfNew) {
                             return null;

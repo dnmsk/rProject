@@ -17,15 +17,15 @@ namespace Project_B.Code.DataProvider {
 
         public BetProvider() : base(_logger) { }
 
-        public void SaveRegular(BrokerData brokerData, bool canCreateIfNew) {
+        public void SaveRegular(BrokerData brokerData, bool canCreateIfNew, bool canAutodetect) {
             InvokeSafe(() => {
                 foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, canCreateIfNew);
+                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, canCreateIfNew, canAutodetect);
                     foreach (var matchParsed in competitionParsed.Matches) {
                         var competitor1 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, canCreateIfNew);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, canCreateIfNew, canAutodetect);
                         var competitor2 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, canCreateIfNew);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, canCreateIfNew, canAutodetect);
                         var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, canCreateIfNew);
                         AddBetParsed(competitionItem, brokerData.Broker, competitionParsed.Type, matchParsed.Odds);
                     }

@@ -22,7 +22,7 @@ namespace Project_B.Code.DataProvider {
         
         public CompetitionProvider() : base(_logger) {}
 
-        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew) {
+        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew, bool canAutodetect) {
             return InvokeSafeSingleCall(() => {
                 nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
@@ -36,7 +36,7 @@ namespace Project_B.Code.DataProvider {
                                                 Competition.Fields.Name
                     );
                 if (competition == null) {
-                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave, canCreateIfNew);
+                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave, canCreateIfNew, canAutodetect);
                 }
                 return new CompetitionTransport {
                     Name = competition.Name,
@@ -48,7 +48,7 @@ namespace Project_B.Code.DataProvider {
             }, null);
         }
 
-        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew) {
+        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew, bool canAutodetect) {
             var nameOriginShort = CompetitionHelper.GetShortCompetitionName(nameOrigin);
             var competitionUniqueAdvanced = CompetitionUniqueAdvanced.DataSource
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Gendertype, (short)genderDetected)
@@ -57,7 +57,10 @@ namespace Project_B.Code.DataProvider {
                                          .Where(QueryHelper.GetFilterByWordsForField(nameOriginShort, CompetitionUniqueAdvanced.Fields.Name))
                                          .First(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID);
             if (competitionUniqueAdvanced == null) {
-                var uniqueID = TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
+                CompetitionUnique uniqueID = null;
+                if (canAutodetect) {
+                    uniqueID = TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
+                }
                 if (uniqueID == null) {
                     if (!canCreateIfNew) {
                         return null;
