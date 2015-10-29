@@ -156,20 +156,20 @@ namespace Project_B.Code.DataProvider {
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value > .3 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .1)) {
+                if (orderedCompetitionCoeffs.First().Value >= .8 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .2)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), key, 
                         Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name);
                     return CompetitionUnique.DataSource.GetByKey(key);
                 }
                 return null;
-            }
+            }/*
             var counts = suitableСompetitionItems.Where(sit => sit.Value.Count == competitionToSave.Matches.Count).ToArray();
             if (counts.Length == 1) {
                 _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), counts[0].Key,
                     Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, counts[0].Key).Sort(Competition.Fields.ID).First().Name);
                 return CompetitionUnique.DataSource.GetByKey(counts[0].Key);
-            }
+            }*/
             return null;
         }
 
