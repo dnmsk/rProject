@@ -17,16 +17,16 @@ namespace Project_B.Code.DataProvider {
 
         public HistoryProvider() : base(_logger) {}
 
-        public void SaveResult(BrokerData brokerData) {
+        public void SaveResult(BrokerData brokerData, bool canCreateIfNew) {
             InvokeSafe(() => {
                 foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed);
+                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, canCreateIfNew);
                     foreach (var matchParsed in competitionParsed.Matches) {
                         var competitor1 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, canCreateIfNew);
                         var competitor2 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed);
-                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, canCreateIfNew);
+                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, canCreateIfNew);
                         MainProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
                     }
                 }

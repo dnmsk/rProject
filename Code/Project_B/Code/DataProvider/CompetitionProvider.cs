@@ -22,7 +22,7 @@ namespace Project_B.Code.DataProvider {
         
         public CompetitionProvider() : base(_logger) {}
 
-        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
+        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew) {
             return InvokeSafeSingleCall(() => {
                 nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
@@ -36,7 +36,7 @@ namespace Project_B.Code.DataProvider {
                                                 Competition.Fields.Name
                     );
                 if (competition == null) {
-                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave);
+                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave, canCreateIfNew);
                 }
                 return new CompetitionTransport {
                     Name = competition.Name,
@@ -48,7 +48,7 @@ namespace Project_B.Code.DataProvider {
             }, null);
         }
 
-        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave) {
+        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew) {
             var nameOriginShort = CompetitionHelper.GetShortCompetitionName(nameOrigin);
             var competitionUniqueAdvanced = CompetitionUniqueAdvanced.DataSource
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Gendertype, (short)genderDetected)
@@ -59,6 +59,9 @@ namespace Project_B.Code.DataProvider {
             if (competitionUniqueAdvanced == null) {
                 var uniqueID = TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
                 if (uniqueID == null) {
+                    if (!canCreateIfNew) {
+                        return null;
+                    }
                     uniqueID = new CompetitionUnique {
                         IsUsed = true
                     };
@@ -174,7 +177,7 @@ namespace Project_B.Code.DataProvider {
             return names.StrJoin(". ");
         }
 
-        public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc) {
+        public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc, bool canCreateIfNew) {
             return InvokeSafeSingleCall(() => {
                 var source = CompetitionItem.DataSource
                         .Where(new DaoFilterOr(
@@ -210,6 +213,9 @@ namespace Project_B.Code.DataProvider {
                     competitionItem.Save();
                 }
                 if (competitionItem == null) {
+                    if (!canCreateIfNew) {
+                        return default(int);
+                    }
                     competitionItem = new CompetitionItem {
                         SportType = competitionTransport.SportType,
                         Datecreatedutc = DateTime.UtcNow,

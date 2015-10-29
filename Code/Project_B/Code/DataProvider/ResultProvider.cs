@@ -22,6 +22,9 @@ namespace Project_B.Code.DataProvider {
 
         public void SaveResults(int competitionItemID, SportType sportType, FullResult fullResult) {
             InvokeSafeSingleCall(() => {
+                if (competitionItemID == default(int)) {
+                    return null;
+                }
                 if (!CompetitionResult.DataSource
                             .WhereEquals(CompetitionResult.Fields.CompetitionitemID, competitionItemID)
                             .IsExists()) {

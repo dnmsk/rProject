@@ -18,13 +18,13 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, true, LanguageType.English) {
                         RunLiveOddsTask = true,
                         RunRegularOddsTask = true,
                         RunPastDateHistoryTask = true,
                         RunTodayHistoryTask = true
                     },
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, false, LanguageType.Russian) {
                         RunPastDateHistoryTask = true,
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
                     },
