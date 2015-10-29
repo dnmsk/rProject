@@ -96,7 +96,7 @@ namespace Project_B.Code.DataProvider {
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-2), matchParsed.DateUtc.AddDays(2), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
                 .AsMapByIds(
                     CompetitionItem.Fields.Competitoruniqueid1,
                     CompetitionItem.Fields.Competitoruniqueid2
@@ -151,7 +151,7 @@ namespace Project_B.Code.DataProvider {
                     nameFull.Equals(matchParsed.CompetitorNameFullOne, StringComparison.InvariantCultureIgnoreCase);
                 var competitionItem = suitableCompetitionItems[matchedByResults[0].Key];
                 var competitorUniqueID = competitorIsFirst ? competitionItem.Competitoruniqueid1 : competitionItem.Competitoruniqueid2;
-                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameFull, matchedByResults[0].Key,
+                _logger.Info("Для '{0}' поставляю [matched = 1] CompetitorUniqueID {1} ({2})", nameFull, matchedByResults[0].Key,
                     Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, competitorUniqueID).Sort(Competitor.Fields.ID).First().NameFull);
                 return CompetitorUnique.DataSource.GetByKey(competitorUniqueID);
             } else {
@@ -186,10 +186,11 @@ namespace Project_B.Code.DataProvider {
                 .ToArray();
             if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .6 &&
                 (suitableCompetitors.Length <= 1 || !(suitableCompetitors[0].Value - suitableCompetitors[1].Value < .15))) {
-                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameFull, suitableCompetitors[0].Key,
+                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
                                             Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                         .Sort(Competitor.Fields.ID)
-                                                        .First().NameFull);
+                                                        .First().NameFull,
+                                            suitableCompetitors[0].Value);
                     return CompetitorUnique.DataSource.GetByKey(suitableCompetitors[0].Key);
             }
             return null;

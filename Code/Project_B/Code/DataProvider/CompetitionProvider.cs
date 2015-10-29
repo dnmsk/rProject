@@ -100,17 +100,17 @@ namespace Project_B.Code.DataProvider {
         private static CompetitionUnique TryDetectCompetitionUniqueFromMatches(SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
             var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
             var minDate = dates.Any() ? dates.Min().Date : DateTime.MinValue;
-            var maxate = dates.Any() ? dates.Max().Date : DateTime.MinValue;
+            var maxdate = dates.Any() ? dates.Max().Date.AddDays(1) : DateTime.MinValue;
             var suitableСompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxate.AddDays(1), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
                 .AsMapByField<int>(CompetitionItem.Fields.CompetitionuniqueID, CompetitionItem.Fields.ID);
             if (minDate < DateTime.UtcNow.Date) {
                 var mapResults = CompetitionResult.DataSource
                     .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
                     .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
                     .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, suitableСompetitionItems.Keys)
-                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxate.AddDays(1), BetweenType.Inclusive)
+                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
                     .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
                     .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
                     .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
@@ -137,9 +137,6 @@ namespace Project_B.Code.DataProvider {
                         if (h.ScoreID != res.ScoreID) {
                             return false;
                         }
-                        if (h.SubScore.Length == 0 || res.SubScore.Length == 0) {
-                            return true;
-                        }
                         if (h.SubScore.Length != res.SubScore.Length) {
                             return false;
                         }
@@ -150,16 +147,16 @@ namespace Project_B.Code.DataProvider {
                         }
                         return true;
                     }));
-                    mapCoefficients[suitableСompetitionItem.Key] = successMatches/(float)hashResults.Length;
+                    mapCoefficients[suitableСompetitionItem.Key] = successMatches/(float)competitionToSave.Matches.Count;
                 }
                 var orderedCompetitionCoeffs = mapCoefficients.OrderByDescending(kv => kv.Value).ToList();
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .8 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .2)) {
+                if (orderedCompetitionCoeffs.First().Value >= .8 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
-                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), key, 
-                        Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name);
+                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key, 
+                        Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);
                     return CompetitionUnique.DataSource.GetByKey(key);
                 }
                 return null;
