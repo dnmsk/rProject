@@ -179,7 +179,7 @@ namespace Project_B.Code.DataProvider {
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .4 &&
-                (suitableCompetitors.Length <= 1 || !(suitableCompetitors[0].Value - suitableCompetitors[1].Value < .15))) {
+                (suitableCompetitors.Length <= 1 || !(suitableCompetitors[1].Value / suitableCompetitors[0].Value < .5))) {
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
                                             Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                         .Sort(Competitor.Fields.ID)

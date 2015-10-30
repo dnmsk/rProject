@@ -101,6 +101,9 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static CompetitionUnique TryDetectCompetitionUniqueFromMatches(SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
+            if (competitionToSave.Matches.Count < 4) {
+                return null;
+            }
             var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
             var minDate = dates.Any() ? dates.Min().Date : DateTime.MinValue;
             var maxdate = dates.Any() ? dates.Max().Date.AddDays(1) : DateTime.MinValue;
@@ -156,7 +159,7 @@ namespace Project_B.Code.DataProvider {
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .8 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
+                if (orderedCompetitionCoeffs.First().Value >= .6 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key, 
                         Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);
