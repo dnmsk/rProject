@@ -5,7 +5,7 @@ using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic.WebFiles;
-using Project_B.Code.Algorythm;
+using Project_B.Code.Algorithm;
 using Project_B.Code.Enums;
 
 namespace Project_B {
@@ -18,15 +18,16 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, true, false, LanguageType.English) {
-                        RunLiveOddsTask = true,
-                        RunRegularOddsTask = true,
-                        RunPastDateHistoryTask = true,
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, 
+                                           GatherBehaviorMode.CreateIfNew, 
+                                           LanguageType.English,
+                                           RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
-                        RunTodayHistoryTask = true
                     },
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, false, true, LanguageType.Russian) {
-                        RunPastDateHistoryTask = true,
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, 
+                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor | GatherBehaviorMode.CreateIfEmptyToDate, 
+                                           LanguageType.Russian,
+                                           RunTaskMode.RunPastDateHistoryTask) {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
                     },
                 };

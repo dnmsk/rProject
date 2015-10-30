@@ -22,7 +22,7 @@ namespace Project_B.Code.DataProvider {
         
         public CompetitionProvider() : base(_logger) {}
 
-        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew, bool canAutodetect) {
+        public CompetitionTransport GetCompetition(LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
@@ -36,7 +36,7 @@ namespace Project_B.Code.DataProvider {
                                                 Competition.Fields.Name
                     );
                 if (competition == null) {
-                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave, canCreateIfNew, canAutodetect);
+                    return GetCompetitionUnique(language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode);
                 }
                 return new CompetitionTransport {
                     Name = competition.Name,
@@ -48,7 +48,7 @@ namespace Project_B.Code.DataProvider {
             }, null);
         }
 
-        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, bool canCreateIfNew, bool canAutodetect) {
+        private CompetitionTransport GetCompetitionUnique(LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             var nameOriginShort = CompetitionHelper.GetShortCompetitionName(nameOrigin);
             var competitionUniqueAdvanced = CompetitionUniqueAdvanced.DataSource
                                          .WhereEquals(CompetitionUniqueAdvanced.Fields.Gendertype, (short)genderDetected)
@@ -58,11 +58,11 @@ namespace Project_B.Code.DataProvider {
                                          .First(CompetitionUniqueAdvanced.Fields.CompetitionuniqueID);
             if (competitionUniqueAdvanced == null) {
                 CompetitionUnique uniqueID = null;
-                if (canAutodetect) {
+                if (algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetition)) {
                     uniqueID = TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
                 }
                 if (uniqueID == null) {
-                    if (!canCreateIfNew) {
+                    if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
                         return null;
                     }
                     uniqueID = new CompetitionUnique {
@@ -132,7 +132,7 @@ namespace Project_B.Code.DataProvider {
                     .ToArray();
                 foreach (var suitableСompetitionItem in suitableСompetitionItems) {
                     List<ResultModel> resultsForCompetition;
-                    if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition) || resultsForCompetition.Count == 0) {
+                    if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition) || resultsForCompetition.Count < 3) {
                         mapCoefficients[suitableСompetitionItem.Key] = 0;
                         continue;
                     }
@@ -163,13 +163,7 @@ namespace Project_B.Code.DataProvider {
                     return CompetitionUnique.DataSource.GetByKey(key);
                 }
                 return null;
-            }/*
-            var counts = suitableСompetitionItems.Where(sit => sit.Value.Count == competitionToSave.Matches.Count).ToArray();
-            if (counts.Length == 1) {
-                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2})", nameOrigin.StrJoin(". "), counts[0].Key,
-                    Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, counts[0].Key).Sort(Competition.Fields.ID).First().Name);
-                return CompetitionUnique.DataSource.GetByKey(counts[0].Key);
-            }*/
+            }
             return null;
         }
 
@@ -177,7 +171,7 @@ namespace Project_B.Code.DataProvider {
             return names.StrJoin(". ");
         }
 
-        public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc, bool canCreateIfNew) {
+        public int GetCompetitionItem(CompetitorTransport competitor1Transport, CompetitorTransport competitor2Transport, CompetitionTransport competitionTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 var source = CompetitionItem.DataSource
                         .Where(new DaoFilterOr(
@@ -213,13 +207,13 @@ namespace Project_B.Code.DataProvider {
                     competitionItem.Save();
                 }
                 if (competitionItem == null) {
-                    if (!canCreateIfNew) {
+                    if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
                         return default(int);
                     }
                     competitionItem = new CompetitionItem {
                         SportType = competitionTransport.SportType,
                         Datecreatedutc = DateTime.UtcNow,
-                        Dateeventutc = eventDateUtc,
+                        Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : DateTime.UtcNow,
                         CompetitionuniqueID = competitionTransport.UniqueID,
                         Competitoruniqueid1 = competitor1Transport.UniqueID,
                         Competitoruniqueid2 = competitor2Transport.UniqueID

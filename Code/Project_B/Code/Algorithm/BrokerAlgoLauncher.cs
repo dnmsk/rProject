@@ -5,42 +5,38 @@ using MainLogic;
 using Project_B.Code.DataProvider;
 using Project_B.Code.Enums;
 
-namespace Project_B.Code.Algorythm {
+namespace Project_B.Code.Algorithm {
     public class BrokerAlgoLauncher {
         private readonly BrokerType _brokerType;
-        private readonly bool _canCreateIfNew;
-        private readonly bool _canAutodetect;
+        private readonly GatherBehaviorMode _algoMode;
         private readonly LanguageType _languageType;
+        private readonly RunTaskMode _runTaskMode;
         private readonly SportType _sportType;
-
-        public bool RunTodayHistoryTask { get; set; }
+        
         public TimeSpan TodayHistoryTaskTimespan = new TimeSpan(1, 0, 0);
-        public bool RunPastDateHistoryTask { get; set; }
         public TimeSpan PastDateHistoryTaskTimespan = new TimeSpan(4, 0, 0);
-        public bool RunLiveOddsTask { get; set; }
         public TimeSpan LiveOddsTaskTimespan = new TimeSpan(0, 0, 15);
-        public bool RunRegularOddsTask { get; set; }
         public TimeSpan RegularOddsTaskTimespan = new TimeSpan(0, 5, 0);
 
-        public BrokerAlgoLauncher(BrokerType brokerType, bool canCreateIfNew, bool canAutodetect, LanguageType languageType, SportType sportType = SportType.Basketball | SportType.Football | SportType.IceHockey | SportType.Tennis | SportType.Volleyball) {
+        public BrokerAlgoLauncher(BrokerType brokerType, GatherBehaviorMode algoMode, LanguageType languageType, RunTaskMode runTaskMode, SportType sportType = SportType.Basketball | SportType.Football | SportType.IceHockey | SportType.Tennis | SportType.Volleyball) {
             _brokerType = brokerType;
-            _canCreateIfNew = canCreateIfNew;
-            _canAutodetect = canAutodetect;
+            _algoMode = algoMode;
             _languageType = languageType;
+            _runTaskMode = runTaskMode;
             _sportType = sportType;
         }
 
         public void Schedule() {
-            if (RunTodayHistoryTask) {
+            if (_runTaskMode.HasFlag(RunTaskMode.RunTodayHistoryTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForToday, TodayHistoryTaskTimespan, null));
             }
-            if (RunPastDateHistoryTask) {
+            if (_runTaskMode.HasFlag(RunTaskMode.RunPastDateHistoryTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForPastDate, PastDateHistoryTaskTimespan, null));
             }
-            if (RunLiveOddsTask) {
+            if (_runTaskMode.HasFlag(RunTaskMode.RunLiveOddsTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectLiveOddsWithResult, LiveOddsTaskTimespan, null));
             }
-            if (RunRegularOddsTask) {
+            if (_runTaskMode.HasFlag(RunTaskMode.RunRegularOddsTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectRegularOdds, RegularOddsTaskTimespan, null));
             }
         }
@@ -50,7 +46,7 @@ namespace Project_B.Code.Algorythm {
                 var utcNow = DateTime.UtcNow;
                 if (MainProvider.Instance.BetProvider.GetStateRegular(_brokerType, utcNow) != SystemStateBetType.Unknown) {
                     var regularOdds = BookPage.Instance.GetOddsProvider(_brokerType).LoadRegular(_sportType, _languageType);
-                    MainProvider.Instance.BetProvider.SaveRegular(regularOdds, _canCreateIfNew, _canAutodetect);
+                    MainProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
                     MainProvider.Instance.BetProvider.SetStateRegular(_brokerType, utcNow);
                 }
                 return null;
@@ -62,7 +58,7 @@ namespace Project_B.Code.Algorythm {
                 var liveData = BookPage.Instance
                     .GetOddsProvider(_brokerType)
                     .LoadLive(_sportType, _languageType);
-                MainProvider.Instance.LiveProvider.ProcessdLiveParsed(liveData, _canCreateIfNew, _canAutodetect);
+                MainProvider.Instance.LiveProvider.ProcessdLiveParsed(liveData, _algoMode);
                 return null;
             }
         }
@@ -74,7 +70,7 @@ namespace Project_B.Code.Algorythm {
                     var historyData = BookPage.Instance
                                               .GetHistoryProvider(_brokerType)
                                               .Load(minDateToCollect.Value, _sportType, _languageType);
-                    MainProvider.Instance.HistoryProvider.SaveResult(historyData, _canCreateIfNew, _canAutodetect);
+                    MainProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
                     MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
                 }
                 return null;
@@ -87,7 +83,7 @@ namespace Project_B.Code.Algorythm {
                 var historyData = BookPage.Instance
                     .GetHistoryProvider(_brokerType)
                     .Load(todayUtc, _sportType, _languageType);
-                MainProvider.Instance.HistoryProvider.SaveResult(historyData, _canCreateIfNew, _canAutodetect);
+                MainProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
                 MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, todayUtc, SystemStateResultType.CollectForToday);
                 return null;
             }

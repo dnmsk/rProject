@@ -252,7 +252,7 @@
     <Compile Include="App_Start\ReactConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Code\Algorythm\BrokerAlgoLauncher.cs" />
+    <Compile Include="Code\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="Code\BookPage.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceBase.cs" />
     <Compile Include="Code\BrokerProvider\BlueRedBroker\RedBlueFaceOddsProvider.cs" />
@@ -331,6 +331,8 @@
     <Compile Include="Code\Enums\LanguageType.cs" />
     <Compile Include="Code\Enums\ResultModeType.cs" />
     <Compile Include="Code\Enums\ResultType.cs" />
+    <Compile Include="Code\Enums\GatherBehaviorMode.cs" />
+    <Compile Include="Code\Enums\RunTaskMode.cs" />
     <Compile Include="Code\Enums\SportType.cs" />
     <Compile Include="Code\Enums\SystemStateBetType.cs" />
     <Compile Include="Code\Enums\SystemStateResultType.cs" />

@@ -22,7 +22,7 @@ namespace Project_B.Code.DataProvider {
 
         public CompetitorProvider() : base(_logger) { }
 
-        public CompetitorTransport GetCompetitor(LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, bool canCreateIfNew, bool canAutodetect) {
+        public CompetitorTransport GetCompetitor(LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 nameFull = (nameFull ?? nameShort).Trim();
                 nameShort = (nameShort ?? nameFull).Trim();
@@ -48,11 +48,11 @@ namespace Project_B.Code.DataProvider {
                 }
                 if (competitor == null) {
                     CompetitorUnique uniqueID = null;
-                    if (canAutodetect) {
+                    if (algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetitor)) {
                         uniqueID = TryGetCompetitorUniqueByResult(nameFull, nameShort, competitionUnique, matchParsed);
                     }
                     if (uniqueID == null) {
-                        if (!canCreateIfNew) {
+                        if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
                             return null;
                         }
                         uniqueID = new CompetitorUnique {
@@ -128,7 +128,7 @@ namespace Project_B.Code.DataProvider {
                 ScoreID = ScoreHelper.Instance.GenerateScoreID(matchParsed.Result.CompetitorResultOne, matchParsed.Result.CompetitorResultTwo),
                 SubScore = matchParsed.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
             };
-            KeyValuePair<int, ResultModel>[] matchedByResults = suitableCompetitionResults
+            var matchedByResults = suitableCompetitionResults
                 .Where(kv => {
                     var res = kv.Value;
                     if (res.ScoreID != currentResultModel.ScoreID) {
@@ -148,20 +148,7 @@ namespace Project_B.Code.DataProvider {
                     return true;
                 })
                 .ToArray();
-            if (matchedByResults.Length == 1) {
-                var competitorIsFirst =
-                    nameShort.Equals(matchParsed.CompetitorNameShortOne, StringComparison.InvariantCultureIgnoreCase) ||
-                    nameFull.Equals(matchParsed.CompetitorNameFullOne, StringComparison.InvariantCultureIgnoreCase);
-                var competitionItem = suitableCompetitionItems[matchedByResults[0].Key];
-                var competitorUniqueID = competitorIsFirst ? competitionItem.Competitoruniqueid1 : competitionItem.Competitoruniqueid2;
-                _logger.Info("Для '{0}' поставляю [matched = 1] CompetitorUniqueID {1} ({2})", nameFull, matchedByResults[0].Key,
-                    Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, competitorUniqueID).Sort(Competitor.Fields.ID).First().NameFull);
-                return CompetitorUnique.DataSource.GetByKey(competitorUniqueID);
-            } else {
-                return TryGetCompetitorUniqueByName(nameFull, nameShort, matchedByResults, matchParsed);
-            }
-
-            return null;
+            return TryGetCompetitorUniqueByName(nameFull, nameShort, matchedByResults, matchParsed);
         }
 
         private static CompetitorUnique TryGetCompetitorUniqueByName(string nameFull, string nameShort, KeyValuePair<int, ResultModel>[] mathedCompetitionItemsByResult, MatchParsed matchParsed) {
@@ -176,25 +163,29 @@ namespace Project_B.Code.DataProvider {
                     CompetitionItem.Fields.Competitoruniqueid1,
                     CompetitionItem.Fields.Competitoruniqueid2
                 );
+            var competitorToDetectIsFirst =
+                nameShort.Equals(matchParsed.CompetitorNameShortOne, StringComparison.InvariantCultureIgnoreCase) ||
+                nameFull.Equals(matchParsed.CompetitorNameFullOne, StringComparison.InvariantCultureIgnoreCase);
             var nameShortHash = new HashSet<char>(Transliterator.GetTranslit(nameShort).ToLower().Select(c => c).Distinct());
             var nameFullHash = new HashSet<char>(Transliterator.GetTranslit(nameFull).ToLower().Select(c => c).Distinct());
             var suitableCompetitors = Competitor.DataSource
-                .WhereIn(Competitor.Fields.CompetitoruniqueID, suitableCompetitionItems.Select(sc =>sc.Competitoruniqueid1)
-                                                                                       .Union(suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
-                                                                                       .Distinct())
+                .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst 
+                        ? suitableCompetitionItems.Select(sc =>sc.Competitoruniqueid1)
+                        : suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
+                    .Distinct())
                 .AsList(Competitor.Fields.NameFull, Competitor.Fields.NameShort, Competitor.Fields.CompetitoruniqueID)
                 .GroupBy(e => e.CompetitoruniqueID)
                 .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(nameFullHash, nameShortHash, e.NameFull, e.NameShort)).Max())
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
-            if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .6 &&
+            if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .4 &&
                 (suitableCompetitors.Length <= 1 || !(suitableCompetitors[0].Value - suitableCompetitors[1].Value < .15))) {
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
                                             Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                         .Sort(Competitor.Fields.ID)
                                                         .First().NameFull,
                                             suitableCompetitors[0].Value);
-                    return CompetitorUnique.DataSource.GetByKey(suitableCompetitors[0].Key);
+                return CompetitorUnique.DataSource.GetByKey(suitableCompetitors[0].Key);
             }
             return null;
         }

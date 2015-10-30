@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -17,16 +18,24 @@ namespace Project_B.Code.DataProvider {
 
         public HistoryProvider() : base(_logger) {}
 
-        public void SaveResult(BrokerData brokerData, bool canCreateIfNew, bool canAutodetect) {
+        public void SaveResult(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
+                if (algoMode.HasFlag(GatherBehaviorMode.CreateIfEmptyToDate)) { 
+                    var minDate = brokerData.Competitions.Min(c => c.Matches.Where(m => m.DateUtc != DateTime.MinValue).Min(m => m.DateUtc));
+                    var maxDate = brokerData.Competitions.Max(c => c.Matches.Max(m => m.DateUtc));
+                    if ((maxDate - minDate).TotalDays <= 1 && CompetitionItem.DataSource.WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive).Count() == 0) {
+                        algoMode = algoMode.FlagSet(GatherBehaviorMode.CreateIfNew);
+                        _logger.Info("Date {0} enable GatherBehaviorMode.CreateIfNew", minDate);
+                    }
+                }       
                 foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, canCreateIfNew, canAutodetect);
+                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
                     foreach (var matchParsed in competitionParsed.Matches) {
                         var competitor1 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, canCreateIfNew, canAutodetect);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, algoMode);
                         var competitor2 = MainProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, canCreateIfNew, canAutodetect);
-                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, canCreateIfNew);
+                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, algoMode);
+                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
                         MainProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
                     }
                 }

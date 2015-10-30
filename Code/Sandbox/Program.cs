@@ -13,7 +13,6 @@ using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
 using Project_B.Code;
-using Project_B.Code.Algorythm;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.Enums;
 
@@ -25,7 +24,7 @@ namespace Sandbox {
                 RegisterDB();
                 var sb = new StringBuilder();
                 for (var date = new DateTime(2014, 01, 01); date < DateTime.Now; date = date.AddDays(1)) {
-                    sb.AppendLine(string.Format("(0, '{0}', 1, 2),", date.ToString("yyyy-MM-dd")));
+                    sb.AppendLine(string.Format("(0, '{0}', 1, 1),", date.ToString("yyyy-MM-dd")));
                 }
                 //var start = Stopwatch.StartNew();
                 /*
