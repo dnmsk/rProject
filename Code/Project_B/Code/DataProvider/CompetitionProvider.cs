@@ -101,9 +101,6 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static CompetitionUnique TryDetectCompetitionUniqueFromMatches(SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
-            if (competitionToSave.Matches.Count < 4) {
-                return null;
-            }
             var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
             var minDate = dates.Any() ? dates.Min().Date : DateTime.MinValue;
             var maxdate = dates.Any() ? dates.Max().Date.AddDays(1) : DateTime.MinValue;
@@ -115,8 +112,7 @@ namespace Project_B.Code.DataProvider {
                 var mapResults = CompetitionResult.DataSource
                     .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
                     .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
-                    .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, suitableСompetitionItems.Keys)
-                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
+                    .WhereIn(CompetitionItem.Fields.ID, suitableСompetitionItems.SelectMany(sci => sci.Value.Select(ci => ci.ID)))
                     .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
                     .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
                     .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
@@ -135,7 +131,7 @@ namespace Project_B.Code.DataProvider {
                     .ToArray();
                 foreach (var suitableСompetitionItem in suitableСompetitionItems) {
                     List<ResultModel> resultsForCompetition;
-                    if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition) || resultsForCompetition.Count < 3) {
+                    if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition)) {
                         mapCoefficients[suitableСompetitionItem.Key] = 0;
                         continue;
                     }
@@ -159,7 +155,7 @@ namespace Project_B.Code.DataProvider {
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .6 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
+                if (orderedCompetitionCoeffs.First().Value >= .5 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key, 
                         Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);
@@ -205,7 +201,7 @@ namespace Project_B.Code.DataProvider {
                 var competitionItem = source
                     .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
-                if (competitionItem != null && eventDateUtc != DateTime.MinValue && competitionItem.Dateeventutc != eventDateUtc) {
+                if (competitionItem != null && eventDateUtc != DateTime.MinValue && (competitionItem.Dateeventutc - eventDateUtc).TotalDays < 2) {
                     competitionItem.Dateeventutc = eventDateUtc;
                     competitionItem.Save();
                 }
