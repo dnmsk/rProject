@@ -210,10 +210,11 @@ namespace Project_B.Code.DataProvider {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
                         return default(int);
                     }
+                    var utcNow = DateTime.UtcNow;
                     competitionItem = new CompetitionItem {
                         SportType = competitionTransport.SportType,
-                        Datecreatedutc = DateTime.UtcNow,
-                        Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : DateTime.UtcNow,
+                        Datecreatedutc = utcNow,
+                        Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow,
                         CompetitionuniqueID = competitionTransport.UniqueID,
                         Competitoruniqueid1 = competitor1Transport.UniqueID,
                         Competitoruniqueid2 = competitor2Transport.UniqueID

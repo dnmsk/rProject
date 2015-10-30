@@ -88,7 +88,7 @@ namespace Project_B.Code.Data.Result {
             var canDetectServe = false;
             var canDetectDidit = true;
             var serve = Serve.Unknown;
-            var hasAnyResult = false;
+            var resultReturned = false;
             foreach (var ch in resStr) {
                 short digit;
                 if (canDetectDidit && _charToDigit.TryGetValue(ch, out digit)) {
@@ -97,6 +97,7 @@ namespace Project_B.Code.Data.Result {
                     } else {
                         simpleResult.CompetitorResultOne = (short) (simpleResult.CompetitorResultOne * 10 + digit);
                     }
+                    resultReturned = false;
                     continue;
                 }
                 switch (ch) {
@@ -127,7 +128,7 @@ namespace Project_B.Code.Data.Result {
                     continue;
                 }
                 if (isFirstDigitCollect) {
-                    hasAnyResult = true;
+                    resultReturned = true;
                     isFirstDigitCollect = false;
                     simpleResult.Serve = serve;
                     yield return simpleResult;
@@ -135,7 +136,7 @@ namespace Project_B.Code.Data.Result {
                     serve = Serve.Unknown;
                 }
             }
-            if (!hasAnyResult) {
+            if (!resultReturned) {
                 yield return simpleResult;
             }
         } 
