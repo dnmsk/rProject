@@ -204,6 +204,8 @@ namespace Project_B.Code.DataProvider {
                 if (competitionItem != null && eventDateUtc != DateTime.MinValue && (competitionItem.Dateeventutc - eventDateUtc).TotalDays < 2) {
                     competitionItem.Dateeventutc = eventDateUtc;
                     competitionItem.Save();
+                } else {
+                    competitionItem = null;
                 }
                 if (competitionItem == null) {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
