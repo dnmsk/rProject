@@ -12,6 +12,7 @@ using Project_B.Code.DataProvider.Transport;
 using Project_B.Code.Entity;
 using Project_B.Code.Enums;
 using Project_B.Models;
+using Project_B.Models.SubData;
 
 namespace Project_B.Code.DataProvider {
     public class CompetitorProvider : SafeInvokerBase {
@@ -128,25 +129,9 @@ namespace Project_B.Code.DataProvider {
                 ScoreID = ScoreHelper.Instance.GenerateScoreID(matchParsed.Result.CompetitorResultOne, matchParsed.Result.CompetitorResultTwo),
                 SubScore = matchParsed.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
             };
+            var resultModelEqualityComparer = new ResultModelEqualityComparer();
             var matchedByResults = suitableCompetitionResults
-                .Where(kv => {
-                    var res = kv.Value;
-                    if (res.ScoreID != currentResultModel.ScoreID) {
-                        return false;
-                    }
-                    if (res.SubScore == null || currentResultModel.SubScore == null) {
-                        return true;
-                    }
-                    if (res.SubScore.Length != currentResultModel.SubScore.Length) {
-                        return false;
-                    }
-                    for (var i = 0; i < currentResultModel.SubScore.Length; i++) {
-                        if (res.SubScore[i] != currentResultModel.SubScore[i]) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
+                .Where(kv => resultModelEqualityComparer.Equals(kv.Value, currentResultModel))
                 .ToArray();
             return TryGetCompetitorUniqueByName(nameFull, nameShort, matchedByResults, matchParsed);
         }
@@ -198,10 +183,10 @@ namespace Project_B.Code.DataProvider {
             var distinctCharsFullCnt = nameFullDiff.Distinct().Count();
 
             var fullFactor = ((float)nameFullDiff.Count(nameFullEn.Contains) / nameFullDiff.Length) * 
-                (distinctCharsShortCnt > nameFullEn.Count ? nameFullEn.Count / (float) distinctCharsFullCnt : distinctCharsFullCnt / (float) nameFullEn.Count);
+                (Math.Min(distinctCharsFullCnt, nameFullEn.Count) / (float)Math.Max(distinctCharsFullCnt, nameFullEn.Count));
             var shortFactor = ((float)nameShortDiff.Count(nameShortEn.Contains) / nameShortDiff.Length) *
-                (distinctCharsShortCnt > nameShortEn.Count ? nameShortEn.Count / (float)distinctCharsShortCnt : distinctCharsShortCnt / (float)nameShortEn.Count);
-            return fullFactor > shortFactor ? fullFactor : shortFactor;
+                (Math.Min(distinctCharsShortCnt, nameFullEn.Count) / (float)Math.Max(distinctCharsShortCnt, nameFullEn.Count));
+            return Math.Max(fullFactor, shortFactor);
         }
     }
 }

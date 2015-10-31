@@ -5,6 +5,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
+using Microsoft.Ajax.Utilities;
 using Project_B.Code.Data;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.DataProvider.Transport;
@@ -12,6 +13,7 @@ using Project_B.Code.Entity;
 using Project_B.Code.Entity.Interface;
 using Project_B.Code.Enums;
 using Project_B.Models;
+using Project_B.Models.SubData;
 
 namespace Project_B.Code.DataProvider {
     public class CompetitionProvider : SafeInvokerBase {
@@ -104,21 +106,19 @@ namespace Project_B.Code.DataProvider {
             var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
             var minDate = dates.Any() ? dates.Min().Date : DateTime.MinValue;
             var maxdate = dates.Any() ? dates.Max().Date.AddDays(1) : DateTime.MinValue;
-            var suitableСompetitionItems = CompetitionItem.DataSource
-                .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
-                .AsMapByField<int>(CompetitionItem.Fields.CompetitionuniqueID, CompetitionItem.Fields.ID);
             if (minDate < DateTime.UtcNow.Date) {
+                var resultModelEqualityComparer = new ResultModelEqualityComparer();
                 var mapResults = CompetitionResult.DataSource
                     .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
                     .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
-                    .WhereIn(CompetitionItem.Fields.ID, suitableСompetitionItems.SelectMany(sci => sci.Value.Select(ci => ci.ID)))
+                    .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
+                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
                     .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
                     .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
                     .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
                         ScoreID = gr.First().ScoreID,
                         SubScore = gr.Select(gra => gra.GetJoinedEntity<CompetitionResultAdvanced>().ScoreID).ToArray()
-                    }).ToList());
+                    }).Distinct(resultModelEqualityComparer).ToList());
                 var mapCoefficients = new Dictionary<int, float>();
                 var hashResults = competitionToSave.Matches
                     .Where(m => m.Result != null)
@@ -128,34 +128,22 @@ namespace Project_B.Code.DataProvider {
                             ? m.Result.SubResult.Select(sr => ScoreHelper.Instance.GenerateScoreID(sr.CompetitorResultOne, sr.CompetitorResultTwo)).ToArray()
                             : new short[0]
                     })
+                    .Distinct(resultModelEqualityComparer)
                     .ToArray();
-                foreach (var suitableСompetitionItem in suitableСompetitionItems) {
+                foreach (var suitableСompetitionItem in mapResults) {
                     List<ResultModel> resultsForCompetition;
                     if (!mapResults.TryGetValue(suitableСompetitionItem.Key, out resultsForCompetition)) {
                         mapCoefficients[suitableСompetitionItem.Key] = 0;
                         continue;
                     }
-                    var successMatches = resultsForCompetition.Count(res => hashResults.Any(h => {
-                        if (h.ScoreID != res.ScoreID) {
-                            return false;
-                        }
-                        if (h.SubScore.Length != res.SubScore.Length) {
-                            return false;
-                        }
-                        for (var i = 0; i < h.SubScore.Length; i++) {
-                            if (h.SubScore[i] != res.SubScore[i]) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }));
-                    mapCoefficients[suitableСompetitionItem.Key] = successMatches/(float)competitionToSave.Matches.Count;
+                    var successMatches = resultsForCompetition.Count(res => hashResults.Any(h => resultModelEqualityComparer.Equals(h, res)));
+                    mapCoefficients[suitableСompetitionItem.Key] = (float)successMatches / Math.Max(suitableСompetitionItem.Value.Count, competitionToSave.Matches.Count);
                 }
                 var orderedCompetitionCoeffs = mapCoefficients.OrderByDescending(kv => kv.Value).ToList();
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .5 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
+                if (orderedCompetitionCoeffs.First().Value >= .4 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key, 
                         Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);
@@ -201,7 +189,7 @@ namespace Project_B.Code.DataProvider {
                 var competitionItem = source
                     .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
-                if (competitionItem != null && eventDateUtc != DateTime.MinValue && (competitionItem.Dateeventutc - eventDateUtc).TotalDays < 2) {
+                if (competitionItem != null && eventDateUtc != DateTime.MinValue && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) < 2) {
                     competitionItem.Dateeventutc = eventDateUtc;
                     competitionItem.Save();
                 } else {

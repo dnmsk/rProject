@@ -65,7 +65,7 @@ namespace Project_B.Code.Algorithm {
 
         public object CollectHistoryForPastDate() {
             using (var sw = new MiniProfiler("CollectHistoryForPastDate")) {
-                var minDateToCollect = MainProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
+                var minDateToCollect = (DateTime?) new DateTime(2014, 01, 01); // MainProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
                 if (minDateToCollect != null) {
                     var historyData = BookPage.Instance
                                               .GetHistoryProvider(_brokerType)
