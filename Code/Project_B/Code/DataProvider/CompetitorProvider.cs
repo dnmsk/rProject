@@ -163,13 +163,14 @@ namespace Project_B.Code.DataProvider {
                 .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(nameFullHash, nameShortHash, e.NameFull, e.NameShort)).Max())
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
-            if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .4 &&
-                (suitableCompetitors.Length <= 1 || !(suitableCompetitors[1].Value / suitableCompetitors[0].Value < .5))) {
-                    _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
-                                            Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
-                                                        .Sort(Competitor.Fields.ID)
-                                                        .First().NameFull,
-                                            suitableCompetitors[0].Value);
+            if (suitableCompetitors.Length > 0 && 
+                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .2) ||
+                        (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .4 && (suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
+                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
+                                        Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
+                                                    .Sort(Competitor.Fields.ID)
+                                                    .First().NameFull,
+                                        suitableCompetitors[0].Value);
                 return CompetitorUnique.DataSource.GetByKey(suitableCompetitors[0].Key);
             }
             return null;
@@ -178,14 +179,11 @@ namespace Project_B.Code.DataProvider {
         private static float SuitByNameFactor(HashSet<char> nameFullEn, HashSet<char> nameShortEn, string nameFullDiff, string nameShortDiff) {
             nameShortDiff = Transliterator.GetTranslit(nameShortDiff.ToLower());
             nameFullDiff = Transliterator.GetTranslit(nameFullDiff.ToLower());
-
-            var distinctCharsShortCnt = nameShortDiff.Distinct().Count();
-            var distinctCharsFullCnt = nameFullDiff.Distinct().Count();
-
+            
             var fullFactor = ((float)nameFullDiff.Count(nameFullEn.Contains) / nameFullDiff.Length) * 
-                (Math.Min(distinctCharsFullCnt, nameFullEn.Count) / (float)Math.Max(distinctCharsFullCnt, nameFullEn.Count));
+                (Math.Min(nameFullDiff.Length, nameFullEn.Count) / (float)Math.Max(nameFullDiff.Length, nameFullEn.Count));
             var shortFactor = ((float)nameShortDiff.Count(nameShortEn.Contains) / nameShortDiff.Length) *
-                (Math.Min(distinctCharsShortCnt, nameFullEn.Count) / (float)Math.Max(distinctCharsShortCnt, nameFullEn.Count));
+                (Math.Min(nameShortDiff.Length, nameFullEn.Count) / (float)Math.Max(nameShortDiff.Length, nameFullEn.Count));
             return Math.Max(fullFactor, shortFactor);
         }
     }

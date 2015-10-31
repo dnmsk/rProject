@@ -13,6 +13,7 @@ using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
 using Project_B.Code;
+using Project_B.Code.Algorithm;
 using Project_B.Code.DataProvider.DataHelper;
 using Project_B.Code.Enums;
 
@@ -27,11 +28,20 @@ namespace Sandbox {
                     sb.AppendLine(string.Format("(0, '{0}', 1, 1),", date.ToString("yyyy-MM-dd")));
                 }
                 //var start = Stopwatch.StartNew();
-                /*
+                /**/
                 Console.WriteLine("CollectOddsAlgo");
-                var algo = new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English);
-                algo.CollectLiveOddsWithResult();
-                */
+                var algo = new BrokerAlgoLauncher(BrokerType.RedBlue,
+                                           //GatherBehaviorMode.CreateIfNew, 
+                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor /*| GatherBehaviorMode.CreateIfEmptyToDate*/,
+                                           //LanguageType.English,
+                                           LanguageType.Russian,
+                                           RunTaskMode.RunPastDateHistoryTask) {
+                    PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
+                };
+                for (var date = new DateTime(2014, 01, 05); date < DateTime.Now; date = date.AddDays(1)) {
+                    algo.CollectHistoryForPastDate(date);
+                }
+                /**/
                 //Console.WriteLine(start.ElapsedMilliseconds);
                 //Console.ReadLine();
             }

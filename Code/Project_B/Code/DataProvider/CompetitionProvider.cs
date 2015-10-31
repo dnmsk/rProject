@@ -112,7 +112,10 @@ namespace Project_B.Code.DataProvider {
                     .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
                     .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
-                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
+                    .Where(new DaoFilterAnd(
+                        new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, minDate),
+                        new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.Less, maxdate)
+                    ))
                     .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
                     .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
                     .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
@@ -137,13 +140,15 @@ namespace Project_B.Code.DataProvider {
                         continue;
                     }
                     var successMatches = resultsForCompetition.Count(res => hashResults.Any(h => resultModelEqualityComparer.Equals(h, res)));
-                    mapCoefficients[suitableСompetitionItem.Key] = (float)successMatches / Math.Max(suitableСompetitionItem.Value.Count, competitionToSave.Matches.Count);
+                    mapCoefficients[suitableСompetitionItem.Key] = (float)successMatches / competitionToSave.Matches.Count;
                 }
                 var orderedCompetitionCoeffs = mapCoefficients.OrderByDescending(kv => kv.Value).ToList();
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .4 && (orderedCompetitionCoeffs.Count == 1 || (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
+                if (orderedCompetitionCoeffs.First().Value >= .4 && 
+                        (orderedCompetitionCoeffs.Count == 1 || 
+                         orderedCompetitionCoeffs.Count > 1 && (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key, 
                         Competition.DataSource.WhereEquals(Competition.Fields.CompetitionuniqueID, key).Sort(Competition.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);

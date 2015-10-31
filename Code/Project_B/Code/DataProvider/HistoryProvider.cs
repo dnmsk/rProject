@@ -46,7 +46,9 @@ namespace Project_B.Code.DataProvider {
                         }
                         successCompetitionItems++;
                         var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
-                        MainProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
+                        if (matchParsed.Result != null) {
+                            MainProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
+                        }
                     }
                 }
                 _logger.Info("SaveResults: {0}: {1}/{2} {3}/{4} {5} {6}", brokerData.Competitions.First().Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), successCompetitions, brokerData.Competitions.Count, 
