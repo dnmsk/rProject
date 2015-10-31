@@ -160,7 +160,7 @@ namespace Project_B.Code.DataProvider {
                     .Distinct())
                 .AsList(Competitor.Fields.NameFull, Competitor.Fields.NameShort, Competitor.Fields.CompetitoruniqueID)
                 .GroupBy(e => e.CompetitoruniqueID)
-                .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(nameFullHash, nameShortHash, e.NameFull, e.NameShort)).Max())
+                .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(nameFullHash, nameShortHash, e.NameFull, e.NameShort, nameFull, nameShort)).Max())
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 && 
@@ -176,14 +176,14 @@ namespace Project_B.Code.DataProvider {
             return null;
         }
 
-        private static float SuitByNameFactor(HashSet<char> nameFullEn, HashSet<char> nameShortEn, string nameFullDiff, string nameShortDiff) {
-            nameShortDiff = Transliterator.GetTranslit(nameShortDiff.ToLower());
-            nameFullDiff = Transliterator.GetTranslit(nameFullDiff.ToLower());
+        private static float SuitByNameFactor(HashSet<char> nameFullEn, HashSet<char> nameShortEn, string nameFullTranslit, string nameShortTranslit, string nameFullSrc, string nameShortSrc) {
+            nameShortTranslit = Transliterator.GetTranslit(nameShortTranslit.ToLower());
+            nameFullTranslit = Transliterator.GetTranslit(nameFullTranslit.ToLower());
             
-            var fullFactor = ((float)nameFullDiff.Count(nameFullEn.Contains) / nameFullDiff.Length) * 
-                (Math.Min(nameFullDiff.Length, nameFullEn.Count) / (float)Math.Max(nameFullDiff.Length, nameFullEn.Count));
-            var shortFactor = ((float)nameShortDiff.Count(nameShortEn.Contains) / nameShortDiff.Length) *
-                (Math.Min(nameShortDiff.Length, nameFullEn.Count) / (float)Math.Max(nameShortDiff.Length, nameFullEn.Count));
+            var fullFactor = ((float)nameFullTranslit.Count(nameFullEn.Contains) / Math.Max(nameFullTranslit.Length, nameFullSrc.Length)) * 
+                (Math.Min(nameFullTranslit.Length, nameFullEn.Count) / (float)Math.Max(nameFullTranslit.Length, nameFullEn.Count));
+            var shortFactor = ((float)nameShortTranslit.Count(nameShortEn.Contains) / Math.Max(nameShortTranslit.Length, nameShortSrc.Length)) *
+                (Math.Min(nameShortTranslit.Length, nameShortEn.Count) / (float)Math.Max(nameShortTranslit.Length, nameShortEn.Count));
             return Math.Max(fullFactor, shortFactor);
         }
     }
