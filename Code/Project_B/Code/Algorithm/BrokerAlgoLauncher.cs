@@ -31,7 +31,7 @@ namespace Project_B.Code.Algorithm {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForToday, TodayHistoryTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunPastDateHistoryTask)) {
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForPastDate, PastDateHistoryTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForPastDate(), PastDateHistoryTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunLiveOddsTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectLiveOddsWithResult, LiveOddsTaskTimespan, null));
@@ -63,9 +63,9 @@ namespace Project_B.Code.Algorithm {
             }
         }
 
-        public object CollectHistoryForPastDate() {
+        public object CollectHistoryForPastDate(DateTime? pastDate = null) {
             using (var sw = new MiniProfiler("CollectHistoryForPastDate")) {
-                var minDateToCollect = (DateTime?) new DateTime(2014, 01, 01); // MainProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
+                var minDateToCollect = pastDate ?? MainProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
                 if (minDateToCollect != null) {
                     var historyData = BookPage.Instance
                                               .GetHistoryProvider(_brokerType)
