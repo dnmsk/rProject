@@ -108,6 +108,8 @@ namespace Project_B.Code.DataProvider {
             var suitableCompetitionResults = CompetitionResult.DataSource
                 .Join(JoinType.Left, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
                 .WhereIn(CompetitionResult.Fields.CompetitionitemID, suitableCompetitionItems.Keys)
+                .Sort(CompetitionResult.Fields.ID)
+                .Sort(CompetitionResultAdvanced.Fields.ID)
                 .AsList(
                     CompetitionResult.Fields.CompetitionitemID,
                     CompetitionResult.Fields.ScoreID,
@@ -151,8 +153,8 @@ namespace Project_B.Code.DataProvider {
             var competitorToDetectIsFirst =
                 nameShort.Equals(matchParsed.CompetitorNameShortOne, StringComparison.InvariantCultureIgnoreCase) ||
                 nameFull.Equals(matchParsed.CompetitorNameFullOne, StringComparison.InvariantCultureIgnoreCase);
-            var nameShortHash = new HashSet<char>(Transliterator.GetTranslit(nameShort).ToLower().Select(c => c).Distinct());
-            var nameFullHash = new HashSet<char>(Transliterator.GetTranslit(nameFull).ToLower().Select(c => c).Distinct());
+            var nameShortHash = new HashSet<char>(Transliterator.GetTranslit(CleanString(nameShort)));
+            var nameFullHash = new HashSet<char>(Transliterator.GetTranslit(CleanString(nameFull)));
             var suitableCompetitors = Competitor.DataSource
                 .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst 
                         ? suitableCompetitionItems.Select(sc =>sc.Competitoruniqueid1)
@@ -164,8 +166,8 @@ namespace Project_B.Code.DataProvider {
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 && 
-                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .2) ||
-                        (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .4 && (suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
+                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .32) ||
+                        (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .32 && (suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
                 _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)
@@ -177,14 +179,27 @@ namespace Project_B.Code.DataProvider {
         }
 
         private static float SuitByNameFactor(HashSet<char> nameFullEn, HashSet<char> nameShortEn, string nameFullTranslit, string nameShortTranslit, string nameFullSrc, string nameShortSrc) {
-            nameShortTranslit = Transliterator.GetTranslit(nameShortTranslit.ToLower());
-            nameFullTranslit = Transliterator.GetTranslit(nameFullTranslit.ToLower());
+            nameShortTranslit = Transliterator.GetTranslit(CleanString(nameShortTranslit));
+            nameFullTranslit = Transliterator.GetTranslit(CleanString(nameFullTranslit));
             
             var fullFactor = ((float)nameFullTranslit.Count(nameFullEn.Contains) / Math.Max(nameFullTranslit.Length, nameFullSrc.Length)) * 
                 (Math.Min(nameFullTranslit.Length, nameFullEn.Count) / (float)Math.Max(nameFullTranslit.Length, nameFullEn.Count));
             var shortFactor = ((float)nameShortTranslit.Count(nameShortEn.Contains) / Math.Max(nameShortTranslit.Length, nameShortSrc.Length)) *
                 (Math.Min(nameShortTranslit.Length, nameShortEn.Count) / (float)Math.Max(nameShortTranslit.Length, nameShortEn.Count));
             return Math.Max(fullFactor, shortFactor);
+        }
+
+        private static string CleanString(string str) {
+            return str
+                .Replace("U-", string.Empty)
+                .Replace(" до ", string.Empty)
+                .Replace("ь", string.Empty)
+                .Replace("'", string.Empty)
+                .Replace(".", string.Empty)
+                .Replace(",", string.Empty)
+                .Replace(" ", string.Empty)
+                .Replace("-", string.Empty)
+                .ToLower();
         }
     }
 }

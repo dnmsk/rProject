@@ -116,6 +116,10 @@ namespace Project_B.Code.DataProvider {
                         new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, minDate),
                         new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.Less, maxdate)
                     ))
+                    .Sort(CompetitionItem.Fields.CompetitionuniqueID)
+                    .Sort(CompetitionItem.Fields.ID)
+                    .Sort(CompetitionResult.Fields.ID)
+                    .Sort(CompetitionResultAdvanced.Fields.ID)
                     .AsList(CompetitionItem.Fields.CompetitionuniqueID, CompetitionResult.Fields.ScoreID, CompetitionResultAdvanced.Fields.ScoreID)
                     .GroupBy(e => e.GetJoinedEntity<CompetitionItem>().CompetitionuniqueID)
                     .ToDictionary(g => g.Key, g=> g.GroupBy(gr => gr.ID).Select(gr => new ResultModel {
@@ -194,11 +198,13 @@ namespace Project_B.Code.DataProvider {
                 var competitionItem = source
                     .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
-                if (competitionItem != null && eventDateUtc != DateTime.MinValue && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) < 2) {
-                    competitionItem.Dateeventutc = eventDateUtc;
-                    competitionItem.Save();
-                } else {
-                    competitionItem = null;
+                if (eventDateUtc != DateTime.MinValue) {
+                    if (competitionItem != null && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) < 2) {
+                            competitionItem.Dateeventutc = eventDateUtc;
+                            competitionItem.Save();
+                    } else {
+                        competitionItem = null;
+                    }
                 }
                 if (competitionItem == null) {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
