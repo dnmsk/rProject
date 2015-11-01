@@ -23,12 +23,6 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                var sb = new StringBuilder();
-                for (var date = new DateTime(2014, 01, 01); date < DateTime.Now; date = date.AddDays(1)) {
-                    sb.AppendLine(string.Format("(0, '{0}', 1, 1),", date.ToString("yyyy-MM-dd")));
-                }
-                //var start = Stopwatch.StartNew();
-                /**/
                 Console.WriteLine("CollectOddsAlgo");
                 var algo = new BrokerAlgoLauncher(BrokerType.RedBlue,
                                            //GatherBehaviorMode.CreateIfNew, 
@@ -38,7 +32,7 @@ namespace Sandbox {
                                            RunTaskMode.RunPastDateHistoryTask) {
                     PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
                 };
-                for (var date = new DateTime(2014, 01, 05); date < DateTime.Now; date = date.AddDays(1)) {
+                for (var date = new DateTime(2014, 05, 01); date < DateTime.Now; date = date.AddDays(1)) {
                     algo.CollectHistoryForPastDate(date);
                 }
                 /**/

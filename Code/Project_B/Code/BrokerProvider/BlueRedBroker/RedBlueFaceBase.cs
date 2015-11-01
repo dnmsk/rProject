@@ -70,6 +70,7 @@ namespace Project_B.Code.BrokerProvider.BlueRedBroker {
         }
 
         protected DateTime ParseDateTime(string date) {
+            date = date.ToLower().Replace("мая", "май");
             var defaultDateTime = DateTime.MinValue;
             foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]) {
                 var dateTime = StringParser.ToDateTime(date, defaultDateTime, dateTimeFormat);
