@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+/*
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using MainLogic;
@@ -8,8 +10,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Project_B.CodeClientSide;
 using Project_B.Models;
-
+*/
 namespace Project_B {
+    /*
     public class EmailService : IIdentityMessageService {
         public Task SendAsync(IdentityMessage message) {
             // Plug in your email service here to send an email.
@@ -47,14 +50,14 @@ namespace Project_B {
                 RequireLowercase = true,
                 RequireUppercase = true
             };
-            manager.PasswordHasher = new ApplicationPasswordHasher();
+            //manager.PasswordHasher = new ApplicationPasswordHasher();
 
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = false;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
             manager.MaxFailedAccessAttemptsBeforeLockout = 5;
 
-            manager.ClaimsIdentityFactory = new ClaimsApplicationIdentityFactory<ApplicationUser>();
+            //manager.ClaimsIdentityFactory = new ClaimsApplicationIdentityFactory<ApplicationUser>();
 
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
@@ -74,26 +77,6 @@ namespace Project_B {
             }
             return manager;
         }
-
-        public override Task<bool> CheckPasswordAsync(ApplicationUser user, string password) {
-            var res = MainLogicProvider.Instance.AccountProvider.LoginWithEmail(user.UserName, password);
-            return Task.FromResult(res != null);
-        }
     }
-
-    // Configure the application sign-in manager which is used in this application.
-    public class ApplicationSignInManager : SignInManager<ApplicationUser, int> {
-        public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
-            : base(userManager, authenticationManager) {
-        }
-
-        public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user) {
-            return user.GenerateUserIdentityAsync((ApplicationUserManager) UserManager);
-        }
-
-        public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options,
-            IOwinContext context) {
-            return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
-        }
-    }
+    */
 }

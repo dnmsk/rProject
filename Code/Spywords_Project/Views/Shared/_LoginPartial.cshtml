@@ -1,6 +1,6 @@
 ﻿@model MainLogic.WebFiles.BaseModel
 
-@if (Model.IsAгthenticated()) {
+@if (Model.IsAuthenticated()) {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right"})) {
         @Html.AntiForgeryToken()
 

@@ -3,7 +3,7 @@
         public readonly MainLogicProvider MainLogicProvider;
         public SessionModule SessionModule { get; private set; }
 
-        public bool IsAгthenticated() {
+        public bool IsAuthenticated() {
             return SessionModule.IsAuthenticated();
         }
 

@@ -1,9 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
+using MainLogic.WebFiles;
 using Microsoft.Owin.Security;
 using Project_B.CodeClientSide;
 using Project_B.CodeServerSide.Enums;
@@ -12,27 +9,6 @@ using Project_B.Models;
 namespace Project_B.Controllers {
     [Authorize]
     public class AccountController : ProjectControllerBase {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-
-        public AccountController() {
-        }
-
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager) {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationSignInManager SignInManager {
-            get { return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>(); }
-            private set { _signInManager = value; }
-        }
-
-        public ApplicationUserManager UserManager {
-            get { return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-            private set { _userManager = value; }
-        }
-
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -52,6 +28,15 @@ namespace Project_B.Controllers {
                 return View(loginModel);
             }
 
+            var loginResult = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
+            if (loginResult != null) {
+                CurrentUser = new SessionModule((int)loginResult.Item1, loginResult.Item2);
+                return RedirectToLocal(returnUrl);
+            }
+
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(loginModel);
+            /*
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = SignInManager.PasswordSignIn(loginModel.Email, loginModel.Password, loginModel.RememberMe, false);
@@ -67,6 +52,7 @@ namespace Project_B.Controllers {
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(loginModel);
             }
+            */
         }
 
         //
@@ -74,9 +60,11 @@ namespace Project_B.Controllers {
         [AllowAnonymous]
         public ActionResult VerifyCode(string provider, string returnUrl, bool rememberMe) {
             // Require that the user has already logged in via username/password or external login
+            /*
             if (!SignInManager.HasBeenVerified()) {
                 return View("Error");
             }
+            */
             return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
 
@@ -89,7 +77,7 @@ namespace Project_B.Controllers {
             if (!ModelState.IsValid) {
                 return View(model);
             }
-
+            /*
             // The following code protects for brute force attacks against the two factor codes. 
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
@@ -106,13 +94,15 @@ namespace Project_B.Controllers {
                     ModelState.AddModelError("", "Invalid code.");
                     return View(model);
             }
+            */
+            return View(model);
         }
 
         //
         // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register() {
-            return View();
+            return View(new RegisterViewModel(GetBaseModel()));
         }
 
         //
@@ -126,9 +116,11 @@ namespace Project_B.Controllers {
                     UserName = model.Email,
                     GuestId = CurrentUser.GuestID
                 };
-                var result = UserManager.Create(user, model.Password);
-                if (result.Succeeded) {
-                    SignInManager.SignIn(user, false, false);
+                var result = BusinessLogic.AccountProvider.RegisterWithEmail(CurrentUser.GuestID, model.Email, model.Password);// UserManager.Create(user, model.Password);
+                if (result) {
+                    var accountID = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
+                    CurrentUser = new SessionModule(CurrentUser.GuestID, accountID.Item2);
+                    //SignInManager.SignIn(user, false, false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -138,7 +130,9 @@ namespace Project_B.Controllers {
 
                     return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+                AddErrors(new[] {
+                    "Error register with email and password"
+                });
             }
 
             // If we got this far, something failed, redisplay form
@@ -152,8 +146,8 @@ namespace Project_B.Controllers {
             if (userId == null || code == null) {
                 return View("Error");
             }
-            var result = UserManager.ConfirmEmail(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            //var result = UserManager.ConfirmEmail(userId, code);
+            return null;//View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         //
@@ -170,12 +164,13 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         public ActionResult ForgotPassword(ForgotPasswordViewModel model) {
             if (ModelState.IsValid) {
+                /*
                 var user = UserManager.FindByName(model.Email);
                 if (user == null || !(UserManager.IsEmailConfirmed(user.Id))) {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
-
+                */
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
@@ -208,6 +203,8 @@ namespace Project_B.Controllers {
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ResetPassword(ResetPasswordViewModel model) {
+            return null;
+            /*
             if (!ModelState.IsValid) {
                 return View(model);
             }
@@ -222,6 +219,7 @@ namespace Project_B.Controllers {
             }
             AddErrors(result);
             return View();
+            */
         }
 
         //
@@ -238,14 +236,15 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLogin(string provider, string returnUrl) {
             // Request a redirect to the external login provider
-            return new ChallengeResult(provider,
-                Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
         }
 
         //
         // GET: /Account/SendCode
         [AllowAnonymous]
         public ActionResult SendCode(string returnUrl, bool rememberMe) {
+            return null;
+            /*
             var userId = SignInManager.GetVerifiedUserId();
             if (userId == default(int)) {
                 return View("Error");
@@ -253,8 +252,8 @@ namespace Project_B.Controllers {
             var userFactors = UserManager.GetValidTwoFactorProviders(userId);
             var factorOptions =
                 userFactors.Select(purpose => new SelectListItem {Text = purpose, Value = purpose}).ToList();
-            return
-                View(new SendCodeViewModel {Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe});
+            return View(new SendCodeViewModel {Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe});
+            */
         }
 
         //
@@ -266,11 +265,12 @@ namespace Project_B.Controllers {
             if (!ModelState.IsValid) {
                 return View();
             }
-
+            /*
             // Generate the token and send it
             if (!SignInManager.SendTwoFactorCode(model.SelectedProvider)) {
                 return View("Error");
             }
+            */
             return RedirectToAction("VerifyCode", new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});
         }
 
@@ -283,6 +283,8 @@ namespace Project_B.Controllers {
                 return RedirectToAction("Login");
             }
 
+            return RedirectToLocal(returnUrl);
+            /*
             // Sign in the user with this external login provider if the user already has a login
             var result = SignInManager.ExternalSignIn(loginInfo, false);
             switch (result) {
@@ -300,6 +302,7 @@ namespace Project_B.Controllers {
                     return View("ExternalLoginConfirmation",
                         new ExternalLoginConfirmationViewModel {Email = loginInfo.Email});
             }
+            */
         }
 
         //
@@ -309,7 +312,7 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model,
             string returnUrl) {
-            if (User.Identity.IsAuthenticated) {
+            if (CurrentUser.IsAuthenticated()) {
                 return RedirectToAction("Index", "Manage");
             }
 
@@ -319,6 +322,7 @@ namespace Project_B.Controllers {
                 if (info == null) {
                     return View("ExternalLoginFailure");
                 }
+                /*
                 var user = new ApplicationUser {
                     UserName = model.Email,
                     GuestId = CurrentUser.GuestID
@@ -332,6 +336,7 @@ namespace Project_B.Controllers {
                     }
                 }
                 AddErrors(result);
+                */
             }
 
             ViewBag.ReturnUrl = returnUrl;
@@ -343,7 +348,7 @@ namespace Project_B.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff() {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            CurrentUser = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -356,15 +361,18 @@ namespace Project_B.Controllers {
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
+                /*
                 if (_userManager != null) {
                     _userManager.Dispose();
                     _userManager = null;
                 }
-
+                */
+                /*
                 if (_signInManager != null) {
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
+                */
             }
 
             base.Dispose(disposing);
@@ -379,8 +387,8 @@ namespace Project_B.Controllers {
             get { return HttpContext.GetOwinContext().Authentication; }
         }
 
-        private void AddErrors(IdentityResult result) {
-            foreach (var error in result.Errors) {
+        private void AddErrors(params string[] strings) {
+            foreach (var error in strings) {
                 ModelState.AddModelError("", error);
             }
         }

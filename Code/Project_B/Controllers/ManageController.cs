@@ -1,40 +1,18 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using MainLogic.WebFiles;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
     [Authorize]
     public class ManageController : ApplicationControllerBase {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
 
         public ManageController() {
         }
-
-        public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager) {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationSignInManager SignInManager {
-            get { return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>(); }
-            private set { _signInManager = value; }
-        }
-
-        public ApplicationUserManager UserManager {
-            get { return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
-            private set { _userManager = value; }
-        }
-
+        
         //
         // GET: /Manage/Index
-        public async Task<ActionResult> Index(ManageMessageId? message) {
+        public ActionResult Index(ManageMessageId? message) {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess
                     ? "Your password has been changed."
@@ -49,7 +27,7 @@ namespace Project_B.Controllers {
                                     : message == ManageMessageId.RemovePhoneSuccess
                                         ? "Your phone number was removed."
                                         : "";
-
+            /*
             var userId = User.Identity.GetUserId<int>();
             var model = new IndexViewModel {
                 HasPassword = HasPassword(),
@@ -58,14 +36,16 @@ namespace Project_B.Controllers {
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId.ToString())
             };
-            return View(model);
+            */
+            return View(new IndexViewModel());
         }
 
         //
         // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RemoveLogin(string loginProvider, string providerKey) {
+        public ActionResult RemoveLogin(string loginProvider, string providerKey) {
+            /*
             ManageMessageId? message;
             var result =
                 await
@@ -81,7 +61,8 @@ namespace Project_B.Controllers {
             else {
                 message = ManageMessageId.Error;
             }
-            return RedirectToAction("ManageLogins", new {Message = message});
+            */
+            return RedirectToAction("ManageLogins", new {Message = ""});
         }
 
         //
@@ -94,10 +75,11 @@ namespace Project_B.Controllers {
         // POST: /Manage/AddPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model) {
+        public ActionResult AddPhoneNumber(AddPhoneNumberViewModel model) {
             if (!ModelState.IsValid) {
                 return View(model);
             }
+            /*
             // Generate the token and send it
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), model.Number);
             if (UserManager.SmsService != null) {
@@ -107,6 +89,7 @@ namespace Project_B.Controllers {
                 };
                 await UserManager.SmsService.SendAsync(message);
             }
+            */
             return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
         }
 
@@ -114,12 +97,14 @@ namespace Project_B.Controllers {
         // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EnableTwoFactorAuthentication() {
+        public ActionResult EnableTwoFactorAuthentication() {
+            /*
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), true);
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (user != null) {
                 await SignInManager.SignInAsync(user, false, false);
             }
+            */
             return RedirectToAction("Index", "Manage");
         }
 
@@ -127,19 +112,21 @@ namespace Project_B.Controllers {
         // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DisableTwoFactorAuthentication() {
+        public ActionResult DisableTwoFactorAuthentication() {
+            /*
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), false);
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (user != null) {
                 await SignInManager.SignInAsync(user, false, false);
             }
+            */
             return RedirectToAction("Index", "Manage");
         }
 
         //
         // GET: /Manage/VerifyPhoneNumber
-        public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber) {
-            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), phoneNumber);
+        public ActionResult VerifyPhoneNumber(string phoneNumber) {
+            //var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), phoneNumber);
             // Send an SMS through the SMS provider to verify the phone number
             return phoneNumber == null
                 ? View("Error")
@@ -150,7 +137,8 @@ namespace Project_B.Controllers {
         // POST: /Manage/VerifyPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model) {
+        public ActionResult VerifyPhoneNumber(VerifyPhoneNumberViewModel model) {
+            /*
             if (!ModelState.IsValid) {
                 return View(model);
             }
@@ -165,12 +153,14 @@ namespace Project_B.Controllers {
             }
             // If we got this far, something failed, redisplay form
             ModelState.AddModelError("", "Failed to verify phone");
+            */
             return View(model);
         }
 
         //
         // GET: /Manage/RemovePhoneNumber
-        public async Task<ActionResult> RemovePhoneNumber() {
+        public ActionResult RemovePhoneNumber() {
+            /*
             var result = await UserManager.SetPhoneNumberAsync(User.Identity.GetUserId<int>(), null);
             if (!result.Succeeded) {
                 return RedirectToAction("Index", new {Message = ManageMessageId.Error});
@@ -179,6 +169,7 @@ namespace Project_B.Controllers {
             if (user != null) {
                 await SignInManager.SignInAsync(user, false, false);
             }
+            */
             return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
         }
 
@@ -192,10 +183,11 @@ namespace Project_B.Controllers {
         // POST: /Manage/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model) {
+        public ActionResult ChangePassword(ChangePasswordViewModel model) {
             if (!ModelState.IsValid) {
                 return View(model);
             }
+            /*
             var result =
                 await UserManager.ChangePasswordAsync(User.Identity.GetUserId<int>(), model.OldPassword, model.NewPassword);
             if (result.Succeeded) {
@@ -206,6 +198,7 @@ namespace Project_B.Controllers {
                 return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
             }
             AddErrors(result);
+            */
             return View(model);
         }
 
@@ -219,7 +212,8 @@ namespace Project_B.Controllers {
         // POST: /Manage/SetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SetPassword(SetPasswordViewModel model) {
+        public ActionResult SetPassword(SetPasswordViewModel model) {
+            /*
             if (ModelState.IsValid) {
                 var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId<int>(), model.NewPassword);
                 if (result.Succeeded) {
@@ -231,14 +225,16 @@ namespace Project_B.Controllers {
                 }
                 AddErrors(result);
             }
-
+            */
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
         //
         // GET: /Manage/ManageLogins
-        public async Task<ActionResult> ManageLogins(ManageMessageId? message) {
+        public ActionResult ManageLogins(ManageMessageId? message) {
+            return View(new ManageLoginsViewModel());
+            /*
             ViewBag.StatusMessage =
                 message == ManageMessageId.RemoveLoginSuccess
                     ? "The external login was removed."
@@ -254,11 +250,12 @@ namespace Project_B.Controllers {
                 AuthenticationManager.GetExternalAuthenticationTypes()
                                      .Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider))
                                      .ToList();
-            ViewBag.ShowRemoveButton = /*user.PasswordHash != null || */userLogins.Count > 1;
+            ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel {
                 CurrentLogins = userLogins,
                 OtherLogins = otherLogins
             });
+            */
         }
 
         //
@@ -267,32 +264,24 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         public ActionResult LinkLogin(string provider) {
             // Request a redirect to the external login provider to link a login for the current user
-            return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"),
-                User.Identity.GetUserId<int>().ToString());
+            return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), CurrentUser.AccountID.ToString());
         }
 
         //
         // GET: /Manage/LinkLoginCallback
-        public async Task<ActionResult> LinkLoginCallback() {
+        public ActionResult LinkLoginCallback() {
+            /*
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId<int>().ToString());
             if (loginInfo == null) {
                 return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
             }
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId<int>(), loginInfo.Login);
-            return result.Succeeded
+            */
+            return false//result.Succeeded
                 ? RedirectToAction("ManageLogins")
                 : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
         }
-
-        protected override void Dispose(bool disposing) {
-            if (disposing && _userManager != null) {
-                _userManager.Dispose();
-                _userManager = null;
-            }
-
-            base.Dispose(disposing);
-        }
-
+        /*
         #region Helpers
 
         // Used for XSRF protection when adding external logins
@@ -324,6 +313,9 @@ namespace Project_B.Controllers {
             return false;
         }
 
+        #endregion
+        */
+
         public enum ManageMessageId {
             AddPhoneSuccess,
             ChangePasswordSuccess,
@@ -333,7 +325,5 @@ namespace Project_B.Controllers {
             RemovePhoneSuccess,
             Error
         }
-
-        #endregion
     }
 }
