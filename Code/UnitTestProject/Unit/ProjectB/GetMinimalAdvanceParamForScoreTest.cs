@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Project_B.Code.DataProvider.DataHelper.LiveResultToDbProc.Proc;
+using Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Proc;
 
 namespace UnitTestProject.Unit.ProjectB {
     [TestFixture]

@@ -5,6 +5,7 @@ using MainLogic.WebFiles;
 namespace Project_B.Controllers {
     public class HomeController : ApplicationControllerBase {
         public ActionResult Index() {
+            var user = User;
             return View(GetBaseModel());
         }
 

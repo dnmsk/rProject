@@ -1,4 +1,4 @@
-﻿using Project_B.Code;
+﻿using Project_B.CodeClientSide;
 using SquishIt.CoffeeScript;
 using SquishIt.Framework;
 using SquishIt.Less;

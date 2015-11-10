@@ -5,8 +5,8 @@ using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic.WebFiles;
-using Project_B.Code.Algorithm;
-using Project_B.Code.Enums;
+using Project_B.CodeServerSide.Algorithm;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B {
     public class MvcApplication : GlobalAsaxBase {

@@ -20,7 +20,7 @@ namespace MainLogic.Providers {
             return InvokeSafeSingleCall(() => {
                 email = email.ToLower();
                 if (AccountIdentity.DataSource
-                        .Where(AccountIdentity.Fields.Email, Oper.Eq, email)
+                        .WhereEquals(AccountIdentity.Fields.Email, email)
                         .IsExists()) {
                     return false;
                 }
@@ -57,10 +57,34 @@ namespace MainLogic.Providers {
             return InvokeSafeSingleCall(() => {
                 var identity = AccountIdentity.DataSource
                     .WhereEquals(AccountIdentity.Fields.ID, account)
-                    .First(AccountIdentity.Fields.Email);
+                    .First(
+                        AccountIdentity.Fields.Email,
+                        AccountIdentity.Fields.GuestID
+                    );
 
                 return new AccountDetailsTransport {
-                    Email = identity.Email
+                    Email = identity.Email,
+                    GuestId = (int)identity.GuestID,
+                    AccountId = identity.ID
+                };
+            }, null);
+        }
+
+        public AccountDetailsTransport GetAccountDescription(string email) {
+            return InvokeSafeSingleCall(() => {
+                var identity = AccountIdentity.DataSource
+                    .Where(AccountIdentity.Fields.Email, Oper.Ilike, email)
+                    .First(
+                        AccountIdentity.Fields.Email,
+                        AccountIdentity.Fields.GuestID
+                    );
+                if (identity == null) {
+                    return null;
+                }
+                return new AccountDetailsTransport {
+                    Email = identity.Email,
+                    GuestId = (int) identity.GuestID,
+                    AccountId = identity.ID
                 };
             }, null);
         }

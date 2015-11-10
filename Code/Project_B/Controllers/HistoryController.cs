@@ -3,9 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
-using Project_B.Code;
-using Project_B.Code.DataProvider;
-using Project_B.Code.Enums;
+using Project_B.CodeClientSide;
+using Project_B.CodeServerSide.DataProvider;
+using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
@@ -27,28 +27,34 @@ namespace Project_B.Controllers {
             }
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, fromDate, toDate);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new CompetitionRegularModel(CurrentLanguage, GetBaseModel()) {
-                CompetitionModel = itemData,
-                DateUtc = fromDate,
-                ResultMap = resultData
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryIndex, GetBaseModel()) {
+                ControllerModel = new CompetitionRegularModel {
+                    CompetitionModel = itemData,
+                    DateUtc = fromDate,
+                    ResultMap = resultData
+                }
             });
         }
         
         public ActionResult Game(int id) {
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, false);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new CompetitionRegularModel(CurrentLanguage, GetBaseModel()) {
-                CompetitionModel = itemData,
-                ResultMap = resultData
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryCompetitionID, GetBaseModel()) {
+                ControllerModel = new CompetitionRegularModel {
+                    CompetitionModel = itemData,
+                    ResultMap = resultData
+                }
             });
         }
 
         public ActionResult Competitor(int id) {
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, id);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new CompetitionRegularModel(CurrentLanguage, GetBaseModel()) {
-                CompetitionModel = itemData,
-                ResultMap = resultData
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryCompetitorID, GetBaseModel()) {
+                ControllerModel = new CompetitionRegularModel {
+                    CompetitionModel = itemData,
+                    ResultMap = resultData
+                }
             });
         }
     }

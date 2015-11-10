@@ -12,10 +12,6 @@ using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
-using Project_B.Code;
-using Project_B.Code.Algorithm;
-using Project_B.Code.DataProvider.DataHelper;
-using Project_B.Code.Enums;
 
 namespace Sandbox {
     class Program {
@@ -23,18 +19,7 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                Console.WriteLine("CollectOddsAlgo");
-                var algo = new BrokerAlgoLauncher(BrokerType.RedBlue,
-                                           //GatherBehaviorMode.CreateIfNew, 
-                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor /*| GatherBehaviorMode.CreateIfEmptyToDate*/,
-                                           //LanguageType.English,
-                                           LanguageType.Russian,
-                                           RunTaskMode.RunPastDateHistoryTask) {
-                    PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
-                };
-                for (var date = new DateTime(2014, 05, 01); date < DateTime.Now; date = date.AddDays(1)) {
-                    algo.CollectHistoryForPastDate(date);
-                }
+                EntityClassCreator.Create(new [] { "StaticPage", "BrokerPage" }, "Master","e:\\");
                 /**/
                 //Console.WriteLine(start.ElapsedMilliseconds);
                 //Console.ReadLine();
