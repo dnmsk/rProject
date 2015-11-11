@@ -168,6 +168,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public int GetCompetitionItem(CompetitorParsedTransport competitor1ParsedTransport, CompetitorParsedTransport competitor2ParsedTransport, CompetitionParsedTransport competitionParsedTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
+                var utcNow = DateTime.UtcNow;
                 var source = CompetitionItem.DataSource
                         .Where(new DaoFilterOr(
                             new DaoFilterAnd(
@@ -183,18 +184,18 @@ namespace Project_B.CodeServerSide.DataProvider {
                         .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionParsedTransport.UniqueID)
                         .Where(eventDateUtc > DateTime.MinValue 
                             ? new DaoFilterAnd(
-                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1)),
-                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(1))
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1.5)),
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(1.5))
                             )
                             : new DaoFilterAnd(
-                                new DaoFilter(CompetitionItem.Fields.Datecreatedutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1)),
-                                new DaoFilter(CompetitionItem.Fields.Datecreatedutc, Oper.LessOrEq, eventDateUtc.AddDays(1))
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, utcNow.AddDays(-1.5)),
+                                new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, utcNow.AddDays(1.5))
                             )
                         );
                 var competitionItem = source
                     .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
                     .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
-                if (eventDateUtc != DateTime.MinValue) {
+                if (eventDateUtc > DateTime.MinValue) {
                     if (competitionItem != null && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) < 2) {
                             competitionItem.Dateeventutc = eventDateUtc;
                             competitionItem.Save();
@@ -206,7 +207,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateIfNew)) {
                         return default(int);
                     }
-                    var utcNow = DateTime.UtcNow;
                     competitionItem = new CompetitionItem {
                         SportType = competitionParsedTransport.SportType,
                         Datecreatedutc = utcNow,
