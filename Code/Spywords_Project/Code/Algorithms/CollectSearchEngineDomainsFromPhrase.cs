@@ -56,7 +56,7 @@ namespace Spywords_Project.Code.Algorithms {
 
         private List<string> GetYandexDomains(Phrase phrase) {
             var yandexDomains = new List<string>();
-            var yandexUrl = "https://yandex.ru/search/?text=" + HttpUtility.UrlEncode(phrase.Text);
+            var yandexUrl = "https://yandex.ru/search/?text=" + HttpUtility.UrlEncode(phrase.Text) + "&lr=213";
             var yandexTries = 0;
             var retries = 0;
             while (true) {
