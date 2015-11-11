@@ -5,6 +5,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -20,9 +21,9 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public StaticPageProvider() : base(_logger) {}
 
-        public Dictionary<PageType, List<StaticPageTransport>> GetCurrentStaticPageModels(bool onlyTop) {
+        public Dictionary<ProjectBActions, List<StaticPageTransport>> GetCurrentStaticPageModels(bool onlyTop) {
             return InvokeSafe(() => {
-                var result = new Dictionary<PageType, List<StaticPageTransport>>();
+                var result = new Dictionary<ProjectBActions, List<StaticPageTransport>>();
                 var dbDataSource = StaticPage.DataSource;
                 if (onlyTop) {
                     dbDataSource = dbDataSource
@@ -43,7 +44,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, null);
         }
 
-        public List<StaticPageTransport> GetAllStaticPageModelsForType(LanguageType languageType, PageType pageType) {
+        public List<StaticPageTransport> GetAllStaticPageModelsForType(LanguageType languageType, ProjectBActions pageType) {
             return InvokeSafe(() => {
                 var entities = StaticPage.DataSource
                     .WhereEquals(StaticPage.Fields.Languagetype, (short)languageType)                     

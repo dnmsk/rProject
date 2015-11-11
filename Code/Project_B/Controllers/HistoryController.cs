@@ -10,7 +10,9 @@ using Project_B.Models;
 
 namespace Project_B.Controllers {
     public class HistoryController : ProjectControllerBase {
+        [ActionLog(ProjectBActions.PageHistoryIndex)]
         public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
+            LogAction(ProjectBActions.PageHistoryIndexConcrete, (short) id);
             DateTime fromDate;
             DateTime toDate;
             if (!date.IsNullOrWhiteSpace()) {
@@ -27,7 +29,7 @@ namespace Project_B.Controllers {
             }
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, fromDate, toDate);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryIndex, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageHistoryIndex, GetBaseModel()) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,
                     DateUtc = fromDate,
@@ -35,11 +37,13 @@ namespace Project_B.Controllers {
                 }
             });
         }
-        
+
+        [ActionLog(ProjectBActions.PageHistoryCompetitionID)]
         public ActionResult Game(int id) {
+            LogAction(ProjectBActions.PageHistoryCompetitionIDConcrete, id);
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, false);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryCompetitionID, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageHistoryCompetitionID, GetBaseModel()) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,
                     ResultMap = resultData
@@ -47,10 +51,12 @@ namespace Project_B.Controllers {
             });
         }
 
+        [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
         public ActionResult Competitor(int id) {
+            LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, id);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, PageType.HistoryCompetitorID, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageHistoryCompetitorID, GetBaseModel()) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,
                     ResultMap = resultData

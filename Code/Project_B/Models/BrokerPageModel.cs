@@ -11,7 +11,7 @@ namespace Project_B.Models {
             type => type.ToLowerInvariant());
 
         public BrokerPageTransport BrokerPageTransport { get; private set; }
-        public BrokerPageModel(LanguageType languageType, string pageUrl, BaseModel baseModel) : base(languageType, PageType.BookmakerPage, baseModel) {
+        public BrokerPageModel(LanguageType languageType, string pageUrl, BaseModel baseModel) : base(languageType, ProjectBActions.PageBookmakerPage, baseModel) {
             BrokerPageTransport = _brokerPagesCache.GetPage(languageType, pageUrl) ?? new BrokerPageTransport();
         }
     }

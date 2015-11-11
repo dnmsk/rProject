@@ -83,6 +83,10 @@
       <Project>{AD204EB5-8F95-4EA5-AC28-059F5757516C}</Project>
       <Name>CommonUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommonProjects\MainLogic\MainLogic.csproj">
+      <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
+      <Name>MainLogic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project_B\Project_B.csproj">
       <Project>{A828DFC0-1D9F-4CF3-A95E-948888154001}</Project>
       <Name>Project_B</Name>

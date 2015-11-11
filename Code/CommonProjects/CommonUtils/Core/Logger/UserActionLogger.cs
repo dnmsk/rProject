@@ -21,16 +21,16 @@ namespace CommonUtils.Core.Logger {
         /// <param name="feature">Фича.</param>
         /// <param name="objectId">параметр логирования</param>
         /// <param name="additionalParams"></param>
-        public static void Log(long guestId, Enum feature, long? objectId = null, Dictionary<string, string> additionalParams = null) {
+        public static void Log(long guestId, Enum feature, int? objectId = null, Dictionary<string, string> additionalParams = null) {
             LogInternal(_actionLogger, guestId, feature, objectId, additionalParams ?? new Dictionary<string, string>());
         }
 
-        private static void LogInternal(LoggerWrapper logger, long guestId, Enum feature, long? objectId, Dictionary<string, string> additionalParams) {
+        private static void LogInternal(LoggerWrapper logger, long guestId, Enum feature, int? objectId, Dictionary<string, string> additionalParams) {
             try {
                 if (guestId <= 0) {
                     return;
                 }
-                logger.Info("{0};{1};{2}", guestId, Convert.ToInt32(feature), objectId ?? default(int));
+                logger.Info("{0};{1};{2}", guestId, Convert.ToInt32(feature), objectId.HasValue ? objectId.Value.ToString() : "NULL");
                 
                 LogsActionProcessor.Instance.ProcessActionID(guestId, feature, objectId, null, additionalParams);
             } catch (Exception e) {

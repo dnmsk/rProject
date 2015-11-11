@@ -1,11 +1,10 @@
 ﻿using System.Web.Mvc;
-using MainLogic.WebFiles;
-using Microsoft.AspNet.Identity;
+using Project_B.CodeClientSide;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
     [Authorize]
-    public class ManageController : ApplicationControllerBase {
+    public class ManageController : ProjectControllerBase {
 
         public ManageController() {
         }

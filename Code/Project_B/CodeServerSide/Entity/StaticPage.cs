@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeClientSide;
 using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
@@ -135,9 +136,9 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public PageType Pagetype {
-            get { return (PageType) ((short?) this[Fields.Pagetype] ?? default(short)); }
-            set { ForceSetData(Fields.Pagetype, value); }
+        public ProjectBActions Pagetype {
+            get { return (ProjectBActions) (int) ((short?) this[Fields.Pagetype] ?? default(short)); }
+            set { ForceSetData(Fields.Pagetype, (short) (int) value); }
         }
 
         /// <summary>

@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using MainLogic.WebFiles;
 using Microsoft.Owin.Security;
 using Project_B.CodeClientSide;
-using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
@@ -12,9 +11,10 @@ namespace Project_B.Controllers {
         //
         // GET: /Account/Login
         [AllowAnonymous]
+        [ActionLog(ProjectBActions.PageAccountLoginIndex)]
         public ActionResult Login(string returnUrl) {
             ViewBag.ReturnUrl = returnUrl;
-            return View(new LoginViewModel(CurrentLanguage, PageType.AccountLoginIndex, GetBaseModel()));
+            return View(new LoginViewModel(CurrentLanguage, ProjectBActions.PageAccountLoginIndex, GetBaseModel()));
         }
 
         //
@@ -22,8 +22,9 @@ namespace Project_B.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [ActionLog(ProjectBActions.PageAccountLoginPost)]
         public ActionResult Login(LoginViewModel model, string returnUrl) {
-            var loginModel = new LoginViewModel(CurrentLanguage, PageType.AccountLoginPost, GetBaseModel(), model);
+            var loginModel = new LoginViewModel(CurrentLanguage, ProjectBActions.PageAccountLoginPost, GetBaseModel(), model);
             if (!ModelState.IsValid) {
                 return View(loginModel);
             }

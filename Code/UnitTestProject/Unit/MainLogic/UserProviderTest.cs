@@ -14,7 +14,7 @@ namespace UnitTestProject.Unit.MainLogic {
         public void CreateNewGuestTest(string userAgent, bool isBot) {
             string ip = "1.1.1.1";
             var guestID = new UserProvider()
-                .CreateNewGuid(ip, userAgent);
+                .CreateNewGuest(ip, userAgent);
             if (isBot) {
                 Assert.AreEqual(0, Guest.DataSource.Count());
             }

@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
-using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 
 namespace MainLogic.WebFiles {
@@ -27,16 +26,25 @@ namespace MainLogic.WebFiles {
             return GetConfigurationProperty<string>(configurationProperty);
         }
 
+        private static readonly Dictionary<string, object> _propertyCache = new Dictionary<string, object>(); 
         public static T GetConfigurationProperty<T>(string configurationProperty) {
+            object obj;
+            if (_propertyCache.TryGetValue(configurationProperty, out obj)) {
+                return (T) obj;
+            }
             var appSetting = ConfigurationManager.AppSettings[configurationProperty];
             if (appSetting.IsNullOrEmpty()) {
-                return default(T);
+                var defalutObj = default(T);
+                _propertyCache[configurationProperty] = defalutObj;
+                return defalutObj;
             }
             if (typeof (T).IsEquivalentTo(typeof (string)) && appSetting[0] != '"') {
                 appSetting = "\"" + appSetting + "\"";
                 appSetting = appSetting.Replace("\\", "\\\\");
             }
-            return _javaScriptSerializer.Deserialize<T>(appSetting);
+            var deserializedObj = _javaScriptSerializer.Deserialize<T>(appSetting);
+            _propertyCache[configurationProperty] = deserializedObj;
+            return deserializedObj;
         }
 
         public static void ModifyConfigurationProperty(string key, string value) {
@@ -48,6 +56,9 @@ namespace MainLogic.WebFiles {
             var configuration = WebConfigurationManager.OpenWebConfiguration("~");
             var section = (AppSettingsSection)configuration.GetSection("appSettings");
             foreach (var par in pars) {
+                if (_propertyCache.ContainsKey(par.Key)) {
+                    _propertyCache.Remove(par.Key);
+                }
                 var keyValueConfigurationElement = section.Settings[par.Key];
                 if(keyValueConfigurationElement == null) {
                     keyValueConfigurationElement = new KeyValueConfigurationElement(par.Key, string.Empty);

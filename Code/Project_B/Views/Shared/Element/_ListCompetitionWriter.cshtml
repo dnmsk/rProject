@@ -4,31 +4,51 @@
 @using Project_B.CodeServerSide.Entity.Interface
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
-@model CompetitionRegularModel
+@model StaticPageBaseModel<CompetitionRegularModel>
 @functions{
     static readonly Dictionary<LanguageType, string[]> _shortHeaders = new Dictionary<LanguageType, string[]> {
         {LanguageType.English, new[] {
-            "1",
-            "2",
-            "Hcap1",
-            "Hcap2",
+            "<b>1</b>",
+            "<b>2</b>",
+            "Hcap<b>1</b>",
+            "Hcap<b>2</b>",
             "Under",
             "Over",
-        } }
+        } },
+        {LanguageType.Russian, new[] {
+            "<b>1</b>",
+            "<b>2</b>",
+            "Фора<b>1</b>",
+            "Фора<b>2</b>",
+            "Меньше",
+            "Больше",
+        } },
     };
     static readonly Dictionary<LanguageType, string[]> _fullHeaders = new Dictionary<LanguageType, string[]> {
         {LanguageType.English, new[] {
-            "1",
-            "X",
-            "2",
-            "1X",
-            "12",
-            "X2",
-            "Hcap1",
-            "Hcap2",
+            "<b>1</b>",
+            "<b>X</b>",
+            "<b>2</b>",
+            "<b>1X</b>",
+            "<b>12</b>",
+            "<b>X2</b>",
+            "Hcap<b>1</b>",
+            "Hcap<b>2</b>",
             "Under",
             "Over",
-        } }
+        } },
+        {LanguageType.Russian, new[] {
+            "<b>1</b>",
+            "<b>X</b>",
+            "<b>2</b>",
+            "<b>1X</b>",
+            "<b>12</b>",
+            "<b>X2</b>",
+            "Фора<b>1</b>",
+            "Фора<b>2</b>",
+            "Меньше",
+            "Больше",
+        } },
     };
 
     static readonly Dictionary<LanguageType, Dictionary<SportType, string[]>> _tableHeaders = new Dictionary<LanguageType, Dictionary<SportType, string[]>> {
@@ -38,7 +58,18 @@
             {SportType.IceHockey, _fullHeaders[LanguageType.English] },
             {SportType.Tennis, _shortHeaders[LanguageType.English] },
             {SportType.Volleyball, _shortHeaders[LanguageType.English] },
-        } }
+        } },
+        {LanguageType.Russian, new Dictionary<SportType, string[]> {
+            {SportType.Basketball, _shortHeaders[LanguageType.Russian] },
+            {SportType.Football, _fullHeaders[LanguageType.Russian] },
+            {SportType.IceHockey, _fullHeaders[LanguageType.Russian] },
+            {SportType.Tennis, _shortHeaders[LanguageType.Russian] },
+            {SportType.Volleyball, _shortHeaders[LanguageType.Russian] },
+        } },
+    };
+    private readonly Dictionary<LanguageType, string> _seeAllDictionaryText = new Dictionary<LanguageType, string> {
+        {LanguageType.English, "See all <b>{0}</b> matches in <b>{1}</b>" },
+        {LanguageType.Russian, "Посмотреть все <b>{0}</b> игр в <b>{1}</b>" },
     };
 
     private static readonly BetOddType[] _shortPercentile = {
@@ -70,7 +101,7 @@
             }
             odds[i] = 1 / (odd);
         }
-        return haveZero ? default(int) : (int) (100 / odds.Sum() - 100);
+        return haveZero ? default(int) : (int)(100 / odds.Sum() - 100);
     }
 
     static List<BetOddType> GetSuccessOddTypes(ResultTransport resultTransport, Dictionary<BetOddType, BetItemTransport> currentBets) {
@@ -109,25 +140,26 @@
 
 }
 
-@helper RenderAdvancedParam(BetOddType oddType, float advanced){
-    if (_oddsWithAdvanced.Contains(oddType)) {
-        advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
-        if (_oddsWithSymbol.Contains(oddType)) {
+@helper RenderAdvancedParam(BetOddType oddType, float advanced) {
+if (_oddsWithAdvanced.Contains(oddType)) {
+    advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
+    if (_oddsWithSymbol.Contains(oddType)) {
             @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
-        } else {
-           @Html.Raw(string.Format("({0})", advanced)) 
-        }
+    } else {
+            @Html.Raw(string.Format("({0})", advanced))
     }
+}
 }
 
 @{
-    Model.ResultMap = Model.ResultMap ?? new Dictionary<int, ResultTransport>();
+    var resultMap = Model.ControllerModel.ResultMap ?? new Dictionary<int, ResultTransport>();
     var currentController = ViewContext.RouteData.Values["controller"].ToString();
 }
 
-@foreach (var bySportTypes in Model.CompetitionModel.GroupBy(c => c.SportType)) {
-    var headers = _tableHeaders[LanguageType.English][bySportTypes.Key];
-    <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@bySportTypes.Key.ToString()</a></H2>
+@foreach (var bySportTypes in Model.ControllerModel.CompetitionModel.GroupBy(c => c.SportType)) {
+    var headers = (_tableHeaders.TryGetValueOrDefault(Model.CurrentLanguage) ??
+                   _tableHeaders.TryGetValueOrDefault(LanguageType.English))[bySportTypes.Key];
+    <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H2>
     foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID).OrderBy(c => c.First().Competition.Name).ToArray()) {
         var competitionModel = groupedCompetitions.First().Competition;
         var itemBetShortModels = groupedCompetitions.ToArray();
@@ -135,37 +167,36 @@
         <H3><a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         <table class="table">
             <thead>
-            <tr>
-                <td class="col-md-1"></td>
-                <td class="col-md-2"></td>
-                <td></td>
-                @foreach (var header in headers) {
-                    <td><strong>@header</strong></td>
-                }
-                <td class="col-md-1"></td>
-            </tr>
+                <tr>
+                    <td class="col-md-1"></td>
+                    <td class="col-md-2"></td>
+                    <td></td>
+                    @foreach (var header in headers) {
+                        <td>@Html.Raw(header)</td>
+                    }
+                    <td class="col-md-1"></td>
+                </tr>
             </thead>
             @for (var index = 0; index < itemBetShortModels.Length; index++) {
-                if (index == Model.LimitToDisplayInGroup) {
+                if (index == Model.ControllerModel.LimitToDisplayInGroup) {
                     appendSeeAllLink = true;
                     break;
                 }
                 var competition = itemBetShortModels[index];
                 ResultTransport resultTransport;
                 var successActs = new List<BetOddType>();
-                if (Model.ResultMap.TryGetValue(competition.CompetitionID, out resultTransport)) {
+                if (resultMap.TryGetValue(competition.CompetitionID, out resultTransport)) {
                     successActs.AddRange(GetSuccessOddTypes(resultTransport, competition.CurrentBets));
                 }
-                <tr @if (resultTransport != null) {
-                        @Html.Raw("class=\"active\"")
-                    }>
+                <tr @if (resultTransport != null) { @Html.Raw("class=\"active\"")   }>
                     <td class="text-right">
                         <a href="@Url.Action("Item", "Competition", new {id = competition.CompetitionID})">
-                            @competition.DateUtc.ToString("dd.MM.yyyy")<br/>@competition.DateUtc.ToString("HH:mm")</a>
+                            @competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")
+                        </a>
                     </td>
                     <td>
                         <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
-                        <br/>
+                        <br />
                         <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
                     </td>
                     @if (competition.CurrentBets != null && competition.HistoryMaxBets != null && competition.HistoryMinBets != null) {
@@ -178,8 +209,7 @@
                                 </div>
                                 <small>@GetBetPercentile(bySportTypes.Key, competition.HistoryMinBets)%</small>
                             </td>
-                        }
-                        else {
+                        } else {
                             <td>&mdash;</td>
                         }
                         foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
@@ -187,23 +217,21 @@
                             if (currentBet.Odd != default(float)) {
                                 var maxBet = competition.HistoryMaxBets[oddType];
                                 var minBet = competition.HistoryMinBets[oddType];
-                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>
+                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>
                                     <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
                                     <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
                                         <small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
                                     </div>
                                     <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
                                 </td>
-                            }
-                            else {
-                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
+                            } else {
+                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
                             }
                         }
-                    }
-                    else {
+                    } else {
                         <td>&mdash;</td>
                         foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
-                            <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
+                            <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
                         }
                     }
                     <td class="text-center">
@@ -211,16 +239,15 @@
                             var score = ScoreHelper.Instance.GenerateScore(resultTransport.ScoreID);
                             <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
                             if (resultTransport.SubScore != null && resultTransport.SubScore.Length > 0) {
-                                <br/>
+                                <br />
                                 <small>
                                     @resultTransport.SubScore.Select(s => {
-                                        var sc = ScoreHelper.Instance.GenerateScore(s);
-                                        return string.Format("{0}:{1}", sc.Item1, sc.Item2);
-                                    }).StrJoin(", ")
+                                   var sc = ScoreHelper.Instance.GenerateScore(s);
+                                   return string.Format("{0}:{1}", sc.Item1, sc.Item2);
+                               }).StrJoin(", ")
                                 </small>
                             }
-                        }
-                        else {
+                        } else {
                             @Html.Raw("&mdash;")
                             ;
                         }
@@ -230,8 +257,10 @@
         </table>
         if (appendSeeAllLink) {
             <div class="text-right">
-                <a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">See all <b>@itemBetShortModels.Length</b> matches in <b>@competitionModel.Name</b></a>
-            </div>
+                <a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@Html.Raw(
+                   string.Format(_seeAllDictionaryText.TryGetValueOrDefaultStruct(Model.CurrentLanguage) ?? _seeAllDictionaryText.TryGetValueOrDefaultStruct(LanguageType.English),
+                                 itemBetShortModels.Length, competitionModel.Name))</a>
+        </div>
         }
     }
 }

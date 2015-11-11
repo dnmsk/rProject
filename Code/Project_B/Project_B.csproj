@@ -252,6 +252,8 @@
     <Compile Include="App_Start\ReactConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
+    <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
@@ -334,7 +336,6 @@
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
     <Compile Include="CodeServerSide\Enums\LanguageType.cs" />
-    <Compile Include="CodeServerSide\Enums\PageType.cs" />
     <Compile Include="CodeServerSide\Enums\ResultModeType.cs" />
     <Compile Include="CodeServerSide\Enums\ResultType.cs" />
     <Compile Include="CodeServerSide\Enums\GatherBehaviorMode.cs" />
@@ -350,6 +351,7 @@
     <Compile Include="CodeClientSide\VirtualFile\SiteMapVirtual.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssetsController.cs" />
+    <Compile Include="Controllers\BookmakerController.cs" />
     <Compile Include="Controllers\CompetitionController.cs" />
     <Compile Include="Controllers\CompetitionLiveController.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
@@ -459,6 +461,10 @@
     <Content Include="Views\History\Game.cshtml" />
     <Content Include="Views\History\Competitor.cshtml" />
     <Content Include="Views\CompetitionLive\Item.cshtml" />
+    <Content Include="Views\Bookmaker\Index.cshtml" />
+    <Content Include="Views\Shared\Statistics\GoogleAnalytics.cshtml" />
+    <Content Include="Views\Shared\Statistics\TopMailru.cshtml" />
+    <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

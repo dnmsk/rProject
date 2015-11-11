@@ -24,7 +24,7 @@ namespace MainLogic.Providers {
 
         public UserProvider() : base(_logger) { }
 
-        public int CreateNewGuid(string ip, string userAgent) {
+        public int CreateNewGuest(string ip, string userAgent) {
             return InvokeSafe(() => {
                 if (UserAgentValidationPolicy.IsBot(userAgent)) {
                     return UserAgentValidationPolicy.BOT_GUID;
@@ -36,6 +36,12 @@ namespace MainLogic.Providers {
                 guid.Save();
                 return guid.ID;
             }, UserAgentValidationPolicy.BOT_GUID);
+        }
+        
+        public bool CheckGuest(int guid) {
+            return InvokeSafe(() => Guest.DataSource
+                                         .WhereEquals(Guest.Fields.ID, guid)
+                                         .IsExists(), false);
         }
 
         public void SaveReferrer(int guestid, string referrer, string target) {

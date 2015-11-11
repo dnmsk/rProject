@@ -12,6 +12,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
+using MainLogic.WebFiles;
 using Spywords_Project.Code.Algorithms;
 
 namespace Sandbox {
@@ -20,7 +21,7 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                var algo = new CollectSearchEngineDomainsFromPhrase();
+                var serialized = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
                 while (true) {
                     Thread.Sleep(100);
                 }

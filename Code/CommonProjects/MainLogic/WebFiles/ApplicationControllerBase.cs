@@ -49,12 +49,18 @@ namespace MainLogic.WebFiles {
             get {
                 if (_currentUser == null) {
                     int guid;
+                    var isFirstTimeOpen = false;
                     if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || !int.TryParse(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value, out guid)) {
-                         guid = CreateGuidInfo(System.Web.HttpContext.Current);
-                        LogAction(LogActionID.OpenSiteFirstTime, null);
+                        guid = CreateGuidInfo(System.Web.HttpContext.Current);
+                        isFirstTimeOpen = true;
+                    } else if (!BusinessLogic.UserProvider.CheckGuest(guid)) {
+                        guid = CreateGuidInfo(System.Web.HttpContext.Current);
+                        isFirstTimeOpen = true;
                     }
                     _currentUser = SessionModule.CreateSessionModule(guid, HttpContext);
-
+                    if (isFirstTimeOpen) {
+                        LogAction(LogActionID.OpenSiteFirstTime, null);
+                    }
                 }
                 return _currentUser;
             }
@@ -91,7 +97,10 @@ namespace MainLogic.WebFiles {
             });
         }
 
-        protected void LogAction(Enum logID, long? objectID, Dictionary<string, string> additionalParams = null) {
+        public void LogAction(Enum logID, int? objectID, Dictionary<string, string> additionalParams = null) {
+            if (GetBaseModel().IsStatisticDisabled) {
+                return;
+            }
             var pars = new Dictionary<string, string> {
                 {"utm_source", UtmParam.UtmSource},
                 {"utm_campaign", UtmParam.UtmCampaign},
@@ -144,15 +153,16 @@ namespace MainLogic.WebFiles {
 
         private static int CreateGuidInfo(HttpContext context) {
             var requestContext = context.Request;
+            var responseContext = context.Response;
             var urlRefferer = GetUrlReffererString(requestContext);
-            var guid = BusinessLogic.UserProvider.CreateNewGuid(GetUserIp(requestContext), context.Request.UserAgent);
+            var guid = BusinessLogic.UserProvider.CreateNewGuest(GetUserIp(requestContext), requestContext.UserAgent);
 
-            context.Response.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
+            responseContext.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
                 Expires = DateTime.Today.AddYears(10),
             });
 
             if (!string.IsNullOrEmpty(urlRefferer)) {
-                context.Response.Cookies.Add(
+                responseContext.Cookies.Add(
                     new HttpCookie(_urlReferrerCookieName, HttpUtility.UrlEncode(urlRefferer)) {
                         Expires = DateTime.Today.AddYears(10)
                     }

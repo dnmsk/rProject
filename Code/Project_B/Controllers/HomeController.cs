@@ -1,20 +1,22 @@
 ﻿using System.Globalization;
 using System.Web.Mvc;
-using MainLogic.WebFiles;
+using Project_B.CodeClientSide;
 
 namespace Project_B.Controllers {
-    public class HomeController : ApplicationControllerBase {
+    public class HomeController : ProjectControllerBase {
+        [ActionLog(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
-            var user = User;
             return View(GetBaseModel());
         }
 
+        [ActionLog(ProjectBActions.PageHomeAbout)]
         public ActionResult About() {
             ViewBag.Message = "Your application description page.";
 
             return View(GetBaseModel());
         }
 
+        [ActionLog(ProjectBActions.PageHomeContact)]
         public ActionResult Contact() {
             ViewBag.Message = "Your contact page.";
 

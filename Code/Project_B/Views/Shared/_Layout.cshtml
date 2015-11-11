@@ -21,5 +21,8 @@
         </footer>
     </div>
     @RenderSection("scripts", required: false)
+    @Html.Partial("Statistics/YandexMetrika", Model)
+    @Html.Partial("Statistics/GoogleAnalytics", Model)
+    @Html.Partial("Statistics/TopMailru", Model)
 </body>
 </html>
