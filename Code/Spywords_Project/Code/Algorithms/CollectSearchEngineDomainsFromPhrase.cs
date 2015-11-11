@@ -90,16 +90,18 @@ namespace Spywords_Project.Code.Algorithms {
             return googleDomains;
         }
 
-        private static bool SaveDomains(Phrase phrase, IEnumerable<string> domains, SearchEngine searchEngine) {
+        private static void SaveDomains(Phrase phrase, IEnumerable<string> domains, SearchEngine searchEngine) {
             foreach (var domain in domains) {
                 try {
+                    if (domain.IsNullOrWhiteSpace()) {
+                        continue;
+                    }
                     var domainEntity = GetDomainEntity(domain);
                     CreateOrUpdateDomainPhrase(domainEntity, phrase, searchEngine, SourceType.Search);
                 } catch (Exception ex) {
                     _logger.Error(ex);
                 }
             }
-            return true;
         }
 
         private static List<Phrase> GetPhrasesToCollect() {
