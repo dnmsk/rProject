@@ -21,7 +21,7 @@ namespace Spywords_Project.Code.Algorithms {
 
         private readonly WebRequestHelper _yandexRequestHelper;
         private readonly WebRequestHelper _googleRequestHelper;
-        public CollectSearchEngineDomainsFromPhrase() : base(TimeSpan.FromMinutes(2)) {
+        public CollectSearchEngineDomainsFromPhrase() : base(TimeSpan.FromSeconds(30)) {
             _yandexRequestHelper = BuildRequestHelper("CookiesYandex", "yandex.ru", TimeSpan.FromSeconds(15));
             _googleRequestHelper = BuildRequestHelper("CookiesGoogle", "google.ru", TimeSpan.FromSeconds(15));
         }
@@ -105,7 +105,10 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<Phrase> GetPhrasesToCollect() {
             return Phrase.DataSource
                       .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.NotRetrieve)
-                      .Join(JoinType.Left, Domainphrase.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.NotRetrieve)
+                      .Join(JoinType.Left, typeof(Domainphrase), new DaoFilterAnd(
+                          new DaoFilterEq(Domainphrase.Fields.PhraseID, new DbFnEmpty(Phrase.Fields.ID)),
+                          new DaoFilter(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, (short) SourceType.Search), Oper.NotEq, default(short))
+                      ), RetrieveMode.NotRetrieve)
                       .WhereNull(Domainphrase.Fields.ID)
                       .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, (short) SourceType.Search), Oper.NotEq, default(short))
                       .AsList(

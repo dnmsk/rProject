@@ -73,7 +73,7 @@ namespace Spywords_Project.Code.Providers {
                     string.Format("count(distinct case when {0}.{1} & {2} = {2} then {0}.{3} else null end)",
                         DomainEntity.Descriptor.TableName, 
                         DomainEntity.Fields.Status,
-                        (short) (DomainStatus.Loaded | DomainStatus.EmailPhoneCollected | DomainStatus.SpywordsCollected), 
+                        (short) (DomainStatus.Loaded | DomainStatus.EmailPhoneCollected), 
                         DomainEntity.Fields.ID), "collectedDomains");
 
                 var phraseStats = DomainEntity.DataSource
@@ -130,7 +130,8 @@ namespace Spywords_Project.Code.Providers {
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
                     .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
-                    .Sort(Phraseaccount.Fields.Datecreated, SortDirection.Desc)
+                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .Sort(DomainEntity.Fields.Domain, SortDirection.Asc)
                     .AsList(
                         DomainEntity.Fields.ID,
                         DomainEntity.Fields.Domain,
