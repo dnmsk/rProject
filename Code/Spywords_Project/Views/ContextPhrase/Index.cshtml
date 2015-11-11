@@ -1,0 +1,39 @@
+﻿@model Spywords_Project.Models.PhraseModel
+
+@{
+    ViewBag.Title = "Сайты в контекстной рекламе поисковиков по запросам";
+}
+
+<h2>@ViewBag.Title</h2>
+<br/>
+@Html.ActionLink("Обновить страницу", "Index")
+<hr/>
+<h3>Добавить запрос</h3>
+<form action="@Url.Action("AddPhrase", "ContextPhrase")" class="form-inline" method="POST">
+    <div class="form-group" style="width: 350px;">
+        <label for="phrase">Текст</label>
+        <input type="text" class="form-control" name="phrase" id="phrase" placeholder="Текст запроса">
+    </div>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+<br />
+
+@if (Model.PhraseEntities.Count == 0) {
+    return;
+}
+<table class="table table-hover">
+    <tr>
+        <th>Запрос</th>
+        <th>Сайтов в Яндекс</th>
+        <th>Сайтов в Google</th>
+        <th>Статистика сбора</th>
+    </tr>
+    @foreach (var phrase in Model.PhraseEntities) {
+        <tr>
+            <td><a href="@Url.Action("PhraseDomains", "ContextPhrase", new {id=phrase.PhraseAccountID})"><b>@phrase.Text</b></a></td>
+            <td>@phrase.AdvertsYandex</td>
+            <td>@phrase.AdvertsGoogle</td>
+            <td>@phrase.CollectedDomainsCount / @phrase.DomainsCount</td>
+        </tr>
+    }
+</table>

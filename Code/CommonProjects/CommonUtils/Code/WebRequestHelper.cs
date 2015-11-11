@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace CommonUtils.Code {
     public class WebRequestHelper : IDisposable {
@@ -46,6 +47,7 @@ namespace CommonUtils.Code {
         }
 
         public readonly CookieContainer Cookies;
+        public TimeSpan? MinRequestDelay = null;
         private readonly string _userAgent;
         private readonly Action<string, CookieContainer> _onDispose;
         public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
@@ -55,7 +57,17 @@ namespace CommonUtils.Code {
             _onDispose = onDispose;
         }
 
+        private DateTime? _lastQueryTime;
         public Tuple<HttpStatusCode, string> GetContent(string url, string postData = null, string contentType = "application/x-www-form-urlencoded", Encoding encoding = null) {
+            if (MinRequestDelay.HasValue) {
+                if (!_lastQueryTime.HasValue) {
+                    _lastQueryTime = DateTime.MinValue;
+                }
+                var requestDealy = DateTime.Now - _lastQueryTime.Value;
+                if (MinRequestDelay.Value > requestDealy) {
+                    Thread.Sleep(MinRequestDelay.Value - requestDealy);
+                }
+            }
             var webResponse = GetResponse(url, Cookies, postData, encoding, contentType, _userAgent, Proxy);
             return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
         }

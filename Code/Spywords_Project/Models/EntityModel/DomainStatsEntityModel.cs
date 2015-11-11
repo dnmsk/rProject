@@ -3,6 +3,7 @@ using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Models.EntityModel {
     public class DomainStatsEntityModel {
+        public SearchEngine SearchEngine { get; set; }
         public int DomainID { get; set; }
         public string Domain { get; set; }
         public int VisitsMonth { get; set; }

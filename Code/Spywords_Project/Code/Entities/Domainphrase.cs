@@ -25,9 +25,9 @@ namespace Spywords_Project.Code.Entities {
             /// </summary>
             [DBField(DbType.Int32)] DomainID,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.Int32)] PhraseID,
 
             /// <summary>
@@ -35,6 +35,11 @@ namespace Spywords_Project.Code.Entities {
             /// </summary>
             [Nullable]
             [DBField(DbType.Int16)] SE,
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
+            [DBField(DbType.Int16)] SourceType,
 
         }
 
@@ -76,8 +81,16 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
         public SearchEngine SE {
-            get { return (SearchEngine) ((short?) this[Fields.PhraseID] ?? default(short)); }
-            set { ForceSetData(Fields.PhraseID, value); }
+            get { return (SearchEngine) ((short?) this[Fields.SE] ?? default(short)); }
+            set { ForceSetData(Fields.SE, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SourceType SourceType {
+            get { return (SourceType) ((short?) this[Fields.SourceType] ?? default(short)); }
+            set { ForceSetData(Fields.SourceType, value); }
         }
 
         public override Enum[] KeyFields {

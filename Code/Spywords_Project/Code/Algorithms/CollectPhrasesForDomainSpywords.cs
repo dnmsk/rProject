@@ -10,9 +10,9 @@ using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Algorithms {
-    public class CollectPhrasesForDomain : AlgoBase {
+    public class CollectPhrasesForDomainSpywords : AlgoBase {
         private readonly static Regex _siteSpywordsExpractor = new Regex("(?s)sword\\.php\\?word=(?<word>.*?)\"", REGEX_OPTIONS);
-        public CollectPhrasesForDomain() : base(new TimeSpan(0, 0, 30)) {
+        public CollectPhrasesForDomainSpywords() : base(new TimeSpan(0, 0, 30)) {
         }
 
         protected override void DoAction() {
@@ -43,15 +43,20 @@ namespace Spywords_Project.Code.Algorithms {
                                 };
                                 phrase.Save();
                             }
-                            if(!Domainphrase.DataSource
+                            var firstDomainPhrase = Domainphrase.DataSource
                                 .WhereEquals(Domainphrase.Fields.DomainID, entity.ID)
                                 .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
-                                .IsExists()) {
+                                .First();
+                            if (firstDomainPhrase == null) {
                                 var domainphrase = new Domainphrase {
                                     DomainID = entity.ID,
-                                    PhraseID = phrase.ID
+                                    PhraseID = phrase.ID,
+                                    SourceType = SourceType.Context
                                 };
                                 listLinksToInsert.Add(domainphrase);
+                            } else {
+                                firstDomainPhrase.SourceType |= SourceType.Context;
+                                firstDomainPhrase.Save();
                             }
                         }
                         SlothMovePlodding.AddAction(() => {

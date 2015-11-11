@@ -14,11 +14,13 @@ namespace Spywords_Project {
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             if (SiteConfiguration.NeedRunTask) {
                 _phraseAlgos = new[] {
-                    (AlgoBase) new CollectDomainInfoSpywords(),
-                    new CollectDomainsFromPhraseSpywords(),
+                    (AlgoBase) 
+                    //new CollectDomainInfoSpywords(),
+                    //new CollectDomainsFromPhraseSpywords(),
                     new CollectEmailPhoneFromDomain(),
                     new CollectShowsDomainYadro(),
-                    new CollectPhrasesForDomain()
+                    //new CollectPhrasesForDomainSpywords(),
+                    new CollectSearchEngineDomainsFromPhrase(),
                 };
             }
         }

@@ -18,15 +18,13 @@ namespace Spywords_Project.Code {
         private readonly string _login;
         private readonly string _password;
         private readonly WebRequestHelper _requestHelper;
-        private readonly TimeSpan _minRequestDelay;
         private static readonly Encoding  _encoding = Encoding.GetEncoding(1251);
         private DateTime _lastQueryTime = DateTime.MinValue;
 
-        public SpywordsQueryWrapper(string login, string password, WebRequestHelper requestHelper, TimeSpan minRequestDelay) {
+        public SpywordsQueryWrapper(string login, string password, WebRequestHelper requestHelper) {
             _login = login;
             _password = password;
             _requestHelper = requestHelper;
-            _minRequestDelay = minRequestDelay;
             Authenticate();
         }
 
@@ -51,10 +49,6 @@ namespace Spywords_Project.Code {
         private string LoadSpywordsContent(string url) {
             lock (this) {
                 _logger.Info("Пошли с запросом " + url);
-                var requestDealy = DateTime.Now - _lastQueryTime;
-                if (_minRequestDelay > requestDealy) {
-                    Thread.Sleep(_minRequestDelay - requestDealy);
-                }
                 var pageContent = _requestHelper.GetContent(url);
                 _lastQueryTime = DateTime.Now;
                 _logger.Debug(string.Format("{0}\r\n{1}", url, pageContent.Item2));

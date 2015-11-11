@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
@@ -11,6 +9,8 @@ using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using MainLogic.WebFiles;
+using Spywords_Project.Code.Entities;
+using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Algorithms {
     public abstract class AlgoBase {
@@ -24,36 +24,11 @@ namespace Spywords_Project.Code.Algorithms {
         private static readonly WebRequestHelper _webRequestHelper;
 
         static AlgoBase() {
-            var cookiesInit = new CookieContainer();
-            var configurationProperty = SiteConfiguration
-                .GetConfigurationProperty<Dictionary<string, string>>("Cookies");
-            if (configurationProperty != null) {
-                configurationProperty
-                    .Each(pair => {
-                        cookiesInit.Add(new Cookie(pair.Key, pair.Value, "/", ".spywords.ru") {
-                            Expires = DateTime.Now.AddYears(1)
-                        });
-                    });
-            }
-            _webRequestHelper = new WebRequestHelper(
-                SiteConfiguration.GetConfigurationProperty("UserAgent"),
-                cookiesInit,
-                (userAgent, cookies) => {
-                    var res = new Dictionary<string, string>();
-                    foreach (Cookie c in cookies.GetCookies(new Uri("http://spywords.ru"))) {
-                        res[c.Name] = c.Value;
-                    }
-                    SiteConfiguration.ModifyConfigurationProperty(new Dictionary<string, string> {
-                        {"UserAgent", userAgent },
-                        {"Cookies", new JavaScriptSerializer().Serialize(res) }
-                    });
-                }
-            );
+            _webRequestHelper = BuildRequestHelper("CookiesSpyword", "spywords.ru", TimeSpan.FromSeconds(1));
             SpywordsQueryWrapper = new SpywordsQueryWrapper(
                 SiteConfiguration.GetConfigurationProperty("spywordsLogin"),
                 SiteConfiguration.GetConfigurationProperty("spywordsPassword"),
-                _webRequestHelper,
-                new TimeSpan(0, 0, 1)
+                _webRequestHelper
             );
         }
 
@@ -66,6 +41,72 @@ namespace Spywords_Project.Code.Algorithms {
                 DoAction();
                 return null;
             }, wakeupInterval, null));
+        }
+
+        protected static WebRequestHelper BuildRequestHelper(string cookiesConfigRow, string targetCookiesDomain, TimeSpan? requestDealy = null) {
+            var cookiesInit = new CookieContainer();
+            var configurationProperty = SiteConfiguration
+                .GetConfigurationProperty<Dictionary<string, string>>(cookiesConfigRow);
+            if (configurationProperty != null) {
+                configurationProperty
+                    .Each(pair => {
+                        cookiesInit.Add(new Cookie(pair.Key, pair.Value, "/", "." + targetCookiesDomain) {
+                            Expires = DateTime.Now.AddYears(1)
+                        });
+                    });
+            }
+            return new WebRequestHelper(
+                SiteConfiguration.GetConfigurationProperty("UserAgent"),
+                cookiesInit,
+                (userAgent, cookies) => {
+                    var res = new Dictionary<string, string>();
+                    foreach (Cookie c in cookies.GetCookies(new Uri("http://" + cookiesConfigRow))) {
+                        res[c.Name] = c.Value;
+                    }
+                    SiteConfiguration.ModifyConfigurationProperty(new Dictionary<string, string> {
+                        {"UserAgent", userAgent },
+                        {cookiesConfigRow, new JavaScriptSerializer().Serialize(res) }
+                    });
+                }
+            ) {
+                MinRequestDelay = requestDealy
+            };
+        }
+
+        protected static DomainEntity GetDomainEntity(string domain) {
+            var d = DomainExtension.DePunycodeDomain(domain.ToLower());
+            var domainEntity = DomainEntity.DataSource
+                                           .WhereEquals(DomainEntity.Fields.Domain, d)
+                                           .First();
+            if (domainEntity == null) {
+                domainEntity = new DomainEntity {
+                    Datecreated = DateTime.Now,
+                    Domain = d,
+                    Status = DomainStatus.Default
+                };
+                domainEntity.Save();
+            }
+            return domainEntity;
+        }
+        
+        protected static void CreateOrUpdateDomainPhrase(DomainEntity domainEntity, Phrase phrase, SearchEngine seType, SourceType sourceType) {
+            var firstDomainPhrase = Domainphrase.DataSource
+                                                .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
+                                                .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
+                                                .First();
+            if (firstDomainPhrase == null) {
+                var domainphrase = new Domainphrase {
+                    DomainID = domainEntity.ID,
+                    PhraseID = phrase.ID,
+                    SourceType = sourceType,
+                    SE = seType
+                };
+                domainphrase.Save();
+            } else {
+                firstDomainPhrase.SourceType |= sourceType;
+                firstDomainPhrase.SE |= seType;
+                firstDomainPhrase.Save();
+            }
         }
 
         protected abstract void DoAction();

@@ -1,0 +1,49 @@
+﻿@using CommonUtils.ExtendedTypes
+@using Spywords_Project.Code.Statuses
+@model Spywords_Project.Models.DomainStatsModel
+
+@{
+    ViewBag.Title = string.Format("Сайты, попавшие в выдачу по запросу '{0}'", Model.Phrase.Text);
+    //Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+@Html.ActionLink("<< Назад", "Index")
+<br />
+<br />
+
+<style>
+    .yn {
+        color: red;
+    }
+    .go {
+        color: blue;
+    }
+</style>
+
+<table class="table table-hover">
+    <tr>
+        <th>ПС</th>
+        <th>Сайт</th>
+        <th>Визитов/мес</th>
+        <th>Emails</th>
+        <th>Телефоны</th>
+    </tr>
+    @foreach (var domain in Model.PhraseDomains) {
+        <tr>
+            <td>
+                @if (domain.SearchEngine.HasFlag(SearchEngine.Google)) {
+                    <b class="go">G</b>
+                }
+                @if (domain.SearchEngine.HasFlag(SearchEngine.Yandex)) {
+                    <b class="yn">Y</b>
+                }
+            </td>
+            <td><a target="_blank" href="http://@domain.Domain"><b>@domain.Domain</b></a></td>
+            <td>@domain.VisitsMonth</td>
+            <td>@Html.Raw((domain.Emails ?? new string[0]).StrJoin("<br />"))</td>
+            <td>@Html.Raw((domain.Phones ?? new string[0]).StrJoin("<br />"))</td>
+        </tr>
+    }
+</table>

@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
@@ -17,7 +18,7 @@ namespace Spywords_Project.Code.Providers {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(PhraseProvider).FullName);
         public PhraseProvider() : base(_logger) {}
 
-        public bool AddPhrase(int accountID, string text) {
+        public bool AddPhrase(int accountID, string text, SourceType sourceType) {
             return InvokeSafeSingleCall(() => {
                 text = text.ToLower();
                 var phrase = Phrase.DataSource
@@ -27,37 +28,46 @@ namespace Spywords_Project.Code.Providers {
                     phrase = new Phrase {
                         Datecreated = DateTime.Now,
                         Text = text,
-                        Status = PhraseStatus.NotCollected
+                        Status = PhraseStatus.NotCollected,
                     };
                     phrase.Save();
                 }
-                var phraseAccount = new Phraseaccount {
-                    Datecreated = DateTime.Now,
-                    AccountidentityID = accountID,
-                    PhraseID = phrase.ID
-                };
+                var phraseAccount = Phraseaccount.DataSource
+                    .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
+                    .WhereEquals(Phraseaccount.Fields.PhraseID, phrase.ID)
+                    .First();
+                if (phraseAccount == null) {
+                    phraseAccount = new Phraseaccount {
+                        Datecreated = DateTime.Now,
+                        AccountidentityID = accountID,
+                        PhraseID = phrase.ID,
+                        SourceType = sourceType
+                    };
+                } else {
+                    phraseAccount.SourceType |= sourceType;
+                }
                 return phraseAccount.Save();
             }, false);
         }
 
-        public List<PhraseEntityModel> GetPhrasesForAccount(int accountID) {
+        public List<PhraseEntityModel> GetPhrasesForAccount(int accountID, SourceType sourceType) {
             return InvokeSafe(() => {
                 var phraseModels = Phrase.DataSource
-                                         .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID,
-                                             RetrieveMode.Retrieve)
-                                         .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
-                                         .AsList()
-                                         .Select(ph => new PhraseEntityModel {
-                                             PhraseID = ph.ID,
-                                             Text = ph.Text,
-                                             AdvertsGoogle = ph.Advertisersgoogle.Value,
-                                             AdvertsYandex = ph.Advertisersyandex.Value,
-                                             PhraseStatus = ph.Status,
-                                             PhraseAccountID = ph.GetJoinedEntity<Phraseaccount>().ID,
-                                             CollectedDomainsCount = 0,
-                                             DomainsCount = 0
-                                         })
-                                         .ToList();
+                    .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.Retrieve)
+                    .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .AsList()
+                    .Select(ph => new PhraseEntityModel {
+                        PhraseID = ph.ID,
+                        Text = ph.Text,
+                        AdvertsGoogle = ph.Advertisersgoogle.Value,
+                        AdvertsYandex = ph.Advertisersyandex.Value,
+                        PhraseStatus = ph.Status,
+                        PhraseAccountID = ph.GetJoinedEntity<Phraseaccount>().ID,
+                        CollectedDomainsCount = 0,
+                        DomainsCount = 0
+                    })
+                    .ToList();
                 var totalDomains = DomainEntity.DataSource.AggrCount(DomainEntity.Fields.ID);
                 var collectedDomains = DomainEntity.DataSource.AggrString(
                     string.Format("count(distinct case when {0}.{1} & {2} = {2} then {0}.{3} else null end)",
@@ -67,14 +77,15 @@ namespace Spywords_Project.Code.Providers {
                         DomainEntity.Fields.ID), "collectedDomains");
 
                 var phraseStats = DomainEntity.DataSource
-                                              .Join(JoinType.Inner, Domainphrase.Fields.DomainID, DomainEntity.Fields.ID, RetrieveMode.NotRetrieve)
-                                              .Join(JoinType.Inner, Phrase.Fields.ID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
-                                              .WhereIn(Phrase.Fields.ID, phraseModels.Select(pm => pm.PhraseID))
-                                              .GroupBy(Phrase.Fields.ID)
-                                              .AsGroups(
-                                                  totalDomains,
-                                                  collectedDomains
-                                              ).ToDictionary(ge => (int) ge[Phrase.Fields.ID], ge => ge);
+                    .Join(JoinType.Inner, Domainphrase.Fields.DomainID, DomainEntity.Fields.ID, RetrieveMode.NotRetrieve)
+                    .Join(JoinType.Inner, Phrase.Fields.ID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
+                    .WhereIn(Phrase.Fields.ID, phraseModels.Select(pm => pm.PhraseID))
+                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .GroupBy(Phrase.Fields.ID)
+                    .AsGroups(
+                        totalDomains,
+                        collectedDomains
+                    ).ToDictionary(ge => (int) ge[Phrase.Fields.ID], ge => ge);
                 foreach (var phraseModel in phraseModels) {
                     GroupedEntity ge;
                     if (phraseStats.TryGetValue(phraseModel.PhraseID, out ge)) {
@@ -86,12 +97,14 @@ namespace Spywords_Project.Code.Providers {
             }, new List<PhraseEntityModel>());
         }
 
-        public PhraseEntityModel GetPhraseEntityModel(int accountID, int accountPhraseID) {
+        public PhraseEntityModel GetPhraseEntityModel(int accountID, int accountPhraseID, SourceType sourceType) {
             return InvokeSafe(() => {
                 var phrase = Phrase.DataSource
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
-                    .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID).First();
+                    .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .First();
                 if (phrase == null) {
                     return null;
                 }
@@ -106,9 +119,9 @@ namespace Spywords_Project.Code.Providers {
             }, null);
         }
 
-        public List<DomainStatsEntityModel> GetDomainsStatsForAccountPhrase(int accountID, int accountPhraseID) {
+        public List<DomainStatsEntityModel> GetDomainsStatsForAccountPhrase(int accountID, int accountPhraseID, SourceType sourceType) {
             return InvokeSafe(() => {
-                if (GetPhraseEntityModel(accountID, accountPhraseID) == null) {
+                if (GetPhraseEntityModel(accountID, accountPhraseID, sourceType) == null) {
                      return new List<DomainStatsEntityModel>();
                 }
                 var domainsStats = DomainEntity.DataSource
@@ -116,6 +129,7 @@ namespace Spywords_Project.Code.Providers {
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
                     .Sort(Phraseaccount.Fields.Datecreated, SortDirection.Desc)
                     .AsList(
                         DomainEntity.Fields.ID,
@@ -128,7 +142,8 @@ namespace Spywords_Project.Code.Providers {
                         DomainEntity.Fields.Datecollected,
                         DomainEntity.Fields.Phrasesgoogle,
                         DomainEntity.Fields.Phrasesyandex,
-                        DomainEntity.Fields.Status
+                        DomainEntity.Fields.Status,
+                        Domainphrase.Fields.SE
                     )
                     .Select(d => new DomainStatsEntityModel {
                         DomainID = d.ID,
@@ -141,7 +156,8 @@ namespace Spywords_Project.Code.Providers {
                         Datecollected = d.Datecollected,
                         Phrasesgoogle = d.Phrasesgoogle.Value,
                         Phrasesyandex = d.Phrasesyandex.Value,
-                        Status = d.Status
+                        Status = d.Status,
+                        SearchEngine = d.GetJoinedEntity<Domainphrase>().SE
                     })
                     .ToList();
                 var domainIDs = domainsStats.Select(ds => ds.DomainID).ToArray();

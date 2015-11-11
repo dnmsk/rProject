@@ -12,6 +12,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
+using Spywords_Project.Code.Algorithms;
 
 namespace Sandbox {
     class Program {
@@ -19,7 +20,10 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                EntityClassCreator.Create(new [] { "StaticPage", "BrokerPage" }, "Master","e:\\");
+                var algo = new CollectSearchEngineDomainsFromPhrase();
+                while (true) {
+                    Thread.Sleep(100);
+                }
                 /**/
                 //Console.WriteLine(start.ElapsedMilliseconds);
                 //Console.ReadLine();

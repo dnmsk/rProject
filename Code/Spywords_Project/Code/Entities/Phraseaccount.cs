@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Entities {
         /// <summary>
@@ -34,6 +35,11 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
             [DBField(DbType.DateTime)] Datecreated,
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
+            [DBField(DbType.Int16)] SourceType,
 
         }
 
@@ -69,6 +75,13 @@ namespace Spywords_Project.Code.Entities {
         public int PhraseID {
             get { return (int) this[Fields.PhraseID]; }
             set { ForceSetData(Fields.PhraseID, value); }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public SourceType SourceType {
+            get { return (SourceType)((short?)this[Fields.SourceType] ?? default(short)); }
+            set { ForceSetData(Fields.SourceType, value); }
         }
 
         /// <summary>

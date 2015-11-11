@@ -61,46 +61,19 @@ namespace Spywords_Project.Code.Algorithms {
                     yandexDomains = new HashSet<string>(yandexDomains.Union(advancedYandexDomains).Distinct());
 
                     var googleDomains = GetDomains(_googleDomainBlockRegex.Match(domains).Value);
-                    var domainEntities = new List<DomainEntity>();
                     try {
                         SlothMovePlodding.AddAction(() => {
-                            foreach (var domain in yandexDomains.Union(googleDomains).Distinct()) {
-                                var d = DomainExtension.DePunycodeDomain(domain);
-                                var domainEntity = DomainEntity.DataSource
-                                                               .WhereEquals(DomainEntity.Fields.Domain, d)
-                                                               .First();
-                                if (domainEntity == null) {
-                                    domainEntity = new DomainEntity {
-                                        Datecreated = DateTime.Now,
-                                        Domain = d,
-                                        Status = DomainStatus.Default
-                                    };
-                                    domainEntity.Save();
-                                }
-                                domainEntities.Add(domainEntity);
-                            }
+                            var domainEntities = new List<DomainEntity>(yandexDomains.Union(googleDomains).Distinct().Select(GetDomainEntity));
                             foreach(var domainEntity in domainEntities) {
-                                var seType = (short)(
+                                var seType = (
                                     (yandexDomains.Contains(domainEntity.Domain)
                                         ? SearchEngine.Yandex
                                         : SearchEngine.Default) |
                                     (googleDomains.Contains(domainEntity.Domain)
                                         ? SearchEngine.Google
                                         : SearchEngine.Default));
-                                var domainPhraseDs = Domainphrase.DataSource
-                                    .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
-                                    .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID);
-                                if(domainPhraseDs.IsExists()) {
-                                    domainPhraseDs
-                                        .Update(Domainphrase.Fields.SE, seType);
-                                } else {
-                                    var domainphrase = new Domainphrase {
-                                        DomainID = domainEntity.ID,
-                                        PhraseID = phrase.ID
-                                    };
-                                    domainphrase[Domainphrase.Fields.SE] = seType;
-                                    domainphrase.Insert();
-                                }
+
+                                CreateOrUpdateDomainPhrase(domainEntity, phrase, seType, SourceType.Context);
                             }
                         });
                     }

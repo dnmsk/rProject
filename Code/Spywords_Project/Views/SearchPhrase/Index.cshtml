@@ -1,15 +1,16 @@
 ﻿@model Spywords_Project.Models.PhraseModel
 
+
 @{
-    ViewBag.Title = "Мои запросы";
+    ViewBag.Title = "Cайты в топ 100 выдачи поисковиков по запросам";
 }
 
-<h2>Мои запросы</h2>
-<br/>
+<h2>@ViewBag.Title</h2>
+<br />
 @Html.ActionLink("Обновить страницу", "Index")
-<hr/>
+<hr />
 <h3>Добавить запрос</h3>
-<form action="@Url.Action("AddPhrase", "Phrase")" class="form-inline" method="POST">
+<form action="@Url.Action("AddPhrase", "SearchPhrase")" class="form-inline" method="POST">
     <div class="form-group" style="width: 350px;">
         <label for="phrase">Текст</label>
         <input type="text" class="form-control" name="phrase" id="phrase" placeholder="Текст запроса">
@@ -24,16 +25,13 @@
 <table class="table table-hover">
     <tr>
         <th>Запрос</th>
-        <th>Сайтов в Яндекс</th>
-        <th>Сайтов в Google</th>
         <th>Статистика сбора</th>
     </tr>
     @foreach (var phrase in Model.PhraseEntities) {
         <tr>
-            <td><a href="@Url.Action("PhraseDomains", "Phrase", new {id=phrase.PhraseAccountID})"><b>@phrase.Text</b></a></td>
-            <td>@phrase.AdvertsYandex</td>
-            <td>@phrase.AdvertsGoogle</td>
+            <td><a href="@Url.Action("PhraseDomains", "SearchPhrase", new {id=phrase.PhraseAccountID})"><b>@phrase.Text</b></a></td>
             <td>@phrase.CollectedDomainsCount / @phrase.DomainsCount</td>
         </tr>
     }
 </table>
+

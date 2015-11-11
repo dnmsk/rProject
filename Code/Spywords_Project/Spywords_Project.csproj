@@ -48,6 +48,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Externals\IDEV_DAO\DAO.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Lemmatizer">
       <HintPath>..\..\Externals\Lemmatizer\Lemmatizer.dll</HintPath>
     </Reference>
@@ -138,7 +142,8 @@
     <Compile Include="Code\Algorithms\CollectEmailPhoneFromDomain.cs" />
     <Compile Include="Code\Algorithms\CollectDomainsFromPhraseSpywords.cs" />
     <Compile Include="Code\Algorithms\CollectDomainInfoSpywords.cs" />
-    <Compile Include="Code\Algorithms\CollectPhrasesForDomain.cs" />
+    <Compile Include="Code\Algorithms\CollectPhrasesForDomainSpywords.cs" />
+    <Compile Include="Code\Algorithms\CollectSearchEngineDomainsFromPhrase.cs" />
     <Compile Include="Code\Algorithms\CollectShowsDomainYadro.cs" />
     <Compile Include="Code\Entities\DomainEntity.cs" />
     <Compile Include="Code\Entities\Domainemail.cs" />
@@ -146,6 +151,7 @@
     <Compile Include="Code\Entities\Domainphrase.cs" />
     <Compile Include="Code\Entities\Phrase.cs" />
     <Compile Include="Code\Entities\Phraseaccount.cs" />
+    <Compile Include="Code\HtmlBlockHelper.cs" />
     <Compile Include="Code\Providers\PhraseProvider.cs" />
     <Compile Include="Code\QueryBaseForm.cs" />
     <Compile Include="Code\QueryProcessor.cs" />
@@ -153,9 +159,12 @@
     <Compile Include="Code\Statuses\DomainStatus.cs" />
     <Compile Include="Code\Statuses\PhraseStatus.cs" />
     <Compile Include="Code\Statuses\SearchEngine.cs" />
+    <Compile Include="Code\Statuses\SourceType.cs" />
+    <Compile Include="Code\XPathQuery.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PhraseController.cs" />
+    <Compile Include="Controllers\ContextPhraseController.cs" />
+    <Compile Include="Controllers\SearchPhraseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -201,8 +210,10 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Phrase\Index.cshtml" />
-    <Content Include="Views\Phrase\PhraseDomains.cshtml" />
+    <Content Include="Views\ContextPhrase\Index.cshtml" />
+    <Content Include="Views\ContextPhrase\PhraseDomains.cshtml" />
+    <Content Include="Views\SearchPhrase\Index.cshtml" />
+    <Content Include="Views\SearchPhrase\PhraseDomains.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
