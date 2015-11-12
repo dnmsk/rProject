@@ -34,6 +34,7 @@ namespace Project_B {
                 _taskObjects.Each(t => t.Schedule());
             }
             SlothMovePlodding.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
+            BaseModelConfig.ConfigureBaseModel();
         }
     }
 }

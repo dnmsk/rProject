@@ -15,7 +15,7 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, DateTime.UtcNow, DateTime.MaxValue);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageCompetitionIndex, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
                     CompetitionModel = itemData,
                     DateUtc = DateTime.Today,
@@ -30,7 +30,7 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(new[] { itemData.CompetitionID });
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageCompetitionItemID, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = new List<CompetitionItemBetShortTransport> { itemData },
                     ResultMap = resultData
@@ -43,7 +43,7 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageCompetitionGameConcrete, id);
             var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, true);
             var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(CurrentLanguage, ProjectBActions.PageCompetitionGame, GetBaseModel()) {
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,
                     ResultMap = resultData

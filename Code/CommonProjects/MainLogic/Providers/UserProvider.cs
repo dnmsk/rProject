@@ -4,7 +4,6 @@ using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths;
 using CommonUtils.WatchfulSloths.KangooCache;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using MainLogic.Code;
 using MainLogic.Entities;
@@ -67,39 +66,37 @@ namespace MainLogic.Providers {
                     .Sort(GuestTechInfo.Fields.Datecreated, SortDirection.Desc)
                     .First(GuestTechInfo.Fields.GuestexistsbrowserID);
                 return techInfo != null ? techInfo.GuestexistsbrowserID : default(int);
-            }, new TimeSpan(7, 0, 0));
+            }, TimeSpan.FromMinutes(30));
 
         public void SaveTechInfo(int guestid, GuestTechInfoTransport techInfo) {
             InvokeSafeSingleCall(() => {
-                SlothMovePlodding.AddAction(() => {
-                    var isbot = guestid == UserAgentValidationPolicy.BOT_GUID;
-                    var lowerUserAgent = techInfo.UserAgent.ToLower();
-                    var guestExistsBrowser = GuestExistsBrowser.DataSource
-                        .WhereEquals(GuestExistsBrowser.Fields.Useragent, lowerUserAgent)
-                        .First(GuestExistsBrowser.Fields.ID);
-                    var now = DateTime.Now;
-                    if (guestExistsBrowser == null) {
-                        guestExistsBrowser = new GuestExistsBrowser {
-                            Datecreated = now,
-                            Browsertype = techInfo.BrowserType,
-                            Isbot = isbot,
-                            Ismobile = techInfo.IsMobile,
-                            Os = techInfo.Os,
-                            Useragent = lowerUserAgent,
-                            Version = techInfo.Version
-                        };
-                        guestExistsBrowser.Save();
-                    }
-                    if (guestid != UserAgentValidationPolicy.BOT_GUID && _cacheBrowserInfosByGuest[guestid] != guestExistsBrowser.ID) {
-                        var newGuestTechInfo = new GuestTechInfo {
-                            Datecreated = now,
-                            GuestexistsbrowserID = guestExistsBrowser.ID,
-                            GuestID = guestid
-                        };
-                        newGuestTechInfo.Save();
-                        _cacheBrowserInfosByGuest[guestid] = newGuestTechInfo.ID;
-                    }
-                });
+                var isbot = guestid == UserAgentValidationPolicy.BOT_GUID;
+                var lowerUserAgent = techInfo.UserAgent.ToLower();
+                var guestExistsBrowser = GuestExistsBrowser.DataSource
+                    .WhereEquals(GuestExistsBrowser.Fields.Useragent, lowerUserAgent)
+                    .First(GuestExistsBrowser.Fields.ID);
+                var now = DateTime.Now;
+                if (guestExistsBrowser == null) {
+                    guestExistsBrowser = new GuestExistsBrowser {
+                        Datecreated = now,
+                        Browsertype = techInfo.BrowserType,
+                        Isbot = isbot,
+                        Ismobile = techInfo.IsMobile,
+                        Os = techInfo.Os,
+                        Useragent = lowerUserAgent,
+                        Version = techInfo.Version
+                    };
+                    guestExistsBrowser.Save();
+                }
+                if (guestid != UserAgentValidationPolicy.BOT_GUID && _cacheBrowserInfosByGuest[guestid] != guestExistsBrowser.ID) {
+                    var newGuestTechInfo = new GuestTechInfo {
+                        Datecreated = now,
+                        GuestexistsbrowserID = guestExistsBrowser.ID,
+                        GuestID = guestid
+                    };
+                    newGuestTechInfo.Save();
+                    _cacheBrowserInfosByGuest[guestid] = newGuestTechInfo.ID;
+                }
                 return (object)null;
             }, null);
         }

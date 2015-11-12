@@ -14,7 +14,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageAccountLoginIndex)]
         public ActionResult Login(string returnUrl) {
             ViewBag.ReturnUrl = returnUrl;
-            return View(new LoginViewModel(CurrentLanguage, ProjectBActions.PageAccountLoginIndex, GetBaseModel()));
+            return View(new LoginViewModel(this));
         }
 
         //
@@ -24,7 +24,7 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         [ActionLog(ProjectBActions.PageAccountLoginPost)]
         public ActionResult Login(LoginViewModel model, string returnUrl) {
-            var loginModel = new LoginViewModel(CurrentLanguage, ProjectBActions.PageAccountLoginPost, GetBaseModel(), model);
+            var loginModel = new LoginViewModel(this, model);
             if (!ModelState.IsValid) {
                 return View(loginModel);
             }
@@ -113,10 +113,6 @@ namespace Project_B.Controllers {
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel model) {
             if (ModelState.IsValid) {
-                var user = new ApplicationUser {
-                    UserName = model.Email,
-                    GuestId = CurrentUser.GuestID
-                };
                 var result = BusinessLogic.AccountProvider.RegisterWithEmail(CurrentUser.GuestID, model.Email, model.Password);// UserManager.Create(user, model.Password);
                 if (result) {
                     var accountID = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);

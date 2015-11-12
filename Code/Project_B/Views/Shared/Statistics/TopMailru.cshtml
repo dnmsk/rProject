@@ -1,10 +1,11 @@
 ﻿@using CommonUtils.ExtendedTypes
 @using MainLogic.WebFiles
 @using MainLogic.WebFiles.Policy
+@using MainLogic.WebFiles.UserPolicy.Enum
 @model BaseModel
 
 @{
-    if (Model.IsStatisticDisabled || !ProductionPolicy.IsProduction()) {
+    if (Model.GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled) || !ProductionPolicy.IsProduction()) {
         return;
     }
 

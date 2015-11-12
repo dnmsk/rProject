@@ -246,6 +246,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\BaseModelConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -253,6 +254,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
+    <Compile Include="CodeClientSide\Enum\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
@@ -347,7 +349,6 @@
     <Compile Include="CodeClientSide\SquishItMinifier.cs" />
     <Compile Include="CodeClientSide\TransportType\SiteMapChangeFreq.cs" />
     <Compile Include="CodeClientSide\TransportType\SiteMapItem.cs" />
-    <Compile Include="CodeClientSide\UserStoreDao.cs" />
     <Compile Include="CodeClientSide\VirtualFile\SiteMapVirtual.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssetsController.cs" />
@@ -371,7 +372,6 @@
     <Compile Include="Models\CompetitionRegularModel.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitionResultItem.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitorTransport.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="CodeClientSide\TransportType\OddsTransport.cs" />
     <Compile Include="CodeClientSide\TransportType\ResultTransport.cs" />

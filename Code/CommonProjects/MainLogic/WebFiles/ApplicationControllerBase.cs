@@ -9,6 +9,7 @@ using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using MainLogic.Transport;
+using MainLogic.WebFiles.UserPolicy.Enum;
 using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {
@@ -37,7 +38,7 @@ namespace MainLogic.WebFiles {
         /// </summary>
         private BaseModel _baseModel;
 
-        protected internal BaseModel GetBaseModel() {
+        public BaseModel GetBaseModel() {
             if (_baseModel == null) {
                 _baseModel = new BaseModel(CurrentUser, BusinessLogic);
             }
@@ -98,7 +99,7 @@ namespace MainLogic.WebFiles {
         }
 
         public void LogAction(Enum logID, int? objectID, Dictionary<string, string> additionalParams = null) {
-            if (GetBaseModel().IsStatisticDisabled) {
+            if (GetBaseModel().GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled)) {
                 return;
             }
             var pars = new Dictionary<string, string> {

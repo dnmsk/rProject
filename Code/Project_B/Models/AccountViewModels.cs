@@ -45,16 +45,15 @@ namespace Project_B.Models {
         public string Email { get; set; }
     }
 
-    public class LoginViewModel : StaticPageBaseModel<object> {
-        public LoginViewModel(BaseModel baseModel) : base(LanguageType.Default, ProjectBActions.Undefined, baseModel) {
+    public class LoginViewModel : StaticPageBaseModel {
+        public LoginViewModel(BaseModel baseModel) : base(baseModel) {
         }
 
-        public LoginViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel)
-            : base(languageType, pageType, baseModel) {
+        public LoginViewModel(ProjectControllerBase projectControllerBase)
+            : base(projectControllerBase) {
         }
 
-        public LoginViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel,
-            LoginViewModel loginModel) : base(languageType, pageType, baseModel) {
+        public LoginViewModel(ProjectControllerBase projectControllerBase, LoginViewModel loginModel) : base(projectControllerBase) {
             Email = loginModel.Email;
             Password = loginModel.Password;
             RememberMe = loginModel.RememberMe;
@@ -74,16 +73,14 @@ namespace Project_B.Models {
         public bool RememberMe { get; set; }
     }
 
-    public class RegisterViewModel : StaticPageBaseModel<object> {
-        public RegisterViewModel(BaseModel baseModel) : base(LanguageType.Default, ProjectBActions.Undefined, baseModel) {
+    public class RegisterViewModel : StaticPageBaseModel {
+        public RegisterViewModel(BaseModel baseModel) : base(baseModel) {
         }
 
-        public RegisterViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel)
-            : base(languageType, pageType, baseModel) {
+        public RegisterViewModel(ProjectControllerBase projectControllerBase) : base(projectControllerBase) {
         }
 
-        public RegisterViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel,
-            RegisterViewModel loginModel) : base(languageType, pageType, baseModel) {
+        public RegisterViewModel(ProjectControllerBase projectControllerBase, RegisterViewModel loginModel) : base(projectControllerBase) {
             Email = loginModel.Email;
             Password = loginModel.Password;
             ConfirmPassword = loginModel.ConfirmPassword;
@@ -106,16 +103,15 @@ namespace Project_B.Models {
         public string ConfirmPassword { get; set; }
     }
 
-    public class ResetPasswordViewModel : StaticPageBaseModel<object> {
-        public ResetPasswordViewModel(BaseModel baseModel) : base(LanguageType.Default, ProjectBActions.Undefined, baseModel) {
+    public class ResetPasswordViewModel : StaticPageBaseModel {
+        public ResetPasswordViewModel(BaseModel baseModel) : base(baseModel) {
         }
 
-        public ResetPasswordViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel)
-            : base(languageType, pageType, baseModel) {
+        public ResetPasswordViewModel(ProjectControllerBase projectControllerBase)
+            : base(projectControllerBase) {
         }
 
-        public ResetPasswordViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel,
-            ResetPasswordViewModel loginModel) : base(languageType, pageType, baseModel) {
+        public ResetPasswordViewModel(ProjectControllerBase projectControllerBase, ResetPasswordViewModel loginModel) : base(projectControllerBase) {
             Email = loginModel.Email;
             Password = loginModel.Password;
             ConfirmPassword = loginModel.ConfirmPassword;
@@ -142,16 +138,16 @@ namespace Project_B.Models {
         public string Code { get; set; }
     }
 
-    public class ForgotPasswordViewModel : StaticPageBaseModel<object> {
-        public ForgotPasswordViewModel(BaseModel baseModel) : base(LanguageType.Default, ProjectBActions.Undefined, baseModel) {
+    public class ForgotPasswordViewModel : StaticPageBaseModel {
+        public ForgotPasswordViewModel(BaseModel baseModel) : base(baseModel) {
         }
 
-        public ForgotPasswordViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel)
-            : base(languageType, pageType, baseModel) {
+        public ForgotPasswordViewModel(ProjectControllerBase projectControllerBase)
+            : base(projectControllerBase) {
         }
 
-        public ForgotPasswordViewModel(LanguageType languageType, ProjectBActions pageType, BaseModel baseModel,
-            ResetPasswordViewModel loginModel) : base(languageType, pageType, baseModel) {
+        public ForgotPasswordViewModel(ProjectControllerBase projectControllerBase,
+            ResetPasswordViewModel loginModel) : base(projectControllerBase) {
             Email = loginModel.Email;
         }
 

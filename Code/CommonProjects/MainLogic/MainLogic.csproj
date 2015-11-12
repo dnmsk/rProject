@@ -97,6 +97,9 @@
     <Compile Include="Transport\GuestTechInfoTransport.cs" />
     <Compile Include="Transport\UtmSubdomainRuleTransport.cs" />
     <Compile Include="WebFiles\SubdomainRoute.cs" />
+    <Compile Include="WebFiles\UserPolicy\UserPolicyGlobal.cs" />
+    <Compile Include="WebFiles\UserPolicy\IUserPolicy.cs" />
+    <Compile Include="WebFiles\UserPolicy\SimpleUserPolicy.cs" />
     <Compile Include="WebFiles\WebVirtualFile.cs" />
     <Compile Include="WebFiles\WebVirtualFileManager.cs" />
     <Compile Include="Wrapper\UtmParamWrapper.cs" />

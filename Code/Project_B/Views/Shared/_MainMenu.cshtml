@@ -1,8 +1,9 @@
-﻿@using Project_B.CodeServerSide.Enums
+﻿@using MainLogic.WebFiles
+@using Project_B.CodeServerSide.Enums
 @model MainLogic.WebFiles.BaseModel
 
 @{
-    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
 }
 
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -13,7 +14,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            @Html.ActionLink("RichBet.ru", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
+            @Html.ActionLink(SiteConfiguration.GetConfigurationProperty("SiteName"), "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
         </div>
 
         <div class="navbar-collapse collapse">

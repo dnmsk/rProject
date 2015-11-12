@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -7,8 +6,8 @@ using MainLogic.WebFiles.Policy;
 
 namespace Project_B.CodeClientSide {
     public class ActionLogAttribute : ActionFilterAttribute {
-        private static readonly Dictionary<string, int?> _cachePreviousPageActionIds = new Dictionary<string, int?>();
-        public Enum ActionToLog { get; }
+        private static readonly Dictionary<string, ProjectBActions> _cachePreviousPageActionIds = new Dictionary<string, ProjectBActions>();
+        public ProjectBActions ActionToLog { get; }
 
         public ActionLogAttribute(ProjectBActions actionToLog) {
             ActionToLog = actionToLog;
@@ -18,32 +17,54 @@ namespace Project_B.CodeClientSide {
             if (ProductionPolicy.IsProduction()) {
                 var controller = filterContext.Controller as ProjectControllerBase;
                 if (controller != null) {
-                    int? arg = null;
+                    var arg = ProjectBActions.Undefined;
                     var lastControllerAction = controller.GetPreviousControllerAction();
                     if (lastControllerAction != null) {
-                        arg = GetPreviousPageActionId(filterContext.RequestContext, lastControllerAction);
+                        arg = GetPageActionId(filterContext.RequestContext, lastControllerAction.Item1, lastControllerAction.Item2);
                     }
-                    controller.LogAction(ActionToLog, arg.HasValue ? arg : (short) controller.CurrentLanguage);
+                    controller.LogAction(ActionToLog, arg != ProjectBActions.Undefined  ? (int) arg : (short) controller.CurrentLanguage);
                 }
             }
             base.OnActionExecuting(filterContext);
         }
 
-        private static int? GetPreviousPageActionId(RequestContext requestContext, Tuple<string, string> controllerAction) {
-            var key = string.Format("{0}/{1}", controllerAction.Item1, controllerAction.Item2).ToLowerInvariant();
-            int? value;
+        public static ProjectBActions GetPageActionId(RequestContext requestContext, string controllerName, string actionName) {
+            var key = string.Format("{0}/{1}", controllerName, actionName).ToLowerInvariant();
+            ProjectBActions value;
             if (!_cachePreviousPageActionIds.TryGetValue(key, out value)) {
                 var factory = ControllerBuilder.Current.GetControllerFactory();
-                var controller = factory.CreateController(requestContext, controllerAction.Item1);
-                var methodInfo = controller.GetType().GetMethod(controllerAction.Item2);
-                if (methodInfo != null) {
-                    var previousAttribute = methodInfo.GetCustomAttribute(typeof(ActionLogAttribute)) as ActionLogAttribute;
-                    if (previousAttribute != null) {
-                        value = Convert.ToInt16(previousAttribute.ActionToLog);
-                    }
-                }
+                var controller = factory.CreateController(requestContext, controllerName);
+                return GetPageActionId(key, controller, actionName);
+            }
+            return value;
+        }
+
+        public static ProjectBActions GetPageActionId(IController controller) {
+            var projectControllerBase = controller as ProjectControllerBase;
+            if (projectControllerBase == null) {
+                return ProjectBActions.Undefined;
+            }
+            var controllerName = projectControllerBase.RouteData.Values["controller"] as string;
+            var actionName = projectControllerBase.RouteData.Values["action"] as string;
+            var key = string.Format("{0}/{1}", controllerName, actionName).ToLowerInvariant();
+            ProjectBActions value;
+            if (!_cachePreviousPageActionIds.TryGetValue(key, out value)) {
+                value = GetPageActionId(key, controller, actionName);
                 _cachePreviousPageActionIds[key] = value;
             }
+            return value;
+        }
+
+        private static ProjectBActions GetPageActionId(string key, IController controller, string actionName) {
+            var value = ProjectBActions.Undefined;
+            var methodInfo = controller.GetType().GetMethod(actionName);
+            if (methodInfo != null) {
+                var previousAttribute = methodInfo.GetCustomAttribute(typeof (ActionLogAttribute)) as ActionLogAttribute;
+                if (previousAttribute != null) {
+                    value = previousAttribute.ActionToLog;
+                }
+            }
+            _cachePreviousPageActionIds[key] = value;
             return value;
         }
     }
