@@ -38,7 +38,13 @@ namespace Project_B.Controllers {
                     param = "Ru";
                     break;
             }
-            return RedirectToAction("Index", new {language = param});
+            return RedirectToAction(
+                RouteData.Values["any2"] as string ?? "Index", 
+                RouteData.Values["any1"] as string ?? "Home", 
+                new {
+                    language = param,
+                    id = RouteData.Values["any3"] as string
+                });
         }
     }
 }

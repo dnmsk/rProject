@@ -7,11 +7,16 @@ namespace Project_B {
         public static void RegisterRoutes(RouteCollection routes) {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.MapRoute(
-                name: "Data",
+                name: "Style",
                 url: "Assets/{action}/{id}",
                 defaults: new { controller = "Assets", action = "Index", language = "", id = UrlParameter.Optional }
+            );/*
+            routes.MapRoute(
+                name: "Error",
+                url: "Error/{action}",
+                defaults: new { controller = "Error", action = UrlParameter.Optional, language = "" }
             );
-
+            */
             routes.MapRoute(
                 name: "Default",
                 url: "{language}/{controller}/{action}/{id}",

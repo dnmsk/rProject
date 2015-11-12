@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 
@@ -46,29 +45,6 @@ namespace MainLogic.WebFiles {
             /*} else {
             }
            */
-
-            var httpException = exception as HttpException;
-            var routeData = new RouteData();
-            routeData.Values.Add("controller", "Error");
-
-            if (httpException == null) {
-                routeData.Values.Add("action", "Internal");
-            } else {
-                switch (httpException.GetHttpCode()) {
-                    case 404:
-                        routeData.Values.Add("action", "NotFound");
-                        break;
-                    default:
-                        routeData.Values.Add("action", "Internal");
-                        break;
-                }
-            }
-
-            routeData.Values.Add("error", exception);
-            Server.ClearError();
-            Response.TrySkipIisCustomErrors = true;
-            //IController errorController = new ErrorController();
-            //errorController.Execute(new RequestContext(new HttpContextWrapper(Context), routeData));
         }
     }
 }

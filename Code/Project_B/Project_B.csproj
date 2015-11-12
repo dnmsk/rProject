@@ -355,6 +355,7 @@
     <Compile Include="Controllers\BookmakerController.cs" />
     <Compile Include="Controllers\CompetitionController.cs" />
     <Compile Include="Controllers\CompetitionLiveController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -465,6 +466,8 @@
     <Content Include="Views\Shared\Statistics\GoogleAnalytics.cshtml" />
     <Content Include="Views\Shared\Statistics\TopMailru.cshtml" />
     <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
+    <Content Include="Views\Error\Error500.cshtml" />
+    <Content Include="Views\Error\Error404.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
