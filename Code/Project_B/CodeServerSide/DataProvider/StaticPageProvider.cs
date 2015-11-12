@@ -43,6 +43,27 @@ namespace Project_B.CodeServerSide.DataProvider {
                 return result;
             }, null);
         }
+        public StaticPageTransport GetStaticPageModel(int id) {
+            return InvokeSafe(() => {
+                return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(id));
+            }, null);
+        }
+        public StaticPageTransport SaveStaticPageModel(StaticPageTransport data) {
+            return InvokeSafe(() => {
+                StaticPage page;
+                if (data.ID == default(int)) {
+                    page = new StaticPage();
+                } else {
+                    page = StaticPage.DataSource.GetByKey(data.ID);
+                }
+                page.Content = data.Content;
+                page.Description = data.Description;
+                page.Keywords = data.Keywords;
+                page.Title = data.Title;
+                page.Languagetype = data.Languagetype;
+                return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(page.ID));
+            }, null);
+        }
 
         public List<StaticPageTransport> GetAllStaticPageModelsForType(LanguageType languageType, ProjectBActions pageType) {
             return InvokeSafe(() => {
@@ -128,14 +149,16 @@ namespace Project_B.CodeServerSide.DataProvider {
         }
 
         private static T StaticPageToModel<T>(IStaticPage entity) where T : StaticPageTransport, new() {
-            return new T {
-                ID = entity.ID,
-                Languagetype = entity.Languagetype,
-                Content = entity.Content,
-                Description = entity.Description,
-                Keywords = entity.Keywords,
-                Title = entity.Title
-            };
+            return entity == null 
+                ? null 
+                : new T {
+                    ID = entity.ID,
+                    Languagetype = entity.Languagetype,
+                    Content = entity.Content,
+                    Description = entity.Description,
+                    Keywords = entity.Keywords,
+                    Title = entity.Title
+                };
         }
 
         private static I ModelToStaticPage<I, T>(I entity, T staticPageModel, bool isTop) where T : StaticPageTransport where I : IStaticPage {

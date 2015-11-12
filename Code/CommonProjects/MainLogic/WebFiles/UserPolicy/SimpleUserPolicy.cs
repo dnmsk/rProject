@@ -2,18 +2,18 @@
 
 namespace MainLogic.WebFiles.UserPolicy {
     internal class SimpleUserPolicy<T> : IUserPolicy<T> {
-        private readonly Func<int, T> _policyValueGetter;
+        private readonly Func<SessionModule, T> _policyValueGetter;
         public System.Enum PolicySection { get; }
-        public object GetUserPolicyObj(int userID) {
+        public object GetUserPolicyObj(SessionModule userID) {
             return GetUserPolicy(userID);
         }
 
-        internal SimpleUserPolicy(System.Enum policyName, Func<int, T> policyValueGetter) {
+        internal SimpleUserPolicy(System.Enum policyName, Func<SessionModule, T> policyValueGetter) {
             _policyValueGetter = policyValueGetter;
             PolicySection = policyName;
         }
 
-        public T GetUserPolicy(int userID) {
+        public T GetUserPolicy(SessionModule userID) {
             return _policyValueGetter(userID);
         }
     }

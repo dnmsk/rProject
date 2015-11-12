@@ -13,8 +13,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, DateTime.UtcNow, DateTime.MaxValue);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, DateTime.UtcNow, DateTime.MaxValue);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
                     CompetitionModel = itemData,
@@ -28,8 +28,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionItemID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(new[] { itemData.CompetitionID });
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(new[] { itemData.CompetitionID });
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = new List<CompetitionItemBetShortTransport> { itemData },
@@ -41,8 +41,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionGame)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionGameConcrete, id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, true);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, true);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,

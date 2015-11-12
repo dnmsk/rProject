@@ -44,10 +44,10 @@ namespace Project_B.CodeServerSide.Algorithm {
         public object CollectRegularOdds() {
             using (var sw = new MiniProfiler("CollectRegularOdds")) {
                 var utcNow = DateTime.UtcNow;
-                if (MainProvider.Instance.BetProvider.GetStateRegular(_brokerType, utcNow) != SystemStateBetType.Unknown) {
+                if (ProjectProvider.Instance.BetProvider.GetStateRegular(_brokerType, utcNow) != SystemStateBetType.Unknown) {
                     var regularOdds = BookPage.Instance.GetOddsProvider(_brokerType).LoadRegular(_sportType, _languageType);
-                    MainProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
-                    MainProvider.Instance.BetProvider.SetStateRegular(_brokerType, utcNow);
+                    ProjectProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
+                    ProjectProvider.Instance.BetProvider.SetStateRegular(_brokerType, utcNow);
                 }
                 return null;
             }
@@ -58,20 +58,20 @@ namespace Project_B.CodeServerSide.Algorithm {
                 var liveData = BookPage.Instance
                     .GetOddsProvider(_brokerType)
                     .LoadLive(_sportType, _languageType);
-                MainProvider.Instance.LiveProvider.ProcessdLiveParsed(liveData, _algoMode);
+                ProjectProvider.Instance.LiveProvider.ProcessdLiveParsed(liveData, _algoMode);
                 return null;
             }
         }
 
         public object CollectHistoryForPastDate(DateTime? pastDate = null) {
             using (var sw = new MiniProfiler("CollectHistoryForPastDate")) {
-                var minDateToCollect = pastDate ?? MainProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
+                var minDateToCollect = pastDate ?? ProjectProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
                 if (minDateToCollect != null) {
                     var historyData = BookPage.Instance
                                               .GetHistoryProvider(_brokerType)
                                               .Load(minDateToCollect.Value, _sportType, _languageType);
-                    MainProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
-                    MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
+                    ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                    ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
                 }
                 return null;
             }
@@ -83,8 +83,8 @@ namespace Project_B.CodeServerSide.Algorithm {
                 var historyData = BookPage.Instance
                     .GetHistoryProvider(_brokerType)
                     .Load(todayUtc, _sportType, _languageType);
-                MainProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
-                MainProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, todayUtc, SystemStateResultType.CollectForToday);
+                ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, todayUtc, SystemStateResultType.CollectForToday);
                 return null;
             }
         }

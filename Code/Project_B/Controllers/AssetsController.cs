@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
+using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide.DataProvider;
+using Project_B.CodeServerSide.Enums;
 using SquishIt.Framework;
 using SquishIt.Framework.Base;
 
@@ -19,6 +22,22 @@ namespace Project_B.Controllers {
             // Set max-age to a year from now
             Response.Cache.SetMaxAge(_fromDays);
             return bundle.RenderCached(id);
+        }
+
+        [HttpPost]
+        public ActionResult GetStaticPageRaw(int id) {
+            return new JsonResult {
+                Data = ProjectProvider.Instance.StaticPageProvider.GetStaticPageModel(id) ?? new StaticPageTransport {
+                    Languagetype = LanguageType.English
+                }
+            };
+        }
+
+        [HttpPost]
+        public ActionResult SaveStaticPageRaw(StaticPageTransport data) {
+            return new JsonResult {
+                Data = ProjectProvider.Instance.StaticPageProvider.SaveStaticPageModel(data)
+            };
         }
     }
 }

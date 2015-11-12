@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.KangooCache;
+using MainLogic.Code;
 using MainLogic.WebFiles.UserPolicy;
 using MainLogic.WebFiles.UserPolicy.Enum;
 
@@ -15,10 +16,11 @@ namespace MainLogic.WebFiles {
         private static readonly Dictionary<Enum, IUserPolicy> _userPolicyStore = new Dictionary<Enum, IUserPolicy>();
         
         static BaseModel() {
-            ConfigurePolicyStore(UserPolicyGlobal.IsAuthenticated, userID => userID != default(int));
-            ConfigurePolicyStore(UserPolicyGlobal.IsStatisticsDisabled, userID => {
+            ConfigurePolicyStore(UserPolicyGlobal.IsAuthenticated, sessionModule => sessionModule.AccountID != default(int));
+            ConfigurePolicyStore(UserPolicyGlobal.IsBot, sessionModule => sessionModule.GuestID == UserAgentValidationPolicy.BOT_GUID);
+            ConfigurePolicyStore(UserPolicyGlobal.IsStatisticsDisabled, sessionModule => {
                 var configurationProperty = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
-                return configurationProperty == null || configurationProperty.Contains(userID);
+                return configurationProperty == null || configurationProperty.Contains(sessionModule.AccountID);
             });
         }
 
@@ -29,7 +31,7 @@ namespace MainLogic.WebFiles {
             _userPolicyStore[userPolicy.PolicySection] = userPolicy;
         }
 
-        public static void ConfigurePolicyStore<T>(Enum policyName, Func<int, T> policyValueGetter) {
+        public static void ConfigurePolicyStore<T>(Enum policyName, Func<SessionModule, T> policyValueGetter) {
             ConfigurePolicyStore(new SimpleUserPolicy<T>(policyName, policyValueGetter));
         }
 
@@ -41,7 +43,7 @@ namespace MainLogic.WebFiles {
                 key => {
                     IUserPolicy obj;
                     if (_userPolicyStore.TryGetValue(key, out obj) && obj != null) {
-                        return obj.GetUserPolicyObj(SessionModule.AccountID);
+                        return obj.GetUserPolicyObj(SessionModule);
                     } 
                     _logger.Error("Policy for {0} {1} not found in store", key.GetType(), key);
                     return null;

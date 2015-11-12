@@ -287,7 +287,7 @@
     <Compile Include="CodeServerSide\DataProvider\DataHelper\SportTypeHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\HistoryProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\LiveProvider.cs" />
-    <Compile Include="CodeServerSide\DataProvider\MainProvider.cs" />
+    <Compile Include="CodeServerSide\DataProvider\ProjectProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ResultProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\StaticPageProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionParsedTransport.cs" />
@@ -426,7 +426,6 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
@@ -449,7 +448,6 @@
     <Content Include="Views\Manage\ManageLogins.cshtml" />
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_MainMenu.cshtml" />
     <Content Include="Views\Competition\Index.cshtml" />
@@ -468,6 +466,7 @@
     <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\Error\Error404.cshtml" />
+    <Content Include="Views\Shared\PageEditor\WysiwygEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -521,16 +520,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>61783</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:61783/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

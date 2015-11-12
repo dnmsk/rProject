@@ -1,0 +1,42 @@
+﻿@using Project_B.CodeServerSide.Enums
+@model Project_B.Models.StaticPageBaseModel
+
+<form action="@Url.Action("SaveStaticPageRaw", "Assets")" method="POST" id="staticPageEditorZone" style="display: none;">
+    <input type="hidden" name="ID"/>
+    <textarea name="Content"></textarea><br/>
+    <label>Title <input type="text" name="Title"/></label><br/>
+    <label>Keywords <input type="text" name="Keywords"/></label><br/>
+    <label>Description <input type="text" name="Description"/></label><br/>
+    <select name="Languagetype">
+        @foreach (var lang in new[] {LanguageType.Russian, LanguageType.English,}) {
+            <option value="@((short)lang)">@lang.ToString()</option>
+        }
+    </select>
+    <input type="submit" value="Save"/>
+</form>
+
+<div class="right btn btn-sm" onclick="editClicked();">edit page</div>
+
+<script type="text/javascript">
+    function editClicked() {
+        var options = {
+            type: "POST",
+            data: { id: @Model.StaticPageTransport.ID },
+            traditional: true,
+            success: function (data) {
+                $("#staticPageEditorZone input[name='ID']").val(data.ID);
+                $("#staticPageEditorZone textarea[name='Content']").val(data.Content);
+                $("#staticPageEditorZone input[name='Title']").val(data.Title);
+                $("#staticPageEditorZone input[name='Keywords']").val(data.Keywords);
+                $("#staticPageEditorZone input[name='Description']").val(data.Description);
+                $("#staticPageEditorZone select[name='Languagetype']").val(data.Languagetype);
+            }
+        };
+        try {
+            $.ajax('@Url.Action("GetStaticPageRaw", "Assets")', options);
+        } catch (ex) {
+            console.log(ex);
+        }
+        $('#staticPageEditorZone').show();
+    }
+</script>

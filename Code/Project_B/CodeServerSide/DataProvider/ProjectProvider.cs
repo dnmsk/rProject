@@ -3,7 +3,7 @@ using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide.TransportType;
 
 namespace Project_B.CodeServerSide.DataProvider {
-    public class MainProvider : Singleton<MainProvider> {
+    public class ProjectProvider : Singleton<ProjectProvider> {
         public readonly BetProvider BetProvider = new BetProvider();
         public readonly CompetitionProvider CompetitionProvider = new CompetitionProvider();
         public readonly CompetitorProvider CompetitorProvider =  new CompetitorProvider();

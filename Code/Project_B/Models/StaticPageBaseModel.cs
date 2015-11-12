@@ -8,7 +8,7 @@ namespace Project_B.Models {
     public class StaticPageBaseModel : BaseModel {
         public StaticPageTransport StaticPageTransport { get; }
         private static readonly StaticPageWebCache<ProjectBActions, StaticPageTransport> _staticPagesCache = new StaticPageWebCache<ProjectBActions, StaticPageTransport>(
-            () => MainProvider.Instance.StaticPageProvider.GetCurrentStaticPageModels(true),
+            () => ProjectProvider.Instance.StaticPageProvider.GetCurrentStaticPageModels(true),
             type => type);
 
         public LanguageType CurrentLanguage { get; }

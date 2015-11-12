@@ -2,11 +2,17 @@
 using System.Web.Mvc;
 using CommonUtils.Code;
 using MainLogic.WebFiles;
+using MainLogic.WebFiles.UserPolicy.Enum;
 
 namespace Project_R.Controllers {
     public class HomeController : ApplicationControllerBase {
         public ActionResult Index() {
-            return View();
+            var baseModel = GetBaseModel();
+            if (baseModel.GetUserPolicyState<bool>(UserPolicyGlobal.IsBot)) {
+                return View();
+            } else {
+                return View("UnderConstruction");
+            }
         }
 
         const long SecondsToCaptchaValid = 10 * 10000000L;

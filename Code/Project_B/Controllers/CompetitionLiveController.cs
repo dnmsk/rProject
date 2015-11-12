@@ -14,8 +14,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageLiveIndexConcrete, (short)id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemsLiveBet(CurrentLanguage, id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Where(i => i.CurrentBets != null).Select(i => i.CompetitionID).ToArray());
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLiveBet(CurrentLanguage, id);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Where(i => i.CurrentBets != null).Select(i => i.CompetitionID).ToArray());
             itemData = itemData.Where(i => resultData.ContainsKey(i.CompetitionID)).ToList();
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
@@ -29,8 +29,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveCompetitionItemID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBet(CurrentLanguage, id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(new[] {itemData.CompetitionID});
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBet(CurrentLanguage, id);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions(new[] {itemData.CompetitionID});
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = new List<CompetitionItemBetShortTransport> {itemData},
@@ -42,8 +42,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveGameID)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageLiveGameIDConcrete, id);
-            var itemData = MainProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, id);
-            var resultData = MainProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, id);
+            var resultData = ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     CompetitionModel = itemData,

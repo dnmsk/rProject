@@ -20,7 +20,7 @@ namespace Project_B.CodeClientSide.VirtualFile {
         }
 
         private static string BuildFileContent() {
-            var pages = MainProvider.Instance.GetSiteMapItems();
+            var pages = ProjectProvider.Instance.GetSiteMapItems();
             var doc = new XmlDocument();
             doc.CreateXmlDeclaration("1.0", "UTF-8", string.Empty);
             var rootElem = doc.CreateElement("urlset", "http://www.sitemaps.org/schemas/sitemap/0.9");

@@ -31,23 +31,23 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var successCompetitions = 0;
                 var successCompetitionItems = 0;
                 foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = MainProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
+                    var competition = ProjectProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
                     if (competition == null) {
                         continue;
                     }
                     successCompetitions++;
                     foreach (var matchParsed in competitionParsed.Matches) {
-                        var competitor1 = MainProvider.Instance.CompetitorProvider
+                        var competitor1 = ProjectProvider.Instance.CompetitorProvider
                             .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, algoMode);
-                        var competitor2 = MainProvider.Instance.CompetitorProvider
+                        var competitor2 = ProjectProvider.Instance.CompetitorProvider
                             .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, algoMode);
                         if (competitor1 == null || competitor2 == null) {
                             continue;
                         }
                         successCompetitionItems++;
-                        var competitionItem = MainProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
+                        var competitionItem = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
                         if (matchParsed.Result != null) {
-                            MainProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
+                            ProjectProvider.Instance.ResultProvider.SaveResults(competitionItem, competitionParsed.Type, matchParsed.Result);
                         }
                     }
                 }

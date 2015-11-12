@@ -7,7 +7,7 @@ using Project_B.CodeServerSide.Enums;
 namespace Project_B.Models {
     public class BrokerPageModel : StaticPageBaseModel {
         private static readonly StaticPageWebCache<string, BrokerPageTransport> _brokerPagesCache = new StaticPageWebCache<string, BrokerPageTransport>(
-            () => MainProvider.Instance.StaticPageProvider.GetCurrentBrokerPageModels(true),
+            () => ProjectProvider.Instance.StaticPageProvider.GetCurrentBrokerPageModels(true),
             type => type.ToLowerInvariant());
 
         public BrokerPageTransport BrokerPageTransport { get; private set; }

@@ -57,7 +57,7 @@ namespace Project_B.CodeClientSide {
 
         private static ProjectBActions GetPageActionId(string key, IController controller, string actionName) {
             var value = ProjectBActions.Undefined;
-            var methodInfo = controller.GetType().GetMethod(actionName);
+            var methodInfo = controller.GetType().GetMethod(actionName, BindingFlags.IgnoreCase, null, CallingConventions.HasThis, new [] {typeof(string), typeof(int), typeof(void)}, null);
             if (methodInfo != null) {
                 var previousAttribute = methodInfo.GetCustomAttribute(typeof (ActionLogAttribute)) as ActionLogAttribute;
                 if (previousAttribute != null) {

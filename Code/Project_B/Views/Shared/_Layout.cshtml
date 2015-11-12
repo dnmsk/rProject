@@ -23,6 +23,7 @@
     @Html.Partial("_MainMenu", Model)
     <div class="container body-content">
         @RenderBody()
+        @Html.Partial("PageEditor/WysiwygEditor", Model)
         <hr/>
         <footer>
             <p>&copy; @DateTime.Now.Year - dnmsk</p>
