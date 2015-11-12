@@ -23,7 +23,7 @@ namespace MainLogic.WebFiles {
         private static readonly JavaScriptSerializer _javaScriptSerializer = new JavaScriptSerializer();
 
         public static string GetConfigurationProperty(string configurationProperty) {
-            return GetConfigurationProperty<string>(configurationProperty);
+            return GetConfigurationProperty<string>(configurationProperty) ?? string.Empty;
         }
 
         private static readonly Dictionary<string, object> _propertyCache = new Dictionary<string, object>(); 
