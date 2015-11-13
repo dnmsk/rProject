@@ -34,7 +34,7 @@
         PageAccountLoginIndex = 1900,
         PageAccountLoginPost = 1901,
 
-        ErrorNotFound = 1990,
+        PageErrorNotFound = 1990,
 
     }
 }

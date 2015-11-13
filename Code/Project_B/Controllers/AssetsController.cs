@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
+using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.Models;
@@ -22,15 +23,17 @@ namespace Project_B.Controllers {
         private string GetContent<T>(BundleBase<T> bundle, string id) where T : BundleBase<T> {
             // Set max-age to a year from now
             Response.Cache.SetMaxAge(_fromDays);
-            return bundle.RenderCached(id);
+            return bundle.RenderCached(id.ToLowerInvariant());
         }
 
+        [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
         public ActionResult PagesForType(ProjectBActions id) {
             var staticPageBaseModel = new StaticPageBaseModel(GetBaseModel()) {PageKey = id};
             return PartialView("PageEditor/PagesForType", staticPageBaseModel);
         }
 
         [ValidateInput(false)]
+        [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
         public ActionResult StaticPageEdit(ProjectBActions id, StaticPageTransport staticPageTransport) {
             switch (Request.RequestType.ToUpper()) {
                 case "POST":

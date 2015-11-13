@@ -1,5 +1,4 @@
-﻿using MainLogic.WebFiles;
-using Project_B.CodeClientSide;
+﻿using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
@@ -10,9 +9,15 @@ namespace Project_B.Models {
             () => ProjectProvider.Instance.StaticPageProvider.GetCurrentBrokerPageModels(true),
             type => type.ToLowerInvariant());
 
-        public BrokerPageTransport BrokerPageTransport { get; private set; }
+        public BrokerPageTransport BrokerPageTransport { get; }
+
+        public static bool ContainsBroker(string brokerName) {
+            return _brokerPagesCache.GetPage(LanguageType.Default, brokerName) != null;
+        }
+
         public BrokerPageModel(string pageUrl, ProjectControllerBase projectControllerBase) : base(projectControllerBase.GetBaseModel()) {
             BrokerPageTransport = _brokerPagesCache.GetPage(projectControllerBase.CurrentLanguage, pageUrl) ?? new BrokerPageTransport();
+            projectControllerBase.LogAction(ProjectBActions.PageBookmakerConcretePage, BrokerPageTransport.ID);
         }
     }
 }

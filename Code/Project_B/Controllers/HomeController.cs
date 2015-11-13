@@ -1,10 +1,13 @@
 ﻿using System.Globalization;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
+using Project_B.CodeClientSide.Enums;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
     public class HomeController : ProjectControllerBase {
+        public override SubNavigationType SubNavigationType => SubNavigationType.Home;
+
         [ActionLog(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
             return View(new StaticPageBaseModel(this));

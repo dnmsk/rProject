@@ -1,6 +1,14 @@
-﻿@using Project_B.CodeServerSide.Enums
+﻿@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeServerSide.Enums
 @model Project_B.Models.StaticPageBaseModel
 
+@{
+    if (!Model.GetUserPolicyState<bool>(UserPolicyLocal.IsPageEditor)) {
+        return;
+    }
+}
+
+<hr/>
 <script src="/Content/Tinymce/tinymce.min.js"></script>
 
 <div class="btn btn-sm" onclick="editClicked(this);">edit page</div>
@@ -63,6 +71,7 @@
     <a class="btn btn-success" onclick="sendData('POST'); return false;">Preview</a>
     <a class="btn btn-danger" onclick="sendData('PUT'); return false;">Save to DB</a>
 </form>
+<hr />
 <br/>
 <div id="pagesForTypeContainer" style="display: none;"></div>
 

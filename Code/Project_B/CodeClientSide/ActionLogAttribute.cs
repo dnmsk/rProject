@@ -4,10 +4,16 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
+using CommonUtils.Core.Logger;
 using MainLogic.WebFiles.Policy;
 
 namespace Project_B.CodeClientSide {
     public class ActionLogAttribute : ActionFilterAttribute {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (ActionLogAttribute).FullName);
+
         private static readonly Dictionary<string, ProjectBActions> _cachePreviousPageActionIds = new Dictionary<string, ProjectBActions>();
         public ProjectBActions ActionToLog { get; }
 
@@ -34,9 +40,15 @@ namespace Project_B.CodeClientSide {
             var key = string.Format("{0}/{1}", controllerName, actionName).ToLowerInvariant();
             ProjectBActions value;
             if (!_cachePreviousPageActionIds.TryGetValue(key, out value)) {
-                var factory = ControllerBuilder.Current.GetControllerFactory();
-                var controller = factory.CreateController(requestContext, controllerName);
-                return GetPageActionId(key, controller, actionName);
+                try {
+                    var factory = ControllerBuilder.Current.GetControllerFactory();
+                    var controller = factory.CreateController(requestContext, controllerName);
+                    return GetPageActionId(key, controller, actionName);
+                } catch (Exception ex) {
+                    _logger.Error(ex);
+                    value = ProjectBActions.Undefined;
+                    _cachePreviousPageActionIds[key] = value;
+                }
             }
             return value;
         }

@@ -1,5 +1,6 @@
 ﻿using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
+using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
@@ -7,6 +8,7 @@ using Project_B.CodeServerSide.Enums;
 namespace Project_B.Models {
     public class StaticPageBaseModel : BaseModel {
         public StaticPageTransport StaticPageTransport { get; }
+        public SubNavigationType SubNavigationType { get; }
         public ProjectBActions PageKey { get; set; }
         private static readonly StaticPageWebCache<ProjectBActions, StaticPageTransport> _staticPagesCache = new StaticPageWebCache<ProjectBActions, StaticPageTransport>(
             () => ProjectProvider.Instance.StaticPageProvider.GetCurrentStaticPageModels(true),
@@ -18,11 +20,13 @@ namespace Project_B.Models {
                     CurrentLanguage = projectController.CurrentLanguage, 
                     PageKey = ActionLogAttribute.GetPageActionId(projectController)
                 ) ?? new StaticPageTransport();
+            SubNavigationType = projectController.SubNavigationType;
         }
 
         public StaticPageBaseModel(BaseModel baseModel) : base(baseModel) {
             CurrentLanguage = LanguageType.Default;
             StaticPageTransport = new StaticPageTransport();
+            SubNavigationType = SubNavigationType.None;
         }
     }
 

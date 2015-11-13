@@ -4,12 +4,15 @@ using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
+using Project_B.CodeClientSide.Enums;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
 namespace Project_B.Controllers {
     public class HistoryController : ProjectControllerBase {
+        public override SubNavigationType SubNavigationType => SubNavigationType.SportTypes;
+
         [ActionLog(ProjectBActions.PageHistoryIndex)]
         public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
             LogAction(ProjectBActions.PageHistoryIndexConcrete, (short) id);

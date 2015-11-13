@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
+using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
@@ -10,6 +11,8 @@ using Project_B.Models;
 
 namespace Project_B.Controllers {
     public class CompetitionLiveController : ProjectControllerBase {
+        public override SubNavigationType SubNavigationType => SubNavigationType.SportTypes;
+
         // GET: CompetitionLive
         [ActionLog(ProjectBActions.PageLiveIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {

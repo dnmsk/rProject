@@ -15,7 +15,7 @@ namespace Project_B.Controllers {
         /// <summary>
         /// Показывает 404 ошибку
         /// </summary>
-        [ActionLog(ProjectBActions.ErrorNotFound)]
+        [ActionLog(ProjectBActions.PageErrorNotFound)]
         public ActionResult NotFound() {
             Response.StatusCode = 404;
             return View("Error404", new StaticPageBaseModel(this));

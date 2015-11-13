@@ -1,7 +1,18 @@
 ﻿@using MainLogic.WebFiles
+@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
-@model BaseModel
+@model Project_B.Models.StaticPageBaseModel
 
+@functions {
+    private static readonly SportType[] _sportTypesToNavigation = {
+        SportType.Football,
+        SportType.Tennis,
+        SportType.Basketball,
+        SportType.Volleyball,
+        SportType.IceHockey
+    };
+}
 @{
     var currentController = ViewContext.RouteData.Values["controller"] as string;
 }
@@ -14,7 +25,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            @Html.ActionLink(SiteConfiguration.GetConfigurationProperty("SiteName") ?? "Main", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
+            <a class="navbar-brand" href="/">@SiteConfiguration.GetConfigurationProperty("SiteName")</a>
         </div>
 
         <div class="navbar-collapse collapse">
@@ -22,22 +33,31 @@
                 <li>@Html.ActionLink("Featured", "Index", "Competition")</li>
                 <li>@Html.ActionLink("Live", "Index", "CompetitionLive")</li>
                 <li>@Html.ActionLink("History", "Index", "History")</li>
+                <li>@Html.ActionLink("Bookmakers", "Index", "Bookmaker")</li>
             </ul>
             @Html.Partial("_LoginPartial", Model)
         </div>
     </div>
 </div>
-<div class="navbar">
-    <div class="container">
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})">All</a></li>
-                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Football})">Football</a></li>
-                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Tennis})">Tennis</a></li>
-                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Basketball})">Basketball</a></li>
-                <li><a href="@Url.Action("Index", currentController, new {id = SportType.Volleyball})">Volleyball</a></li>
-                <li><a href="@Url.Action("Index", currentController, new {id = SportType.IceHockey})">Hockey</a></li>
-            </ul>
+@if (Model.SubNavigationType != SubNavigationType.None) {
+    <div class="navbar">
+        <div class="container">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @switch (Model.SubNavigationType) {
+                        case SubNavigationType.SportTypes:
+                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})">All</a></li>
+                            foreach (var sportType in _sportTypesToNavigation) {
+                                <li><a href="@Url.Action("Index", currentController, new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></li>
+                            }
+                            break;
+                        case SubNavigationType.Home:
+                            break;
+                        case SubNavigationType.Bookmakers:
+                            break;
+                    }
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+}

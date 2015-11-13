@@ -1,5 +1,6 @@
 ﻿using System;
 using MainLogic.WebFiles;
+using Project_B.CodeClientSide.Enums;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide {
@@ -32,6 +33,10 @@ namespace Project_B.CodeClientSide {
                     segments.Length <= 3 ? "Index" : segments[3].Trim('/'));
             }
             return null;
+        }
+
+        public virtual SubNavigationType SubNavigationType {
+            get { return SubNavigationType.None; }
         }
     }
 }

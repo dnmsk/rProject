@@ -254,8 +254,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
-    <Compile Include="CodeClientSide\Enum\UserPolicyLocal.cs" />
+    <Compile Include="CodeClientSide\CheckCredentialAttribute.cs" />
+    <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
+    <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
+    <Compile Include="CodeClientSide\Routes\LeftMatchingRoute.cs" />
+    <Compile Include="CodeClientSide\Routes\LowercaseRoute.cs" />
+    <Compile Include="CodeClientSide\Routes\ShortUrlControllerResolveRoute.cs" />
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
@@ -469,6 +474,7 @@
     <Content Include="Views\Error\Error404.cshtml" />
     <Content Include="Views\Shared\PageEditor\PagesForType.cshtml" />
     <Content Include="Views\Shared\PageEditor\WysiwygEditor.cshtml" />
+    <Content Include="Views\Bookmaker\BookmakerPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

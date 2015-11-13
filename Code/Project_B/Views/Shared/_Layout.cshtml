@@ -17,21 +17,20 @@
     }
     @SquishItMinifierStatic.Css.MvcRenderCachedAssetTag()
     @SquishItMinifierStatic.JavaScript.MvcRenderCachedAssetTag()
-
 </head>
 <body>
     @Html.Partial("_MainMenu", Model)
-<div class="container body-content">
-    <div id="container">
+    <div class="container body-content">
+        <div id="container">
+            @Html.Raw(Model.StaticPageTransport.Content)
+        </div>
         @RenderBody()
+        @Html.Partial("PageEditor/WysiwygEditor", Model)
+        <hr/>
+        <footer>
+            <p>&copy; @DateTime.Now.Year - dnmsk</p>
+        </footer>
     </div>
-    @Html.Partial("PageEditor/WysiwygEditor", Model)
-    <hr/>
-    <footer>
-        <p>&copy; @DateTime.Now.Year - dnmsk</p>
-    </footer>
-</div>
-    @RenderSection("scripts", required: false)
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)
     @Html.Partial("Statistics/TopMailru", Model)

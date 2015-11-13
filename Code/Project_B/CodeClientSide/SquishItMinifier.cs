@@ -44,7 +44,7 @@ namespace Project_B.CodeClientSide {
 
         public void AsCached(string bundleScope = null) {
             bundleScope = bundleScope ?? _assetScope;
-            _bundle.AsCached(bundleScope, string.Format("~/Assets/{0}/{1}?#", _path, bundleScope));
+            _bundle.AsCached(bundleScope, string.Format("~/assets/{0}/{1}?#", _path, bundleScope));
         }
 
         public MvcHtmlString MvcRenderCachedAssetTag(string bundleScope = null) {
@@ -65,13 +65,13 @@ namespace Project_B.CodeClientSide {
         */
         public static SquishItMinifier<JavaScriptBundle> JavaScript(bool isDebug) {
             var javaScriptBundle = Bundle.JavaScript();
-            return new SquishItMinifier<JavaScriptBundle>("Js", isDebug ? javaScriptBundle : javaScriptBundle.ForceRelease());
+            return new SquishItMinifier<JavaScriptBundle>("js", isDebug ? javaScriptBundle : javaScriptBundle.ForceRelease());
         }
 
         public static SquishItMinifier<CSSBundle> Css(bool isDebug) {
             var cssBundle = Bundle.Css()
                 .AppendHashForAssets();
-            return new SquishItMinifier<CSSBundle>("Css", isDebug ? cssBundle : cssBundle.ForceRelease());
+            return new SquishItMinifier<CSSBundle>("css", isDebug ? cssBundle : cssBundle.ForceRelease());
         }
     }
 }
