@@ -10,13 +10,11 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger("SimpleKangooCache");
-
-        protected readonly V DefValue;
+        
         private readonly Func<K, V> _valueGetter;
-        protected readonly ConcurrentDictionary<K, V> Cache;
+        protected ConcurrentDictionary<K, V> Cache { get; private set; }
 
-        public SimpleKangooCache(V defValue, Func<K, V> valueGetter) {
-            DefValue = defValue;
+        public SimpleKangooCache(Func<K, V> valueGetter) {
             _valueGetter = valueGetter;
             var comparer = GetComparer();
             Cache = comparer == null
@@ -32,6 +30,10 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
             return false;
         }
 
+        protected void ReplaceCacheContainer(ConcurrentDictionary<K, V> newCache) {
+            Cache = newCache;
+        }
+
         /// <summary>
         /// Получение элемента из кэша. Если элемента нет - он будет получен по правилу получения этого ключа.
         /// </summary>
@@ -45,11 +47,11 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                             string.Format("Ключ null для типа {0}, класс {1}. Такого исключения не должно быть, что-то сломалось. Будет возвращено дефолтное значение.", typeof(V), GetType())
                         )
                     );
-                    return DefValue;
+                    return default(V);
                 }
 
                 V cacheElement;
-                if (!Cache.TryGetValue(key, out cacheElement) || NeedUpdate(cacheElement) ) {
+                if ((!Cache.TryGetValue(key, out cacheElement) || NeedUpdate(cacheElement)) && _valueGetter != null) {
                     if (ConfigHelper.TestMode) {
                         return _valueGetter(key);
                     }
@@ -61,6 +63,14 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
             set {
                 Cache[key] = value;
             }
+        }
+
+        public bool TryGetValue(K key, out V value) {
+            return Cache.TryGetValue(key, out value);
+        }
+
+        public bool ContainsKey(K key) {
+            return Cache.ContainsKey(key);
         }
     }
 }

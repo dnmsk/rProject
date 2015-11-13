@@ -27,5 +27,7 @@ namespace Project_B.CodeClientSide.TransportType {
         /// 
         /// </summary>
         public string Content { get; set; }
+        public bool IsTop { get; set; }
+        public bool IsPublished { get; set; }
     }
 }

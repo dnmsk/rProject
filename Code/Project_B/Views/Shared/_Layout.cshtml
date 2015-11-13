@@ -21,14 +21,16 @@
 </head>
 <body>
     @Html.Partial("_MainMenu", Model)
-    <div class="container body-content">
+<div class="container body-content">
+    <div id="container">
         @RenderBody()
-        @Html.Partial("PageEditor/WysiwygEditor", Model)
-        <hr/>
-        <footer>
-            <p>&copy; @DateTime.Now.Year - dnmsk</p>
-        </footer>
     </div>
+    @Html.Partial("PageEditor/WysiwygEditor", Model)
+    <hr/>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - dnmsk</p>
+    </footer>
+</div>
     @RenderSection("scripts", required: false)
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)

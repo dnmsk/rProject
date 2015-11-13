@@ -1,0 +1,27 @@
+﻿@using Project_B.CodeServerSide.DataProvider
+@model Project_B.Models.StaticPageBaseModel
+
+<h4>You can edit exist pages or <a class="btn btn-xs btn-warning" onclick="createNewPage();">Add</a> new</h4>
+@{
+    var publishedFound = false;
+    <table class="table">
+        <tr><th>ID</th><th>Language</th><th>IsTop</th><th>IsPublished</th><th></th><th></th></tr>
+        <tbody>
+        @foreach (var staticPageModel in ProjectProvider.Instance.StaticPageProvider.GetAllStaticPageModelsForType(Model.PageKey).OrderByDescending(sp => sp.ID)) {
+            <tr>
+                <td>@staticPageModel.ID</td>
+                <td>@staticPageModel.Languagetype</td>
+                <td>@staticPageModel.IsTop</td>
+                <td>@staticPageModel.IsPublished</td>
+                <td><a class="btn btn-xs btn-primary" onclick="beginEdit(@staticPageModel.ID);">EDIT</a></td>
+                <td>
+                    @if (!publishedFound && staticPageModel.IsPublished && staticPageModel.IsTop) {
+                        publishedFound = true;
+                        <span>Active</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

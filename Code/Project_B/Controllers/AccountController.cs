@@ -141,7 +141,7 @@ namespace Project_B.Controllers {
         [AllowAnonymous]
         public ActionResult ConfirmEmail(int userId, string code) {
             if (userId == null || code == null) {
-                return View("Error");
+                //return View("Error");
             }
             //var result = UserManager.ConfirmEmail(userId, code);
             return null;//View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -191,7 +191,7 @@ namespace Project_B.Controllers {
         // GET: /Account/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword(string code) {
-            return code == null ? View("Error") : View();
+            return /*code == null ? View("Error") :*/ View();
         }
 
         //

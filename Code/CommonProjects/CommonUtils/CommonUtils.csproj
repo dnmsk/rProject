@@ -117,6 +117,7 @@
     <Compile Include="WatchfulSloths\IWatchfulSloth.cs" />
     <Compile Include="WatchfulSloths\KangooCache\KangarooCache.cs" />
     <Compile Include="WatchfulSloths\KangooCache\KangooCacheElement.cs" />
+    <Compile Include="WatchfulSloths\KangooCache\MultipleKangooCache.cs" />
     <Compile Include="WatchfulSloths\KangooCache\SimpleKangooCache.cs" />
     <Compile Include="WatchfulSloths\KangooCache\ThriftyKangarooCache.cs" />
     <Compile Include="WatchfulSloths\SlothMoveRules\ISlothMoveRule.cs" />

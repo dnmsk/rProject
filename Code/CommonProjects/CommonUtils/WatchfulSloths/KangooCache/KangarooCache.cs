@@ -18,11 +18,8 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger("KangarooCache");
 
-        public KangarooCache(V defValue, IWatchfulSloth sloth, Func<K, V> valueGetter, TimeSpan? keyActualTime = null) 
+        public KangarooCache(IWatchfulSloth sloth, Func<K, V> valueGetter, TimeSpan? keyActualTime = null) 
                                                                             : base (
-                                                                                new KangooCacheElement<V> {
-                                                                                    Element = defValue
-                                                                                }, 
                                                                                 k => new KangooCacheElement<V> {
                                                                                     Element = valueGetter(k),
                                                                                     LastActualDate = DateTime.Now.Add(keyActualTime ?? TimeSpan.FromMinutes(30))
@@ -42,7 +39,8 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         /// <returns></returns>
         public new V this[K key] {
             get {
-                return base[key].Element;
+                var kangooCacheElement = base[key];
+                return kangooCacheElement != null ? kangooCacheElement.Element : default (V);
             }
             set {
                 base[key] = new KangooCacheElement<V> {
@@ -57,7 +55,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         }
 
         protected override bool NeedUpdate(KangooCacheElement<V> inCache) {
-            return inCache.LastActualDate < DateTime.Now || inCache.Element.Equals(DefValue);
+            return inCache == null || inCache.LastActualDate < DateTime.Now;
         }
 
         private object SelfClean() {

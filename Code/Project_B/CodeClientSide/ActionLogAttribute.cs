@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -57,7 +59,9 @@ namespace Project_B.CodeClientSide {
 
         private static ProjectBActions GetPageActionId(string key, IController controller, string actionName) {
             var value = ProjectBActions.Undefined;
-            var methodInfo = controller.GetType().GetMethod(actionName, BindingFlags.IgnoreCase, null, CallingConventions.HasThis, new [] {typeof(string), typeof(int), typeof(void)}, null);
+            var methodInfo = controller.GetType()
+                    .GetMethods()
+                    .FirstOrDefault(m => m.Name.Equals(actionName, StringComparison.InvariantCultureIgnoreCase));
             if (methodInfo != null) {
                 var previousAttribute = methodInfo.GetCustomAttribute(typeof (ActionLogAttribute)) as ActionLogAttribute;
                 if (previousAttribute != null) {

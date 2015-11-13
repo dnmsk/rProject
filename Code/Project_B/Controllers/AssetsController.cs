@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Web.Mvc;
+using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
-using Project_B.CodeServerSide.Enums;
+using Project_B.Models;
 using SquishIt.Framework;
 using SquishIt.Framework.Base;
 
 namespace Project_B.Controllers {
-    public class AssetsController : Controller {
+    public class AssetsController : ProjectControllerBase {
         private readonly TimeSpan _fromDays = TimeSpan.FromDays(365);
 
         public ActionResult Js(string id) {
@@ -24,19 +25,30 @@ namespace Project_B.Controllers {
             return bundle.RenderCached(id);
         }
 
-        [HttpPost]
-        public ActionResult GetStaticPageRaw(int id) {
-            return new JsonResult {
-                Data = ProjectProvider.Instance.StaticPageProvider.GetStaticPageModel(id) ?? new StaticPageTransport {
-                    Languagetype = LanguageType.English
-                }
-            };
+        public ActionResult PagesForType(ProjectBActions id) {
+            var staticPageBaseModel = new StaticPageBaseModel(GetBaseModel()) {PageKey = id};
+            return PartialView("PageEditor/PagesForType", staticPageBaseModel);
         }
 
-        [HttpPost]
-        public ActionResult SaveStaticPageRaw(StaticPageTransport data) {
+        [ValidateInput(false)]
+        public ActionResult StaticPageEdit(ProjectBActions id, StaticPageTransport staticPageTransport) {
+            switch (Request.RequestType.ToUpper()) {
+                case "POST":
+                    return StaticPageFormatJsonResult(staticPageTransport);
+                case "PUT":
+                    return StaticPageFormatJsonResult(ProjectProvider.Instance.StaticPageProvider.SaveStaticPageModel(id, staticPageTransport));
+                case "GET":
+                default:
+                    return StaticPageFormatJsonResult(ProjectProvider.Instance.StaticPageProvider.GetStaticPageModel(id, staticPageTransport.ID) ?? staticPageTransport);
+            }
+        }
+
+        private static JsonResult StaticPageFormatJsonResult(StaticPageTransport pageTransport) {
             return new JsonResult {
-                Data = ProjectProvider.Instance.StaticPageProvider.SaveStaticPageModel(data)
+                Data = new {
+                    StaticPageTransport = pageTransport
+                },
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
     }

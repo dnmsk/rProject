@@ -387,6 +387,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Tinymce\tinymce.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -466,6 +467,7 @@
     <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\Error\Error404.cshtml" />
+    <Content Include="Views\Shared\PageEditor\PagesForType.cshtml" />
     <Content Include="Views\Shared\PageEditor\WysiwygEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>

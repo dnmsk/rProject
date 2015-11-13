@@ -127,9 +127,9 @@ namespace Project_B.Controllers {
         public ActionResult VerifyPhoneNumber(string phoneNumber) {
             //var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId<int>(), phoneNumber);
             // Send an SMS through the SMS provider to verify the phone number
-            return phoneNumber == null
+            return/* phoneNumber == null
                 ? View("Error")
-                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
+                :*/ View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
         //

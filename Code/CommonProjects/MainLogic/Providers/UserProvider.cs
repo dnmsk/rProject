@@ -59,7 +59,7 @@ namespace MainLogic.Providers {
             });
         }
 
-        private readonly KangarooCache<int, int> _cacheBrowserInfosByGuest = new KangarooCache<int, int>(default(int), WatchfulSloth.Instance,
+        private readonly KangarooCache<int, int> _cacheBrowserInfosByGuest = new KangarooCache<int, int>(WatchfulSloth.Instance,
             guestID => {
                 var techInfo = GuestTechInfo.DataSource
                     .WhereEquals(GuestTechInfo.Fields.GuestID, guestID)

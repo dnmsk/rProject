@@ -39,7 +39,7 @@ namespace MainLogic.WebFiles {
         public SessionModule SessionModule { get; }
 
         private BaseModel() {
-            _cachedPolicyData = new SimpleKangooCache<Enum, object>(null,
+            _cachedPolicyData = new SimpleKangooCache<Enum, object>(
                 key => {
                     IUserPolicy obj;
                     if (_userPolicyStore.TryGetValue(key, out obj) && obj != null) {

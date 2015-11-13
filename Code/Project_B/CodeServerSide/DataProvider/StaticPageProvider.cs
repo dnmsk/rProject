@@ -43,32 +43,34 @@ namespace Project_B.CodeServerSide.DataProvider {
                 return result;
             }, null);
         }
-        public StaticPageTransport GetStaticPageModel(int id) {
-            return InvokeSafe(() => {
-                return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(id));
-            }, null);
+        public StaticPageTransport GetStaticPageModel(ProjectBActions pageType, int id) {
+            return InvokeSafe(() => 
+                        StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.WhereEquals(StaticPage.Fields.Pagetype, (short) (int) pageType).GetByKey(id)), null);
         }
-        public StaticPageTransport SaveStaticPageModel(StaticPageTransport data) {
-            return InvokeSafe(() => {
+        public StaticPageTransport SaveStaticPageModel(ProjectBActions pageType, StaticPageTransport data) {
+            return InvokeSafeSingleCall(() => {
                 StaticPage page;
                 if (data.ID == default(int)) {
                     page = new StaticPage();
                 } else {
-                    page = StaticPage.DataSource.GetByKey(data.ID);
+                    page = StaticPage.DataSource
+                                    .WhereEquals(StaticPage.Fields.Pagetype, (short)(int)pageType)
+                                    .GetByKey(data.ID);
                 }
                 page.Content = data.Content;
                 page.Description = data.Description;
                 page.Keywords = data.Keywords;
                 page.Title = data.Title;
-                page.Languagetype = data.Languagetype;
+                page.Pagetype = pageType;
+                page.Languagetype = data.Languagetype == LanguageType.Default ? LanguageType.English : data.Languagetype;
+                page.Save();
                 return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(page.ID));
             }, null);
         }
 
-        public List<StaticPageTransport> GetAllStaticPageModelsForType(LanguageType languageType, ProjectBActions pageType) {
+        public List<StaticPageTransport> GetAllStaticPageModelsForType(ProjectBActions pageType) {
             return InvokeSafe(() => {
-                var entities = StaticPage.DataSource
-                    .WhereEquals(StaticPage.Fields.Languagetype, (short)languageType)                     
+                var entities = StaticPage.DataSource                   
                     .WhereEquals(StaticPage.Fields.Pagetype, (short)pageType)                     
                     .Sort(StaticPage.Fields.ID, SortDirection.Asc)
                     .AsList();
@@ -157,7 +159,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                     Content = entity.Content,
                     Description = entity.Description,
                     Keywords = entity.Keywords,
-                    Title = entity.Title
+                    Title = entity.Title,
+                    IsPublished = entity.Datepublishedutc.HasValue,
+                    IsTop = entity.Istop,
                 };
         }
 

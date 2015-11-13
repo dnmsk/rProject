@@ -1,30 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using CommonUtils.ExtendedTypes;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
-using MainLogic;
-using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public class ScoreHelper : Singleton<ScoreHelper> {
-        private Dictionary<string, ResultModeType> _nameToGender = new Dictionary<string, ResultModeType>();
-
-        public ScoreHelper() {
-            UpdateResultModeMap();
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(UpdateResultModeMap, new TimeSpan(0, 30, 0), null));
-        }
-
-        private object UpdateResultModeMap() {
-            var genders = ResultModeAdvanced.DataSource.AsList();
-            var newMap = new Dictionary<string, ResultModeType>();
-            foreach (var genderAdvanced in genders) {
-                newMap[genderAdvanced.Name.ToLower()] = genderAdvanced.Resultmodetype;
-            }
-            _nameToGender = newMap;
-            return null;
-        }
-        
         public short GenerateScoreID(short score1, short score2) {
             return (short) (((short) (score1 << 8)) | score2);
         }
