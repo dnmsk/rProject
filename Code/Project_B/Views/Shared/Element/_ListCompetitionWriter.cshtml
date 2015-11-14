@@ -1,4 +1,6 @@
 ﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Entity.Interface
@@ -6,70 +8,34 @@
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 @functions{
-    static readonly Dictionary<LanguageType, string[]> _shortHeaders = new Dictionary<LanguageType, string[]> {
-        {LanguageType.English, new[] {
-            "<b>1</b>",
-            "<b>2</b>",
-            "Hcap<b>1</b>",
-            "Hcap<b>2</b>",
-            "Under",
-            "Over",
-        } },
-        {LanguageType.Russian, new[] {
-            "<b>1</b>",
-            "<b>2</b>",
-            "Фора<b>1</b>",
-            "Фора<b>2</b>",
-            "Меньше",
-            "Больше",
-        } },
-    };
-    static readonly Dictionary<LanguageType, string[]> _fullHeaders = new Dictionary<LanguageType, string[]> {
-        {LanguageType.English, new[] {
-            "<b>1</b>",
-            "<b>X</b>",
-            "<b>2</b>",
-            "<b>1X</b>",
-            "<b>12</b>",
-            "<b>X2</b>",
-            "Hcap<b>1</b>",
-            "Hcap<b>2</b>",
-            "Under",
-            "Over",
-        } },
-        {LanguageType.Russian, new[] {
-            "<b>1</b>",
-            "<b>X</b>",
-            "<b>2</b>",
-            "<b>1X</b>",
-            "<b>12</b>",
-            "<b>X2</b>",
-            "Фора<b>1</b>",
-            "Фора<b>2</b>",
-            "Меньше",
-            "Больше",
-        } },
+    private static readonly SiteText[] _shortHeaders = {
+        SiteText.GridOddTitleWin1,
+        SiteText.GridOddTitleWin2,
+        SiteText.GridOddTitleHcap1,
+        SiteText.GridOddTitleHcap2,
+        SiteText.GridOddTitleUnder,
+        SiteText.GridOddTitleOver
     };
 
-    static readonly Dictionary<LanguageType, Dictionary<SportType, string[]>> _tableHeaders = new Dictionary<LanguageType, Dictionary<SportType, string[]>> {
-        {LanguageType.English, new Dictionary<SportType, string[]> {
-            {SportType.Basketball, _shortHeaders[LanguageType.English] },
-            {SportType.Football, _fullHeaders[LanguageType.English] },
-            {SportType.IceHockey, _fullHeaders[LanguageType.English] },
-            {SportType.Tennis, _shortHeaders[LanguageType.English] },
-            {SportType.Volleyball, _shortHeaders[LanguageType.English] },
-        } },
-        {LanguageType.Russian, new Dictionary<SportType, string[]> {
-            {SportType.Basketball, _shortHeaders[LanguageType.Russian] },
-            {SportType.Football, _fullHeaders[LanguageType.Russian] },
-            {SportType.IceHockey, _fullHeaders[LanguageType.Russian] },
-            {SportType.Tennis, _shortHeaders[LanguageType.Russian] },
-            {SportType.Volleyball, _shortHeaders[LanguageType.Russian] },
-        } },
+    private static readonly SiteText[] _fullHeaders = {
+        SiteText.GridOddTitleWin1,
+        SiteText.GridOddTitleDraw,
+        SiteText.GridOddTitleWin2,
+        SiteText.GridOddTitleWin1Draw,
+        SiteText.GridOddTitleWin1Win2,
+        SiteText.GridOddTitleDrawWin2,
+        SiteText.GridOddTitleHcap1,
+        SiteText.GridOddTitleHcap2,
+        SiteText.GridOddTitleUnder,
+        SiteText.GridOddTitleOver
     };
-    private readonly Dictionary<LanguageType, string> _seeAllDictionaryText = new Dictionary<LanguageType, string> {
-        {LanguageType.English, "See all <b>{0}</b> matches in <b>{1}</b>" },
-        {LanguageType.Russian, "Посмотреть все <b>{0}</b> игр в <b>{1}</b>" },
+
+    static readonly Dictionary<SportType, SiteText[]> _tableHeaders = new Dictionary<SportType, SiteText[]> {
+        {SportType.Basketball, _shortHeaders },
+        {SportType.Football, _fullHeaders },
+        {SportType.IceHockey, _fullHeaders },
+        {SportType.Tennis, _shortHeaders },
+        {SportType.Volleyball, _shortHeaders }
     };
 
     private static readonly BetOddType[] _shortPercentile = {
@@ -141,14 +107,14 @@
 }
 
 @helper RenderAdvancedParam(BetOddType oddType, float advanced) {
-if (_oddsWithAdvanced.Contains(oddType)) {
-    advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
-    if (_oddsWithSymbol.Contains(oddType)) {
+    if (_oddsWithAdvanced.Contains(oddType)) {
+        advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
+        if (_oddsWithSymbol.Contains(oddType)) {
             @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
-    } else {
+        } else {
             @Html.Raw(string.Format("({0})", advanced))
+        }
     }
-}
 }
 
 @{
@@ -157,8 +123,7 @@ if (_oddsWithAdvanced.Contains(oddType)) {
 }
 
 @foreach (var bySportTypes in Model.ControllerModel.CompetitionModel.GroupBy(c => c.SportType)) {
-    var headers = (_tableHeaders.TryGetValueOrDefault(Model.CurrentLanguage) ??
-                   _tableHeaders.TryGetValueOrDefault(LanguageType.English))[bySportTypes.Key];
+    var headers =  _tableHeaders[bySportTypes.Key].Select(textType => LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, textType)).ToArray();
     <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H2>
     foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID).OrderBy(c => c.First().Competition.Name).ToArray()) {
         var competitionModel = groupedCompetitions.First().Competition;
@@ -225,13 +190,13 @@ if (_oddsWithAdvanced.Contains(oddType)) {
                                     <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
                                 </td>
                             } else {
-                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
+                                <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
                             }
                         }
                     } else {
                         <td>&mdash;</td>
                         foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
-                            <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
+                            <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
                         }
                     }
                     <td class="text-center">
@@ -242,14 +207,13 @@ if (_oddsWithAdvanced.Contains(oddType)) {
                                 <br />
                                 <small>
                                     @resultTransport.SubScore.Select(s => {
-                                   var sc = ScoreHelper.Instance.GenerateScore(s);
-                                   return string.Format("{0}:{1}", sc.Item1, sc.Item2);
-                               }).StrJoin(", ")
+                                        var sc = ScoreHelper.Instance.GenerateScore(s);
+                                        return string.Format("{0}:{1}", sc.Item1, sc.Item2);
+                                    }).StrJoin(", ")
                                 </small>
                             }
                         } else {
                             @Html.Raw("&mdash;")
-                            ;
                         }
                     </td>
                 </tr>
@@ -258,9 +222,8 @@ if (_oddsWithAdvanced.Contains(oddType)) {
         if (appendSeeAllLink) {
             <div class="text-right">
                 <a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@Html.Raw(
-                   string.Format(_seeAllDictionaryText.TryGetValueOrDefaultStruct(Model.CurrentLanguage) ?? _seeAllDictionaryText.TryGetValueOrDefaultStruct(LanguageType.English),
-                                 itemBetShortModels.Length, competitionModel.Name))</a>
-        </div>
+                   LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.GridOddFooterSeeMore).FormatSafe(itemBetShortModels.Length, competitionModel.Name))</a>
+            </div>
         }
     }
 }

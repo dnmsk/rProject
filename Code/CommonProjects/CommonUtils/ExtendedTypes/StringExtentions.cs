@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Text;
 
 namespace CommonUtils.ExtendedTypes {
@@ -15,6 +14,20 @@ namespace CommonUtils.ExtendedTypes {
         /// <returns>Форматированная строка.</returns>
         public static string Format(this string str, params object[] param) {
             return string.Format(str, param);
+        }
+
+        /// <summary>
+        /// Сокращенное использование string.Format(...).
+        /// </summary>
+        /// <param name="str">Строка для форматирования.</param>
+        /// <param name="param">Параметры.</param>
+        /// <returns>Форматированная строка.</returns>
+        public static string FormatSafe(this string str, params object[] param) {
+            try {
+                return string.Format(str, param);
+            } catch (Exception ex) {
+                return str;
+            }
         }
 
         /// <summary>

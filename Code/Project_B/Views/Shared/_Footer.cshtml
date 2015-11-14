@@ -1,4 +1,6 @@
-﻿@using Project_B.CodeServerSide.DataProvider.DataHelper
+﻿@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @model Project_B.Models.StaticPageBaseModel
 @{
     var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
@@ -6,7 +8,7 @@
 <footer>
     <p>&copy; @DateTime.Now.Year - dnmsk</p>
     <div class="right">
-        Site language:
+        @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterSiteLanguage):
         @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
             var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);
             var isoPart = "/" + languageName.Item2;
