@@ -6,7 +6,7 @@
     var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
 }
 <footer>
-    <p>&copy; @DateTime.Now.Year - dnmsk</p>
+    <p>&copy; @DateTime.UtcNow.Year - dnmsk</p>
     <div class="right">
         @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterSiteLanguage):
         @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {

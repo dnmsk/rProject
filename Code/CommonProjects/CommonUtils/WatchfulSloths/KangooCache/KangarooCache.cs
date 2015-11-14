@@ -22,7 +22,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                                                                             : base (
                                                                                 k => new KangooCacheElement<V> {
                                                                                     Element = valueGetter(k),
-                                                                                    LastActualDate = DateTime.Now.Add(keyActualTime ?? TimeSpan.FromMinutes(30))
+                                                                                    LastActualDate = DateTime.UtcNow.Add(keyActualTime ?? TimeSpan.FromMinutes(30))
                                                                             }) {
             _keyActualTime = keyActualTime ?? TimeSpan.FromMinutes(30);
             if (sloth != null) {
@@ -45,7 +45,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
             set {
                 base[key] = new KangooCacheElement<V> {
                     Element = value,
-                    LastActualDate = DateTime.Now.Add(_keyActualTime)
+                    LastActualDate = DateTime.UtcNow.Add(_keyActualTime)
                 };
             }
         }
@@ -55,12 +55,12 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         }
 
         protected override bool NeedUpdate(KangooCacheElement<V> inCache) {
-            return inCache == null || inCache.LastActualDate < DateTime.Now;
+            return inCache == null || inCache.LastActualDate < DateTime.UtcNow;
         }
 
         private object SelfClean() {
             ICollection<K> keys = Cache.Keys.ToArray();
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             int cleanedKeys = 0;
             foreach (var key in keys) {
                 try {

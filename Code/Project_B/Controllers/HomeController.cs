@@ -15,15 +15,11 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageHomeAbout)]
         public ActionResult About() {
-            ViewBag.Message = "Your application description page.";
-
             return View(new StaticPageBaseModel(this));
         }
 
         [ActionLog(ProjectBActions.PageHomeContact)]
         public ActionResult Contact() {
-            ViewBag.Message = "Your contact page.";
-
             return View(new StaticPageBaseModel(this));
         }
 

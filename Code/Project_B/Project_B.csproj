@@ -223,6 +223,7 @@
     <Compile Include="CodeClientSide\Enums\SiteText.cs" />
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
+    <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\Routes\LeftMatchingRoute.cs" />

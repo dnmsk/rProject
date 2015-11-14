@@ -62,7 +62,7 @@ namespace AutoPublication.Code {
             try {
                 buildPublishItem.BuildName = PublicatorProvider.Publish(pathToBuild, buildPublishItem.ProjectName, buildPublishItem.ProjectPath);
                 var path = Path.Combine(buildPublishItem.ProjectPath, _publishDesciptionFile);
-                buildPublishItem.ProjectPublishDate = DateTime.Now;
+                buildPublishItem.ProjectPublishDate = DateTime.UtcNow;
                 for(var i = 0; i < _buildPublishItems.Count; i++) {
                     var item = _buildPublishItems[i];
                     if(item.ProjectPath == buildPublishItem.ProjectPath &&

@@ -5,9 +5,6 @@ using Project_B.Models;
 namespace Project_B.Controllers {
     [Authorize]
     public class ManageController : ProjectControllerBase {
-
-        public ManageController() {
-        }
         
         //
         // GET: /Manage/Index
@@ -313,7 +310,7 @@ namespace Project_B.Controllers {
         }
 
         #endregion
-        */
+        /**/
 
         public enum ManageMessageId {
             AddPhoneSuccess,

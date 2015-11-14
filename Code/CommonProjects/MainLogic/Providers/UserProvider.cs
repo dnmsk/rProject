@@ -29,7 +29,7 @@ namespace MainLogic.Providers {
                     return UserAgentValidationPolicy.BOT_GUID;
                 }
                 var guid = new Guest {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     Ip = ip
                 };
                 guid.Save();
@@ -51,7 +51,7 @@ namespace MainLogic.Providers {
                     return;
                 }
                 new GuestReferrer {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     GuestID = guestid,
                     Urlreferrer = referrer,
                     Urltarget = target
@@ -75,7 +75,7 @@ namespace MainLogic.Providers {
                 var guestExistsBrowser = GuestExistsBrowser.DataSource
                     .WhereEquals(GuestExistsBrowser.Fields.Useragent, lowerUserAgent)
                     .First(GuestExistsBrowser.Fields.ID);
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 if (guestExistsBrowser == null) {
                     guestExistsBrowser = new GuestExistsBrowser {
                         Datecreated = now,
@@ -104,7 +104,7 @@ namespace MainLogic.Providers {
             InvokeSafe(() => {
                 if (utmParams.Any()) {
                     new UtmGuestReferrer {
-                        Datecreated = DateTime.Now,
+                        Datecreated = DateTime.UtcNow,
                         GuestID = guestid,
                         Campaign = utmParams.UtmCampaign,
                         Medium = utmParams.UtmMedium,
@@ -116,7 +116,7 @@ namespace MainLogic.Providers {
         public void SaveGuestAction(int guestid, int subdomainRuleID, int action, int arg) {
             InvokeSafe(() => {
                 new GuestActionLog {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     Action = action,
                     Arg = arg,
                     GuestID = guestid,

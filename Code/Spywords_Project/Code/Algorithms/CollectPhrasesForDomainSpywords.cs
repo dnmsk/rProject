@@ -37,7 +37,7 @@ namespace Spywords_Project.Code.Algorithms {
                                 .First(Phrase.Fields.ID);
                             if(phrase == null) {
                                 phrase = new Phrase {
-                                    Datecreated = DateTime.Now,
+                                    Datecreated = DateTime.UtcNow,
                                     Status = PhraseStatus.NotCollected,
                                     Text = word
                                 };

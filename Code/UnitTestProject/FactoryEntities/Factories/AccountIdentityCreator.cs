@@ -8,7 +8,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
             Factory.AddCreatorDao(() => {
                 var guest = Factory.CreateDao<Guest>();
                 return new AccountIdentity {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     GuestID = guest.ID,
                     Email = "test@test.test",
                     Password = "test".GetMD5()

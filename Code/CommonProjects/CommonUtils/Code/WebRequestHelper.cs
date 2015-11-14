@@ -63,7 +63,7 @@ namespace CommonUtils.Code {
                 if (!_lastQueryTime.HasValue) {
                     _lastQueryTime = DateTime.MinValue;
                 }
-                var requestDealy = DateTime.Now - _lastQueryTime.Value;
+                var requestDealy = DateTime.UtcNow - _lastQueryTime.Value;
                 if (MinRequestDelay.Value > requestDealy) {
                     Thread.Sleep(MinRequestDelay.Value - requestDealy);
                 }

@@ -32,7 +32,7 @@ namespace Spywords_Project.Code.Algorithms {
             var phrases = GetEntitiesToProcess();
             foreach (var phrase in phrases) {
                 var domains = SpywordsQueryWrapper.GetDomainsForPhrase(phrase.Text);
-                phrase.Datecollected = DateTime.Now;
+                phrase.Datecollected = DateTime.UtcNow;
 
                 var statsContainer = _phraseStatsContainer.Match(domains).Value;
                 var resultRows = _containerSplitToTr.Matches(statsContainer);

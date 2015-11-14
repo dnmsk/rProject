@@ -35,7 +35,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy;: @DateTime.Now.Year @Html.ActionLink("Dmitry Klimanov", "Contact", "Home")</p>
+            <p>&copy;: @DateTime.UtcNow.Year @Html.ActionLink("Dmitry Klimanov", "Contact", "Home")</p>
         </footer>
     </div>
 

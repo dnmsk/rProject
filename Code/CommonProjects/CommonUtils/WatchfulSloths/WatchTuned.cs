@@ -12,7 +12,7 @@ namespace CommonUtils.WatchfulSloths {
         }
 
         public DateTime Now() {
-            return _now ?? DateTime.Now;
+            return _now ?? DateTime.UtcNow;
         }
     }
 }

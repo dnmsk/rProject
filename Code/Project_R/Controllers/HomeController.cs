@@ -34,6 +34,6 @@ namespace Project_R.Controllers {
             };
         }
 
-        private static long TicksNow => DateTime.Now.Ticks;
+        private static long TicksNow => DateTime.UtcNow.Ticks;
     }
 }

@@ -7,7 +7,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
             Factory.AddCreatorDao(() => 
                 new GuestExistsBrowser {
                     Isbot = false,
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     Version = 1,
                     Browsertype = "Opera",
                     Ismobile = false,

@@ -9,7 +9,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
                 var guestExistBrowser = Factory.CreateDao<GuestExistsBrowser>();
                 return new GuestTechInfo {
                     GuestID = guest.ID,
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     GuestexistsbrowserID = guestExistBrowser.ID
                 };
             });

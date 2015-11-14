@@ -78,6 +78,7 @@
     <Compile Include="Code\FileMonitor.cs" />
     <Compile Include="Code\MiniProfiler.cs" />
     <Compile Include="Code\Punycode.cs" />
+    <Compile Include="Code\StringCryptoManagerDES.cs" />
     <Compile Include="Code\StringParser.cs" />
     <Compile Include="Code\Transliterator.cs" />
     <Compile Include="Code\WebRequestHelper.cs" />

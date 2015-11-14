@@ -20,7 +20,7 @@ namespace Spywords_Project.Code.Algorithms {
             var domainEntities = GetEntitiesToProcess();
             foreach (var domainEntity in domainEntities) {
                 var spywordInfo = SpywordsQueryWrapper.GetDomainInfo(domainEntity.Domain);
-                domainEntity.Datecollected = DateTime.Now;
+                domainEntity.Datecollected = DateTime.UtcNow;
                 domainEntity.Status |= DomainStatus.SpywordsCollected;
 
                 var statsContainer = _domainStatsContainer.Match(spywordInfo).Value;

@@ -7,7 +7,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
             Factory.AddCreatorDao(() => {
                 var guest = Factory.CreateDao<Guest>();
                 return new GuestReferrer {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     GuestID = guest.ID,
                     Urlreferrer = "referrer",
                     Urltarget = "target"

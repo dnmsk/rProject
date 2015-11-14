@@ -97,7 +97,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <typeparam name="T">Тип элементов массива.</typeparam>
         /// <param name="list">список для заполнения</param>
         public static IList<T> Shuffle<T>(this IList<T> list) {
-            Random rng = new Random(DateTime.Now.Millisecond);
+            Random rng = new Random(DateTime.UtcNow.Millisecond);
 
             var ret = new List<T>(list);
             int n = list.Count;
@@ -118,7 +118,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <typeparam name="T">Тип элементов массива.</typeparam>
         /// <param name="list">список для заполнения</param>
         public static T[] Shuffle<T>(this T[] list) {
-            Random rng = new Random(DateTime.Now.Millisecond);
+            Random rng = new Random(DateTime.UtcNow.Millisecond);
 
             var ret = (T[]) list.Clone();
             int n = list.Length;

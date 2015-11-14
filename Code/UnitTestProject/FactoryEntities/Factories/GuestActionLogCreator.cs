@@ -8,7 +8,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
                 var guest = Factory.CreateDao<Guest>();
                 var subdomainRule = Factory.CreateDao<UtmSubdomainRule>();
                 return new GuestActionLog {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     GuestID = guest.ID,
                     Action = 0,
                     Arg = 0,
