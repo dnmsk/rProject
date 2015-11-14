@@ -6,14 +6,12 @@
     var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
 }
 <footer>
-    <p>&copy; @DateTime.UtcNow.Year - dnmsk</p>
-    <div class="right">
-        @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterSiteLanguage):
-        @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
-            var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);
-            var isoPart = "/" + languageName.Item2;
-            <a href="@(isoPart + Url.Action(ViewContext.RouteData.Values["action"] as string, ViewContext.RouteData.Values["controller"] as string, new {id = ViewContext.RouteData.Values["id"]})
-                     .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'") }>@languageName.Item1</a>
-        }
-    </div>
+<p class="pull-right">&copy; @DateTime.UtcNow.Year - dnmsk</p>
+    @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterSiteLanguage):
+    @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
+        var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);
+        var isoPart = "/" + languageName.Item2;
+        <a href="@(isoPart + Url.Action(ViewContext.RouteData.Values["action"] as string, ViewContext.RouteData.Values["controller"] as string, new {id = ViewContext.RouteData.Values["id"]})
+                    .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'") }>@languageName.Item1</a>
+    }
 </footer>
