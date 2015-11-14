@@ -138,6 +138,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                 entity.Largeiconclass = staticPageTransport.Largeiconclass;
                 entity.Orderindex = staticPageTransport.Orderindex;
                 entity.Pageurl = staticPageTransport.Pageurl;
+                entity.Brokertype = staticPage.Brokertype;
+                entity.Alt = staticPage.Alt;
                 return BuildBrokerPageModel(entity);
             }, null);
         }
@@ -148,6 +150,8 @@ namespace Project_B.CodeServerSide.DataProvider {
             staticPageToModel.Largeiconclass = staticPage.Largeiconclass;
             staticPageToModel.Orderindex = staticPage.Orderindex;
             staticPageToModel.Pageurl = staticPage.Pageurl;
+            staticPageToModel.BrokerType = staticPage.Brokertype;
+            staticPageToModel.Alt = staticPage.Alt;
             return staticPageToModel;
         }
 

@@ -51,7 +51,7 @@ namespace Spywords_Project.Code.Algorithms {
                 configurationProperty
                     .Each(pair => {
                         cookiesInit.Add(new Cookie(pair.Key, pair.Value, "/", "." + targetCookiesDomain) {
-                            Expires = DateTime.Now.AddYears(1)
+                            Expires = DateTime.UtcNow.AddYears(1)
                         });
                     });
             }
@@ -80,7 +80,7 @@ namespace Spywords_Project.Code.Algorithms {
                                            .First();
             if (domainEntity == null) {
                 domainEntity = new DomainEntity {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     Domain = d,
                     Status = DomainStatus.Default
                 };

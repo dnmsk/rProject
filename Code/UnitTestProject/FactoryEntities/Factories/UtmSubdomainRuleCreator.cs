@@ -6,7 +6,7 @@ namespace UnitTestProject.FactoryEntities.Factories {
         public void Bind() {
             Factory.AddCreatorDao(() => {
                 return new UtmSubdomainRule {
-                    Datecreated = DateTime.Now,
+                    Datecreated = DateTime.UtcNow,
                     Subdomainname = "subdomain",
                     Targetdomain = "target"
                 };

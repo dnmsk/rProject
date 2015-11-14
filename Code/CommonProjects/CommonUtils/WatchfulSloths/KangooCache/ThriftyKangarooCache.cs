@@ -44,10 +44,10 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         public V this[K key] {
             get {
                 KangooCacheElement<V> cacheElement;
-                if (!_cache.TryGetValue(key, out cacheElement) || cacheElement.LastActualDate < DateTime.Now || cacheElement.Element == _defValue) {
+                if (!_cache.TryGetValue(key, out cacheElement) || cacheElement.LastActualDate < DateTime.UtcNow || cacheElement.Element == _defValue) {
                     cacheElement = cacheElement ?? new KangooCacheElement<V> {
                         Element = _defValue,
-                        LastActualDate = DateTime.Now
+                        LastActualDate = DateTime.UtcNow
                     };
 
                     if (!_requestedKeys.Contains(key)) {
@@ -66,7 +66,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                                 lock (_cache) {
                                     _cache[key] = new KangooCacheElement<V> {
                                         Element = data,
-                                        LastActualDate = DateTime.Now.Add(_keyActualTime)
+                                        LastActualDate = DateTime.UtcNow.Add(_keyActualTime)
                                     };
                                 }
                                 PostProcessResult(data);

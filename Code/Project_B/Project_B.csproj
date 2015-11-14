@@ -223,6 +223,7 @@
     <Compile Include="CodeClientSide\Enums\SiteText.cs" />
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
+    <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\Routes\LeftMatchingRoute.cs" />
@@ -323,7 +324,7 @@
     <Compile Include="CodeClientSide\SquishItMinifier.cs" />
     <Compile Include="CodeClientSide\TransportType\SiteMapChangeFreq.cs" />
     <Compile Include="CodeClientSide\TransportType\SiteMapItem.cs" />
-    <Compile Include="CodeClientSide\VirtualFile\SiteMapVirtual.cs" />
+    <Compile Include="CodeClientSide\VirtualFiles\SiteMapVirtual.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssetsController.cs" />
     <Compile Include="Controllers\BookmakerController.cs" />

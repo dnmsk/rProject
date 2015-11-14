@@ -27,8 +27,6 @@ namespace Project_B.CodeClientSide {
             return null;
         }
 
-        public virtual SubNavigationType SubNavigationType {
-            get { return SubNavigationType.None; }
-        }
+        public virtual SubNavigationType SubNavigationType => SubNavigationType.None;
     }
 }

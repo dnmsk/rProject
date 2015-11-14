@@ -9,6 +9,7 @@ using AutoPublication.Code;
 using CommonUtils.Code;
 using CommonUtils.Core.Config;
 using CommonUtils.Core.Logger;
+using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
@@ -21,11 +22,6 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                var serialized = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
-                while (true) {
-                    Thread.Sleep(100);
-                }
-                /**/
                 //Console.WriteLine(start.ElapsedMilliseconds);
                 //Console.ReadLine();
             }

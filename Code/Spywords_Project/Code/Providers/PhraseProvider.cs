@@ -26,7 +26,7 @@ namespace Spywords_Project.Code.Providers {
                     .First();
                 if (phrase == null) {
                     phrase = new Phrase {
-                        Datecreated = DateTime.Now,
+                        Datecreated = DateTime.UtcNow,
                         Text = text,
                         Status = PhraseStatus.NotCollected,
                     };
@@ -38,7 +38,7 @@ namespace Spywords_Project.Code.Providers {
                     .First();
                 if (phraseAccount == null) {
                     phraseAccount = new Phraseaccount {
-                        Datecreated = DateTime.Now,
+                        Datecreated = DateTime.UtcNow,
                         AccountidentityID = accountID,
                         PhraseID = phrase.ID,
                         SourceType = sourceType
@@ -184,7 +184,7 @@ namespace Spywords_Project.Code.Providers {
 
         public ProgressStatusSummary GetProgress() {
             return InvokeSafe(() => {
-                var last30Min = DateTime.Now.AddMinutes(-30);
+                var last30Min = DateTime.UtcNow.AddMinutes(-30);
                 var result = new ProgressStatusSummary();
                 result.DomainsCount = (int) (DomainEntity.DataSource.Max(DomainEntity.Fields.ID) ?? default(decimal));
                 result.PhrasesCount = (int) (Phrase.DataSource.Max(Phrase.Fields.ID) ?? default(decimal));

@@ -35,6 +35,11 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
+            [DBField(DbType.String)] Alt,
+
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.String)] Faviconclass,
 
         /// <summary>
@@ -126,6 +131,14 @@ namespace Project_B.CodeServerSide.Entity {
         public string Pageurl {
             get { return (string) this[Fields.Pageurl] ?? string.Empty; }
             set { ForceSetData(Fields.Pageurl, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Alt {
+            get { return (string) this[Fields.Alt] ?? string.Empty; }
+            set { ForceSetData(Fields.Alt, value); }
         }
 
         /// <summary>

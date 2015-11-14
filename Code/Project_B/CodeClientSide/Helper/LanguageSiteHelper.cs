@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.KangooCache;
 using DbEntity;
@@ -9,23 +10,24 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {
     public class LanguageSiteHelper : Singleton<LanguageSiteHelper> {
-        private readonly MultipleKangooCache<LanguageType, MultipleKangooCache<short, string>> _siteTextCache;
+        private readonly MultipleKangooCache<LanguageType, Dictionary<short, string>> _siteTextCache;
 
         public LanguageSiteHelper() {
-            _siteTextCache = new MultipleKangooCache<LanguageType, MultipleKangooCache<short, string>>(MainLogicProvider.WatchfulSloth, 
+            _siteTextCache = new MultipleKangooCache<LanguageType, Dictionary<short, string>>(MainLogicProvider.WatchfulSloth, 
                 languagesCache => {
                     foreach (var languageType in LanguageTypeHelper.Instance.GetLanguages()) {
-                        languagesCache[languageType] = new MultipleKangooCache<short, string>(null, languageCache => {
-                            foreach (var textEntity in LanguageSiteText.DataSource.WhereEquals(LanguageSiteText.Fields.Languagetype, (short)languageType).AsList()) {
-                                languageCache[(short) textEntity.Sitetext] = textEntity.Text;
-                            }
-                        });
+                        var listEntityForType = LanguageSiteText.DataSource.WhereEquals(LanguageSiteText.Fields.Languagetype, (short)languageType).AsList();
+                        var dict = new Dictionary<short, string>();
+                        foreach (var languageSiteText in listEntityForType) {
+                            dict[(short)languageSiteText.Sitetext] = languageSiteText.Text;
+                        }
+                        languagesCache[languageType] = dict;
                     }
                 });
         }
 
         public string GetText(LanguageType languageType, SiteText siteText) {
-            MultipleKangooCache<short, string> langCaches;
+            Dictionary<short, string> langCaches;
             string text;
             return (_siteTextCache.TryGetValue(languageType, out langCaches) ||
                     _siteTextCache.TryGetValue(LanguageTypeHelper.DefaultLanguageTypeSetted, out langCaches)) 

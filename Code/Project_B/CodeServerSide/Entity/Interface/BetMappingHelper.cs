@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.Enums;
-using Project_B.Models;
 
 namespace Project_B.CodeServerSide.Entity.Interface {
     public static class BetMappingHelper<T> {
@@ -36,6 +35,5 @@ namespace Project_B.CodeServerSide.Entity.Interface {
             betItemTransport.AdvancedParam = advanced ?? default(float);
             return betItemTransport;
         }
-
     }
 }

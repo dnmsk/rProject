@@ -3,10 +3,8 @@
 @model Project_B.Models.StaticPageBaseModel
 @if (Model.IsAuthenticated())
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-    {
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
     @Html.AntiForgeryToken()
-
     <ul class="nav navbar-nav navbar-right">
         <li>
             @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderLoginHello) + " " + Model.AccountEmail + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderAccountManageTitle) })

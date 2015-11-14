@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using CommonUtils.WatchfulSloths.KangooCache;
 using MainLogic.WebFiles;
 using Project_B.CodeServerSide.DataProvider;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 
-namespace Project_B.CodeClientSide.VirtualFile {
+namespace Project_B.CodeClientSide.VirtualFiles {
     public class SiteMapVirtual : IVirtualFile {
         private readonly ThriftyKangooSimpleCache<object> _sitemapContent = new ThriftyKangooSimpleCache<object>(BuildFileContent, string.Empty, new TimeSpan(12, 0, 0));
 
         public string VirtualPath { get { return "~/Sitemap.xml"; } }
 
         public SiteMapVirtual() {
-            var warmContent = GetContent();
+            GetContent();
         }
 
         public string GetContent() {
@@ -24,25 +26,28 @@ namespace Project_B.CodeClientSide.VirtualFile {
             var doc = new XmlDocument();
             doc.CreateXmlDeclaration("1.0", "UTF-8", string.Empty);
             var rootElem = doc.CreateElement("urlset", "http://www.sitemaps.org/schemas/sitemap/0.9");
+            var langsWithSlash = LanguageTypeHelper.Instance.GetIsoNames().Select(iso => "/" + iso).ToArray();
             foreach (var page in pages) {
-                var url = doc.CreateElement("url");
-                var location = doc.CreateElement("loc");
-                location.InnerText = page.Location;
-                url.AppendChild(location);
+                foreach (var lang in langsWithSlash) {
+                    var url = doc.CreateElement("url");
+                    var location = doc.CreateElement("loc");
+                    location.InnerText = lang + page.Location;
+                    url.AppendChild(location);
 
-                var lastmod = doc.CreateElement("lastmod");
-                lastmod.InnerText = page.LastMod.ToString("yyyy-MM-dd");
-                url.AppendChild(lastmod);
+                    var lastmod = doc.CreateElement("lastmod");
+                    lastmod.InnerText = page.LastMod.ToString("yyyy-MM-dd");
+                    url.AppendChild(lastmod);
 
-                var changefreq = doc.CreateElement("changefreq");
-                changefreq.InnerText = page.ChangeFreq.ToString().ToLower();
-                url.AppendChild(changefreq);
+                    var changefreq = doc.CreateElement("changefreq");
+                    changefreq.InnerText = page.ChangeFreq.ToString().ToLower();
+                    url.AppendChild(changefreq);
 
-                var priority = doc.CreateElement("priority");
-                priority.InnerText = page.Priority.ToString(CultureInfo.InvariantCulture);
-                url.AppendChild(priority);
+                    var priority = doc.CreateElement("priority");
+                    priority.InnerText = page.Priority.ToString(CultureInfo.InvariantCulture);
+                    url.AppendChild(priority);
 
-                rootElem.AppendChild(url);
+                    rootElem.AppendChild(url);
+                }
             }
             doc.AppendChild(rootElem);
             return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +

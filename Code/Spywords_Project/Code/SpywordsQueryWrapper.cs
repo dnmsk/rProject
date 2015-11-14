@@ -50,7 +50,7 @@ namespace Spywords_Project.Code {
             lock (this) {
                 _logger.Info("Пошли с запросом " + url);
                 var pageContent = _requestHelper.GetContent(url);
-                _lastQueryTime = DateTime.Now;
+                _lastQueryTime = DateTime.UtcNow;
                 _logger.Debug(string.Format("{0}\r\n{1}", url, pageContent.Item2));
                 TryLogError(url, pageContent);
                 if (IsAuthenticated(pageContent.Item2)) {

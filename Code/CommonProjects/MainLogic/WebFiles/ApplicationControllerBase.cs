@@ -14,9 +14,8 @@ using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {
     public abstract class ApplicationControllerBase : Controller {
-        protected override bool DisableAsyncSupport {
-            get { return true; }
-        }
+        protected static readonly StringCryptoManagerDES CryptoManager = new StringCryptoManagerDES(SiteConfiguration.GetConfigurationProperty<string>("DataEncryptorKey"));
+        protected override bool DisableAsyncSupport => true;
 
         public const string GUEST_COOKIE_NAME = "guest";
         public const string UTM_COOKIE_NAME = "utm_data";
@@ -51,7 +50,8 @@ namespace MainLogic.WebFiles {
                 if (_currentUser == null) {
                     int guid;
                     var isFirstTimeOpen = false;
-                    if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || !int.TryParse(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value, out guid)) {
+                    if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || 
+                                    !int.TryParse(CryptoManager.DecryptString(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value), out guid)) {
                         guid = CreateGuidInfo(System.Web.HttpContext.Current);
                         isFirstTimeOpen = true;
                     } else if (!BusinessLogic.UserProvider.CheckGuest(guid)) {
@@ -69,6 +69,9 @@ namespace MainLogic.WebFiles {
                 if (value == null) {
                     _currentUser = new SessionModule(CurrentUser.GuestID);
                     FormsAuthentication.SignOut();
+                    HttpContext.Response.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, CryptoManager.EncryptString(CurrentUser.GuestID.ToString(CultureInfo.InvariantCulture))) {
+                        Expires = DateTime.Today.AddYears(10)
+                    });
                     return;
                 }
                 if (value.IsAuthenticated()) {
@@ -158,16 +161,14 @@ namespace MainLogic.WebFiles {
             var urlRefferer = GetUrlReffererString(requestContext);
             var guid = BusinessLogic.UserProvider.CreateNewGuest(GetUserIp(requestContext), requestContext.UserAgent);
 
-            responseContext.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
-                Expires = DateTime.Today.AddYears(10),
-                Secure = true
+            responseContext.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, CryptoManager.EncryptString(guid.ToString(CultureInfo.InvariantCulture))) {
+                Expires = DateTime.Today.AddYears(10)
             });
 
             if (!string.IsNullOrEmpty(urlRefferer)) {
                 responseContext.Cookies.Add(
-                    new HttpCookie(_urlReferrerCookieName, HttpUtility.UrlEncode(urlRefferer)) {
-                        Expires = DateTime.Today.AddYears(10),
-                        Secure = true
+                    new HttpCookie(_urlReferrerCookieName, CryptoManager.EncryptString(urlRefferer)) {
+                        Expires = DateTime.Today.AddYears(10)
                     }
                 );
             }
@@ -198,12 +199,12 @@ namespace MainLogic.WebFiles {
                     request.Params.Get(UTM_CAMPAIGN_PARAM_NAME) ?? string.Empty,
                     request.Params.Get(UTM_MEDIUM_PARAM_NAME) ?? string.Empty
                 );
-                var utmCookie = new HttpCookie(UTM_COOKIE_NAME, UtmParam.SerializeStruct()) {
-                    Expires = DateTime.Now.AddYears(5)
+                var utmCookie = new HttpCookie(UTM_COOKIE_NAME, CryptoManager.EncryptString(UtmParam.SerializeStruct())) {
+                    Expires = DateTime.UtcNow.AddYears(5)
                 };
                 response.Cookies.Set(utmCookie);
             } else /*if (UtmSource.IsNullOrEmpty())*/ {
-                UtmParam = UtmParamWrapper.DeserializeParamWrapper(request.Cookies[UTM_COOKIE_NAME].Value);
+                UtmParam = UtmParamWrapper.DeserializeParamWrapper(CryptoManager.DecryptString(request.Cookies[UTM_COOKIE_NAME].Value));
             }
         }
     }

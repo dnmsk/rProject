@@ -68,7 +68,7 @@ namespace Project_B.CodeServerSide {
                             continue;
                         }
                         webRequestHelper.Cookies.Add(new Cookie(splittedCookie[0], splittedCookie[1], "/", "." + domain) {
-                            Expires = DateTime.Now.AddYears(1)
+                            Expires = DateTime.UtcNow.AddYears(1)
                         });
                     }
                 }

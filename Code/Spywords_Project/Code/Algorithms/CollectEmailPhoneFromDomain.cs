@@ -18,7 +18,7 @@ namespace Spywords_Project.Code.Algorithms {
             var entityToProcess = GetEntitiesToProcess();
             foreach (var domainEntity in entityToProcess) {
                 domainEntity.Status |= DomainStatus.Loaded;
-                domainEntity.Datecollected = DateTime.Now;
+                domainEntity.Datecollected = DateTime.UtcNow;
                 try {
                     var siteContent = WebRequestHelper.GetContentWithStatus("http://" + DomainExtension.PunycodeDomain(domainEntity.Domain));
                     domainEntity.Content = siteContent.Item2;
@@ -27,7 +27,7 @@ namespace Spywords_Project.Code.Algorithms {
                     if (emails != null) {
                         emails.Select(e => new Domainemail {
                                                 DomainID = domainEntity.ID,
-                                                Datecreated = DateTime.Now,
+                                                Datecreated = DateTime.UtcNow,
                                                 Email = e
                                             })
                               .ToList()
@@ -38,7 +38,7 @@ namespace Spywords_Project.Code.Algorithms {
                     if (phones != null) {
                         phones.Select(ph => new Domainphone {
                                                 DomainID = domainEntity.ID,
-                                                Datecreated = DateTime.Now,
+                                                Datecreated = DateTime.UtcNow,
                                                 Phone = ph
                                             })
                               .ToList()

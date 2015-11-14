@@ -116,6 +116,13 @@
         }
     }
 }
+@helper RenderOdd(BetItemTransport betItem) {
+    var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
+    <a class="@broker.Faviconclass" title="@broker.Alt" @if (broker.IsTop && !broker.Pageurl.IsNullOrEmpty()) {
+        @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new {id = broker.Pageurl})))
+    }></a>
+    @betItem.Odd
+}
 
 @{
     var resultMap = Model.ControllerModel.ResultMap ?? new Dictionary<int, ResultTransport>();
@@ -183,11 +190,11 @@
                                 var maxBet = competition.HistoryMaxBets[oddType];
                                 var minBet = competition.HistoryMinBets[oddType];
                                 <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>
-                                    <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
+                                    <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@RenderOdd(maxBet)</small>
                                     <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
-                                        <small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
+                                        <small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@RenderOdd(currentBet)</b>
                                     </div>
-                                    <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                                    <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@RenderOdd(minBet)</small>
                                 </td>
                             } else {
                                 <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>

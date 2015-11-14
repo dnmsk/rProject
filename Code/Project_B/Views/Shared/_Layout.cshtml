@@ -1,6 +1,7 @@
 ﻿@using CommonUtils.ExtendedTypes
-@using MainLogic.WebFiles
 @using Project_B.CodeClientSide
+@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
 @model Project_B.Models.StaticPageBaseModel
 
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@Model.StaticPageTransport.Title - @SiteConfiguration.GetConfigurationProperty("SiteName")</title>
+    <title>@Model.StaticPageTransport.Title - @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderSiteName)</title>
     @if (!Model.StaticPageTransport.Keywords.IsNullOrEmpty()) {
         <meta name="keywords" content="@Model.StaticPageTransport.Keywords"/>
     }
@@ -31,6 +32,5 @@
     </div>
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)
-    @Html.Partial("Statistics/TopMailru", Model)
 </body>
 </html>
