@@ -33,7 +33,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         public string GetSportNameForLanguage(LanguageType languageType, SportType sportType) {
             Dictionary<SportType, string> mapByLang;
             if (!_sportTypeName.TryGetValue(languageType, out mapByLang) &&
-                !_sportTypeName.TryGetValue(LanguageType.English, out mapByLang)) {
+                !_sportTypeName.TryGetValue(LanguageTypeHelper.DefaultLanguageTypeSetted, out mapByLang)) {
                 return sportType.ToString();
             }
             string name;

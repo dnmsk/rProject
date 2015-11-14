@@ -1,13 +1,14 @@
 ﻿using System;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using MainLogic.Entities;
 using MainLogic.Transport;
+using MainLogic.WebFiles;
 
 namespace MainLogic.Providers {
     public class AccountProvider : SafeInvokerBase {
+        private static string _passwordSault = SiteConfiguration.GetConfigurationProperty<string>("PasswordSault") ?? string.Empty;
         /// <summary>
         /// Логгер.
         /// </summary>
@@ -28,7 +29,7 @@ namespace MainLogic.Providers {
                     Datecreated = DateTime.Now,
                     GuestID = guestid,
                     Email = email,
-                    Password = password.GetMD5()
+                    Password = (password + _passwordSault).GetMD5()
                 }.Save();
             }, false);
         }
@@ -38,7 +39,7 @@ namespace MainLogic.Providers {
                 email = email.ToLower();
                 var identity = AccountIdentity.DataSource
                                               .WhereEquals(AccountIdentity.Fields.Email, email)
-                                              .WhereEquals(AccountIdentity.Fields.Password, password.GetMD5())
+                                              .WhereEquals(AccountIdentity.Fields.Password, (password + _passwordSault).GetMD5())
                                               .First(
                                                     AccountIdentity.Fields.ID,
                                                     AccountIdentity.Fields.GuestID

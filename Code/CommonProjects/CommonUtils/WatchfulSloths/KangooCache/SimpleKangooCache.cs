@@ -64,7 +64,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                 Cache[key] = value;
             }
         }
-
+        
         public bool TryGetValue(K key, out V value) {
             return Cache.TryGetValue(key, out value);
         }

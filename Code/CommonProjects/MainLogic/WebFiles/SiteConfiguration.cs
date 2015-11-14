@@ -19,14 +19,14 @@ namespace MainLogic.WebFiles {
             MailruID = GetConfigurationProperty("MailruID");
             NeedRunTask = GetConfigurationProperty<bool>("RunTask");
         }
-
-        private static readonly JavaScriptSerializer _javaScriptSerializer = new JavaScriptSerializer();
-
+        
         public static string GetConfigurationProperty(string configurationProperty) {
             return GetConfigurationProperty<string>(configurationProperty);
         }
-
+        
+        private static readonly JavaScriptSerializer _javaScriptSerializer = new JavaScriptSerializer();
         private static readonly Dictionary<string, object> _propertyCache = new Dictionary<string, object>(); 
+
         public static T GetConfigurationProperty<T>(string configurationProperty) {
             object obj;
             if (_propertyCache.TryGetValue(configurationProperty, out obj)) {

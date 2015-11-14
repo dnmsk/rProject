@@ -27,9 +27,7 @@
         @RenderBody()
         @Html.Partial("PageEditor/WysiwygEditor", Model)
         <hr/>
-        <footer>
-            <p>&copy; @DateTime.Now.Year - dnmsk</p>
-        </footer>
+        @Html.Partial("_Footer", Model)
     </div>
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)

@@ -1,4 +1,5 @@
 ﻿@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @model Project_B.Models.StaticPageBaseModel
 
@@ -51,17 +52,12 @@
         <tr>
             <td>Language</td>
             <td>
-                @Html.DropDownListFor(m => m.StaticPageTransport.Languagetype, new[] {
-                    new SelectListItem {
-                        Value = ((short) LanguageType.Russian).ToString(),
-                        Text = LanguageType.Russian.ToString()
-                    },
-                    new SelectListItem {
-                        Value = ((short) LanguageType.English).ToString(),
-                        Text = LanguageType.English.ToString()
-                    },
-
-                })
+                @Html.DropDownListFor(m => m.StaticPageTransport.Languagetype, LanguageTypeHelper.Instance.GetLanguages().Select(l =>
+                   new SelectListItem {
+                       Value = ((short)l).ToString(),
+                       Text = l.ToString()
+                   }
+               ))
             </td>
         </tr>
         <tr><td>IsTop</td><td>@Html.CheckBoxFor(m => m.StaticPageTransport.IsTop)</td></tr>

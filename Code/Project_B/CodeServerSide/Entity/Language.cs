@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity {
         /// <summary>
@@ -15,15 +16,25 @@ namespace Project_B.CodeServerSide.Entity {
     public sealed class Language : AbstractEntityTemplateKey<Language, short> {
 
         public enum Fields {
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.Int16)] ID,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
             [DBField(DbType.String)] Name,
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.String)] IsoName,
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.String)] LocalName,
 
         }
 
@@ -45,12 +56,30 @@ namespace Project_B.CodeServerSide.Entity {
             set { ForceSetData(Fields.ID, value); }
         }
 
+        public LanguageType LanguageType => (LanguageType) ID;
+
         /// <summary>
         /// 
         /// </summary>
         public string Name {
             get { return (string) this[Fields.Name]; }
             set { ForceSetData(Fields.Name, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string IsoName {
+            get { return (string) this[Fields.IsoName]; }
+            set { ForceSetData(Fields.IsoName, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LocalName {
+            get { return (string) this[Fields.LocalName]; }
+            set { ForceSetData(Fields.LocalName, value); }
         }
 
         public override Enum[] KeyFields {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
 using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide {
@@ -41,7 +42,7 @@ namespace Project_B.CodeClientSide {
             if (_dictionaryCache.TryGetValue(key, out languageItemCache)) {
                 V item;
                 if (languageItemCache.TryGetValue(languageType, out item) ||
-                    languageItemCache.TryGetValue(LanguageType.English, out item)) {
+                    languageItemCache.TryGetValue(LanguageTypeHelper.DefaultLanguageTypeSetted, out item)) {
                     return item;
                 }
             }

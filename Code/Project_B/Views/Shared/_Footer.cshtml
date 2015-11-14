@@ -1,0 +1,17 @@
+﻿@using Project_B.CodeServerSide.DataProvider.DataHelper
+@model Project_B.Models.StaticPageBaseModel
+@{
+    var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
+}
+<footer>
+    <p>&copy; @DateTime.Now.Year - dnmsk</p>
+    <div class="right">
+        Site language:
+        @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
+            var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);
+            var isoPart = "/" + languageName.Item2;
+            <a href="@(isoPart + Url.Action(ViewContext.RouteData.Values["action"] as string, ViewContext.RouteData.Values["controller"] as string, new {id = ViewContext.RouteData.Values["id"]})
+                     .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'") }>@languageName.Item1</a>
+        }
+    </div>
+</footer>

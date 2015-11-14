@@ -2,6 +2,7 @@
 using System.Web.Routing;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide.Routes;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 
 namespace Project_B {
     public class RouteConfig {
@@ -12,29 +13,7 @@ namespace Project_B {
                 url: "Assets/{action}/{id}",
                 defaults: new RouteValueDictionary(new { controller = "Assets", action = "Index", language = "", id = UrlParameter.Optional }),
                 routeHandler:new MvcRouteHandler()));
-            /*
-            routes.MapRoute(
-                name: "Style",
-                url: "Assets/{action}/{id}",
-                defaults: new { controller = "Assets", action = "Index", language = "", id = UrlParameter.Optional }
-            );
-            *//*
-            routes.MapRoute(
-                name: "Error",
-                url: "Error/{action}",
-                defaults: new { controller = "Error", action = UrlParameter.Optional, language = "" }
-            );
-            */
-            var langs = new[] {"En", "Ru"};
-            var valuesConstraint = new ExpectedValuesConstraint(langs);
-            /*
-            routes.MapRoute(
-                name: "Default",
-                url: "{language}/{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                constraints: new { language = valuesConstraint }
-            );
-            */
+            var valuesConstraint = new ExpectedValuesConstraint(LanguageTypeHelper.Instance.GetIsoNames());
             routes.Add(new LowercaseRoute(
                 url: "{language}/{controller}/{action}/{id}",
                 defaults: new RouteValueDictionary(new { controller = "Home", action = "Index", id = UrlParameter.Optional }),

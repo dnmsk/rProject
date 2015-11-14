@@ -7,6 +7,7 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
@@ -62,7 +63,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 page.Keywords = data.Keywords;
                 page.Title = data.Title;
                 page.Pagetype = pageType;
-                page.Languagetype = data.Languagetype == LanguageType.Default ? LanguageType.English : data.Languagetype;
+                page.Languagetype = data.Languagetype == LanguageType.Default ? LanguageTypeHelper.DefaultLanguageTypeSetted : data.Languagetype;
                 page.Save();
                 return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(page.ID));
             }, null);

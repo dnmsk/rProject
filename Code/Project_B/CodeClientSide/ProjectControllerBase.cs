@@ -1,6 +1,7 @@
 ﻿using System;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide.Enums;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide {
@@ -11,16 +12,7 @@ namespace Project_B.CodeClientSide {
                 if (_currentLanguage != LanguageType.Default) {
                     return _currentLanguage;
                 }
-                switch (((RouteData.Values["language"] as string) ?? string.Empty).ToLower()) {
-                    case "ru":
-                        _currentLanguage = LanguageType.Russian;
-                        break;
-                    case "en":
-                    default:
-                        _currentLanguage = LanguageType.English;
-                        break;
-                }
-                return _currentLanguage;
+                return _currentLanguage = LanguageTypeHelper.Instance.GetLanguageByIsoOrDefault(RouteData.Values["language"] as string);
             }
         }
 

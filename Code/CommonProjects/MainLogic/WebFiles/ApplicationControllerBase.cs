@@ -160,12 +160,14 @@ namespace MainLogic.WebFiles {
 
             responseContext.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, guid.ToString(CultureInfo.InvariantCulture)) {
                 Expires = DateTime.Today.AddYears(10),
+                Secure = true
             });
 
             if (!string.IsNullOrEmpty(urlRefferer)) {
                 responseContext.Cookies.Add(
                     new HttpCookie(_urlReferrerCookieName, HttpUtility.UrlEncode(urlRefferer)) {
-                        Expires = DateTime.Today.AddYears(10)
+                        Expires = DateTime.Today.AddYears(10),
+                        Secure = true
                     }
                 );
             }

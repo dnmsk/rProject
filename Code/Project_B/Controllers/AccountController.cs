@@ -1,7 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 using MainLogic.WebFiles;
-using Microsoft.Owin.Security;
 using Project_B.CodeClientSide;
 using Project_B.Models;
 
@@ -275,11 +274,12 @@ namespace Project_B.Controllers {
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
         public ActionResult ExternalLoginCallback(string returnUrl) {
+            /*
             var loginInfo = AuthenticationManager.GetExternalLoginInfo();
             if (loginInfo == null) {
                 return RedirectToAction("Login");
             }
-
+            */
             return RedirectToLocal(returnUrl);
             /*
             // Sign in the user with this external login provider if the user already has a login
@@ -315,10 +315,12 @@ namespace Project_B.Controllers {
 
             if (ModelState.IsValid) {
                 // Get the information about the user from the external login provider
+                /*
                 var info = AuthenticationManager.GetExternalLoginInfo();
                 if (info == null) {
                     return View("ExternalLoginFailure");
                 }
+                */
                 /*
                 var user = new ApplicationUser {
                     UserName = model.Email,
@@ -379,11 +381,11 @@ namespace Project_B.Controllers {
 
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
-
+        /*
         private IAuthenticationManager AuthenticationManager {
             get { return HttpContext.GetOwinContext().Authentication; }
         }
-
+        */
         private void AddErrors(params string[] strings) {
             foreach (var error in strings) {
                 ModelState.AddModelError("", error);
@@ -413,11 +415,13 @@ namespace Project_B.Controllers {
             public string UserId { get; set; }
 
             public override void ExecuteResult(ControllerContext context) {
+                /*
                 var properties = new AuthenticationProperties {RedirectUri = RedirectUri};
                 if (UserId != null) {
                     properties.Dictionary[XsrfKey] = UserId;
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+                */
             }
         }
 
