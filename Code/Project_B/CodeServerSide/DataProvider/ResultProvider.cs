@@ -108,7 +108,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     result[competitionID] = new ResultTransport {
                         CompetitionID = competitionID,
                         ScoreID = r.ScoreID,
-                        SubScore = subresult.Select(s => s.ScoreID).ToArray()
+                        SubScore = new [] { subresult.Select(s => s.ScoreID).LastOrDefault() }
                     };
                 }
                 return result;

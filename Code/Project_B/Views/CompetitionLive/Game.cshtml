@@ -1,7 +1,16 @@
-﻿@using Project_B.Models
-@model StaticPageBaseModel<CompetitionRegularModel>
-
+﻿@using System.Web.Mvc.Html
+@using Project_B.CodeServerSide.DataProvider.DataHelper
+@using Project_B.Models
+@model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
 @{
-    ViewBag.Title = "Competitions for " + Model.ControllerModel.DateUtc.ToString("dd.MM.yyyy");
+    var sportType = Model.ControllerModel.CompetitionTransport.SportType;
+    var competition = Model.ControllerModel.CompetitionTransport;
 }
-@Html.Partial("Element/_ListCompetitionWriter", Model)
+
+<H2><a href="@Url.Action("Index", "Competition", new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></H2>
+<H3><a href="@Url.Action("Item", "Competition", new {id = competition.ID})">@competition.Name</a></H3>
+<div class="pull-right">
+    <a href="@Url.Action("Game", "Competition", new { id = competition.CompetitionItems.First().CompetitionItemID})">Regular</a>
+    <a class="active">Live</a>
+</div>
+@Html.Partial("Element/_ListCompetitionUniqueWriter", competition)

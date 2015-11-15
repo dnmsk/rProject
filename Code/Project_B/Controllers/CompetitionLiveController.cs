@@ -40,10 +40,8 @@ namespace Project_B.Controllers {
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, id);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
-                    Competitions = new List<CompetitionTransport> { itemData}
-                }
+            return View(new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
+                ControllerModel = itemData
             });
         }
     }

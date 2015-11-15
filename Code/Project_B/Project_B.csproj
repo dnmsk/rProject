@@ -230,6 +230,7 @@
     <Compile Include="CodeClientSide\Routes\LowercaseRoute.cs" />
     <Compile Include="CodeClientSide\Routes\ShortUrlControllerResolveRoute.cs" />
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
+    <Compile Include="CodeClientSide\TransportType\CompetitionAdvancedTransport.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\BlueRedBroker\RedBlueFaceBase.cs" />
@@ -445,6 +446,7 @@
     <Content Include="Views\Shared\PageEditor\WysiwygEditor.cshtml" />
     <Content Include="Views\Bookmaker\BookmakerPage.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\Element\_ListCompetitionUniqueWriter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

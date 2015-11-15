@@ -1,7 +1,4 @@
 ﻿@using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 
-@{
-    ViewBag.Title = "Competitions for " + Model.ControllerModel.DateUtc.ToString("dd.MM.yyyy");
-}
 @Html.Partial("Element/_ListCompetitionWriter", Model)

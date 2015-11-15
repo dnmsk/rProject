@@ -8,6 +8,7 @@ namespace Project_B.CodeClientSide.TransportType {
        
         public List<CompetitionItemBetShortTransport> CompetitionItems { get; set; }
         public SportType SportType { get; set; }
+        public LanguageType Language { get; set; }
 
         public CompetitionTransport() {
             CompetitionItems = new List<CompetitionItemBetShortTransport>();

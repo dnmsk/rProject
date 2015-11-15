@@ -241,7 +241,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 BuildCompetitiontItemFullModel(competitionTransports, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 return competitionTransports;
-            }, null);
+            }, new List<CompetitionTransport>());
         }
 
         public List<CompetitionTransport> GetCompetitionItemsHistory(LanguageType languageType, DateTime fromDate, DateTime toDate, SportType? sportType = null, int[] competitionUniqueIDs = null) {
@@ -263,7 +263,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var shortModels = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 BuildCompetitiontItemFullModel(shortModels, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 return shortModels;
-            }, null);
+            }, new List<CompetitionTransport>());
         }
 
         private Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> ints) {
@@ -310,23 +310,30 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var shortModels = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, competitionItemIDs));
                 BuildCompetitiontItemFullModel(shortModels, GetLiveBetMap, ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
                 return shortModels;
-            }, null);
+            }, new List<CompetitionTransport>());
         }
         
-        public CompetitionTransport GetCompetitionItemRegularBet(LanguageType languageType, int competitionItemID) {
+        public CompetitionAdvancedTransport GetCompetitionItemRegularBet(LanguageType languageType, int competitionItemID) {
             return InvokeSafe(() => {
-                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.ID, competitionItemID));
                 BuildCompetitiontItemFullModel(competition, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
-                return competition.FirstOrDefault();
-            }, null);
+                return new CompetitionAdvancedTransport {
+                    CompetitionTransport = competition.FirstOrDefault(),
+                    HaveLiveData = CompetitionResultLive.DataSource.WhereEquals(CompetitionResultLive.Fields.CompetitionitemID, competitionItemID).IsExists() ||
+                                   BetLive.DataSource.WhereEquals(BetLive.Fields.CompetitionitemID, competitionItemID).IsExists()
+                };
+            }, new CompetitionAdvancedTransport());
         }
 
-        public CompetitionTransport GetCompetitionItemLiveBetForCompetition(LanguageType languageType, int competitionID) {
+        public CompetitionAdvancedTransport GetCompetitionItemLiveBetForCompetition(LanguageType languageType, int competitionID) {
             return InvokeSafe(() => {
-                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
+                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.ID, competitionID));
                 BuildCompetitiontItemFullModel(competition, GetLiveBetMap, ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
-                return competition.FirstOrDefault();
-            }, null);
+                return new CompetitionAdvancedTransport {
+                    CompetitionTransport = competition.FirstOrDefault(),
+                    HaveLiveData = true
+                };
+            }, new CompetitionAdvancedTransport());
         }
 
         public List<CompetitionTransport> GetCompetitionItemsRegularBetForCompetitor(LanguageType languageType, int competitorID) {
@@ -338,7 +345,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     )));
                 BuildCompetitiontItemFullModel(competition, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 return competition;
-            }, null);
+            }, new List<CompetitionTransport>());
         }
         
         private static void BuildCompetitiontItemFullModel<T>(List<CompetitionTransport> competitions, Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, Func<int[], Dictionary<int, ResultTransport>> getResultMap) {
@@ -413,7 +420,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             foreach (var competitionItem in competitionItemForDate) {
                 CompetitionTransport competitionTransport;
                 if (!competitionsDict.TryGetValue(competitionItem.CompetitionuniqueID, out competitionTransport)) {
-                    competitionTransport = ExtractNameFromCompetition(competitionItem.CompetitionuniqueID, competitionNameMap);
+                    competitionTransport = ExtractNameFromCompetition(languageType, competitionItem.CompetitionuniqueID, competitionNameMap);
                     competitionsDict[competitionTransport.ID] = competitionTransport;
                 }
                 competitionTransport.CompetitionItems.Add(new CompetitionItemBetShortTransport {
@@ -423,7 +430,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                     Competitor2 = ExtractNameFromCompetitor(competitionItem.Competitoruniqueid2, competitorNameMap),
                 });
             }
-
             return competitionsDict.Values.ToList();
         }
 
@@ -440,7 +446,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             };
         }
 
-        private static CompetitionTransport ExtractNameFromCompetition(int competitionID, Dictionary<int, CompetitionUniqueAdvanced> competitionNameMap) {
+        private static CompetitionTransport ExtractNameFromCompetition(LanguageType languageType, int competitionID, Dictionary<int, CompetitionUniqueAdvanced> competitionNameMap) {
             CompetitionUniqueAdvanced competition;
             if (!competitionNameMap.TryGetValue(competitionID, out competition)){
                 competition = CompetitionUniqueAdvanced.DataSource
@@ -453,7 +459,8 @@ namespace Project_B.CodeServerSide.DataProvider {
             return new CompetitionTransport {
                 ID = competitionID,
                 Name = competition.Name,
-                SportType = competition.Sporttype
+                SportType = competition.Sporttype,
+                Language = languageType
             };
         }
 
