@@ -221,10 +221,46 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, default(int));
         }
 
-        public List<CompetitionItemBetShortTransport> GetCompetitionItemsRegularBet(LanguageType languageType, SportType sportType, DateTime fromDate, DateTime toDate) {
+        public List<CompetitionItemBetShortTransport> GetCompetitionItemsFutured(LanguageType languageType, SportType? sportType = null, int[] competitionUniqueIDs = null) {
             return InvokeSafe(() => {
-                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, fromDate, toDate);
-                return GetCompetitiontItemBetModel(shortModels, false, GetBetMap);
+                var competitionItemForDateQuery = CompetitionItem.DataSource
+                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .Join(JoinType.Left, CompetitionResultLive.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .WhereNull(CompetitionResult.Fields.ID)
+                    .WhereNull(CompetitionResultLive.Fields.ID)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow.Date)
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
+                if (sportType.HasValue && sportType != SportType.Unknown) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
+                }
+                if (competitionUniqueIDs != null) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs);
+                }
+                var shortModels = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
+                return GetCompetitiontItemBetModel(shortModels, true, GetBetMap);
+            }, null);
+        }
+
+        public List<CompetitionItemBetShortTransport> GetCompetitionItemsHistory(LanguageType languageType, DateTime fromDate, DateTime toDate, SportType? sportType = null, int[] competitionUniqueIDs = null) {
+            return InvokeSafe(() => {
+                var competitionItemForDateQuery = CompetitionItem.DataSource
+                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .WhereNotNull(CompetitionResult.Fields.ID)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate)
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
+                if (sportType.HasValue && sportType != SportType.Unknown) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
+                }
+                if (competitionUniqueIDs != null) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs);
+                }
+                var shortModels = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
+                return GetCompetitiontItemBetModel(shortModels, true, GetBetMap);
             }, null);
         }
 
@@ -249,42 +285,40 @@ namespace Project_B.CodeServerSide.DataProvider {
                 .ToList());
         }
 
-        public List<CompetitionItemBetShortTransport> GetCompetitionItemsLiveBet(LanguageType languageType, SportType sportType) {
+        public List<CompetitionItemBetShortTransport> GetCompetitionItemsLive(LanguageType languageType, SportType? sportType = null, int[] competitionUniqueIDs = null) {
             return InvokeSafe(() => {
-                var fromDate = DateTime.UtcNow.AddHours(-3);
-                var toDate = DateTime.UtcNow.AddHours(24);
-                var shortModels = GetCompetitionItemShortModelByDate(languageType, sportType, fromDate, toDate);
+                var competitionItemForDateQuery = CompetitionItem.DataSource
+                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .Join(JoinType.Left, CompetitionResultLive.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .WhereNull(CompetitionResult.Fields.ID)
+                    .WhereNotNull(CompetitionResultLive.Fields.ID)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow.Date)
+                    .Where(CompetitionResultLive.Fields.Datecreatedutc, Oper.GreaterOrEq, DateTime.UtcNow.AddHours(-2));
+                if (sportType.HasValue && sportType != SportType.Unknown) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
+                }
+                if (competitionUniqueIDs != null) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs);
+                }
+                var competitionItemIDs = competitionItemForDateQuery
+                    .GroupBy(CompetitionItem.Fields.ID)
+                    .AsGroups()
+                    .Select(g => (int) g[CompetitionItem.Fields.ID]);
+
+                var shortModels = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, competitionItemIDs));
                 return GetCompetitiontItemBetModel(shortModels, true, GetLiveBetMap);
             }, null);
         }
-
+        
         public CompetitionItemBetShortTransport GetCompetitionItemRegularBet(LanguageType languageType, int competitionItemID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
                 return GetCompetitiontItemBetModel(competition, true, GetBetMap).FirstOrDefault();
             }, null);
         }
-        
-        public CompetitionItemBetShortTransport GetCompetitionItemLiveBet(LanguageType languageType, int competitionItemID) {
-            return InvokeSafe(() => {
-                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, new[] { competitionItemID }));
-                return GetCompetitiontItemBetModel(competition, false, GetLiveBetMap).FirstOrDefault();
-            }, null);
-        }
 
-        public List<CompetitionItemBetShortTransport> GetCompetitionItemsRegularBetForCompetition(LanguageType languageType, int competitionID, bool takeOnlyInFutured) {
-            return InvokeSafe(() => {
-                var competitionItemQuery = CompetitionItem.DataSource
-                    .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID);
-                if (takeOnlyInFutured) {
-                    competitionItemQuery = competitionItemQuery
-                        .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow);
-                }
-                var competition = GetCompetitionItemShortModel(languageType, competitionItemQuery);
-                return GetCompetitiontItemBetModel(competition, true, GetBetMap);
-            }, null);
-        }
-        
         public List<CompetitionItemBetShortTransport> GetCompetitionItemLiveBetForCompetition(LanguageType languageType, int competitionID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionID));
@@ -300,17 +334,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
                     )));
                 return GetCompetitiontItemBetModel(competition, true, GetBetMap);
-            }, null);
-        }
-        
-        public List<CompetitionItemBetShortTransport> GetCompetitionItemLiveBetForCompetitor(LanguageType languageType, int competitorID) {
-            return InvokeSafe(() => {
-                var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource
-                    .Where(new DaoFilterOr(
-                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
-                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
-                    )));
-                return GetCompetitiontItemBetModel(competition, false, GetLiveBetMap);
             }, null);
         }
         
@@ -333,17 +356,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                 result.Add(itemModel);
             }
             return result;
-        }
-
-        private static List<CompetitionItemShortTransport> GetCompetitionItemShortModelByDate(LanguageType languageType, SportType sportType, DateTime fromDate, DateTime toDate) {
-            var competitionItemForDateQuery = CompetitionItem.DataSource
-                .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
-                .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate);
-            if (sportType != SportType.Unknown) {
-                competitionItemForDateQuery = competitionItemForDateQuery
-                    .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
-            }
-            return GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
         }
 
         private static List<CompetitionItemShortTransport> GetCompetitionItemShortModel(LanguageType languageType, DbDataSource<CompetitionItem, int> competitionItemQuery) {

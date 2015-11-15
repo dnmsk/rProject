@@ -56,10 +56,10 @@ namespace Project_B.CodeServerSide.DataProvider {
             });
         }
 
-        public DateTime? GetPastDateToCollect(BrokerType brokerType, LanguageType languageType) {
+        public DateTime? GetPastDateToCollect(BrokerType brokerType, LanguageType languageType, SystemStateResultType pastDateType) {
             return InvokeSafe(() => {
                 var systemState = SystemStateResult.DataSource
-                    .Where(new DbFnSimpleOp(SystemStateResult.Fields.Stateresult, FnMathOper.BitwiseAnd, (short) SystemStateResultType.CollectForYesterday), Oper.Eq, default(short))
+                    .Where(new DbFnSimpleOp(SystemStateResult.Fields.Stateresult, FnMathOper.BitwiseAnd, (short)pastDateType), Oper.Eq, default(short))
                     .Where(SystemStateResult.Fields.Dateutc, Oper.Less, DateTime.UtcNow.Date.AddDays(-1))
                     .WhereEquals(SystemStateResult.Fields.BrokerID, (short)brokerType)
                     .WhereEquals(SystemStateResult.Fields.Languagetype, (short)languageType)

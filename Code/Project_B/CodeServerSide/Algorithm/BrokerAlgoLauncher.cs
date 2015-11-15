@@ -32,6 +32,7 @@ namespace Project_B.CodeServerSide.Algorithm {
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunPastDateHistoryTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForPastDate(), PastDateHistoryTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForYesterday, TodayHistoryTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunLiveOddsTask)) {
                 MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectLiveOddsWithResult, LiveOddsTaskTimespan, null));
@@ -65,13 +66,27 @@ namespace Project_B.CodeServerSide.Algorithm {
 
         public object CollectHistoryForPastDate(DateTime? pastDate = null) {
             using (var sw = new MiniProfiler("CollectHistoryForPastDate")) {
-                var minDateToCollect = pastDate ?? ProjectProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType);
+                var minDateToCollect = pastDate ?? ProjectProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType, SystemStateResultType.CollectForTwoDayAgo);
                 if (minDateToCollect != null) {
                     var historyData = BookPage.Instance
                                               .GetHistoryProvider(_brokerType)
                                               .Load(minDateToCollect.Value, _sportType, _languageType);
                     ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
-                    ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForYesterday);
+                    ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForTwoDayAgo);
+                }
+                return null;
+            }
+        }
+
+        public object CollectHistoryForYesterday() {
+            using (var sw = new MiniProfiler("CollectHistoryForYesterday")) {
+                var minDateToCollect = DateTime.UtcNow.AddDays(-1);
+                if (minDateToCollect.Hour%3 == 0) {
+                    var historyData = BookPage.Instance
+                                                .GetHistoryProvider(_brokerType)
+                                                .Load(minDateToCollect, _sportType, _languageType);
+                    ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                    ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Date, SystemStateResultType.CollectForTwoDayAgo);
                 }
                 return null;
             }

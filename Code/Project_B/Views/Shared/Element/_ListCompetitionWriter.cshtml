@@ -136,7 +136,7 @@
         var competitionModel = groupedCompetitions.First().Competition;
         var itemBetShortModels = groupedCompetitions.ToArray();
         var appendSeeAllLink = false;
-        <H3><a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
+        <H3><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         <table class="table">
             <thead>
                 <tr>
@@ -162,7 +162,7 @@
                 }
                 <tr @if (resultTransport != null) { @Html.Raw("class=\"active\"")   }>
                     <td class="text-right">
-                        <a href="@Url.Action("Item", "Competition", new {id = competition.CompetitionID})">
+                        <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionID})">
                             @competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")
                         </a>
                     </td>
@@ -228,7 +228,7 @@
         </table>
         if (appendSeeAllLink) {
             <div class="text-right">
-                <a href="@Url.Action("Game", currentController, new {id = competitionModel.ID})">@Html.Raw(
+                <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(
                    LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.GridOddFooterSeeMore).FormatSafe(itemBetShortModels.Length, competitionModel.Name))</a>
             </div>
         }

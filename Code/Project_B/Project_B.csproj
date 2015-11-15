@@ -432,7 +432,7 @@
     <Content Include="Views\CompetitionLive\Index.cshtml" />
     <Content Include="Views\CompetitionLive\Game.cshtml" />
     <Content Include="Views\History\Index.cshtml" />
-    <Content Include="Views\History\Game.cshtml" />
+    <Content Include="Views\History\Item.cshtml" />
     <Content Include="Views\History\Competitor.cshtml" />
     <Content Include="Views\CompetitionLive\Item.cshtml" />
     <Content Include="Views\Bookmaker\Index.cshtml" />

@@ -30,7 +30,7 @@ namespace Project_B.Controllers {
                 toDate = DateTime.UtcNow;
                 fromDate = toDate.Date;
             }
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBet(CurrentLanguage, id, fromDate, toDate);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, fromDate, toDate, id);
             var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
@@ -41,10 +41,10 @@ namespace Project_B.Controllers {
             });
         }
 
-        [ActionLog(ProjectBActions.PageHistoryCompetitionID)]
-        public ActionResult Game(int id) {
-            LogAction(ProjectBActions.PageHistoryCompetitionIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetition(CurrentLanguage, id, false);
+        [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
+        public ActionResult Item(int id) {
+            LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
             var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
