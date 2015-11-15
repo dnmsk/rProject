@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -17,12 +16,10 @@ namespace Project_B.Controllers {
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, id);
-            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
-                    CompetitionModel = itemData,
                     DateUtc = DateTime.Today,
-                    ResultMap = resultData,
+                    Competitions = itemData,
                     LimitToDisplayInGroup = 4
                }
             });
@@ -32,11 +29,9 @@ namespace Project_B.Controllers {
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, new[] {id});
-            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(itemData.Select(i => i.CompetitionID).ToArray());
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
-                    CompetitionModel = itemData,
-                    ResultMap = resultData
+                    Competitions = itemData,
                 }
             });
         }
@@ -45,11 +40,9 @@ namespace Project_B.Controllers {
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
-            var resultData = ProjectProvider.Instance.ResultProvider.GetResultForCompetitions(new[] { itemData.CompetitionID });
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
-                    CompetitionModel = new List<CompetitionItemBetShortTransport> { itemData },
-                    ResultMap = resultData
+                    Competitions = new List<CompetitionTransport> { itemData },
                 }
             });
         }

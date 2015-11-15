@@ -125,16 +125,13 @@
 }
 
 @{
-    var resultMap = Model.ControllerModel.ResultMap ?? new Dictionary<int, ResultTransport>();
     var currentController = ViewContext.RouteData.Values["controller"].ToString();
 }
 
-@foreach (var bySportTypes in Model.ControllerModel.CompetitionModel.GroupBy(c => c.SportType)) {
+@foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType)) {
     var headers =  _tableHeaders[bySportTypes.Key].Select(textType => LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, textType)).ToArray();
     <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H2>
-    foreach (var groupedCompetitions in bySportTypes.GroupBy(c => c.Competition.ID).OrderBy(c => c.First().Competition.Name).ToArray()) {
-        var competitionModel = groupedCompetitions.First().Competition;
-        var itemBetShortModels = groupedCompetitions.ToArray();
+    foreach (var competitionModel in bySportTypes) {
         var appendSeeAllLink = false;
         <H3><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         <table class="table">
@@ -149,20 +146,19 @@
                     <td class="col-md-1"></td>
                 </tr>
             </thead>
-            @for (var index = 0; index < itemBetShortModels.Length; index++) {
+            @for (var index = 0; index < competitionModel.CompetitionItems.Count; index++) {
                 if (index == Model.ControllerModel.LimitToDisplayInGroup) {
                     appendSeeAllLink = true;
                     break;
                 }
-                var competition = itemBetShortModels[index];
-                ResultTransport resultTransport;
+                var competition = competitionModel.CompetitionItems[index];
                 var successActs = new List<BetOddType>();
-                if (resultMap.TryGetValue(competition.CompetitionID, out resultTransport)) {
-                    successActs.AddRange(GetSuccessOddTypes(resultTransport, competition.CurrentBets));
+                if (competition.Result != null) {
+                    successActs.AddRange(GetSuccessOddTypes(competition.Result, competition.CurrentBets));
                 }
-                <tr @if (resultTransport != null) { @Html.Raw("class=\"active\"")   }>
+                <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")   }>
                     <td class="text-right">
-                        <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionID})">
+                        <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionItemID})">
                             @competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")
                         </a>
                     </td>
@@ -184,7 +180,7 @@
                         } else {
                             <td>&mdash;</td>
                         }
-                        foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
+                        foreach (var oddType in BetHelper.SportTypeWithOdds[competitionModel.SportType]) {
                             var currentBet = competition.CurrentBets[oddType];
                             if (currentBet.Odd != default(float)) {
                                 var maxBet = competition.HistoryMaxBets[oddType];
@@ -202,18 +198,18 @@
                         }
                     } else {
                         <td>&mdash;</td>
-                        foreach (var oddType in BetHelper.SportTypeWithOdds[competition.SportType]) {
+                        foreach (var oddType in BetHelper.SportTypeWithOdds[competitionModel.SportType]) {
                             <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"") }>&mdash;</td>
                         }
                     }
                     <td class="text-center">
-                        @if (resultTransport != null) {
-                            var score = ScoreHelper.Instance.GenerateScore(resultTransport.ScoreID);
+                        @if (competition.Result != null) {
+                            var score = ScoreHelper.Instance.GenerateScore(competition.Result.ScoreID);
                             <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
-                            if (resultTransport.SubScore != null && resultTransport.SubScore.Length > 0) {
+                            if (competition.Result.SubScore != null && competition.Result.SubScore.Length > 0) {
                                 <br />
                                 <small>
-                                    @resultTransport.SubScore.Select(s => {
+                                    @competition.Result.SubScore.Select(s => {
                                         var sc = ScoreHelper.Instance.GenerateScore(s);
                                         return string.Format("{0}:{1}", sc.Item1, sc.Item2);
                                     }).StrJoin(", ")
@@ -229,7 +225,7 @@
         if (appendSeeAllLink) {
             <div class="text-right">
                 <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(
-                   LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.GridOddFooterSeeMore).FormatSafe(itemBetShortModels.Length, competitionModel.Name))</a>
+                   LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.GridOddFooterSeeMore).FormatSafe(competitionModel.CompetitionItems.Count, competitionModel.Name))</a>
             </div>
         }
     }
