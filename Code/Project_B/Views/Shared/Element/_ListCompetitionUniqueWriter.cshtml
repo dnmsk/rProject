@@ -156,7 +156,7 @@
             @if (competition.CurrentBets != null && competition.HistoryMaxBets != null && competition.HistoryMinBets != null) {
                 var currentPercentile = GetBetPercentile(Model.SportType, competition.CurrentBets);
                 if (currentPercentile != default(int)) {
-                    <td>
+                    <td title="ROI">
                         <small>@GetBetPercentile(Model.SportType, competition.HistoryMaxBets)%</small>
                         <div>
                             <b>@currentPercentile%</b>

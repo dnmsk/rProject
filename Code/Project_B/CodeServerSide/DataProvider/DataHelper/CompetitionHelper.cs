@@ -37,7 +37,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     break;
                 }
 
-                if (_stopList.Any(sl => name.IndexOf(sl, StringComparison.InvariantCultureIgnoreCase) >= 0)) {
+                if (_stopList.Any(sl => name.IndexOf(sl, StringComparison.InvariantCultureIgnoreCase) >= 0) && result.Count > 1) {
                     break;
                 }
                 result.Add(name);
