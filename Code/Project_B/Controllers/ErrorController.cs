@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Net;
+using System.Web.Mvc;
 using Project_B.CodeClientSide;
 using Project_B.Models;
 
@@ -8,7 +9,7 @@ namespace Project_B.Controllers {
         /// Показывает 500 ошибку
         /// </summary>
         public ActionResult Internal() {
-            Response.StatusCode = 500;
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return View("Error500");
         }
 
@@ -17,7 +18,7 @@ namespace Project_B.Controllers {
         /// </summary>
         [ActionLog(ProjectBActions.PageErrorNotFound)]
         public ActionResult NotFound() {
-            Response.StatusCode = 404;
+            Response.StatusCode = (int)HttpStatusCode.NotFound;
             return View("Error404", new StaticPageBaseModel(this));
         }
     }

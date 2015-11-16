@@ -115,17 +115,16 @@
         }
     }
 }
-@helper RenderOdd(BetItemTransport betItem) {
+@helper RenderOddSrcLink(BetItemTransport betItem) {
     var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
-    <a class="@broker.Faviconclass" title="@broker.Alt" @if (broker.IsTop && !broker.Pageurl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.Pageurl })))  }></a>
-    @betItem.Odd
+    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))  }></a>
 }
 
 @{
     var headers = _tableHeaders[Model.SportType].Select(textType => LanguageSiteHelper.Instance.GetText(Model.Language, textType)).ToArray();
 }
 
-<table class="table">
+<table class="table text-right">
     <thead>
         <tr>
             <td class="col-md-1"></td>
@@ -134,7 +133,7 @@
             @foreach (var header in headers) {
                 <td>@Html.Raw(header)</td>
             }
-            <td class="col-md-1"></td>
+            <td></td>
         </tr>
     </thead>
     @for (var index = 0; index < Model.CompetitionItems.Count; index++) {
@@ -144,12 +143,12 @@
             successActs.AddRange(GetSuccessOddTypes(Model.SportType, competition.Result, competition.CurrentBets));
         }
         <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")    }>
-            <td class="text-right">
+            <td>
                 <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionItemID})">
                     @competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")
                 </a>
             </td>
-            <td>
+            <td class="text-left">
                 <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
                 <br />
                 <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
@@ -173,11 +172,11 @@
                         var maxBet = competition.HistoryMaxBets[oddType];
                         var minBet = competition.HistoryMinBets[oddType];
                         <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")    }>
-                            <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@RenderOdd(maxBet)</small>
+                            <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
                             <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
-                                <small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@RenderOdd(currentBet)</b>
+                                @RenderOddSrcLink(currentBet)<small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
                             </div>
-                            <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@RenderOdd(minBet)</small>
+                            <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
                         </td>
                     } else {
                         <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")  }>&mdash;</td>

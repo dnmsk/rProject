@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Web.Mvc;
 using MainLogic.WebFiles;
 using MainLogic.WebFiles.UserPolicy.Enum;
@@ -19,7 +20,7 @@ namespace Project_B.CodeClientSide {
         public override void OnActionExecuting(ActionExecutingContext filterContext) {
             var controller = filterContext.Controller as ApplicationControllerBase;
             if (controller == null || controller.GetBaseModel().GetUserPolicyState<bool>(_policyName) != _successValue) {
-                filterContext.RequestContext.HttpContext.Response.StatusCode = 404;
+                filterContext.RequestContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return;
             }
             base.OnActionExecuting(filterContext);

@@ -6,6 +6,7 @@
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
     var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 
 @foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType).OrderBy(c => (short)c.Key)) {

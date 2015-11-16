@@ -1,10 +1,12 @@
 ﻿@using System.Web.Mvc.Html
+@using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
 @{
     var sportType = Model.ControllerModel.CompetitionTransport.SportType;
     var competition = Model.ControllerModel.CompetitionTransport;
+    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 
 <H2><a href="@Url.Action("Index", "Competition", new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></H2>

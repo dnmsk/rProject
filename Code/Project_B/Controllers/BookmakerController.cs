@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Net;
+using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -11,9 +12,15 @@ namespace Project_B.Controllers {
         // GET: Bookmaker
         [ActionLog(ProjectBActions.PageBookmakerPage)]
         public ActionResult Index(string id) {
-            return id.IsNullOrEmpty() 
-                ? View(new StaticPageBaseModel(this)) 
-                : View("BookmakerPage", new BrokerPageModel(id, this));
+            if (id.IsNullOrEmpty()) {
+                return View(new StaticPageBaseModel(this));
+            }
+            var brokerPageModel = new BrokerPageModel(id, this);
+            if (brokerPageModel.BrokerPageTransport == null) {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return new EmptyResult();
+            }
+            return View("BookmakerPage", brokerPageModel);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         /// </summary>
         protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof (BrokerBase).FullName);
 
-        private readonly WebRequestHelper _requestHelper;
+        public WebRequestHelper RequestHelper { get; }
         protected static readonly JavaScriptSerializer JavaScriptSerializer = new JavaScriptSerializer();
 
         public string Url { get; private set; }
@@ -28,13 +28,13 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         }
 
         public BrokerBase(WebRequestHelper requestHelper) {
-            _requestHelper = requestHelper;
+            RequestHelper = requestHelper;
         }
         
         protected string LoadPage(string url, string postData = null, string contentType = null) {
             try {
                 Url = url;
-                var loadResult = _requestHelper.GetContent(url, postData, contentType);
+                var loadResult = RequestHelper.GetContent(url, postData, contentType);
                 if (loadResult.Item1 != HttpStatusCode.OK) {
                     Logger.Error("status = " + loadResult.Item1);
                 }

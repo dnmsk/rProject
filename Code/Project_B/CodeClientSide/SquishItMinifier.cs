@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
@@ -10,22 +11,50 @@ using SquishIt.Framework.JavaScript;
 
 namespace Project_B.CodeClientSide {
     public class SquishItMinifierStatic : Singleton<SquishItMinifierStatic> {
+        public const string MAIN = "main";
         private static readonly bool _isDebug = ((CompilationSection) ConfigurationManager.GetSection("system.web/compilation")).Debug;
-        private Dictionary<string, CSSBundle> _dictionaryCssBundles = new Dictionary<string, CSSBundle>();
-        private Dictionary<string, CSSBundle> _dictionaryJsBundles = new Dictionary<string, CSSBundle>();
+        private readonly Dictionary<string, SquishItMinifier<CSSBundle>> _dictionaryCssBundles = new Dictionary<string, SquishItMinifier<CSSBundle>>();
+        private readonly Dictionary<string, SquishItMinifier<JavaScriptBundle>> _dictionaryJsBundles = new Dictionary<string, SquishItMinifier<JavaScriptBundle>>();
 
-        public static SquishItMinifier<CSSBundle> Css => SquishItMinifier<CSSBundle>.Css(_isDebug);
+        public SquishItMinifier<CSSBundle> Css(string key) {
+            SquishItMinifier<CSSBundle> css;
+            if (!_dictionaryCssBundles.TryGetValue(key, out css)) {
+                css = SquishItMinifier<CSSBundle>.Css(_isDebug);
+                _dictionaryCssBundles[key] = css;
+            }
+            return css;
+        }
 
-        public static SquishItMinifier<JavaScriptBundle> JavaScript => SquishItMinifier<JavaScriptBundle>.JavaScript(_isDebug);
+        public SquishItMinifier<JavaScriptBundle> JavaScript(string key) {
+            SquishItMinifier<JavaScriptBundle> js;
+            if (!_dictionaryJsBundles.TryGetValue(key, out js)) {
+                js = SquishItMinifier<CSSBundle>.JavaScript(_isDebug);
+                _dictionaryJsBundles[key] = js;
+            }
+            return js;
+        }
+
+        public MvcHtmlString MvcRenderCachedAssetTag(IEnumerable<string> assets = null) {
+            assets = assets != null ? assets.Distinct() : new [] { MAIN };
+            var result = new MvcHtmlString(string.Empty);
+            foreach (var asset in assets) {
+                SquishItMinifier<CSSBundle> css;
+                if (_dictionaryCssBundles.TryGetValue(asset, out css)) {
+                    result = new MvcHtmlString(result.ToHtmlString() + css.MvcRenderCachedAssetTag(asset).ToHtmlString());
+                }
+                SquishItMinifier<JavaScriptBundle> js;
+                if (_dictionaryJsBundles.TryGetValue(asset, out js)) {
+                    result = new MvcHtmlString(result.ToHtmlString() + js.MvcRenderCachedAssetTag(asset).ToHtmlString());
+                }
+            }
+            return result;
+        }
     }
     public class SquishItMinifier<T> where T : BundleBase<T> {
-        public const string MAIN = "main";
         private readonly string _path;
-        private readonly string _assetScope;
         private readonly BundleBase<T> _bundle;
         private SquishItMinifier(string path, BundleBase<T> bundle) {
             _path = path;
-            _assetScope = MAIN + path;
             _bundle = bundle;
         }
 
@@ -39,13 +68,17 @@ namespace Project_B.CodeClientSide {
             return this;
         }
 
-        public void AsCached(string bundleScope = null) {
-            bundleScope = bundleScope ?? _assetScope;
+        public void AsCached(string bundleScope) {
+            _bundle.ClearCache();
             _bundle.AsCached(bundleScope, string.Format("~/assets/{0}/{1}?#", _path, bundleScope));
         }
 
-        public MvcHtmlString MvcRenderCachedAssetTag(string bundleScope = null) {
-            bundleScope = bundleScope ?? _assetScope;
+        public SquishItMinifier<T> AddString(string content) {
+            _bundle.AddString(content);
+            return this;
+        }
+
+        public MvcHtmlString MvcRenderCachedAssetTag(string bundleScope) {
             return MvcHtmlString.Create(_bundle.RenderCachedAssetTag(bundleScope));
         }
 

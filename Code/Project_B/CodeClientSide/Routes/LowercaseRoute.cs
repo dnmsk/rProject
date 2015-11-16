@@ -9,10 +9,9 @@ namespace Project_B.CodeClientSide.Routes {
 
         public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values) {
             var path = base.GetVirtualPath(requestContext, values);
-
-            if (path != null)
+            if (path != null) {
                 path.VirtualPath = path.VirtualPath.ToLowerInvariant();
-
+            }
             return path;
         }
     }

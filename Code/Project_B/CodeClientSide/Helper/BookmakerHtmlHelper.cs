@@ -1,33 +1,65 @@
-﻿using CommonUtils.ExtendedTypes;
+﻿using System;
+using System.Net;
+using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.KangooCache;
-using MainLogic;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {
     public class BookmakerHtmlHelper : Singleton<BookmakerHtmlHelper> {
-        private readonly MultipleKangooCache<BrokerType, BrokerPageTransport> _bookmakerCache;
+        public const string BOOKMAKER_S = "bookmakers";
+        private readonly MultipleKangooCache<BrokerType, BrokerPageIcon> _bookmakerCache;
+        private const string _classPrefix = "_b";
+        private short _incr;
+        private static readonly string[] _protocols = {"https", "http"};
 
         public BookmakerHtmlHelper() {
-            _bookmakerCache = new MultipleKangooCache<BrokerType, BrokerPageTransport>(MainLogicProvider.WatchfulSloth,
+            _bookmakerCache = new MultipleKangooCache<BrokerType, BrokerPageIcon>(null,
                 cache => {
                     foreach (var brokerPagesTransport in ProjectProvider.Instance.StaticPageProvider.GetCurrentBrokerPageModels(false)) {
                         foreach (var pageTransport in brokerPagesTransport.Value) {
-                            _bookmakerCache[pageTransport.BrokerType] = new BrokerPageTransport {
-                                Faviconclass = pageTransport.Faviconclass,
-                                IsTop = pageTransport.IsTop,
-                                Pageurl = pageTransport.Pageurl,
-                                Alt = pageTransport.Alt
-                            };
+                            if (!cache.ContainsKey(pageTransport.BrokerType) &&
+                                                            !pageTransport.TargetUrl.IsNullOrEmpty()) {
+                                var brokerPageIcon = new BrokerPageIcon {
+                                    PageUrl = pageTransport.Pageurl,
+                                    TargetUrl = pageTransport.TargetUrl,
+                                    IconClass = _classPrefix
+                                };
+                                cache[pageTransport.BrokerType] = brokerPageIcon;
+                                SlothMovePlodding.AddAction(() => {
+                                    foreach (var protocol in _protocols) {
+                                        var data = BookPage.Instance.GetOddsProvider(pageTransport.BrokerType).RequestHelper.GetContentRaw(protocol + "://" + brokerPageIcon.TargetUrl + "/favicon.ico");
+                                        if (data.Item1 == HttpStatusCode.OK) {
+                                            string currentClassName;
+                                            lock (cache) {
+                                                currentClassName = _classPrefix + _incr++;
+                                            }
+                                            brokerPageIcon.IconClass += " " + currentClassName;
+                                            var base64 = Convert.ToBase64String(data.Item2);
+                                            SquishItMinifierStatic.Instance
+                                                                  .Css(BOOKMAKER_S)
+                                                                  .AddString(string.Format(".{0}{{background-image:url(\"data:image/png;base64,{1}\");}}", currentClassName, base64))
+                                                                  .AsCached(BOOKMAKER_S);
+                                        }
+                                        break;
+                                    }
+                                });
+                            }
                         }
                     }
                 });
+            SquishItMinifierStatic.Instance
+                                  .Css(BOOKMAKER_S)
+                                  .AddString(string.Format(".{0}{{display:inline-block;width:18px;height:18px;vertical-align:text-bottom;}}", _classPrefix))
+                                  .AsCached(BOOKMAKER_S);
         }
 
-        public BrokerPageTransport GetBroker(BrokerType brokerType) {
-            BrokerPageTransport value;
-            return _bookmakerCache.TryGetValue(brokerType, out value) ? value : new BrokerPageTransport();
+        public BrokerPageIcon GetBroker(BrokerType brokerType) {
+            BrokerPageIcon value;
+            return _bookmakerCache.TryGetValue(brokerType, out value) ? value : new BrokerPageIcon();
         }
     }
 }

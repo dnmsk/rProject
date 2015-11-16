@@ -13,6 +13,10 @@ namespace Project_B {
                 url: "Assets/{action}/{id}",
                 defaults: new RouteValueDictionary(new { controller = "Assets", action = "Index", language = "", id = UrlParameter.Optional }),
                 routeHandler:new MvcRouteHandler()));
+            routes.Add(new LowercaseRoute(
+                url: "Redirect/{id}",
+                defaults: new RouteValueDictionary(new { controller = "Redirect", action = "Index", language = "", id = UrlParameter.Optional }),
+                routeHandler:new MvcRouteHandler()));
             var valuesConstraint = new ExpectedValuesConstraint(LanguageTypeHelper.Instance.GetIsoNames());
             routes.Add(new LowercaseRoute(
                 url: "{language}/{controller}/{action}/{id}",

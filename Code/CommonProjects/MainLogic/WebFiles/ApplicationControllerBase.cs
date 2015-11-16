@@ -14,7 +14,7 @@ using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {
     public abstract class ApplicationControllerBase : Controller {
-        protected static readonly StringCryptoManagerDES CryptoManager = new StringCryptoManagerDES(SiteConfiguration.GetConfigurationProperty<string>("DataEncryptorKey"));
+        public static readonly StringCryptoManagerDES CryptoManager = new StringCryptoManagerDES(SiteConfiguration.GetConfigurationProperty<string>("DataEncryptorKey"));
         protected override bool DisableAsyncSupport => true;
 
         public const string GUEST_COOKIE_NAME = "guest";

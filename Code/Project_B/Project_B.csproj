@@ -224,12 +224,14 @@
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
+    <Compile Include="CodeClientSide\Helper\ExternalLinkHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\Routes\LeftMatchingRoute.cs" />
     <Compile Include="CodeClientSide\Routes\LowercaseRoute.cs" />
     <Compile Include="CodeClientSide\Routes\ShortUrlControllerResolveRoute.cs" />
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
+    <Compile Include="CodeClientSide\TransportType\BrokerPageIcon.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitionAdvancedTransport.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
@@ -292,6 +294,7 @@
     <Compile Include="CodeServerSide\Entity\CompetitionUniqueAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Competitor.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitorUnique.cs" />
+    <Compile Include="CodeServerSide\Entity\ExternalLink.cs" />
     <Compile Include="CodeServerSide\Entity\Gender.cs" />
     <Compile Include="CodeServerSide\Entity\GenderAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\BetHelper.cs" />
@@ -335,6 +338,7 @@
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -374,6 +378,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include=".bin\node.cmd" />
+    <Content Include="App_Code\RedirectLinkHelperHtml.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
@@ -451,6 +456,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Less\" />
+    <Folder Include="Views\Redirect\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

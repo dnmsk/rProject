@@ -16,8 +16,10 @@ namespace Project_B.Models {
         }
 
         public BrokerPageModel(string pageUrl, ProjectControllerBase projectControllerBase) : base(projectControllerBase.GetBaseModel()) {
-            BrokerPageTransport = _brokerPagesCache.GetPage(projectControllerBase.CurrentLanguage, pageUrl) ?? new BrokerPageTransport();
-            projectControllerBase.LogAction(ProjectBActions.PageBookmakerConcretePage, BrokerPageTransport.ID);
+            BrokerPageTransport = _brokerPagesCache.GetPage(projectControllerBase.CurrentLanguage, pageUrl);
+            if (BrokerPageTransport != null) {
+                projectControllerBase.LogAction(ProjectBActions.PageBookmakerConcretePage, BrokerPageTransport.ID);
+            }
         }
     }
 }

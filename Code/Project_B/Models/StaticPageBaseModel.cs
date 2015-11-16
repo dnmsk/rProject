@@ -1,4 +1,5 @@
-﻿using MainLogic.WebFiles;
+﻿using System.Collections.Generic;
+using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
@@ -15,12 +16,16 @@ namespace Project_B.Models {
             type => type);
 
         public LanguageType CurrentLanguage { get; }
+        public List<string> AdditionHtmlAssets { get; set; }
         public StaticPageBaseModel(ProjectControllerBase projectController) : base(projectController.GetBaseModel()) {
             StaticPageTransport = _staticPagesCache.GetPage(
                     CurrentLanguage = projectController.CurrentLanguage, 
                     PageKey = ActionLogAttribute.GetPageActionId(projectController)
                 ) ?? new StaticPageTransport();
             SubNavigationType = projectController.SubNavigationType;
+            AdditionHtmlAssets = new List<string> {
+                "bk"
+            };
         }
 
         public StaticPageBaseModel(BaseModel baseModel) : base(baseModel) {

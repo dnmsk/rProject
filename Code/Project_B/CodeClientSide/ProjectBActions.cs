@@ -35,6 +35,7 @@
         PageAccountLoginPost = 1901,
 
         PageErrorNotFound = 1990,
-
+        PageRedirect = 1998,
+        PageRedirectConcrete = 1999
     }
 }

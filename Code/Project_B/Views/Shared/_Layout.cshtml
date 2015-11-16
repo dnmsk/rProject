@@ -16,14 +16,14 @@
     @if (!Model.StaticPageTransport.Description.IsNullOrEmpty()) {
         <meta name="description" content="@Model.StaticPageTransport.Description"/>
     }
-    @SquishItMinifierStatic.Css.MvcRenderCachedAssetTag()
-    @SquishItMinifierStatic.JavaScript.MvcRenderCachedAssetTag()
+    @SquishItMinifierStatic.Instance.MvcRenderCachedAssetTag()
 </head>
 <body>
+    @SquishItMinifierStatic.Instance.MvcRenderCachedAssetTag(Model.AdditionHtmlAssets)
     @Html.Partial("_MainMenu", Model)
     <div class="container body-content">
         <div id="container">
-            @Html.Raw(Model.StaticPageTransport.Content)
+            @Html.Raw(ExternalLinkHelper.Instance.ProcessStaticContentForExternalLink(Url, Model, Model.StaticPageTransport.Content))
         </div>
         @RenderBody()
         @Html.Partial("PageEditor/WysiwygEditor", Model)

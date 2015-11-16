@@ -134,24 +134,22 @@ namespace Project_B.CodeServerSide.DataProvider {
                     }
                     : BrokerPage.DataSource.GetByKey(staticPageTransport.ID);
                 var entity = ModelToStaticPage(staticPage, staticPageTransport, isTop);
-                entity.Faviconclass = staticPageTransport.Faviconclass;
                 entity.Largeiconclass = staticPageTransport.Largeiconclass;
                 entity.Orderindex = staticPageTransport.Orderindex;
                 entity.Pageurl = staticPageTransport.Pageurl;
                 entity.Brokertype = staticPage.Brokertype;
-                entity.Alt = staticPage.Alt;
+                entity.TargetUrl = staticPage.TargetUrl;
                 return BuildBrokerPageModel(entity);
             }, null);
         }
 
         private static BrokerPageTransport BuildBrokerPageModel(BrokerPage staticPage) {
             var staticPageToModel = StaticPageToModel<BrokerPageTransport>(staticPage);
-            staticPageToModel.Faviconclass = staticPage.Faviconclass;
             staticPageToModel.Largeiconclass = staticPage.Largeiconclass;
             staticPageToModel.Orderindex = staticPage.Orderindex;
             staticPageToModel.Pageurl = staticPage.Pageurl;
             staticPageToModel.BrokerType = staticPage.Brokertype;
-            staticPageToModel.Alt = staticPage.Alt;
+            staticPageToModel.TargetUrl = staticPage.TargetUrl;
             return staticPageToModel;
         }
 

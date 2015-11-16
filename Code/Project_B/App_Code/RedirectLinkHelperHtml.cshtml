@@ -1,0 +1,12 @@
+﻿@using System.Web.Mvc
+@using MainLogic.WebFiles
+@using Project_B.CodeClientSide.Helper
+
+@functions {
+    private new static System.Web.Mvc.HtmlHelper Html => ((WebViewPage) WebPageContext.Current.Page).Html;
+    private new static System.Web.Mvc.UrlHelper Url => ((WebViewPage) WebPageContext.Current.Page).Url;
+}
+
+@helper UrlActionCreateExternalLink(BaseModel baseModel, short linkID) {
+    @ExternalLinkHelper.Instance.CreateHrefToRedirect(Url, baseModel, linkID)
+}

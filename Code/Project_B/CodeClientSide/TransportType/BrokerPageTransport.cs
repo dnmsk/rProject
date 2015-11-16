@@ -6,12 +6,8 @@ namespace Project_B.CodeClientSide.TransportType {
 
         public string Pageurl { get; set; }
 
-        public string Alt { get; set; }
-
-        /// <summary>
-        /// </summary>
-        public string Faviconclass { get; set; }
-
+        public string TargetUrl { get; set; }
+        
         /// <summary>
         /// </summary>
         public string Largeiconclass { get; set; }
