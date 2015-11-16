@@ -73,20 +73,23 @@ namespace Spywords_Project.Code.Algorithms {
             };
         }
 
+        private static readonly object _domainLocker = new object();
         protected static DomainEntity GetDomainEntity(string domain) {
             var d = DomainExtension.DePunycodeDomain(domain.ToLower());
-            var domainEntity = DomainEntity.DataSource
-                                           .WhereEquals(DomainEntity.Fields.Domain, d)
-                                           .First();
-            if (domainEntity == null) {
-                domainEntity = new DomainEntity {
-                    Datecreated = DateTime.UtcNow,
-                    Domain = d,
-                    Status = DomainStatus.Default
-                };
-                domainEntity.Save();
+            lock (_domainLocker) {
+                var domainEntity = DomainEntity.DataSource
+                                               .WhereEquals(DomainEntity.Fields.Domain, d)
+                                               .First();
+                if (domainEntity == null) {
+                    domainEntity = new DomainEntity {
+                        Datecreated = DateTime.UtcNow,
+                        Domain = d,
+                        Status = DomainStatus.Default
+                    };
+                    domainEntity.Save();
+                }
+                return domainEntity;
             }
-            return domainEntity;
         }
         
         protected static void CreateOrUpdateDomainPhrase(DomainEntity domainEntity, Phrase phrase, SearchEngine seType, SourceType sourceType) {

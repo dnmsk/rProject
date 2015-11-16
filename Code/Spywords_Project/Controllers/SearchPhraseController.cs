@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -38,7 +37,7 @@ namespace Spywords_Project.Controllers {
             var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Search);
             var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Search);
 
-            return new FileContentResult(Encoding.UTF8.GetBytes(BuildExportCsv(phraseDomains)), "text/css") {
+            return new FileContentResult(Encoding.GetEncoding(1251).GetBytes(BuildExportCsv(phraseDomains)), "text/css") {
                 FileDownloadName = string.Format("Фраза_{0}.csv", phrase.Text.Replace(" ", "_"))
             };
         }
@@ -47,9 +46,9 @@ namespace Spywords_Project.Controllers {
             return domainStats
                 .Select(ds => new [] {
                     ds.Domain,
-                    ds.VisitsMonth.ToString(),
+                    (ds.Phones ?? new string[0]).StrJoin(","),
                     (ds.Emails ?? new string[0]).StrJoin(","),
-                    (ds.Phones ?? new string[0]).StrJoin(",")
+                    ds.SearchEngine.ToString().Replace(" ", "")
                 }.StrJoin(";"))
                 .StrJoin(Environment.NewLine);
         }

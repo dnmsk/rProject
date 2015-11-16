@@ -1,25 +1,22 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Web.Configuration;
 using System.Web.Mvc;
+using CommonUtils.ExtendedTypes;
 using SquishIt.Framework;
 using SquishIt.Framework.Base;
 using SquishIt.Framework.CSS;
 using SquishIt.Framework.JavaScript;
 
 namespace Project_B.CodeClientSide {
-    public static class SquishItMinifierStatic {
-        public static readonly bool IsDebug = ((CompilationSection) ConfigurationManager.GetSection("system.web/compilation")).Debug;
-        public static SquishItMinifier<CSSBundle> Css {
-            get {
-                return SquishItMinifier<CSSBundle>.Css(IsDebug);
-            }
-        }
+    public class SquishItMinifierStatic : Singleton<SquishItMinifierStatic> {
+        private static readonly bool _isDebug = ((CompilationSection) ConfigurationManager.GetSection("system.web/compilation")).Debug;
+        private Dictionary<string, CSSBundle> _dictionaryCssBundles = new Dictionary<string, CSSBundle>();
+        private Dictionary<string, CSSBundle> _dictionaryJsBundles = new Dictionary<string, CSSBundle>();
 
-        public static SquishItMinifier<JavaScriptBundle> JavaScript {
-            get {
-                return SquishItMinifier<JavaScriptBundle>.JavaScript(IsDebug);
-            }
-        } 
+        public static SquishItMinifier<CSSBundle> Css => SquishItMinifier<CSSBundle>.Css(_isDebug);
+
+        public static SquishItMinifier<JavaScriptBundle> JavaScript => SquishItMinifier<JavaScriptBundle>.JavaScript(_isDebug);
     }
     public class SquishItMinifier<T> where T : BundleBase<T> {
         public const string MAIN = "main";
