@@ -64,6 +64,7 @@ namespace Spywords_Project.Code.Algorithms {
                     break;
                 }
                 var yandexHtml = _yandexRequestHelper.GetContent(yandexUrl + (yandexTries == 0 ? string.Empty : ("&p=" + yandexTries)));
+                _logger.Info("Go to YANDEX with query " + phrase.Text);
                 if (yandexHtml == null || yandexHtml.Item1 != HttpStatusCode.OK) {
                     if (retries > 2) {
                         break;
@@ -82,6 +83,7 @@ namespace Spywords_Project.Code.Algorithms {
         private List<string> GetGoogleDomains(Phrase phrase) {
             var googleDomains = new List<string>();
             var googleHtml = _googleRequestHelper.GetContent(string.Format("https://www.google.ru/search?num=100&hl=ru&site=webhp&source=hp&q=" + HttpUtility.UrlEncode(phrase.Text)));
+            _logger.Info("Go to GOOGLE with query " + phrase.Text);
             if (googleHtml.Item1 == HttpStatusCode.OK) {
                 new HtmlBlockHelper(googleHtml.Item2)
                     .ExtractBlock(new XPathQuery(".//h3[@class='r']/a[@href]"))
