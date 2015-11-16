@@ -10,6 +10,8 @@
 <h2>@ViewBag.Title</h2>
 <br />
 @Html.ActionLink("<< Назад", "Index")
+<a class="btn btn-success pull-right" title="Выгрузить результаты в CSV" href="@Url.Action("ExportPrase", new {id=Model.Phrase.PhraseAccountID})">Выгрузить в CSV</a>
+<br />
 <br />
 <br />
 

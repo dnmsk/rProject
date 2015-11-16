@@ -10,7 +10,6 @@ using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Enums;
-using Project_B.Models;
 
 namespace Project_B.CodeServerSide.DataProvider {
     public class ResultProvider : SafeInvokerBase {
