@@ -9,6 +9,7 @@ using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using MainLogic.WebFiles;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
 
@@ -22,8 +23,11 @@ namespace Spywords_Project.Code.Algorithms {
         private readonly WebRequestHelper _yandexRequestHelper;
         private readonly WebRequestHelper _googleRequestHelper;
         public CollectSearchEngineDomainsFromPhrase() : base(TimeSpan.FromSeconds(30)) {
-            _yandexRequestHelper = BuildRequestHelper("CookiesYandex", "yandex.ru", TimeSpan.FromSeconds(15));
-            _googleRequestHelper = BuildRequestHelper("CookiesGoogle", "google.ru", TimeSpan.FromSeconds(15));
+            var interval = SiteConfiguration
+                .GetConfigurationProperty<int>("SEInterval");
+            interval = interval == default(int) ? 60 : interval;
+            _yandexRequestHelper = BuildRequestHelper("CookiesYandex", "yandex.ru", TimeSpan.FromSeconds(interval));
+            _googleRequestHelper = BuildRequestHelper("CookiesGoogle", "google.ru", TimeSpan.FromSeconds(interval));
         }
 
         protected override void DoAction() {
