@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -23,9 +22,6 @@ namespace MainLogic.WebFiles {
         public const string UTM_CAMPAIGN_PARAM_NAME = "utm_campaign";
         public const string UTM_MEDIUM_PARAM_NAME = "utm_medium";
         private const string _urlReferrerCookieName = "prevUrl";
-
-        private const string _domainPattern = "(?:https?://)?(?:www)?(.+?(?=/))";
-        private static readonly Regex _domainRegex = new Regex(_domainPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         protected static readonly MainLogicProvider BusinessLogic = new MainLogicProvider();
 
@@ -52,10 +48,10 @@ namespace MainLogic.WebFiles {
                     var isFirstTimeOpen = false;
                     if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || 
                                     !int.TryParse(CryptoManager.DecryptString(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value), out guid)) {
-                        guid = CreateGuidInfo(System.Web.HttpContext.Current);
+                        guid = CreateGuidInfo(HttpContext);
                         isFirstTimeOpen = true;
                     } else if (!BusinessLogic.UserProvider.CheckGuest(guid)) {
-                        guid = CreateGuidInfo(System.Web.HttpContext.Current);
+                        guid = CreateGuidInfo(HttpContext);
                         isFirstTimeOpen = true;
                     }
                     _currentUser = SessionModule.CreateSessionModule(guid, HttpContext);
@@ -118,14 +114,14 @@ namespace MainLogic.WebFiles {
             UserActionLogger.Log(CurrentUser.GuestID, logID, objectID, pars);
         }
 
-        public static string GetUserIp(HttpRequest requestContext) {
+        public static string GetUserIp(HttpRequestBase requestContext) {
             var userIP = GetUnfilteredUserIP(requestContext);
             var indexOf = userIP.IndexOf(",", StringComparison.InvariantCulture);
             var filteredUserIP = userIP.Substring(0, indexOf > 0 ? indexOf : userIP.Length);
             return filteredUserIP;
         }
 
-        private static string GetUnfilteredUserIP(HttpRequest requestContext) {
+        private static string GetUnfilteredUserIP(HttpRequestBase requestContext) {
             if (requestContext == null) {
                 return string.Empty;
             }
@@ -142,20 +138,17 @@ namespace MainLogic.WebFiles {
             return requestContext.UserHostAddress;
         }
 
-        protected static string GetUrlReffererString(HttpRequest requestContext) {
+        protected static string GetUrlReffererString(HttpRequestBase requestContext) {
             var prevUri = requestContext.UrlReferrer;
             var refData = string.Empty;
-
             if (prevUri != null && requestContext.Cookies[_urlReferrerCookieName] == null) {
                 refData += prevUri.ToString();
             }
-
             requestContext.QueryString["url_from"].Do(urlFrom => { refData += string.Format(";{0}", urlFrom); });
-
             return refData;
         }
 
-        private static int CreateGuidInfo(HttpContext context) {
+        private static int CreateGuidInfo(HttpContextBase context) {
             var requestContext = context.Request;
             var responseContext = context.Response;
             var urlRefferer = GetUrlReffererString(requestContext);
@@ -185,17 +178,11 @@ namespace MainLogic.WebFiles {
                                 // иначе ищем реферер
                                 (request.UrlReferrer != null
                                     // проверяем, внутренний ли переход
-                                    ? (referrer.IndexOf(domain, StringComparison.Ordinal) > 0
-                                        // скажем что внутренний переход
+                                    ? (referrer.IndexOf(domain, StringComparison.Ordinal) >= 0
                                         ? domain
-                                        // иначе попробуем распарсить регуляркой
-                                        : (_domainRegex.Match(referrer).Groups.Count > 1
-                                            // найдем домен...
-                                            ? _domainRegex.Match(referrer).Groups[1].ToString()
-                                            // ...или извинимся
-                                            : "НЕ РАСПАРСИЛОСЬ" + referrer))
+                                        : referrer.GetDomain())
                                     // если заход по прямому урлу
-                                    : "target"),
+                                    : "direct"),
                     request.Params.Get(UTM_CAMPAIGN_PARAM_NAME) ?? string.Empty,
                     request.Params.Get(UTM_MEDIUM_PARAM_NAME) ?? string.Empty
                 );
@@ -203,7 +190,7 @@ namespace MainLogic.WebFiles {
                     Expires = DateTime.UtcNow.AddYears(5)
                 };
                 response.Cookies.Set(utmCookie);
-            } else /*if (UtmSource.IsNullOrEmpty())*/ {
+            } else {
                 UtmParam = UtmParamWrapper.DeserializeParamWrapper(CryptoManager.DecryptString(request.Cookies[UTM_COOKIE_NAME].Value));
             }
         }

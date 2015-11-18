@@ -11,15 +11,9 @@ namespace CommonUtils.ExtendedTypes {
         private const string HTTPS = "https://";
 
         private const string WWW = "www.";
-
-        /// <summary>
-        /// Максимально допустимая длина домена, без поддоменов, например http://rookee.ru.
-        /// </summary>
+        
         private const int MAX_DOMAIN_LENGTH = 127;
-
-        /// <summary>
-        /// Максимально допустимая длина домена, с поддоменами, например http://blog.rookee.ru.
-        /// </summary>
+        
         private const int MAX_SUBDOMAIN_LENGTH = 254;
 
         /// <summary>
@@ -105,7 +99,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <param name="url">Урл в строковом представлении.</param>
         /// <returns>Возвращает домен без "http://" и "https://".</returns>
         public static string GetDomain(this string url) {
-            return url.CutHttpHttps().Split(_endDomain, 2)[0];
+            return url.CutHttpHttps().CutWww().Split(_endDomain, 2)[0];
         }
 
         /// <summary>
