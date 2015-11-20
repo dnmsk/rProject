@@ -114,14 +114,14 @@ namespace MainLogic.WebFiles {
             UserActionLogger.Log(CurrentUser.GuestID, logID, objectID, pars);
         }
 
-        public static string GetUserIp(HttpRequestBase requestContext) {
+        public static string GetUserIp(HttpRequest requestContext) {
             var userIP = GetUnfilteredUserIP(requestContext);
             var indexOf = userIP.IndexOf(",", StringComparison.InvariantCulture);
             var filteredUserIP = userIP.Substring(0, indexOf > 0 ? indexOf : userIP.Length);
             return filteredUserIP;
         }
 
-        private static string GetUnfilteredUserIP(HttpRequestBase requestContext) {
+        private static string GetUnfilteredUserIP(HttpRequest requestContext) {
             if (requestContext == null) {
                 return string.Empty;
             }
@@ -152,7 +152,7 @@ namespace MainLogic.WebFiles {
             var requestContext = context.Request;
             var responseContext = context.Response;
             var urlRefferer = GetUrlReffererString(requestContext);
-            var guid = BusinessLogic.UserProvider.CreateNewGuest(GetUserIp(requestContext), requestContext.UserAgent);
+            var guid = BusinessLogic.UserProvider.CreateNewGuest(GetUserIp(System.Web.HttpContext.Current.Request), requestContext.UserAgent);
 
             responseContext.Cookies.Add(new HttpCookie(GUEST_COOKIE_NAME, CryptoManager.EncryptString(guid.ToString(CultureInfo.InvariantCulture))) {
                 Expires = DateTime.Today.AddYears(10)

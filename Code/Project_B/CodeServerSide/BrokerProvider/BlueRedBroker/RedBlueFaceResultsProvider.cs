@@ -58,13 +58,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.BlueRedBroker {
                 date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             });
-                /*string.Format(CurrentConfiguration.StringSimple[SectionName.UrlResultTarget], 
-                                        GetParamValueForCompetition(
-                                            sportType, 
-                                            CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsResultsParam], 
-                                            CurrentConfiguration.StringSimple[SectionName.StringMapStringsResultsParamJoin]), 
-                                        date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]));
-            */
             return new BrokerData {
                 Competitions = BuildCompetitions(LoadPage(url)),
                 Broker = BrokerType,

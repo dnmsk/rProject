@@ -5,6 +5,7 @@ using CommonUtils.WatchfulSloths.KangooCache;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide;
+using Project_B.CodeServerSide.BrokerProvider.Configuration;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 
@@ -14,7 +15,6 @@ namespace Project_B.CodeClientSide.Helper {
         private readonly MultipleKangooCache<BrokerType, BrokerPageIcon> _bookmakerCache;
         private const string _classPrefix = "_b";
         private short _incr;
-        private static readonly string[] _protocols = {"https", "http"};
 
         public BookmakerHtmlHelper() {
             _bookmakerCache = new MultipleKangooCache<BrokerType, BrokerPageIcon>(null,
@@ -29,22 +29,24 @@ namespace Project_B.CodeClientSide.Helper {
                                     IconClass = _classPrefix
                                 };
                                 cache[pageTransport.BrokerType] = brokerPageIcon;
+                                var oddsProvider = BookPage.Instance.GetOddsProvider(pageTransport.BrokerType);
+                                var url = oddsProvider.CurrentConfiguration.StringSimple[SectionName.StringFaviconTarget];
+                                if (url.IsNullOrEmpty()) {
+                                    continue;
+                                }
                                 SlothMovePlodding.AddAction(() => {
-                                    foreach (var protocol in _protocols) {
-                                        var data = BookPage.Instance.GetOddsProvider(pageTransport.BrokerType).RequestHelper.GetContentRaw(protocol + "://" + brokerPageIcon.TargetUrl + "/favicon.ico");
-                                        if (data.Item1 == HttpStatusCode.OK) {
-                                            string currentClassName;
-                                            lock (cache) {
-                                                currentClassName = _classPrefix + _incr++;
-                                            }
-                                            brokerPageIcon.IconClass += " " + currentClassName;
-                                            var base64 = Convert.ToBase64String(data.Item2);
-                                            SquishItMinifierStatic.Instance
-                                                                  .Css(BOOKMAKER_S)
-                                                                  .AddString(string.Format(".{0}{{background-image:url(\"data:image/png;base64,{1}\");}}", currentClassName, base64))
-                                                                  .AsCached(BOOKMAKER_S);
+                                    var data = oddsProvider.RequestHelper.GetContentRaw(url);
+                                    if (data.Item1 == HttpStatusCode.OK) {
+                                        string currentClassName;
+                                        lock (cache) {
+                                            currentClassName = _classPrefix + _incr++;
                                         }
-                                        break;
+                                        brokerPageIcon.IconClass += " " + currentClassName;
+                                        var base64 = Convert.ToBase64String(data.Item2);
+                                        SquishItMinifierStatic.Instance
+                                                                .Css(BOOKMAKER_S)
+                                                                .AddString(string.Format(".{0}{{background-image:url(\"data:image/png;base64,{1}\");}}", currentClassName, base64))
+                                                                .AsCached(BOOKMAKER_S);
                                     }
                                 });
                             }

@@ -7,7 +7,9 @@
         UrlLiveTarget = 2,
         UrlOddsTarget = 3,
         UrlResultTarget = 4,
-        
+
+        StringFaviconTarget = 50,
+
         SimpleStringUserAgent = 901,
 
         //XPath Reserve from 1000 to 9999

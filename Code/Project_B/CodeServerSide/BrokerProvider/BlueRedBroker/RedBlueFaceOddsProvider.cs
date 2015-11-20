@@ -31,12 +31,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.BlueRedBroker {
                     var participantsShortName = matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddCompetitorsShortName]].Value
                         .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
                     var participantsFullName = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsParticipants]);
-                    if (participantsFullName.Count != 2) {
-                        Logger.Error("participants full name count = " + participantsFullName.Count);
-                    }
-                    if (participantsShortName.Length != 2) {
-                        Logger.Error("participants full name count = " + participantsFullName.Count);
-                    }
                     string date = null;
                     var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsDate]);
                     if (dateBlock.Any()) {
@@ -136,7 +130,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.BlueRedBroker {
         public BrokerData LoadLive(SportType sportType, LanguageType language) {
             var url = FormatUrl(SectionName.UrlLiveTarget, new {
                 lang = GetLanguageParam(language)
-            });//CurrentConfiguration.StringSimple[SectionName.UrlLiveTarget];
+            });
             return new BrokerData {
                 Competitions = BuildCompetitions(LoadPage(url)),
                 Broker = BrokerType,
@@ -150,9 +144,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.BlueRedBroker {
                     CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]),
                 lang = GetLanguageParam(language)
             });
-                /*string.Format(CurrentConfiguration.StringSimple[SectionName.UrlOddsTarget], 
-                    GetParamValueForCompetition(sportType, CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam], 
-                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]));*/
             return new BrokerData {
                 Competitions = BuildCompetitions(LoadPage(url)),
                 Broker = BrokerType,

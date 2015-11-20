@@ -80,7 +80,7 @@ namespace Project_B.CodeServerSide {
         }
 
         public IResultHistoryProvider GetHistoryProvider(BrokerType brokerType) {
-            return brokerType == BrokerType.Unknown ? _resultsProviders.Values.First() : _resultsProviders[brokerType];
+            return brokerType == BrokerType.Default ? _resultsProviders.Values.First() : _resultsProviders[brokerType];
         }
     }
 }

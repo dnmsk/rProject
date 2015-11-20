@@ -1,8 +1,10 @@
-﻿namespace Project_B.CodeServerSide.Enums {
-    public enum BrokerType : short {
-        Unknown = 0,
-        RedBlue = 1,
+﻿using System;
 
-        Default = short.MaxValue
+namespace Project_B.CodeServerSide.Enums {
+    [Flags]
+    public enum BrokerType : short {
+        Default = 0,
+        RedBlue = 0x01,
+
     }
 }

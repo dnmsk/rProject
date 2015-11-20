@@ -313,6 +313,7 @@
     <Compile Include="CodeServerSide\Entity\StaticPage.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateBet.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateResult.cs" />
+    <Compile Include="CodeServerSide\Entity\View\VwBetRoiDetail.cs" />
     <Compile Include="CodeServerSide\Enums\BetOddType.cs" />
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />

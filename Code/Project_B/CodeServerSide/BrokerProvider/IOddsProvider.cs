@@ -1,4 +1,5 @@
 ﻿using CommonUtils.Code;
+using Project_B.CodeServerSide.BrokerProvider.Configuration;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Enums;
 
@@ -7,5 +8,6 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         BrokerData LoadLive(SportType sportType, LanguageType language);
         BrokerData LoadRegular(SportType sportType, LanguageType language);
         WebRequestHelper RequestHelper { get; }
+        BrokerConfiguration CurrentConfiguration { get; }
     }
 }

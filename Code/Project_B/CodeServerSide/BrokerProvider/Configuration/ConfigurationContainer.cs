@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
                 foreach (XmlNode brokerNode in xmlDoc.SelectNodes(".//Broker")) {
                     var brokerName = brokerNode.Attributes["Name"].InnerText;
                     BrokerType brokerType;
-                    if (!Enum.TryParse(brokerName, out brokerType) || brokerType == BrokerType.Unknown) {
+                    if (!Enum.TryParse(brokerName, out brokerType) || brokerType == BrokerType.Default) {
                         continue;
                     }
                     newConfiguration[brokerType] = new BrokerConfiguration(brokerNode);
