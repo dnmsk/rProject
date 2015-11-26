@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Project_B.CodeServerSide.BrokerProvider {
+namespace Project_B.CodeServerSide.BrokerProvider.Helper {
     public class DateTimeToGmtFixer {
         private readonly short _deltaFromGmt;
 

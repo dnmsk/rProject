@@ -9,5 +9,7 @@ namespace Project_B.CodeServerSide.Enums {
         Basketball = 0x004,
         IceHockey = 0x008,
         Volleyball = 0x010,
+
+        All = Football | Tennis | Basketball | IceHockey | Volleyball
     }
 }

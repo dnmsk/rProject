@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CommonUtils.Core.Logger;
 
-namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
+namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
     public class SimpleConfiguration<K, V> : Dictionary<K, V> {
         /// <summary>
         /// Логгер.

@@ -10,7 +10,7 @@ namespace Project_B.CodeServerSide.Data {
         public string CompetitorNameShortTwo { get; set; }
         public string CompetitorNameFullTwo { get; set; }
         public DateTime DateUtc { get; set; }
-        public List<OddParsed> Odds { get; set; }
+        public List<OddParsed> Odds { get; }
         public FullResult Result { get; set; }
 
         public MatchParsed() {

@@ -2,7 +2,7 @@
 using System.Linq;
 using HtmlAgilityPack;
 
-namespace Project_B.CodeServerSide.BrokerProvider.HtmlDataExtractor {
+namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
     public class HtmlBlockHelper {
         private readonly HtmlDocument _htmlDoc;
         public HtmlBlockHelper(string html) {

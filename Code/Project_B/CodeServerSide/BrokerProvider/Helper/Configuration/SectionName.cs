@@ -1,4 +1,4 @@
-﻿namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
+﻿namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
     public enum SectionName : short {
         AaundefinedDefault = 0,
 
@@ -7,6 +7,7 @@
         UrlLiveTarget = 2,
         UrlOddsTarget = 3,
         UrlResultTarget = 4,
+        UrlKab = 5,
 
         StringFaviconTarget = 50,
 
@@ -20,7 +21,7 @@
         XPathToEventInList = 1004,
         XPathToOddsParticipants = 1005,
         XPathToOddsDate = 1006,
-        XPathToOddsLiveResult = 1007,
+        //XPathToOddsLiveResult = 1007,
         XPathToOddsFactor = 1008,
         XPathToEventResult = 1009,
         XPathToResultParticipants = 1010,
@@ -36,12 +37,15 @@
         StringOddConfirmation = 10004,
         StringOddBrokerID = 10005,
         StringOddCompetitorsShortName = 10006,
+        StringMatchRow = 10007,
+        StringCompetitionRow = 10008,
 
         //Array Reserve from 15000 to 19999
         ArrayParticipantsSplitter = 15000,
         ArrayCookie = 15001,
         ArrayProxy = 15002,
         ArrayDateTimeFormat = 15003,
+        ArrayBadStartParticipants = 15004,
 
         //Map Reserve from 30000 to Max
         MapStringsOddsParam = 30000,

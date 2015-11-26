@@ -5,7 +5,7 @@ using CommonUtils.WatchfulSloths.KangooCache;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide;
-using Project_B.CodeServerSide.BrokerProvider.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 
@@ -29,7 +29,7 @@ namespace Project_B.CodeClientSide.Helper {
                                     IconClass = _classPrefix
                                 };
                                 cache[pageTransport.BrokerType] = brokerPageIcon;
-                                var oddsProvider = BookPage.Instance.GetOddsProvider(pageTransport.BrokerType);
+                                var oddsProvider = BookPage.Instance.GetBrokerProvider(pageTransport.BrokerType);
                                 var url = oddsProvider.CurrentConfiguration.StringSimple[SectionName.StringFaviconTarget];
                                 if (url.IsNullOrEmpty()) {
                                     continue;

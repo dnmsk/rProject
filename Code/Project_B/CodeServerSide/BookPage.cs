@@ -7,7 +7,7 @@ using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.BrokerProvider;
-using Project_B.CodeServerSide.BrokerProvider.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide {
@@ -16,8 +16,7 @@ namespace Project_B.CodeServerSide {
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (BookPage).FullName);
-        private readonly Dictionary<BrokerType, IOddsProvider> _oddsProviders = new Dictionary<BrokerType, IOddsProvider>(); 
-        private readonly Dictionary<BrokerType, IResultHistoryProvider> _resultsProviders = new Dictionary<BrokerType, IResultHistoryProvider>(); 
+        private readonly Dictionary<BrokerType, BrokerBase> _brokerProviders = new Dictionary<BrokerType, BrokerBase>(); 
 
         public BookPage() {
             var currentBrokerProviderTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -25,14 +24,12 @@ namespace Project_B.CodeServerSide {
                     try {
                         var type = assembly.GetTypes();
                         return type;
-                    }
-                    catch (ReflectionTypeLoadException ex) {
+                    } catch (ReflectionTypeLoadException ex) {
                         _logger.Error(ex);
                         foreach (var loaderException in ex.LoaderExceptions) {
                             _logger.Error(loaderException);
                         }
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         _logger.Error(ex);
                     }
                     return null;
@@ -44,19 +41,11 @@ namespace Project_B.CodeServerSide {
             var webRequestHelper = new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]) {
                 Proxy = globalConfiguration.StringArray[SectionName.ArrayProxy].First()
             };
-            var availableBrokerType = new List<BrokerType>();
             foreach (var brokerProviderType in currentBrokerProviderTypes) {
                 var instance = (BrokerBase)Activator.CreateInstance(brokerProviderType, webRequestHelper);
-                if (typeof (IOddsProvider).IsAssignableFrom(brokerProviderType)) {
-                    _oddsProviders.Add(instance.BrokerType, (IOddsProvider)instance);
-                } else if (typeof (IResultHistoryProvider).IsAssignableFrom(brokerProviderType)) {
-                    _resultsProviders.Add(instance.BrokerType, (IResultHistoryProvider)instance);
-                }
-                if (!availableBrokerType.Contains(instance.BrokerType)) {
-                    availableBrokerType.Add(instance.BrokerType);
-                }
+                _brokerProviders.Add(instance.BrokerType, instance);
             }
-            foreach (var brokerType in availableBrokerType) {
+            foreach (var brokerType in _brokerProviders.Keys) {
                 var brokerConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[brokerType];
                 var domain = brokerConfiguration.StringSimple[SectionName.Domain];
                 var cookies = brokerConfiguration.StringArray[SectionName.ArrayCookie];
@@ -74,13 +63,9 @@ namespace Project_B.CodeServerSide {
                 }
             }
         }
-
-        public IOddsProvider GetOddsProvider(BrokerType brokerType) {
-            return _oddsProviders[brokerType];
-        }
-
-        public IResultHistoryProvider GetHistoryProvider(BrokerType brokerType) {
-            return brokerType == BrokerType.Default ? _resultsProviders.Values.First() : _resultsProviders[brokerType];
+        
+        public BrokerBase GetBrokerProvider(BrokerType brokerType) {
+            return brokerType == BrokerType.Default ? _brokerProviders.Values.First() : _brokerProviders[brokerType];
         }
     }
 }

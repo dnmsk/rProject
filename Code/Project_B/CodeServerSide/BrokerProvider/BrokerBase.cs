@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Script.Serialization;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using Project_B.CodeServerSide.BrokerProvider.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Enums;
 
@@ -16,39 +18,46 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         /// </summary>
         protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof (BrokerBase).FullName);
 
+        protected static readonly JavaScriptSerializer JavaScriptSerializer = new JavaScriptSerializer {
+            MaxJsonLength = 99999999,
+            RecursionLimit = 9999
+        };
+
         public WebRequestHelper RequestHelper { get; }
-        protected static readonly JavaScriptSerializer JavaScriptSerializer = new JavaScriptSerializer();
-
-        public string Url { get; private set; }
-
         public abstract BrokerType BrokerType { get; }
+        public abstract BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language);
+        public abstract BrokerData LoadLive(SportType sportType, LanguageType language);
+        public abstract BrokerData LoadRegular(SportType sportType, LanguageType language);
+        public BrokerConfiguration CurrentConfiguration => ConfigurationContainer.Instance.BrokerConfiguration[BrokerType];
 
-        public BrokerConfiguration CurrentConfiguration {
-            get { return ConfigurationContainer.Instance.BrokerConfiguration[BrokerType]; }
+        protected BrokerBase(WebRequestHelper requestHelper) {
+            RequestHelper = requestHelper;
         }
 
-        public BrokerBase(WebRequestHelper requestHelper) {
-            RequestHelper = requestHelper;
+        protected static DateTime LinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+
+        protected static List<string> FormatCompetitionName(string competitionName) {
+            return competitionName.RemoveAllTags()
+                                  .Replace("&nbsp;", " ")
+                                  .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(s => s.Trim())
+                                  .ToList();
         }
         
         protected string LoadPage(string url, string postData = null, string contentType = null) {
             try {
-                Url = url;
                 var loadResult = RequestHelper.GetContent(url, postData, contentType);
                 if (loadResult.Item1 != HttpStatusCode.OK) {
                     Logger.Error("status = " + loadResult.Item1);
                 }
                 return loadResult.Item2;
-
             }
             catch (Exception ex) {
-                Logger.Error("url: {0} \r\n" + ex);
+                Logger.Error("url: {0} \r\n" + ex, url);
             }
             return null;
         }
-
-        public abstract List<CompetitionParsed> BuildCompetitions(string htmlContent);
-
+        
         protected static string GetParamValueForCompetition(SportType sportType, Dictionary<string, string> srcDict, string strJoinDelim) {
             var listParams = new List<string>();
             foreach (var competition in srcDict) {
@@ -71,6 +80,25 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 languageParam = "en";
             }
             return languageParam;
+        }
+
+        protected DateTime ParseDateTime(string date) {
+            date = date.ToLower().Replace("мая", "май");
+            var defaultDateTime = DateTime.MinValue;
+            foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]) {
+                var dateTime = StringParser.ToDateTime(date, defaultDateTime, dateTimeFormat);
+                if (!dateTime.Equals(defaultDateTime)) {
+                    return dateTime;
+                }
+            }
+            return defaultDateTime;
+        }
+
+        protected static Dictionary<string, object> ToD(object obj) {
+            return (Dictionary<string, object>)obj;
+        }
+        protected static object[] ToA(object obj) {
+            return (object[])obj;
         }
     }
 }

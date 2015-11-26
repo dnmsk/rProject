@@ -14,6 +14,7 @@
         HeaderLogin = 19,
 
         FooterSiteLanguage = 50,
+        FooterAdminEmail = 51,
 
         SubHeaderAllCompetitions = 100,
 

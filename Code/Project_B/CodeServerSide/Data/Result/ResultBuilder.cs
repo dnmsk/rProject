@@ -1,9 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using CommonUtils.Core.Logger;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Data.Result {
     public static class ResultBuilder {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (ResultBuilder).FullName);
+
         public static FullResult BuildResultFromString(SportType sportType, string resString) {
             FullResult result ;
             switch (sportType) {
@@ -34,7 +41,7 @@ namespace Project_B.CodeServerSide.Data.Result {
                     result = BuildFootballResult(resString);
                     break;
                 default:
-                    result = null;
+                    result = BuildFullResult(resString);
                     break;
             }
             return result;
@@ -57,15 +64,21 @@ namespace Project_B.CodeServerSide.Data.Result {
         }
 
         private static FullResult BuildFullResult(string resString) {
-            var tempResult = ParseStringToSimpleResults(resString).ToList();
-            var fullResult = new FullResult {
-                CompetitorResultOne = tempResult[0].CompetitorResultOne,
-                CompetitorResultTwo = tempResult[0].CompetitorResultTwo
-            };
-            for (var i = 1; i < tempResult.Count; i++) {
-                fullResult.SubResult.Add(tempResult[i]);
+            try {
+                var tempResult = ParseStringToSimpleResults(resString).ToList();
+                var fullResult = new FullResult {
+                    CompetitorResultOne = tempResult[0].CompetitorResultOne,
+                    CompetitorResultTwo = tempResult[0].CompetitorResultTwo
+                };
+                for (var i = 1; i < tempResult.Count; i++) {
+                    fullResult.SubResult.Add(tempResult[i]);
+                }
+                return fullResult;
             }
-            return fullResult;
+            catch (Exception ex) {
+                _logger.Error(ex);
+            }
+            return null;
         }
 
         private static readonly Dictionary<char, short> _charToDigit = new Dictionary<char, short> {
@@ -113,6 +126,7 @@ namespace Project_B.CodeServerSide.Data.Result {
                     case '>':
                         canDetectDidit = true;
                         break;
+                    case '-':
                     case ':':
                         if (canDetectDidit) {
                             isFirstDigitCollect = true;

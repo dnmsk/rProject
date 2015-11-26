@@ -1,4 +1,4 @@
-﻿namespace Project_B.CodeServerSide.BrokerProvider.HtmlDataExtractor {
+﻿namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
     public class XPathQuery {
         private readonly string _xPath;
 

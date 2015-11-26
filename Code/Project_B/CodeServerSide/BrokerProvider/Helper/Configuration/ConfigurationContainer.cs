@@ -4,7 +4,7 @@ using CommonUtils.Core.Config;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
+namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
     public class ConfigurationContainer : Singleton<ConfigurationContainer> {
         private const string _brokerConfigurationFileName = "Broker.xml";
 
@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
                 foreach (XmlNode brokerNode in xmlDoc.SelectNodes(".//Broker")) {
                     var brokerName = brokerNode.Attributes["Name"].InnerText;
                     BrokerType brokerType;
-                    if (!Enum.TryParse(brokerName, out brokerType) || brokerType == BrokerType.Default) {
+                    if (!Enum.TryParse(brokerName, out brokerType)) {
                         continue;
                     }
                     newConfiguration[brokerType] = new BrokerConfiguration(brokerNode);

@@ -4,14 +4,15 @@
 @model Project_B.Models.StaticPageBaseModel
 @{
     var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
+    var email = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterAdminEmail);
 }
 <footer>
-<p class="pull-right">&copy; @DateTime.UtcNow.Year - dnmsk</p>
+    <span class="pull-right text-right">Email: <a href="mailto:@email">@email</a><br/>&copy; @DateTime.UtcNow.Year</span>
     @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterSiteLanguage):
     @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
         var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);
         var isoPart = "/" + languageName.Item2;
         <a href="@(isoPart + Url.Action(ViewContext.RouteData.Values["action"] as string, ViewContext.RouteData.Values["controller"] as string, new {id = ViewContext.RouteData.Values["id"]})
-                    .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'") }>@languageName.Item1</a>
+                            .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'")  }>@languageName.Item1</a>
     }
 </footer>

@@ -5,6 +5,6 @@ namespace Project_B.CodeServerSide.Enums {
     public enum BrokerType : short {
         Default = 0,
         RedBlue = 0x01,
-
+        GrayBlue = 0x02,
     }
 }

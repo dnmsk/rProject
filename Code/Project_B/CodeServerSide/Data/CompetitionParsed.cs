@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Data {
     public class CompetitionParsed {
-        public SportType Type { get; set; }
-        public List<string> Name { get; set; }
-        public List<MatchParsed> Matches { get; set; }
+        public SportType Type { get; }
+        public List<string> Name { get; }
+        public List<MatchParsed> Matches { get; }
 
-        public CompetitionParsed() {
-            Name = new List<string>();
+        public CompetitionParsed(List<string> competitionName) {
+            Name = competitionName;
+            Type = SportTypeHelper.Instance[competitionName];
             Matches = new List<MatchParsed>();
         }
     }

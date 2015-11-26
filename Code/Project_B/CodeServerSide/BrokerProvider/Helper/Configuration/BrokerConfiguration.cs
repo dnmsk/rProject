@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Xml;
 using CommonUtils.Core.Logger;
-using Project_B.CodeServerSide.BrokerProvider.HtmlDataExtractor;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
 
-namespace Project_B.CodeServerSide.BrokerProvider.Configuration {
+namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
     public class BrokerConfiguration {
         /// <summary>
         /// Логгер.

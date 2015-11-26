@@ -25,11 +25,17 @@ namespace Project_B {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
                     },
                     new BrokerAlgoLauncher(BrokerType.RedBlue, 
-                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor /*| GatherBehaviorMode.CreateIfEmptyToDate*/, 
+                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, 
                                            LanguageType.Russian,
                                            RunTaskMode.RunPastDateHistoryTask) {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
-                    },
+                    },/*
+                    new BrokerAlgoLauncher(BrokerType.GrayBlue, 
+                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, 
+                                           LanguageType.English,
+                                           RunTaskMode.RunPastDateHistoryTask) {
+                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
+                    },*/
                 };
                 _taskObjects.Each(t => t.Schedule());
             }
