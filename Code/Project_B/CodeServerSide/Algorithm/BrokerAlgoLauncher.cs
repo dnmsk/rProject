@@ -14,10 +14,10 @@ namespace Project_B.CodeServerSide.Algorithm {
         private readonly RunTaskMode _runTaskMode;
         private readonly SportType _sportType;
         
-        public TimeSpan TodayHistoryTaskTimespan = new TimeSpan(1, 0, 0);
-        public TimeSpan PastDateHistoryTaskTimespan = new TimeSpan(4, 0, 0);
-        public TimeSpan LiveOddsTaskTimespan = new TimeSpan(0, 0, 15);
-        public TimeSpan RegularOddsTaskTimespan = new TimeSpan(0, 5, 0);
+        public TimeSpan TodayHistoryTaskTimespan = TimeSpan.FromHours(1);
+        public TimeSpan PastDateHistoryTaskTimespan = TimeSpan.FromHours(4);
+        public TimeSpan LiveOddsTaskTimespan = TimeSpan.FromSeconds(30);
+        public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(5);
 
         public BrokerAlgoLauncher(BrokerType brokerType, LanguageType languageType, GatherBehaviorMode algoMode, RunTaskMode runTaskMode = RunTaskMode.Default, SportType sportType = SportType.All) {
             _brokerType = brokerType;

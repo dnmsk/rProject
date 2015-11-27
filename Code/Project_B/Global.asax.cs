@@ -21,17 +21,18 @@ namespace Project_B {
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, 
                                 GatherBehaviorMode.CreateIfNew, 
                                 RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
-                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
                     },
                     new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, 
                                 GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, 
                                 RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
-                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
+                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1),
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(6)
                     },
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian, 
                                 GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor,
-                                RunTaskMode.RunPastDateHistoryTask) {
-                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
+                                RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunTodayHistoryTask) {
+                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1),
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(6)
                     },
                 };
                 _taskObjects.Each(t => t.Schedule());
