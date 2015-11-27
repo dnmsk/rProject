@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -49,24 +50,29 @@ namespace Project_B.CodeServerSide.DataProvider {
 
 
         private static void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {
+            var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
             var lastResult = CompetitionResultLive.DataSource
                 .Join(JoinType.Left, CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, CompetitionResultLive.Fields.ID, RetrieveMode.Retrieve)
                 .WhereEquals(CompetitionResultLive.Fields.CompetitionitemID, competitionItemID)
+                .WhereEquals(CompetitionResultLive.Fields.ScoreID, generateScoreID)
                 .Sort(CompetitionResultLive.Fields.ID, SortDirection.Desc)
                 .Sort(CompetitionResultLiveAdvanced.Fields.ID, SortDirection.Desc)
-                .First();
-            var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
-            if (lastResult == null || generateScoreID != lastResult.ScoreID) {
-                lastResult = new CompetitionResultLive {
+                .AsList(
+                    CompetitionResultLive.Fields.ScoreID,
+                    CompetitionResultLiveAdvanced.Fields.ScoreID,
+                    CompetitionResultLiveAdvanced.Fields.Advancedparam
+                );
+            if (lastResult.Count == 0) {
+                var competitionResultLive = new CompetitionResultLive {
                     CompetitionitemID = competitionItemID,
                     ScoreID = generateScoreID,
                     Datecreatedutc = DateTime.UtcNow
                 };
-                lastResult.Save();
+                lastResult.Add(competitionResultLive);
+                competitionResultLive.Save();
             }
-            var lastAdvancedResult = lastResult.GetJoinedEntity<CompetitionResultLiveAdvanced>();
             LiveResultProcFactory.GetLiveResultProc(sportType)
-                                 .Process(lastResult, lastAdvancedResult, result);
+                                 .Process(lastResult, result);
         }
 
         private static void ProcessLiveOdds(int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> odds) {
@@ -75,7 +81,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }
             var betWithAdvancedDb = BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.BetliveID, BetLive.Fields.ID, RetrieveMode.Retrieve)
-                .WhereEquals(BetLive.Fields.BrokerID, (short) brokerType)
+                .WhereEquals(BetLive.Fields.BrokerID, (int) brokerType)
                 .WhereEquals(BetLive.Fields.CompetitionitemID, competitionItemID)
                 .Sort(BetLive.Fields.ID, SortDirection.Desc)
                 .Sort(BetLiveAdvanced.Fields.ID, SortDirection.Desc)

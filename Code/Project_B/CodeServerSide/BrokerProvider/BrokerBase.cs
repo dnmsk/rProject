@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,11 +16,12 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         /// Логгер.
         /// </summary>
         protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof (BrokerBase).FullName);
-
         protected static readonly JavaScriptSerializer JavaScriptSerializer = new JavaScriptSerializer {
             MaxJsonLength = 99999999,
             RecursionLimit = 9999
         };
+        protected static DateTime LinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+        protected static DateTime LinuxLocal => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Local);
 
         public WebRequestHelper RequestHelper { get; }
         public abstract BrokerType BrokerType { get; }
@@ -33,9 +33,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         protected BrokerBase(WebRequestHelper requestHelper) {
             RequestHelper = requestHelper;
         }
-
-        protected static DateTime LinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-
+        
         protected static List<string> FormatCompetitionName(string competitionName) {
             return competitionName.RemoveAllTags()
                                   .Replace("&nbsp;", " ")
@@ -51,8 +49,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     Logger.Error("status = " + loadResult.Item1);
                 }
                 return loadResult.Item2;
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Logger.Error("url: {0} \r\n" + ex, url);
             }
             return null;

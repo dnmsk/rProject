@@ -61,7 +61,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var systemState = SystemStateResult.DataSource
                     .Where(new DbFnSimpleOp(SystemStateResult.Fields.Stateresult, FnMathOper.BitwiseAnd, (short)pastDateType), Oper.Eq, default(short))
                     .Where(SystemStateResult.Fields.Dateutc, Oper.Less, DateTime.UtcNow.Date.AddDays(-1))
-                    .WhereEquals(SystemStateResult.Fields.BrokerID, (short)brokerType)
+                    .WhereEquals(SystemStateResult.Fields.BrokerID, (int)brokerType)
                     .WhereEquals(SystemStateResult.Fields.Languagetype, (short)languageType)
                     .Sort(SystemStateResult.Fields.Dateutc, SortDirection.Asc)
                     .First();
@@ -74,7 +74,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 dateUtc = dateUtc.Date;
                 var systemState = SystemStateResult.DataSource
                     .WhereEquals(SystemStateResult.Fields.Dateutc, dateUtc)
-                    .WhereEquals(SystemStateResult.Fields.BrokerID, (short) brokerType)
+                    .WhereEquals(SystemStateResult.Fields.BrokerID, (int) brokerType)
                     .WhereEquals(SystemStateResult.Fields.Languagetype, (short) languageType)
                     .First();
                 if (systemState == null) {

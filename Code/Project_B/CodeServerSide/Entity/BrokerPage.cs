@@ -70,7 +70,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Brokertype,
+            [DBField(DbType.Int32)] Brokertype,
 
         /// <summary>
         /// 
@@ -188,7 +188,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
         public BrokerType Brokertype {
-            get { return (BrokerType) ((short?) this[Fields.Brokertype] ?? default(short)); }
+            get { return (BrokerType) ((int?) this[Fields.Brokertype] ?? default(int)); }
             set { ForceSetData(Fields.Brokertype, value); }
         }
 

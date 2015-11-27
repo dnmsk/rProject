@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.Entity;
@@ -11,17 +12,22 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Pr
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (TennisLiveResultProcessor).FullName);
 
-        public void Process(CompetitionResultLive lastResult, CompetitionResultLiveAdvanced lastAdvancedResult, FullResult result) {
+        public void Process(List<CompetitionResultLive> lastResultList, FullResult result) {
             var totalSubResults = result.SubResult.Count;
             if (result.SubResult == null || totalSubResults <= 1) {
                 return;
             }
             var setSubResult = result.SubResult[totalSubResults - 2];
             var generateScoreID = ScoreHelper.Instance.GenerateScoreID(setSubResult.CompetitorResultOne, setSubResult.CompetitorResultTwo);
-            if (lastAdvancedResult == null || lastAdvancedResult.ScoreID != generateScoreID) {
+            var lastResult = lastResultList.FirstOrDefault(lr => {
+                var lra = lr.GetJoinedEntity<CompetitionResultLiveAdvanced>();
+                return lra != null && lra.ScoreID == generateScoreID;
+            });
+            var lastAdvancedResult = lastResult?.GetJoinedEntity<CompetitionResultLiveAdvanced>();
+            if (lastAdvancedResult == null) {
                 lastAdvancedResult = new CompetitionResultLiveAdvanced {
                     ScoreID = generateScoreID,
-                    CompetitionresultliveID = lastResult.ID,
+                    CompetitionresultliveID = lastResultList.First().ID,
                     Datecreatedutc = DateTime.UtcNow,
                     Advancedparam = GetServeBit(setSubResult.Serve)
                 };

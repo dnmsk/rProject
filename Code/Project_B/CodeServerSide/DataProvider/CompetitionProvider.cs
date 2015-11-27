@@ -149,7 +149,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value >= .4 && 
+                if (orderedCompetitionCoeffs.First().Value > .5 && 
                         (orderedCompetitionCoeffs.Count == 1 || 
                          orderedCompetitionCoeffs.Count > 1 && (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;

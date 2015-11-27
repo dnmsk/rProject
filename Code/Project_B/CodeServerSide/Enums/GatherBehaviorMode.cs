@@ -7,6 +7,6 @@ namespace Project_B.CodeServerSide.Enums {
         CreateIfNew = 0x01,
         CreateIfEmptyToDate = 0x02,
         CanDetectCompetition = 0x04,
-        CanDetectCompetitor = 0x08,
+        CanDetectCompetitor = 0x08
     }
 }

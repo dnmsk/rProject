@@ -1,17 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.Entity;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Proc {
     public class VolleyballLiveResultProcessor : ILiveResultProc {
-        public void Process(CompetitionResultLive lastResult, CompetitionResultLiveAdvanced lastAdvancedResult, FullResult result) {
+        public void Process(List<CompetitionResultLive> lastResultList, FullResult result) {
             if (result.SubResult == null || result.SubResult.Count == 0) {
                 return;
             }
             var lastSubResult = result.SubResult.Last();
             var generateScoreID = ScoreHelper.Instance.GenerateScoreID(lastSubResult.CompetitorResultOne, lastSubResult.CompetitorResultTwo);
-            if (lastAdvancedResult == null || lastAdvancedResult.ScoreID != generateScoreID) {
+
+            var lastResult = lastResultList.FirstOrDefault(lr => {
+                var lra = lr.GetJoinedEntity<CompetitionResultLiveAdvanced>();
+                return lra != null && lra.ScoreID == generateScoreID;
+            });
+            var lastAdvancedResult = lastResult?.GetJoinedEntity<CompetitionResultLiveAdvanced>();
+            if (lastAdvancedResult == null) {
                 lastAdvancedResult = new CompetitionResultLiveAdvanced {
                     ScoreID = generateScoreID,
                     CompetitionresultliveID = lastResult.ID,

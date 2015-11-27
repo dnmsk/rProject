@@ -18,16 +18,13 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, 
-                                           GatherBehaviorMode.CreateIfNew, 
-                                           LanguageType.English,
-                                           RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.CreateIfNew, RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0),
                     },
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, 
-                                           GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, 
-                                           LanguageType.Russian,
-                                           RunTaskMode.RunPastDateHistoryTask) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian, GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, RunTaskMode.RunPastDateHistoryTask) {
+                        PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
+                    },
+                    new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, RunTaskMode.RunPastDateHistoryTask) {
                         PastDateHistoryTaskTimespan = new TimeSpan(0, 1, 0)
                     },/*
                     new BrokerAlgoLauncher(BrokerType.GrayBlue, 

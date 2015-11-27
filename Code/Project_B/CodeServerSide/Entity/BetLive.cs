@@ -30,7 +30,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] BrokerID,
+            [DBField(DbType.Int32)] BrokerID,
 
         /// <summary>
         /// 
@@ -109,7 +109,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
         public BrokerType BrokerID {
-            get { return (BrokerType) (short) this[Fields.BrokerID]; }
+            get { return (BrokerType) (int) this[Fields.BrokerID]; }
             set { ForceSetData(Fields.BrokerID, value); }
         }
 

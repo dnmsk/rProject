@@ -43,7 +43,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                             continue;
                         }
                         internalCompetitionItemIDToCompetitionParsed[(int) dataRowJson[0]] = new MatchParsed {
-                            DateUtc = LinuxUtc.AddSeconds((int) dataRowJson[2]),
+                            DateUtc = LinuxLocal.ToUniversalTime().AddSeconds((int) dataRowJson[2]),
                             Result = ResultBuilder.BuildResultFromString(SportType.Unknown, (string) dataRowJson[4]),
                             CompetitorNameShortOne = competitorsName.Item1,
                             CompetitorNameShortTwo = competitorsName.Item2
@@ -120,7 +120,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         var matchParsed = new MatchParsed {
                             CompetitorNameFullOne = (string) map["team1"],
                             CompetitorNameFullTwo = (string) map["team2"],
-                            DateUtc = LinuxUtc.AddSeconds((int) map["startTime"]),
+                            DateUtc = LinuxLocal.ToUniversalTime().AddSeconds((int) map["startTime"]),
                             BrokerMatchID = (int) map["id"]
                         };
                         matchesDict[matchParsed.BrokerMatchID] = matchParsed;

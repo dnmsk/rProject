@@ -10,6 +10,7 @@ namespace UnitTestProject.Unit.ProjectB {
         [TestCase(0, 0, 3, 0)]
         [TestCase(0x01, 0x01, 4, 1)]
         [TestCase(0x01, 0, 0, 1)]
+        [TestCase(0x01, 0x01, 0, 1)]
         [TestCase(0x03, 0x01, 0, 2)]
         [TestCase(0x07, 0x03, 0, 3)]
         [TestCase(0x08, 0, 3, 1)]
