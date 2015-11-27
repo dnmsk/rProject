@@ -37,16 +37,15 @@ namespace Project_B.CodeClientSide.Helper {
                                 SlothMovePlodding.AddAction(() => {
                                     var data = oddsProvider.RequestHelper.GetContentRaw(url);
                                     if (data.Item1 == HttpStatusCode.OK) {
-                                        string currentClassName;
                                         lock (cache) {
-                                            currentClassName = _classPrefix + _incr++;
+                                            var currentClassName = _classPrefix + _incr++;
+                                            brokerPageIcon.IconClass += " " + currentClassName;
+                                            var base64 = Convert.ToBase64String(data.Item2);
+                                            SquishItMinifierStatic.Instance
+                                                                    .Css(BOOKMAKER_S)
+                                                                    .AddString(string.Format(".{0}{{background-image:url(\"data:image/png;base64,{1}\");}}", currentClassName, base64))
+                                                                    .AsCached(BOOKMAKER_S);
                                         }
-                                        brokerPageIcon.IconClass += " " + currentClassName;
-                                        var base64 = Convert.ToBase64String(data.Item2);
-                                        SquishItMinifierStatic.Instance
-                                                                .Css(BOOKMAKER_S)
-                                                                .AddString(string.Format(".{0}{{background-image:url(\"data:image/png;base64,{1}\");}}", currentClassName, base64))
-                                                                .AsCached(BOOKMAKER_S);
                                     }
                                 });
                             }
@@ -55,7 +54,7 @@ namespace Project_B.CodeClientSide.Helper {
                 });
             SquishItMinifierStatic.Instance
                                   .Css(BOOKMAKER_S)
-                                  .AddString(string.Format(".{0}{{display:inline-block;width:18px;height:18px;vertical-align:text-bottom;}}", _classPrefix))
+                                  .AddString(string.Format(".{0}{{display:inline-block;width:18px;height:18px;vertical-align:text-bottom;background-position: center center;background-repeat: no-repeat;}}", _classPrefix))
                                   .AsCached(BOOKMAKER_S);
         }
 

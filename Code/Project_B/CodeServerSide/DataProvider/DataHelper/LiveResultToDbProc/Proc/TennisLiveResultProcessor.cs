@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonUtils.Core.Logger;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.Entity;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Proc {
     public class TennisLiveResultProcessor : ILiveResultProc {
-        /// <summary>
-        /// Логгер.
-        /// </summary>
-        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (TennisLiveResultProcessor).FullName);
-
         public void Process(List<CompetitionResultLive> lastResultList, FullResult result) {
             var totalSubResults = result.SubResult.Count;
             if (result.SubResult == null || totalSubResults <= 1) {
@@ -80,12 +74,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Pr
         }; 
 
         private static short GetInternalScore(short score) {
-            try {
-                return _scoreRealToDb[score];
-            } catch (Exception ex) {
-                _logger.Error("score = {0}", score);
-            }
-            return score;
+            short s;
+            return _scoreRealToDb.TryGetValue(score, out s) ? s : score;
         }
 
         public static short GetServeBit(Serve serve) {
