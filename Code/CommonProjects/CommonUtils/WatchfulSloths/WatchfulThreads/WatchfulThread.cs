@@ -3,6 +3,7 @@ using System.Threading;
 using CommonUtils.Core.Logger;
 
 namespace CommonUtils.WatchfulSloths.WatchfulThreads {
+    //TODO SIGNALS!!!
     public class WatchfulThread {
         /// <summary>
         /// Логгер.
@@ -54,7 +55,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                     _onWorkDoneAction(this);
                     continue;
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(10);
             }
         }
     }

@@ -27,7 +27,6 @@ namespace MainLogic.WebFiles {
 
         public UtmParamWrapper UtmParam { get; private set; }
 
-
         /// <summary>
         /// базовая модель
         /// </summary>

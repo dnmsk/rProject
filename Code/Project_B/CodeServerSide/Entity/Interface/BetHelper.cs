@@ -38,7 +38,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                         break;
                     case BetOddType.Handicap1:
                         newBet.Hcap1 = odd.Factor;
-                        newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
+                        //newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
                         hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap2:
