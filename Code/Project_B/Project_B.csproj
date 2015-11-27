@@ -250,6 +250,7 @@
     <Compile Include="CodeServerSide\DataProvider\CompetitionProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitorProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionHelper.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionProcessorStatic.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\GenderDetectorHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\LanguageTypeHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\LiveResultToDbProc\LiveResultProcFactory.cs" />

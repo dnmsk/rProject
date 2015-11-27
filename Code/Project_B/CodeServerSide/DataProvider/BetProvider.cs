@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
@@ -19,17 +21,8 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void SaveRegular(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
-                foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = ProjectProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
-                    foreach (var matchParsed in competitionParsed.Matches) {
-                        var competitor1 = ProjectProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, algoMode);
-                        var competitor2 = ProjectProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, algoMode);
-                        var competitionItem = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
-                        AddBetParsed(competitionItem, brokerData.Broker, competitionParsed.Type, matchParsed.Odds);
-                    }
-                }
+                CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
+                    (type, sportType, competitionItemID, matchParsed) => AddBetParsed(competitionItemID, type, sportType, matchParsed.Odds));
             });
         }
 

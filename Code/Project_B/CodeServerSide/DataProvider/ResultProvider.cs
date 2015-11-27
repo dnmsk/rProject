@@ -22,7 +22,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void SaveResults(int competitionItemID, SportType sportType, FullResult fullResult) {
             InvokeSafeSingleCall(() => {
-                if (competitionItemID == default(int)) {
+                if (competitionItemID == default(int) || fullResult == null) {
                     return null;
                 }
                 if (!CompetitionResult.DataSource

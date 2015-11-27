@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
@@ -68,7 +69,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxwin1broker,
+            [DBField(DbType.Int32)] Maxwin1broker,
 
         /// <summary>
         /// 
@@ -78,7 +79,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxwin2broker,
+            [DBField(DbType.Int32)] Maxwin2broker,
 
         /// <summary>
         /// 
@@ -88,7 +89,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxdrawbroker,
+            [DBField(DbType.Int32)] Maxdrawbroker,
 
         /// <summary>
         /// 
@@ -98,7 +99,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxwin1drawbroker,
+            [DBField(DbType.Int32)] Maxwin1drawbroker,
 
         /// <summary>
         /// 
@@ -118,7 +119,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxdrawwin2broker,
+            [DBField(DbType.Int32)] Maxdrawwin2broker,
 
         /// <summary>
         /// 
@@ -128,7 +129,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxhcap1broker,
+            [DBField(DbType.Int32)] Maxhcap1broker,
 
         /// <summary>
         /// 
@@ -143,7 +144,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxhcap2broker,
+            [DBField(DbType.Int32)] Maxhcap2broker,
 
         /// <summary>
         /// 
@@ -158,7 +159,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxtotalunderbroker,
+            [DBField(DbType.Int32)] Maxtotalunderbroker,
 
         /// <summary>
         /// 
@@ -173,7 +174,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxtotaloverbroker,
+            [DBField(DbType.Int32)] Maxtotaloverbroker,
 
         /// <summary>
         /// 
@@ -223,7 +224,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public float Roi1x2 => (float?) this[Fields.Roi1x2] ?? default(float);
+        public float Roi1X2 => (float?) this[Fields.Roi1x2] ?? default(float);
 
             /// <summary>
         /// 
@@ -243,7 +244,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxwin1broker => (short?) this[Fields.Maxwin1broker] ?? default(short);
+        public BrokerType Maxwin1Broker => (BrokerType)((int?) this[Fields.Maxwin1broker] ?? default(int));
 
             /// <summary>
         /// 
@@ -253,7 +254,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxwin2broker => (short?) this[Fields.Maxwin2broker] ?? default(short);
+        public BrokerType Maxwin2Broker => (BrokerType)((int?) this[Fields.Maxwin2broker] ?? default(int));
 
             /// <summary>
         /// 
@@ -263,27 +264,27 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxdrawbroker => (short?) this[Fields.Maxdrawbroker] ?? default(short);
+        public BrokerType Maxdrawbroker => (BrokerType)((int?) this[Fields.Maxdrawbroker] ?? default(int));
 
             /// <summary>
         /// 
         /// </summary>
-        public float Maxwin1draw => (float?) this[Fields.Maxwin1draw] ?? default(float);
+        public float Maxwin1Draw => (float?) this[Fields.Maxwin1draw] ?? default(float);
 
             /// <summary>
         /// 
         /// </summary>
-        public short Maxwin1drawbroker => (short?) this[Fields.Maxwin1drawbroker] ?? default(short);
+        public BrokerType Maxwin1Drawbroker => (BrokerType)((int?) this[Fields.Maxwin1drawbroker] ?? default(int));
 
             /// <summary>
         /// 
         /// </summary>
-        public float Maxwin1win2 => (float?) this[Fields.Maxwin1win2] ?? default(float);
+        public float Maxwin1Win2 => (float?) this[Fields.Maxwin1win2] ?? default(float);
 
             /// <summary>
         /// 
         /// </summary>
-        public short Maxwin1win2broker => (short?) this[Fields.Maxwin1win2broker] ?? default(short);
+        public BrokerType Maxwin1Win2Broker => (BrokerType)((int?) this[Fields.Maxwin1win2broker] ?? default(int));
 
             /// <summary>
         /// 
@@ -293,7 +294,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxdrawwin2broker => (short?) this[Fields.Maxdrawwin2broker] ?? default(short);
+        public BrokerType Maxdrawwin2Broker => (BrokerType)((int?) this[Fields.Maxdrawwin2broker] ?? default(int));
 
             /// <summary>
         /// 
@@ -303,12 +304,12 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxhcap1broker => (short?) this[Fields.Maxhcap1broker] ?? default(short);
+        public BrokerType Maxhcap1Broker => (BrokerType)((int?) this[Fields.Maxhcap1broker] ?? default(int));
 
             /// <summary>
         /// 
         /// </summary>
-        public float Maxhcap1detail => (float?) this[Fields.Maxhcap1detail] ?? default(float);
+        public float Maxhcap1Detail => (float?) this[Fields.Maxhcap1detail] ?? default(float);
 
             /// <summary>
         /// 
@@ -318,12 +319,12 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxhcap2broker => (short?) this[Fields.Maxhcap2broker] ?? default(short);
+        public BrokerType Maxhcap2Broker => (BrokerType)((int?) this[Fields.Maxhcap2broker] ?? default(int));
 
             /// <summary>
         /// 
         /// </summary>
-        public float Maxhcap2detail => (float?) this[Fields.Maxhcap2detail] ?? default(float);
+        public float Maxhcap2Detail => (float?) this[Fields.Maxhcap2detail] ?? default(float);
 
             /// <summary>
         /// 
@@ -333,7 +334,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxtotalunderbroker => (short?) this[Fields.Maxtotalunderbroker] ?? default(short);
+        public BrokerType Maxtotalunderbroker => (BrokerType)((int?) this[Fields.Maxtotalunderbroker] ?? default(int));
 
             /// <summary>
         /// 
@@ -348,7 +349,7 @@ namespace Project_B.CodeServerSide.Entity.View {
             /// <summary>
         /// 
         /// </summary>
-        public short Maxtotaloverbroker => (short?) this[Fields.Maxtotaloverbroker] ?? default(short);
+        public BrokerType Maxtotaloverbroker => (BrokerType) ((int?) this[Fields.Maxtotaloverbroker] ?? default(int));
 
             /// <summary>
         /// 

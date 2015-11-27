@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -23,17 +22,8 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void ProcessdLiveParsed(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
-                foreach (var competitionParsed in brokerData.Competitions) {
-                    var competition = ProjectProvider.Instance.CompetitionProvider.GetCompetition(brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
-                    foreach (var matchParsed in competitionParsed.Matches) {
-                        var competitor1 = ProjectProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.UniqueID, matchParsed, algoMode);
-                        var competitor2 = ProjectProvider.Instance.CompetitorProvider
-                            .GetCompetitor(brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.UniqueID, matchParsed, algoMode);
-                        var competitionItem = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItem(competitor1, competitor2, competition, DateTime.MinValue, algoMode);
-                        AddLive(competitionItem, brokerData.Broker, competitionParsed.Type, matchParsed);
-                    }
-                }
+                CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
+                    (type, sportType, competitionItemID, matchParsed) => AddLive(competitionItemID, type, sportType, matchParsed));
             });
         }
 
@@ -46,9 +36,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 ProcessLiveResult(competitionItemID, sportType, matchParsed.Result);
             });
         }
-
-
-
+        
         private static void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {
             var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
             var lastResult = CompetitionResultLive.DataSource
