@@ -21,7 +21,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc.Pr
             if (lastAdvancedResult == null) {
                 lastAdvancedResult = new CompetitionResultLiveAdvanced {
                     ScoreID = generateScoreID,
-                    CompetitionresultliveID = lastResult.ID,
+                    CompetitionresultliveID = lastResultList.First().ID,
                     Datecreatedutc = DateTime.UtcNow,
                     Advancedparam = TennisLiveResultProcessor.GetServeBit(lastSubResult.Serve)
                 };
