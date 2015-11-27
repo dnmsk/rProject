@@ -39,12 +39,12 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// Движение.
         /// </summary>
         public override void Move() {
+            _prevMove = _watch.Now();
             try {
                 Result = _move();
             } catch (Exception e) {
                 _logger.Error(e);
             }
-            _prevMove = _watch.Now();
         }
     }
 }
