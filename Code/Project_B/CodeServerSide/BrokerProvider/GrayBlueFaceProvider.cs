@@ -38,7 +38,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     object[] dataRowJson;
                     if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringMatchRow],StringComparison.InvariantCultureIgnoreCase)) {
                         dataRowJson = BuildJsonObject(row, firstIndex, lastIndex);
-                        if ((int) dataRowJson[4] != 3) {
+                        if ((int) dataRowJson[5] != 3) {
                             continue;
                         }
                         var competitorsName = ExtractCompetitorsFromString((string) dataRowJson[3]);
