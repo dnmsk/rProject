@@ -166,7 +166,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             return names.StrJoin(". ");
         }
 
-        public int GetCompetitionItem(CompetitorParsedTransport competitor1ParsedTransport, CompetitorParsedTransport competitor2ParsedTransport, CompetitionParsedTransport competitionParsedTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
+        public int GetCompetitionItemID(CompetitorParsedTransport competitor1ParsedTransport, CompetitorParsedTransport competitor2ParsedTransport, CompetitionParsedTransport competitionParsedTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 var utcNow = DateTime.UtcNow;
                 var source = CompetitionItem.DataSource
@@ -194,7 +194,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         );
                 var competitionItem = source
                     .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
-                    .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc);
+                    .First(CompetitionItem.Fields.ID, CompetitionItem.Fields.Dateeventutc, CompetitionItem.Fields.Competitoruniqueid1, CompetitionItem.Fields.Competitoruniqueid2);
                 if (eventDateUtc > DateTime.MinValue) {
                     if (competitionItem != null && Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalDays) < 2) {
                             competitionItem.Dateeventutc = eventDateUtc;
@@ -217,7 +217,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                     };
                     competitionItem.Save();
                 }
-                return competitionItem.ID;
+                return competitionItem.Competitoruniqueid1 == competitor1ParsedTransport.UniqueID && 
+                       competitionItem.Competitoruniqueid2 == competitor2ParsedTransport.UniqueID 
+                        ?  competitionItem.ID 
+                        : -competitionItem.ID;
             }, default(int));
         }
 

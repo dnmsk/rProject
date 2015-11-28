@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
-using FreeImageAPI;
 using MainLogic.WebFiles;
 using Project_B.CodeServerSide.Enums;
 
@@ -82,32 +80,16 @@ namespace Project_B.Controllers {
         }
         private static short UploadImage(PhotoFormat imageFormat, byte[] photoToUpload) {
             var photoID = default(short);
-            Bitmap img;
-            using (var steam = new MemoryStream(photoToUpload)) {
-                img = new Bitmap(Image.FromStream(steam));
-            }
-            SaveOnDisk(img, CombinePathFromID(photoID) + "." + GetTypeImageExtension(imageFormat), imageFormat, FREE_IMAGE_SAVE_FLAGS.JPEG_QUALITYSUPERB | FREE_IMAGE_SAVE_FLAGS.JPEG_PROGRESSIVE);
-            return photoID;
-        }
-        
-        private static void SaveOnDisk(Bitmap bmp, string path, PhotoFormat photoFormat, FREE_IMAGE_SAVE_FLAGS saveFlags) {
-            FREE_IMAGE_FORMAT format;
-            switch (photoFormat) {
-                case PhotoFormat.Png:
-                    format = FREE_IMAGE_FORMAT.FIF_PNG;
-                    saveFlags = FREE_IMAGE_SAVE_FLAGS.PNG_Z_BEST_COMPRESSION;
-                    break;
-                case PhotoFormat.Jpeg:
-                default:
-                    format = FREE_IMAGE_FORMAT.FIF_JPEG;
-                    break;
-            }
+            var path = CombinePathFromID(photoID) + "." + GetTypeImageExtension(imageFormat);
             if (System.IO.File.Exists(path)) {
                 System.IO.File.Delete(path);
             }
-            FreeImage.SaveBitmap(bmp, path, format, saveFlags);
+            using (var f = System.IO.File.Create(path)) {
+                f.Write(photoToUpload, 0, photoToUpload.Length);
+            }
+            return photoID;
         }
-
+        
         private static string CombinePathFromID(short id) {
             return Path.Combine(_imageStorePath, (id % _subFolderCnt).ToString(), id.ToString());
         }
