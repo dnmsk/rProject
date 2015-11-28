@@ -85,8 +85,8 @@ namespace CommonUtils.Code {
             return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
         }
 
-        public Tuple<HttpStatusCode, byte[]> GetContentRaw(string url, CookieContainer cookies = null) {
-            var webResponse = GetResponse(url, cookies);
+        public Tuple<HttpStatusCode, byte[]> GetContentRaw(string url) {
+            var webResponse = GetResponse(url, Cookies, null, null, null, _userAgent, Proxy);
             return new Tuple<HttpStatusCode, byte[]>(((HttpWebResponse) webResponse).StatusCode, GetContentRaw(webResponse));
         }
         

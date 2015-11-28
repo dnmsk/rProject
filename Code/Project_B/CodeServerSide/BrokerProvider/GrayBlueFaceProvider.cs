@@ -14,14 +14,14 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         private readonly GrayBlueOddTypeProvider _blueOddTypeProvider;
 
         public GrayBlueFaceProvider(WebRequestHelper requestHelper) : base(requestHelper) {
-            _blueOddTypeProvider = new GrayBlueOddTypeProvider(CurrentConfiguration.StringSimple[SectionName.UrlKab], requestHelper, JavaScriptSerializer, ToA, ToD);
+            //_blueOddTypeProvider = new GrayBlueOddTypeProvider(CurrentConfiguration.StringSimple[SectionName.UrlKab], requestHelper, JavaScriptSerializer, ToA, ToD);
         }
 
         public override BrokerType BrokerType => BrokerType.GrayBlue;
 
         public override BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language) {
             var data = LoadPage(FormatUrl(SectionName.UrlResultTarget, new {
-                date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
+                date = ((int)(DateTime.UtcNow - LinuxUtc).TotalSeconds) / 10,//date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             }));
             var rows = data.Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
