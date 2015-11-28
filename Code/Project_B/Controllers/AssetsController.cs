@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -10,7 +10,6 @@ using SquishIt.Framework.Base;
 
 namespace Project_B.Controllers {
     public class AssetsController : ProjectControllerBase {
-        private readonly TimeSpan _fromDays = TimeSpan.FromDays(365);
 
         public ActionResult Js(string id) {
             return Content(GetContent(Bundle.JavaScript(), id), "text/javascript");
@@ -20,12 +19,31 @@ namespace Project_B.Controllers {
             return Content(GetContent(Bundle.Css(), id), "text/css");
         }
 
-        private string GetContent<T>(BundleBase<T> bundle, string id) where T : BundleBase<T> {
-            // Set max-age to a year from now
-            Response.Cache.SetMaxAge(_fromDays);
-            return bundle.RenderCached(id.ToLowerInvariant());
+        [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
+        public ActionResult Index() {
+            return View();
         }
 
+        [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
+        public ActionResult Images(int id = 0) {
+            return View();
+        }
+
+        [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
+        [HttpGet]
+        [HttpPost]
+        public ActionResult Image(int id) {
+            switch (Request.RequestType.ToUpper()) {
+                case "POST":
+                    id = ImgController.UploadImageFromRequest(Request, 1).First();
+                    break;
+                case "GET":
+                default:
+                    break;
+            }
+            return View();
+        }
+        
         [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
         public ActionResult PagesForType(ProjectBActions id) {
             var staticPageBaseModel = new StaticPageBaseModel(GetBaseModel()) {PageKey = id};
@@ -53,6 +71,11 @@ namespace Project_B.Controllers {
                 },
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
+        }
+
+        private string GetContent(IRenderable bundle, string id) {
+            ImgController.MarkResponseAsCached(Response);
+            return bundle.RenderCached(id.ToLowerInvariant());
         }
     }
 }

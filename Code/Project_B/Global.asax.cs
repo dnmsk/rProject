@@ -18,21 +18,12 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, 
-                                GatherBehaviorMode.CreateIfNew, 
-                                RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.CreateIfNew, RunTaskMode.AllTasks),
+                    new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.TryDetectOnly, RunTaskMode.AllTasks) {
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12)
                     },
-                    new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, 
-                                GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor, 
-                                RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunLiveOddsTask | RunTaskMode.RunRegularOddsTask | RunTaskMode.RunTodayHistoryTask) {
-                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1),
-                        TodayHistoryTaskTimespan = TimeSpan.FromHours(6)
-                    },
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian, 
-                                GatherBehaviorMode.CanDetectCompetition | GatherBehaviorMode.CanDetectCompetitor,
-                                RunTaskMode.RunPastDateHistoryTask | RunTaskMode.RunTodayHistoryTask) {
-                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1),
-                        TodayHistoryTaskTimespan = TimeSpan.FromHours(6)
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian, GatherBehaviorMode.TryDetectOnly, RunTaskMode.HistoryTasks) {
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12)
                     },
                 };
                 _taskObjects.Each(t => t.Schedule());

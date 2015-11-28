@@ -64,7 +64,7 @@ namespace Project_B.CodeServerSide.Algorithm {
         }
 
         public object CollectHistoryForPastDate(DateTime? pastDate = null) {
-            using (MiniProfiler sw = new MiniProfiler(GetProfilerString("CollectHistoryForPastDate"))) {
+            using (new MiniProfiler(GetProfilerString("CollectHistoryForPastDate"))) {
                 var minDateToCollect = pastDate ?? ProjectProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType, SystemStateResultType.CollectForTwoDayAgo);
                 if (minDateToCollect != null) {
                     var historyData = Broker.LoadResult(minDateToCollect.Value, _sportType, _languageType);
