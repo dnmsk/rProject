@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide.Algorithm {
         public TimeSpan TodayHistoryTaskTimespan = TimeSpan.FromHours(1);
         public TimeSpan PastDateHistoryTaskTimespan = TimeSpan.FromHours(4);
         public TimeSpan LiveOddsTaskTimespan = TimeSpan.FromSeconds(60);
-        public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(30);
+        public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(5);
 
         public BrokerAlgoLauncher(BrokerType brokerType, LanguageType languageType, GatherBehaviorMode algoMode, RunTaskMode runTaskMode = RunTaskMode.Default, SportType sportType = SportType.All) {
             _brokerType = brokerType;

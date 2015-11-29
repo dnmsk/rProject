@@ -51,8 +51,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             {BetOddType.DrawWin2, BetOddType.Win1Draw}, 
             {BetOddType.Handicap1, BetOddType.Handicap2}, 
             {BetOddType.Handicap2, BetOddType.Handicap1}, 
-            {BetOddType.TotalOver, BetOddType.TotalUnder}, 
-            {BetOddType.TotalUnder, BetOddType.TotalOver}, 
         }; 
 
         private static void ReverseAllDataInMatch(MatchParsed matchParsed) {
@@ -71,7 +69,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 };
             }
             if (matchParsed.Odds != null && matchParsed.Odds.Any()) {
-                var totalDetail = (int) (matchParsed.Odds.Where(o => o.Type == BetOddType.TotalOver).MaxOrDefault(o => o.AdvancedParam, null) ?? default(int));
                 var hcapDetail = (int) (matchParsed.Odds.Where(o => o.Type == BetOddType.Handicap2).MaxOrDefault(o => o.AdvancedParam, null) ?? default(int));
                 matchParsed.Odds.Each(odds => {
                     BetOddType newOddType;
@@ -80,9 +77,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         switch (newOddType) {
                             case BetOddType.Handicap2:
                                 odds.AdvancedParam = hcapDetail;
-                                break;
-                            case BetOddType.TotalOver:
-                                odds.AdvancedParam = totalDetail;
                                 break;
                         }
                     }
