@@ -30,6 +30,7 @@ namespace Project_B.Controllers {
                 fromDate = toDate.Date;
             }
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, fromDate, toDate, id);
+            itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -42,6 +43,7 @@ namespace Project_B.Controllers {
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
+            itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -53,6 +55,7 @@ namespace Project_B.Controllers {
         public ActionResult Competitor(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, id);
+            itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,

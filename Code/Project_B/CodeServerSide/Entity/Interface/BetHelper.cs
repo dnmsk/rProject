@@ -48,7 +48,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                         break;
                     case BetOddType.TotalUnder:
                         newBet.Totalunder = odd.Factor;
-                        newBet.Totaldetail = (odd.AdvancedParam ?? default(float));
+                        //newBet.Totaldetail = (odd.AdvancedParam ?? default(float));
                         hasAnyFactor = true;
                         break;
                     case BetOddType.TotalOver:
@@ -99,17 +99,19 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         public static void SaveBetIfChanged<T>(int competitionItemID, BrokerType brokerType, SportType sportType,
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
             if (newBet != null) {
-                if (betDb == null || !betDb.IsEqualsTo(newBet) ||
-                    _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && newBetAdvanced != null &&
-                    !betAdvancedDb.IsEqualsTo(newBetAdvanced)) {
+                var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && newBetAdvanced != null;
+                var createNewBet = betDb == null || !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+                if (createNewBet) {
                     newBet.CompetitionitemID = competitionItemID;
                     newBet.BrokerID = brokerType;
-                    newBet.Datecreatedutc = DateTime.UtcNow;
-                    newBet.Save();
-                    if (_sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null) {
-                        newBetAdvanced.BetID = newBet.ID;
-                        newBetAdvanced.Save();
-                    }
+                } else {
+                    newBet = betDb;
+                }
+                newBet.Datecreatedutc = DateTime.UtcNow;
+                newBet.Save();
+                if (canCreateNewBetAdvanced && createNewBet) {
+                    newBetAdvanced.BetID = newBet.ID;
+                    newBetAdvanced.Save();
                 }
             }
         }

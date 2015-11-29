@@ -27,10 +27,16 @@
         </div>
         @RenderBody()
         @Html.Partial("PageEditor/WysiwygEditor", Model)
-        <hr/>
+        <hr />
         @Html.Partial("_Footer", Model)
     </div>
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)
+    <script type="text/javascript">
+        var expires = new Date();
+        expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000));
+        document.cookie = '@ProjectControllerBase.GMT_COOKIE_NAME' + '=' + -new Date().getTimezoneOffset() + ';expires=' + expires.toUTCString();
+    </script>
 </body>
+
 </html>

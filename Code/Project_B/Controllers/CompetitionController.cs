@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
@@ -15,6 +16,7 @@ namespace Project_B.Controllers {
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, id);
+            itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
                     DateUtc = DateTime.Today,
@@ -28,6 +30,7 @@ namespace Project_B.Controllers {
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, new[] {id});
+            itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -39,6 +42,7 @@ namespace Project_B.Controllers {
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
+            FixToUserTime(itemData.CompetitionTransport);
             return View(new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
             });

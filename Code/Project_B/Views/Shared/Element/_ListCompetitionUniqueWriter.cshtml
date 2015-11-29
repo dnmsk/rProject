@@ -52,7 +52,7 @@
         {SportType.Volleyball, _shortPercentile },
     };
     private static readonly SportType[] _sportTypesBySum = { SportType.Tennis, SportType.Volleyball, };
-    static int GetBetPercentile(SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
+    static float GetBetPercentile(SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
         var percentileMap = _percentileMap[sportType];
         var odds = new float[percentileMap.Length];
         var haveZero = false;
@@ -64,7 +64,7 @@
             }
             odds[i] = 1 / (odd);
         }
-        return haveZero ? default(int) : (int)(100 / odds.Sum() - 100);
+        return haveZero ? default(int) : (100 / odds.Sum() - 100);
     }
     static List<BetOddType> GetSuccessOddTypes(SportType sportType, ResultTransport resultTransport, Dictionary<BetOddType, BetItemTransport> currentBets) {
         var resultScore = ScoreHelper.Instance.GenerateScore(resultTransport.ScoreID);
@@ -157,11 +157,11 @@
                 var currentPercentile = GetBetPercentile(Model.SportType, competition.CurrentBets);
                 if (currentPercentile != default(int)) {
                     <td title="ROI">
-                        <small>@GetBetPercentile(Model.SportType, competition.HistoryMaxBets)%</small>
+                        <small>@GetBetPercentile(Model.SportType, competition.HistoryMaxBets).ToString("#0.#")%</small>
                         <div>
-                            <b>@currentPercentile%</b>
+                            <b>@currentPercentile.ToString("#0.#")%</b>
                         </div>
-                        <small>@GetBetPercentile(Model.SportType, competition.HistoryMinBets)%</small>
+                        <small>@GetBetPercentile(Model.SportType, competition.HistoryMinBets).ToString("#0.#")%</small>
                     </td>
                 } else {
                     <td>&mdash;</td>

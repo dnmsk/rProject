@@ -1,11 +1,29 @@
 ﻿using System;
+using CommonUtils.Code;
+using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide.Enums;
+using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide {
     public abstract class ProjectControllerBase : ApplicationControllerBase {
+        public const string GMT_COOKIE_NAME = "GMT";
+        private int? _gmtDeltaMinutes;
+        public void FixToUserTime(CompetitionTransport competitionTransport) {
+            if (!_gmtDeltaMinutes.HasValue) {
+                var gmtCookie = Request.Cookies[GMT_COOKIE_NAME];
+                _gmtDeltaMinutes = gmtCookie != null ? StringParser.ToInt(gmtCookie.Value, default(int)) : default(int);
+            }
+            competitionTransport.CompetitionItems.Each(ci => {
+                ci.DateUtc = ci.DateUtc.AddMinutes(_gmtDeltaMinutes.Value);
+                ci.CurrentBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
+                ci.HistoryMaxBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
+                ci.HistoryMinBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
+            });
+        }
+
         private LanguageType _currentLanguage = LanguageType.Default;
         public LanguageType CurrentLanguage {
             get {

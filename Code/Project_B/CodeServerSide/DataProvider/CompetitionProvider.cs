@@ -254,7 +254,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .WhereNotNull(CompetitionResult.Fields.ID)
                     .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
                     .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate)
-                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc);
                 if (sportType.HasValue && sportType != SportType.Unknown) {
                     competitionItemForDateQuery = competitionItemForDateQuery
                         .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
