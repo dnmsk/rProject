@@ -99,8 +99,8 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         public static void SaveBetIfChanged<T>(int competitionItemID, BrokerType brokerType, SportType sportType,
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
             if (newBet != null) {
-                var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && betAdvancedDb != null && newBetAdvanced != null;
-                var createNewBet = betDb == null || !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+                var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null;
+                var createNewBet = betDb == null || !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && betAdvancedDb != null && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
                 if (createNewBet) {
                     newBet.CompetitionitemID = competitionItemID;
                     newBet.BrokerID = brokerType;
