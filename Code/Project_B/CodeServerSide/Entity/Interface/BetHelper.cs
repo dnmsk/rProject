@@ -11,7 +11,9 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         };
 
         public static bool IsEqualsTo<T>(this IBet<T> t, IBet<T> bet) {
-            return t.Win1 == bet.Win1
+            return t != null 
+                   && bet != null
+                   && t.Win1 == bet.Win1
                    && t.Win2 == bet.Win2
                    && t.Hcap1 == bet.Hcap1
                    && t.Hcap2 == bet.Hcap2
@@ -30,39 +32,38 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                 switch (odd.Type) {
                     case BetOddType.Win1:
                         newBet.Win1 = odd.Factor;
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.Win2:
                         newBet.Win2 = odd.Factor;
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap1:
                         newBet.Hcap1 = odd.Factor;
                         //newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.Handicap2:
                         newBet.Hcap2 = odd.Factor;
                         newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.TotalUnder:
                         newBet.Totalunder = odd.Factor;
                         //newBet.Totaldetail = (odd.AdvancedParam ?? default(float));
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.TotalOver:
                         newBet.Totalover = odd.Factor;
                         newBet.Totaldetail = odd.AdvancedParam ?? default(float);
-                        hasAnyFactor = true;
                         break;
+                    default:
+                        continue;
                 }
+                hasAnyFactor = true;
             }
             return hasAnyFactor ? newBet : null;
         }
 
         public static bool IsEqualsTo<T>(this IBetAdvanced<T> t, IBetAdvanced<T> betAdvanced) {
-            return t.Win1draw == betAdvanced.Win1draw
+            return t != null 
+                   && betAdvanced != null
+                   && t.Win1draw == betAdvanced.Win1draw
                    && t.Draw == betAdvanced.Draw
                    && t.Win1win2 == betAdvanced.Win1win2
                    && t.Drawwin2 == betAdvanced.Drawwin2;
@@ -77,21 +78,20 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
                         newBet.Win1win2 = odd.Factor;
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.DrawWin2:
                         newBet.Drawwin2 = odd.Factor;
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.Win1Draw:
                         newBet.Win1draw = odd.Factor;
-                        hasAnyFactor = true;
                         break;
                     case BetOddType.Draw:
                         newBet.Draw = odd.Factor;
-                        hasAnyFactor = true;
                         break;
+                    default:
+                        continue;
                 }
+                hasAnyFactor = true;
             }
             return hasAnyFactor ? newBet : null;
         }
@@ -100,7 +100,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
             if (newBet != null) {
                 var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null;
-                var createNewBet = betDb == null || !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && betAdvancedDb != null && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+                var createNewBet = !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
                 if (createNewBet) {
                     newBet.CompetitionitemID = competitionItemID;
                     newBet.BrokerID = brokerType;
