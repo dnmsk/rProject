@@ -13,8 +13,8 @@
     <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H2>
     foreach (var competitionModel in bySportTypes) {
         var totalElements = competitionModel.CompetitionItems.Count;
-        var appendSeeAllLink = totalElements > Model.ControllerModel.LimitToDisplayInGroup;
-        competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.LimitToDisplayInGroup).ToList();
+        var appendSeeAllLink = totalElements > Model.ControllerModel.Filter.LimitToDisplayInGroup;
+        competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.Filter.LimitToDisplayInGroup).ToList();
         <H3><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
         @Html.Partial("Element/_ListCompetitionUniqueWriter", competitionModel)
         if (appendSeeAllLink) {

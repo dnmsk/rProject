@@ -10,9 +10,9 @@ namespace CommonUtils.ExtendedTypes {
     }
     public static class HaackFormatter {
         public static string HaackFormat(this string format, object source) {
-
             if (format == null) {
-                throw new ArgumentNullException("format");
+                return string.Empty;
+                //throw new ArgumentNullException("format");
             }
 
             var formattedStrings = (from expression in SplitFormat(format)

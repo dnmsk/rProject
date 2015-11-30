@@ -34,7 +34,10 @@ namespace Project_B.Controllers {
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
-                    DateUtc = fromDate,
+                    Filter = new FilterModel {
+                        SportType = id,
+                        DateUtc = fromDate,
+                    }
                 }
             });
         }

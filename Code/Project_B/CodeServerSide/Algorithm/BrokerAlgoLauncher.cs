@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide.Algorithm {
         public TimeSpan TodayHistoryTaskTimespan = TimeSpan.FromHours(1);
         public TimeSpan PastDateHistoryTaskTimespan = TimeSpan.FromHours(4);
         public TimeSpan LiveOddsTaskTimespan = TimeSpan.FromSeconds(60);
-        public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(5);
+        public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(30);
 
         public BrokerAlgoLauncher(BrokerType brokerType, LanguageType languageType, GatherBehaviorMode algoMode, RunTaskMode runTaskMode = RunTaskMode.Default, SportType sportType = SportType.All) {
             _brokerType = brokerType;
@@ -45,12 +45,9 @@ namespace Project_B.CodeServerSide.Algorithm {
 
         public object CollectRegularOdds() {
             using (new MiniProfiler(GetProfilerString("CollectRegularOdds"))) {
-                var utcNow = DateTime.UtcNow;
-                if (ProjectProvider.Instance.BetProvider.GetStateRegular(_brokerType, utcNow) != SystemStateBetType.Unknown) {
-                    var regularOdds = Broker.LoadRegular(_sportType, _languageType);
-                    ProjectProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
-                    ProjectProvider.Instance.BetProvider.SetStateRegular(_brokerType, utcNow);
-                }
+                var regularOdds = Broker.LoadRegular(_sportType, _languageType);
+                ProjectProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
+                ProjectProvider.Instance.BetProvider.SetStateRegular(_brokerType, DateTime.UtcNow);
                 return null;
             }
         }

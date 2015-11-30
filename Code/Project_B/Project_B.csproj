@@ -357,6 +357,7 @@
     <Compile Include="Models\CompetitionRegularModel.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitionResultItem.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitorTransport.cs" />
+    <Compile Include="Models\FilterModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="CodeClientSide\TransportType\OddsTransport.cs" />
     <Compile Include="CodeClientSide\TransportType\ResultTransport.cs" />

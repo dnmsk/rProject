@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -19,9 +18,11 @@ namespace Project_B.Controllers {
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
-                    DateUtc = DateTime.Today,
                     Competitions = itemData,
-                    LimitToDisplayInGroup = 4
+                    Filter = new FilterModel {
+                        LimitToDisplayInGroup = 4,
+                        SportType = id,
+                    }
                }
             });
         }

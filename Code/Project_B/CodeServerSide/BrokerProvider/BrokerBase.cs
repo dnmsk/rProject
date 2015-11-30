@@ -21,7 +21,6 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             RecursionLimit = 9999
         };
         protected static DateTime LinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-        protected static DateTime LinuxLocal => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Local);
 
         public WebRequestHelper RequestHelper { get; }
         public abstract BrokerType BrokerType { get; }

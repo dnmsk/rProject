@@ -20,7 +20,6 @@ namespace Project_B.Controllers {
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
-                    DateUtc = DateTime.Today,
                     Competitions = itemData,
                 }
             });

@@ -1,4 +1,5 @@
 ﻿@using System.Web.Mvc.Html
+@using CommonUtils.ExtendedTypes
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
@@ -7,6 +8,16 @@
     var sportType = Model.ControllerModel.CompetitionTransport.SportType;
     var competition = Model.ControllerModel.CompetitionTransport;
     Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
+    var match = competition.CompetitionItems.First();
+    var source = new {
+        player1 = match.Competitor1.Name,
+        player2 = match.Competitor2.Name,
+        sporttype = competition.SportType,
+        competition = competition.Name
+    };
+    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
+    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
+    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
 }
 
 <H2><a href="@Url.Action("Index", "Competition", new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></H2>
