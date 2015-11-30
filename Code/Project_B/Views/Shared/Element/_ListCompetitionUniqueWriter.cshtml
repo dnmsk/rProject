@@ -106,22 +106,32 @@
 }
 
 @helper RenderAdvancedParam(BetOddType oddType, float advanced) {
-    if (_oddsWithAdvanced.Contains(oddType)) {
-        advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
-        if (_oddsWithSymbol.Contains(oddType)) {
-                @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
-        } else {
-                @Html.Raw(string.Format("({0})", advanced))
-        }
+if (_oddsWithAdvanced.Contains(oddType)) {
+    advanced = _oddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
+    if (_oddsWithSymbol.Contains(oddType)) {
+            @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
+    } else {
+            @Html.Raw(string.Format("({0})", advanced))
     }
 }
+}
 @helper RenderOddSrcLink(BetItemTransport betItem) {
-    var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
-    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))  }></a>
+var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
+    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))   }></a>
+}
+@helper RenderDateTime(int currentYear, DateTime dateTime, int competitionID) {
+    <a href="@Url.Action("Game", "Competition", new {id = competitionID})">
+        @if (dateTime.Year != currentYear) {
+            @dateTime.ToString("dd.MM.yyyy")<br />@dateTime.ToString("HH:mm")
+        } else {
+            @dateTime.ToString("dd'/'MM HH:mm")
+        }
+    </a>
 }
 
 @{
     var headers = _tableHeaders[Model.SportType].Select(textType => LanguageSiteHelper.Instance.GetText(Model.Language, textType)).ToArray();
+    var currentYear = DateTime.UtcNow.Year;
 }
 
 <table class="table text-right">
@@ -142,11 +152,9 @@
         if (competition.Result != null) {
             successActs.AddRange(GetSuccessOddTypes(Model.SportType, competition.Result, competition.CurrentBets));
         }
-        <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")    }>
+        <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")     }>
             <td>
-                <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionItemID})">
-                    @competition.DateUtc.ToString("dd.MM.yyyy")<br />@competition.DateUtc.ToString("HH:mm")
-                </a>
+                @RenderDateTime(currentYear, competition.DateUtc, competition.CompetitionItemID)
             </td>
             <td class="text-left">
                 <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
@@ -171,7 +179,7 @@
                     if (currentBet.Odd != default(float)) {
                         var maxBet = competition.HistoryMaxBets[oddType];
                         var minBet = competition.HistoryMinBets[oddType];
-                        <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")    }>
+                        <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")     }>
                             <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
                             <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
                                 @RenderOddSrcLink(currentBet)<small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
@@ -179,13 +187,13 @@
                             <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
                         </td>
                     } else {
-                        <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")  }>&mdash;</td>
+                        <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
                     }
                 }
             } else {
                 <td>&mdash;</td>
                 foreach (var oddType in BetHelper.SportTypeWithOdds[Model.SportType]) {
-                    <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")  }>&mdash;</td>
+                    <td @if (successActs.Contains(oddType)) { @Html.Raw("class=\"success\"")   }>&mdash;</td>
                 }
             }
             <td class="text-center">
@@ -196,9 +204,9 @@
                         <br />
                         <small>
                             @competition.Result.SubScore.Select(s => {
-                            var sc = ScoreHelper.Instance.GenerateScore(s);
-                            return string.Format("{0}:{1}", sc.Item1, sc.Item2);
-                        }).StrJoin(", ")
+                           var sc = ScoreHelper.Instance.GenerateScore(s);
+                           return string.Format("{0}:{1}", sc.Item1, sc.Item2);
+                       }).StrJoin(", ")
                         </small>
                     }
                 } else {

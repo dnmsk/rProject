@@ -1,0 +1,67 @@
+﻿@using Project_B.CodeServerSide.Enums
+@using Project_B.Controllers
+@model Project_B.Models.StaticPageBaseModel<dynamic>
+@{
+    FileFormat[] imageFormats = {
+        FileFormat.Jpeg,
+        FileFormat.Png
+    };
+}
+
+<h3>File uploading</h3>
+@using (Html.BeginForm("File", "Assets", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    <input type="file" name="file"/>
+    <input type="submit" value="Upload"/>
+}
+
+<hr />
+
+<style type="text/css">
+    .relativeContainer {
+        position: relative;
+        margin-bottom: 5%;
+    }
+    .constElement {
+        position: absolute;
+        left: 5%;
+        top: 0;
+        right: 5%;
+        bottom: 10%;
+        background-size: contain;
+        background-color: greenyellow;
+    }
+
+    .textInputInfo {
+        width: 100%;
+        margin-top: 100%;
+    }
+    .filePager {
+        border: 1px solid;
+        border-radius: 10px;
+        font-weight: bold;
+        padding: 5px 15px;
+    }
+</style>
+
+<h3>Exist files</h3>
+
+<div class="container">
+    @foreach (var file in (List<Tuple<short, FileFormat>>) Model.ControllerModel.files) {
+        var fileWebPath = FileController.GetFileWebPath(file.Item1, file.Item2);
+        <div class="col-lg-3 relativeContainer">
+            <a class="constElement" style="@if (imageFormats.Contains(file.Item2)) {@Html.Raw(string.Format("background-image: url({0});", fileWebPath))
+                                           }" 
+               href="@Url.Action("File", new {id = file.Item1})"></a>
+            <input type="text" readonly="readonly" value="@fileWebPath" class="textInputInfo"/>
+        </div>
+    }
+</div>
+
+<hr/>
+
+@{
+    var totalPages = Model.ControllerModel.pages;
+    for (var i = totalPages; i > 0; i--) {
+        <a class="filePager" @if(Model.ControllerModel.currentPage != i){ @Html.Raw("href=\"" + Url.Action("Files", new {startID = i*Model.ControllerModel.currentLimit}) + "\"")}>@(totalPages - i + 1)</a>
+    }
+}

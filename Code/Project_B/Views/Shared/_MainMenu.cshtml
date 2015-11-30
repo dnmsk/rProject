@@ -15,6 +15,7 @@
 }
 @{
     var currentController = ViewContext.RouteData.Values["controller"] as string;
+    var currentLanguage = Model.CurrentLanguage != LanguageType.Default ? Model.CurrentLanguage : LanguageType.English;
 }
 
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -25,15 +26,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderSiteName)</a>
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.HeaderSiteName)</a>
         </div>
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderCompetition), "Index", "Competition")</li>
-                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderCompetitionLive), "Index", "CompetitionLive")</li>
-                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderHistory), "Index", "History")</li>
-                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderBookmaker), "Index", "Bookmaker")</li>
+                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.HeaderCompetition), "Index", "Competition")</li>
+                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.HeaderCompetitionLive), "Index", "CompetitionLive")</li>
+                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.HeaderHistory), "Index", "History")</li>
+                <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.HeaderBookmaker), "Index", "Bookmaker")</li>
             </ul>
             @Html.Partial("_LoginPartial", Model)
         </div>
@@ -46,9 +47,9 @@
                 <ul class="nav navbar-nav">
                     @switch (Model.SubNavigationType) {
                         case SubNavigationType.SportTypes:
-                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.SubHeaderAllCompetitions)</a></li>
+                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})">@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteText.SubHeaderAllCompetitions)</a></li>
                             foreach (var sportType in _sportTypesToNavigation) {
-                                <li><a href="@Url.Action("Index", currentController, new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></li>
+                                <li><a href="@Url.Action("Index", currentController, new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
                             }
                             break;
                         case SubNavigationType.Home:

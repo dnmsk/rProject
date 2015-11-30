@@ -1,9 +1,10 @@
 ﻿@using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
+@using Project_B.CodeServerSide.Enums
 @model Project_B.Models.StaticPageBaseModel
 @{
-    var currentLangIsoLength = ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length;
+    var currentLangIsoLength = Model.CurrentLanguage != LanguageType.Default ? ("/" + LanguageTypeHelper.Instance.GetLanguageName(Model.CurrentLanguage).Item2).Length : default(int);
     var email = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.FooterAdminEmail);
 }
 <footer>

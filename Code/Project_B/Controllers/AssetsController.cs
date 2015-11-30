@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Dynamic;
+using System.Linq;
 using System.Web.Mvc;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -21,27 +22,45 @@ namespace Project_B.Controllers {
 
         [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
         public ActionResult Index() {
-            return View();
+            return View(new StaticPageBaseModel(GetBaseModel()));
         }
 
         [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
-        public ActionResult Images(int id = 0) {
-            return View();
+        public ActionResult Files(short startID = 0, int limit = 12) {
+            var totalFilesCount = ProjectProvider.Instance.WebFileProvider.GetTotalFilesCount();
+            startID = startID == default(short) ? totalFilesCount : startID;
+            var fileInfos = ProjectProvider.Instance.WebFileProvider.GetFileInfos(startID, limit);
+            var pages = (totalFilesCount / limit) + (totalFilesCount % limit > 0 ? 1 : 0);
+            var m = (dynamic) new ExpandoObject();
+            var model = new StaticPageBaseModel<dynamic>(GetBaseModel()) {
+                ControllerModel = m
+            };
+            m.currentPage = pages - (startID/limit);
+            m.pages = pages;
+            m.currentLimit = limit;
+            m.files = fileInfos;
+            return View(model);
         }
 
         [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
-        [HttpGet]
-        [HttpPost]
-        public ActionResult Image(int id) {
+        public ActionResult File(short id = default(short)) {
             switch (Request.RequestType.ToUpper()) {
                 case "POST":
-                    id = ImgController.UploadImageFromRequest(Request, 1).First();
+                    id = id == default(short) 
+                        ? FileController.UploadFileFromRequest(Request, 1).First()
+                        : FileController.UpdateFileFromRequest(id, Request);
                     break;
                 case "GET":
                 default:
                     break;
             }
-            return View();
+            var fileInfo = ProjectProvider.Instance.WebFileProvider.GetFileInfos(id, 1).First();
+            var m = (dynamic)new ExpandoObject();
+            var model = new StaticPageBaseModel<dynamic>(GetBaseModel()) {
+                ControllerModel = m
+            };
+            m.file = fileInfo;
+            return View(model);
         }
         
         [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
@@ -74,7 +93,7 @@ namespace Project_B.Controllers {
         }
 
         private string GetContent(IRenderable bundle, string id) {
-            ImgController.MarkResponseAsCached(Response);
+            FileController.MarkResponseAsCached(Response);
             return bundle.RenderCached(id.ToLowerInvariant());
         }
     }

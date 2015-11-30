@@ -1,0 +1,26 @@
+﻿@using Project_B.CodeServerSide.Enums
+@using Project_B.Controllers
+@model Project_B.Models.StaticPageBaseModel<dynamic>
+
+@{
+    FileFormat[] imageFormats = {
+        FileFormat.Jpeg,
+        FileFormat.Png
+    };
+    var file = Model.ControllerModel.file;
+    var fileWebPath = FileController.GetFileWebPath(file.Item1, file.Item2);
+}
+
+<h3>File updating</h3>
+@using (Html.BeginForm("File", "Assets", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    <input type="file" name="file"/>
+    <input type="hidden" name="id" value="@file.Item1"/>
+    <input type="submit" value="Upload" />
+}
+
+<hr/>
+<input type="text" readonly="readonly" value="@fileWebPath"/>
+@if (imageFormats.Contains((FileFormat)file.Item2)) {
+    <br />
+    <img src="@fileWebPath"/>
+}

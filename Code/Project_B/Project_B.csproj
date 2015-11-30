@@ -268,6 +268,7 @@
     <Compile Include="CodeServerSide\DataProvider\StaticPageProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionParsedTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitorParsedTransport.cs" />
+    <Compile Include="CodeServerSide\DataProvider\WebFileProvider.cs" />
     <Compile Include="CodeServerSide\Data\BrokerData.cs" />
     <Compile Include="CodeServerSide\Data\CompetitionParsed.cs" />
     <Compile Include="CodeServerSide\Data\MatchParsed.cs" />
@@ -294,6 +295,7 @@
     <Compile Include="CodeServerSide\Entity\Competitor.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitorUnique.cs" />
     <Compile Include="CodeServerSide\Entity\ExternalLink.cs" />
+    <Compile Include="CodeServerSide\Entity\WebFileStore.cs" />
     <Compile Include="CodeServerSide\Entity\Gender.cs" />
     <Compile Include="CodeServerSide\Entity\GenderAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\BetHelper.cs" />
@@ -317,7 +319,7 @@
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
     <Compile Include="CodeServerSide\Enums\LanguageType.cs" />
-    <Compile Include="CodeServerSide\Enums\PhotoFormat.cs" />
+    <Compile Include="CodeServerSide\Enums\FileFormat.cs" />
     <Compile Include="CodeServerSide\Enums\ResultModeType.cs" />
     <Compile Include="CodeServerSide\Enums\ResultType.cs" />
     <Compile Include="CodeServerSide\Enums\GatherBehaviorMode.cs" />
@@ -338,7 +340,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ImgController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Global.asax.cs">
@@ -455,13 +457,13 @@
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\Element\_ListCompetitionUniqueWriter.cshtml" />
     <Content Include="Views\Assets\Index.cshtml" />
-    <Content Include="Views\Assets\Images.cshtml" />
-    <Content Include="Views\Assets\Image.cshtml" />
+    <Content Include="Views\Assets\Files.cshtml" />
+    <Content Include="Views\Assets\File.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Less\" />
-    <Folder Include="Views\Img\" />
+    <Folder Include="Views\File\" />
     <Folder Include="Views\Redirect\" />
   </ItemGroup>
   <ItemGroup>
