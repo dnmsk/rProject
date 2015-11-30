@@ -33,15 +33,17 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     if (competitionItem != default(int)) {
                         if (competitionItem < default(int)) {
                             competitionItem = -competitionItem;
-                            logger.Info("Inverse data for ID = " + competitionItem);
+                            logger.Info("Inverse data for ID = {0} {1} {2}", competitionItem, brokerData.Broker, brokerData.Language);
                             ReverseAllDataInMatch(matchParsed);
                         }
                         actionForMatch(brokerData.Broker, competitionParsed.Type, competitionItem, matchParsed);
                     }
                 }
             }
-            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: {3}/{4} {5} {6}", brokerData.Competitions.First().Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), successCompetitions, brokerData.Competitions.Count,
-                successCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), brokerData.Broker, brokerData.Language);
+            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: {3}/{4} {5} {6}", brokerData.Competitions.First().Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), 
+                successCompetitions, brokerData.Competitions.Count,
+                successCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), 
+                brokerData.Broker, brokerData.Language);
         }
 
         private static readonly Dictionary<BetOddType, BetOddType> _inversionMap = new Dictionary<BetOddType, BetOddType> {

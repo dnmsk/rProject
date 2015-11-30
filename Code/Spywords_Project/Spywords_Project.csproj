@@ -145,6 +145,7 @@
     <Compile Include="Code\Algorithms\CollectPhrasesForDomainSpywords.cs" />
     <Compile Include="Code\Algorithms\CollectSearchEngineDomainsFromPhrase.cs" />
     <Compile Include="Code\Algorithms\CollectShowsDomainYadro.cs" />
+    <Compile Include="Code\AppsWorldVisitorsParser.cs" />
     <Compile Include="Code\Entities\DomainEntity.cs" />
     <Compile Include="Code\Entities\Domainemail.cs" />
     <Compile Include="Code\Entities\Domainphone.cs" />

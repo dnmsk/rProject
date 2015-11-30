@@ -81,6 +81,14 @@
     <Compile Include="Code\StringCryptoManagerDES.cs" />
     <Compile Include="Code\StringParser.cs" />
     <Compile Include="Code\Transliterator.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamWebHeaderCollection.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamBase.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamBool.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamCookieContainer.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamInt.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamString.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestParamType.cs" />
+    <Compile Include="Code\WebRequestData\WebRequestStaticProcessor.cs" />
     <Compile Include="Code\WebRequestHelper.cs" />
     <Compile Include="Core\Logger\ILogActionRule.cs" />
     <Compile Include="Core\Logger\LogsActionProcessor.cs" />

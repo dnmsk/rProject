@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using CommonUtils.Code.WebRequestData;
+using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.Code {
     public class WebRequestHelper : IDisposable {
-        public string Proxy { get; set; }
-
         /// <summary>
         ///     Юзер-агенты для подставновкив запросы
         /// </summary>
@@ -45,15 +46,14 @@ namespace CommonUtils.Code {
         static WebRequestHelper() {
             ServicePointManager.Expect100Continue = false;
         }
+        private readonly IDictionary<WebRequestParamType, WebRequestParamBase> _webRequestParams = new Dictionary<WebRequestParamType, WebRequestParamBase>();
 
-        public readonly CookieContainer Cookies;
+        //public readonly CookieContainer Cookies;
         public TimeSpan? MinRequestDelay = null;
-        private readonly string _userAgent;
         private readonly Action<string, CookieContainer> _onDispose;
         public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
-            Proxy = null;
-            _userAgent = userAgent ?? RandomUserAgent();
-            Cookies = cookies ?? new CookieContainer();
+            _webRequestParams.Add(WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(cookies ?? new CookieContainer()));
+            _webRequestParams.Add(WebRequestParamType.UserAgentString, new WebRequestParamString(userAgent ?? RandomUserAgent()));
             _onDispose = onDispose;
         }
 
@@ -67,9 +67,36 @@ namespace CommonUtils.Code {
                 if (MinRequestDelay.Value > requestDealy) {
                     Thread.Sleep(MinRequestDelay.Value - requestDealy);
                 }
+                _lastQueryTime = DateTime.UtcNow;
             }
-            var webResponse = GetResponse(url, Cookies, postData, encoding, contentType, _userAgent, Proxy);
+            var webResponse = GetResponse(url, _webRequestParams, postData, encoding, contentType);
             return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+        }
+
+        public static Tuple<HttpStatusCode, string> GetContentWithStatus(string url, CookieContainer cookies = null) {
+            var def = GetCopyDefParams();
+            SetParam(def, WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(cookies));
+            var webResponse = GetResponse(url, def);
+            return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+        }
+
+        public Tuple<HttpStatusCode, byte[]> GetContentRaw(string url) {
+            var webResponse = GetResponse(url, _webRequestParams, null, null, null);
+            return new Tuple<HttpStatusCode, byte[]>(((HttpWebResponse) webResponse).StatusCode, GetContentRaw(webResponse));
+        }
+        
+        private static string GetContent(WebResponse response, Encoding encoding = null) {
+            var contentRaw = GetContentRaw(response);
+            encoding = encoding ?? EncodingDetector.DetectFromStatistic(contentRaw);
+            return encoding.GetString(contentRaw);
+        }
+
+        public T GetParam<T>(WebRequestParamType key) {
+            return GetParam<T>(_webRequestParams, key);
+        }
+
+        public void SetParam(WebRequestParamType key, WebRequestParamBase value) {
+            SetParam(_webRequestParams, key, value);
         }
 
         /// <summary>
@@ -78,22 +105,6 @@ namespace CommonUtils.Code {
         /// <returns></returns>
         private static string RandomUserAgent() {
             return _userAgents[new Random().Next(_userAgents.Length - 1)];
-        }
-
-        public static Tuple<HttpStatusCode, string> GetContentWithStatus(string url, CookieContainer cookies = null) {
-            var webResponse = GetResponse(url, cookies);
-            return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
-        }
-
-        public Tuple<HttpStatusCode, byte[]> GetContentRaw(string url) {
-            var webResponse = GetResponse(url, Cookies, null, null, null, _userAgent, Proxy);
-            return new Tuple<HttpStatusCode, byte[]>(((HttpWebResponse) webResponse).StatusCode, GetContentRaw(webResponse));
-        }
-        
-        private static string GetContent(WebResponse response, Encoding encoding = null) {
-            var contentRaw = GetContentRaw(response);
-            encoding = encoding ?? EncodingDetector.DetectFromStatistic(contentRaw);
-            return encoding.GetString(contentRaw);
         }
 
         private static byte[] GetContentRaw(WebResponse response) {
@@ -137,23 +148,9 @@ namespace CommonUtils.Code {
             return result;
         }
 
-        private static WebResponse GetResponse(string url, CookieContainer cookieContainer = null, string postData = null, Encoding encoding = null, string contentType = "text/xml", string userAgent = null, string proxy = null) {
-            var readWriteTimeout = 15000;
+        private static WebResponse GetResponse(string url, IDictionary<WebRequestParamType, WebRequestParamBase> webRequestParams, string postData = null, Encoding encoding = null, string contentType = "text/xml") {
             var request = (HttpWebRequest) WebRequest.Create(url);
-            request.Accept =
-                "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
-            request.Headers["Accept-Language"] = "ru-ru,ru;q=0.5";
-            request.Headers["Accept-Encoding"] = "gzip,deflate";
-            request.Headers["Accept-Charset"] = "utf-8,windows-1251;q=0.7,*;q=0.7";
-            request.KeepAlive = false;
-            request.Timeout = readWriteTimeout;
-            request.ReadWriteTimeout = readWriteTimeout;
-            request.UserAgent = userAgent ?? RandomUserAgent();
-            request.AllowAutoRedirect = true;
-            request.CookieContainer = cookieContainer ?? new CookieContainer();
-            if (proxy != null) {
-                request.Proxy = new WebProxy(new Uri(proxy.StartsWith("http") ? proxy : "http://" + proxy));
-            }
+            WebRequestStaticProcessor.ProcessRequestParams(request, MergeWithDefaultParams(webRequestParams));
             if (!string.IsNullOrEmpty(postData)) {
                 encoding = encoding ?? Encoding.UTF8;
                 request.Method = "POST";
@@ -169,7 +166,6 @@ namespace CommonUtils.Code {
                     return null;
                 }
             }
-
             try {
                 return request.GetResponse();
             }
@@ -178,9 +174,50 @@ namespace CommonUtils.Code {
             }
         }
 
+        private static readonly Dictionary<WebRequestParamType, WebRequestParamBase> _defaultParamsBase = new Dictionary<WebRequestParamType, WebRequestParamBase> {
+            { WebRequestParamType.AcceptString, new WebRequestParamString("text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5") },
+            { WebRequestParamType.HeadersArrayKeyValue, new WebRequestParamWebHeaderCollection(new WebHeaderCollection {
+                {HttpRequestHeader.AcceptCharset, "utf-8,windows-1251;q=0.7,*;q=0.7" },
+                {HttpRequestHeader.AcceptEncoding, "gzip,deflate" },
+                {HttpRequestHeader.AcceptLanguage, "ru-ru,ru;q=0.5" },
+            })},
+            { WebRequestParamType.KeepAliveBool, new WebRequestParamBool(false) },
+            { WebRequestParamType.AllowAutoRedirectBool, new WebRequestParamBool(true) },
+            { WebRequestParamType.TimeoutInt, new WebRequestParamInt(15000) },
+            { WebRequestParamType.ReadWriteTimeoutInt, new WebRequestParamInt(15000) },
+            { WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(new CookieContainer()) },
+            { WebRequestParamType.UserAgentString, new WebRequestParamString(RandomUserAgent()) },
+            { WebRequestParamType.ProxyString, new WebRequestParamString(null) },
+        };
+
+        private static Dictionary<WebRequestParamType, WebRequestParamBase> GetCopyDefParams() {
+            return _defaultParamsBase.ToDictionary(kv => kv.Key, kv => (WebRequestParamBase) kv.Value.Clone());
+        }
+
+        private static IDictionary<WebRequestParamType, WebRequestParamBase> MergeWithDefaultParams(IDictionary<WebRequestParamType, WebRequestParamBase> clientParams) {
+            _defaultParamsBase.Each(defKeyValue => {
+                if (!clientParams.ContainsKey(defKeyValue.Key)) {
+                    clientParams.Add(defKeyValue);
+                }
+            });
+            return clientParams;
+        }
+
+        private static void SetParam<T>(IDictionary<WebRequestParamType, WebRequestParamBase> paramBase, WebRequestParamType key, T value) where T : WebRequestParamBase {
+            paramBase[key] = value;
+        }
+
+        private static T GetParam<T>(IDictionary<WebRequestParamType, WebRequestParamBase> paramBase, WebRequestParamType key) {
+            WebRequestParamBase par;
+            if (paramBase.TryGetValue(key, out par)) {
+                return (T) par.Value;
+            }
+            return default(T);
+        }
+
         public void PushToConfigurationFile() {
             if(_onDispose != null) {
-                _onDispose(_userAgent, Cookies);
+                _onDispose((string) _webRequestParams[WebRequestParamType.UserAgentString].Value, (CookieContainer) _webRequestParams[WebRequestParamType.CookieContainer].Value);
             }
         }
 

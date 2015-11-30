@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using CommonUtils.Code;
+using CommonUtils.Code.WebRequestData;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.BrokerProvider;
@@ -38,13 +39,14 @@ namespace Project_B.CodeServerSide {
                 .Distinct();
 
             var globalConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default];
-            var webRequestHelper = new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]) {
-                Proxy = globalConfiguration.StringArray[SectionName.ArrayProxy].First()
-            };
+            var webRequestHelper = new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]);
+            webRequestHelper.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(globalConfiguration.StringArray[SectionName.ArrayProxy].FirstOrDefault()));
+
             foreach (var brokerProviderType in currentBrokerProviderTypes) {
                 var instance = (BrokerBase)Activator.CreateInstance(brokerProviderType, webRequestHelper);
                 _brokerProviders.Add(instance.BrokerType, instance);
             }
+            var cookieContainer = webRequestHelper.GetParam<CookieContainer>(WebRequestParamType.CookieContainer);
             foreach (var brokerType in _brokerProviders.Keys) {
                 var brokerConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[brokerType];
                 var domain = brokerConfiguration.StringSimple[SectionName.Domain];
@@ -56,7 +58,7 @@ namespace Project_B.CodeServerSide {
                             _logger.Error("Cookies " + cookie);
                             continue;
                         }
-                        webRequestHelper.Cookies.Add(new Cookie(splittedCookie[0], splittedCookie[1], "/", "." + domain) {
+                        cookieContainer.Add(new Cookie(splittedCookie[0], splittedCookie[1], "/", "." + domain) {
                             Expires = DateTime.UtcNow.AddYears(1)
                         });
                     }
