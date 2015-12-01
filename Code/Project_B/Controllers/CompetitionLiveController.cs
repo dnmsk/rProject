@@ -18,11 +18,13 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageLiveIndexConcrete, (short)id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, id);
             itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
-            });
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageLiveCompetitionUniqueID)]
@@ -30,11 +32,13 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, null, new[] { id });
             itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
-            });
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageLiveCompetitionItemID)]

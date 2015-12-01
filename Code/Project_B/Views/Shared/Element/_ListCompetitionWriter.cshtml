@@ -10,13 +10,13 @@
 }
 
 @foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType).OrderBy(c => (short)c.Key)) {
-    <H2><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H2>
+    <H3><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H3>
     foreach (var competitionModel in bySportTypes) {
         var totalElements = competitionModel.CompetitionItems.Count;
         var appendSeeAllLink = totalElements > Model.ControllerModel.Filter.LimitToDisplayInGroup;
         competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.Filter.LimitToDisplayInGroup).ToList();
-        <H3><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H3>
-        @Html.Partial("Element/_ListCompetitionUniqueWriter", competitionModel)
+        <H4><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H4>
+        @Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competitionModel, Model.ControllerModel.Filter.DisplayColumn))
         if (appendSeeAllLink) {
             <div class="text-right">
                 <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(

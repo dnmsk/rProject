@@ -30,5 +30,7 @@
         GridOddTitleOver = 1009,
 
         GridOddFooterSeeMore = 1010,
+        GridResult = 1011,
+        GridOddRoi1X2 = 1012
     }
 }

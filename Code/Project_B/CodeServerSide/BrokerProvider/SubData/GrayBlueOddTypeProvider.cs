@@ -22,7 +22,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.SubData {
             _javaScriptSerializer = javaScriptSerializer;
             _toA = toA;
             _toD = toD;
-            RefreshMap();
         }
 
         public Dictionary<int, Func<OddParsed>> GetOddMapCreator(int timestamp) {

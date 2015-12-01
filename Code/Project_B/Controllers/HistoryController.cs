@@ -37,6 +37,7 @@ namespace Project_B.Controllers {
                     Filter = new FilterModel {
                         SportType = id,
                         DateUtc = fromDate,
+                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result
                     }
                 }
             });
@@ -47,11 +48,13 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
             itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
-            });
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
@@ -59,11 +62,13 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, id);
             itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
-            });
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            return View(staticPageBaseModel);
         }
     }
 }

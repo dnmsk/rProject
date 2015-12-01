@@ -220,10 +220,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
     <Compile Include="CodeClientSide\CheckCredentialAttribute.cs" />
+    <Compile Include="CodeClientSide\Enums\DisplayColumnType.cs" />
     <Compile Include="CodeClientSide\Enums\SiteText.cs" />
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
+    <Compile Include="CodeClientSide\Helper\DisplayColumnProcessor.cs" />
     <Compile Include="CodeClientSide\Helper\ExternalLinkHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />

@@ -22,6 +22,7 @@ namespace Project_B.Controllers {
                     Filter = new FilterModel {
                         LimitToDisplayInGroup = 4,
                         SportType = id,
+                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds
                     }
                }
             });
@@ -32,11 +33,13 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, new[] {id});
             itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
-            });
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds;
+            return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageCompetitionItemID)]

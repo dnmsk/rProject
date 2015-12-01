@@ -1,5 +1,6 @@
 ﻿@using System.Web.Mvc.Html
 @using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
@@ -26,4 +27,4 @@
     <a href="@Url.Action("Game", "Competition", new { id = competition.CompetitionItems.First().CompetitionItemID})">Regular</a>
     <a class="active">Live</a>
 </div>
-@Html.Partial("Element/_ListCompetitionUniqueWriter", competition)
+@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All))
