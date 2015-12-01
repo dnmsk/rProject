@@ -13,9 +13,9 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("StaticPage")]
+    [DBTable("SiteStaticPage")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class StaticPage : AbstractEntityTemplateKey<StaticPage, int>, IStaticPage {
+    public sealed class SiteStaticPage : AbstractEntityTemplateKey<SiteStaticPage, int>, IStaticPage {
 
         public enum Fields {
         /// <summary>
@@ -78,13 +78,13 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public StaticPage() {
+        public SiteStaticPage() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public StaticPage(Hashtable ht) : base(ht) {}
+        public SiteStaticPage(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>

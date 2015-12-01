@@ -20,7 +20,7 @@
         if (appendSeeAllLink) {
             <div class="text-right">
                 <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(
-                   LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.GridOddFooterSeeMore).FormatSafe(totalElements, competitionModel.Name))</a>
+                   LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.GridOddFooterSeeMore).FormatSafe(totalElements, competitionModel.Name))</a>
             </div>
         }
     }

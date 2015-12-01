@@ -16,7 +16,7 @@ namespace Project_B.CodeClientSide.Helper {
             _siteTextCache = new MultipleKangooCache<LanguageType, Dictionary<short, string>>(MainLogicProvider.WatchfulSloth, 
                 languagesCache => {
                     foreach (var languageType in LanguageTypeHelper.Instance.GetLanguages()) {
-                        var listEntityForType = LanguageSiteText.DataSource.WhereEquals(LanguageSiteText.Fields.Languagetype, (short)languageType).AsList();
+                        var listEntityForType = SiteText.DataSource.WhereEquals(SiteText.Fields.Languagetype, (short)languageType).AsList();
                         var dict = new Dictionary<short, string>();
                         foreach (var languageSiteText in listEntityForType) {
                             dict[(short)languageSiteText.Sitetext] = languageSiteText.Text;
@@ -26,25 +26,25 @@ namespace Project_B.CodeClientSide.Helper {
                 });
         }
 
-        public string GetText(LanguageType languageType, SiteText siteText) {
+        public string GetText(LanguageType languageType, SiteTextType siteTextType) {
             Dictionary<short, string> langCaches;
             string text;
             return (_siteTextCache.TryGetValue(languageType, out langCaches) ||
                     _siteTextCache.TryGetValue(LanguageTypeHelper.DefaultLanguageTypeSetted, out langCaches)) 
-                   && langCaches.TryGetValue((short) siteText, out text)
+                   && langCaches.TryGetValue((short) siteTextType, out text)
                 ? text
-                : string.Format("{{{0}}}", siteText);
+                : string.Format("{{{0}}}", siteTextType);
         }
 
-        public void SetText(LanguageType languageType, SiteText siteText, string text) {
-            var textEntity = LanguageSiteText.DataSource
-                                             .WhereEquals(LanguageSiteText.Fields.Languagetype, (short) languageType)
-                                             .WhereEquals(LanguageSiteText.Fields.Sitetext, (short) siteText)
+        public void SetText(LanguageType languageType, SiteTextType siteTextType, string text) {
+            var textEntity = SiteText.DataSource
+                                             .WhereEquals(SiteText.Fields.Languagetype, (short) languageType)
+                                             .WhereEquals(SiteText.Fields.Sitetext, (short) siteTextType)
                                              .First() 
-                            ?? new LanguageSiteText {
+                            ?? new SiteText {
                                 Datecreatedutc = DateTime.UtcNow,
                                 Languagetype = languageType,
-                                Sitetext = siteText
+                                Sitetext = siteTextType
                             };
             textEntity.Text = text;
             textEntity.Save();

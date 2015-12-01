@@ -10,9 +10,9 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("ExternalLink")]
+    [DBTable("SiteExternalLink")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class ExternalLink : AbstractEntityTemplateKey<ExternalLink, short> {
+    public sealed class SiteExternalLink : AbstractEntityTemplateKey<SiteExternalLink, short> {
 
         public enum Fields {
         /// <summary>
@@ -35,13 +35,13 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public ExternalLink() {
+        public SiteExternalLink() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public ExternalLink(Hashtable ht) : base(ht) {}
+        public SiteExternalLink(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>

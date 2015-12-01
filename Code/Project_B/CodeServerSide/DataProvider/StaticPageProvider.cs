@@ -24,13 +24,13 @@ namespace Project_B.CodeServerSide.DataProvider {
         public Dictionary<ProjectBActions, List<StaticPageTransport>> GetCurrentStaticPageModels(bool onlyTop) {
             return InvokeSafe(() => {
                 var result = new Dictionary<ProjectBActions, List<StaticPageTransport>>();
-                var dbDataSource = StaticPage.DataSource;
+                var dbDataSource = SiteStaticPage.DataSource;
                 if (onlyTop) {
                     dbDataSource = dbDataSource
-                        .WhereEquals(StaticPage.Fields.Istop, true);
+                        .WhereEquals(SiteStaticPage.Fields.Istop, true);
                 }
                 var entities = dbDataSource
-                        .Sort(StaticPage.Fields.ID, SortDirection.Asc)
+                        .Sort(SiteStaticPage.Fields.ID, SortDirection.Asc)
                         .AsList();
                 foreach (var staticPage in entities) {
                     List<StaticPageTransport> list;
@@ -45,16 +45,16 @@ namespace Project_B.CodeServerSide.DataProvider {
         }
         public StaticPageTransport GetStaticPageModel(ProjectBActions pageType, int id) {
             return InvokeSafe(() => 
-                        StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.WhereEquals(StaticPage.Fields.Pagetype, (short) (int) pageType).GetByKey(id)), null);
+                        StaticPageToModel<StaticPageTransport>(SiteStaticPage.DataSource.WhereEquals(SiteStaticPage.Fields.Pagetype, (short) (int) pageType).GetByKey(id)), null);
         }
         public StaticPageTransport SaveStaticPageModel(ProjectBActions pageType, StaticPageTransport data) {
             return InvokeSafeSingleCall(() => {
-                StaticPage page;
+                SiteStaticPage page;
                 if (data.ID == default(int)) {
-                    page = new StaticPage();
+                    page = new SiteStaticPage();
                 } else {
-                    page = StaticPage.DataSource
-                                    .WhereEquals(StaticPage.Fields.Pagetype, (short)(int)pageType)
+                    page = SiteStaticPage.DataSource
+                                    .WhereEquals(SiteStaticPage.Fields.Pagetype, (short)(int)pageType)
                                     .GetByKey(data.ID);
                 }
                 page.Content = data.Content;
@@ -64,15 +64,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                 page.Pagetype = pageType;
                 page.Languagetype = data.Languagetype == LanguageType.Default ? LanguageTypeHelper.DefaultLanguageTypeSetted : data.Languagetype;
                 page.Save();
-                return StaticPageToModel<StaticPageTransport>(StaticPage.DataSource.GetByKey(page.ID));
+                return StaticPageToModel<StaticPageTransport>(SiteStaticPage.DataSource.GetByKey(page.ID));
             }, null);
         }
 
         public List<StaticPageTransport> GetAllStaticPageModelsForType(ProjectBActions pageType) {
             return InvokeSafe(() => {
-                var entities = StaticPage.DataSource                   
-                    .WhereEquals(StaticPage.Fields.Pagetype, (short)pageType)                     
-                    .Sort(StaticPage.Fields.ID, SortDirection.Asc)
+                var entities = SiteStaticPage.DataSource                   
+                    .WhereEquals(SiteStaticPage.Fields.Pagetype, (short)pageType)                     
+                    .Sort(SiteStaticPage.Fields.ID, SortDirection.Asc)
                     .AsList();
                 return entities.Select(StaticPageToModel<StaticPageTransport>).ToList();
             }, null);
@@ -81,10 +81,10 @@ namespace Project_B.CodeServerSide.DataProvider {
         public StaticPageTransport EditStaticPage(StaticPageTransport staticPageTransport, bool isTop) {
             return InvokeSafe(() => {
                 var staticPage = staticPageTransport.ID == default(int)
-                    ? new StaticPage {
+                    ? new SiteStaticPage {
                         Datecreatedutc = DateTime.UtcNow
                     }
-                    : StaticPage.DataSource.GetByKey(staticPageTransport.ID);
+                    : SiteStaticPage.DataSource.GetByKey(staticPageTransport.ID);
                 var entity = ModelToStaticPage(staticPage, staticPageTransport, isTop);
                 return StaticPageToModel<StaticPageTransport>(entity);
             }, null);
@@ -93,13 +93,13 @@ namespace Project_B.CodeServerSide.DataProvider {
         public Dictionary<string, List<BrokerPageTransport>> GetCurrentBrokerPageModels(bool onlyTop) {
             return InvokeSafe(() => {
                 var result = new Dictionary<string, List<BrokerPageTransport>>();
-                var dbDataSource = BrokerPage.DataSource;
+                var dbDataSource = SiteBrokerPage.DataSource;
                 if (onlyTop) {
                     dbDataSource = dbDataSource
-                        .WhereEquals(BrokerPage.Fields.Istop, true);
+                        .WhereEquals(SiteBrokerPage.Fields.Istop, true);
                 }
                 var entities = dbDataSource
-                        .Sort(BrokerPage.Fields.ID, SortDirection.Asc)
+                        .Sort(SiteBrokerPage.Fields.ID, SortDirection.Asc)
                         .AsList();
                 foreach (var staticPage in entities) {
                     List<BrokerPageTransport> list;
@@ -116,10 +116,10 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<BrokerPageTransport> GetCurrentBrokerPageModels(LanguageType languageType, string shortUrl) {
             return InvokeSafe(() => {
-                var entities = BrokerPage.DataSource
-                        .WhereEquals(BrokerPage.Fields.Languagetype, (short)languageType)
-                        .Where(BrokerPage.Fields.Pageurl, Oper.Ilike, shortUrl)
-                        .Sort(BrokerPage.Fields.ID, SortDirection.Asc)
+                var entities = SiteBrokerPage.DataSource
+                        .WhereEquals(SiteBrokerPage.Fields.Languagetype, (short)languageType)
+                        .Where(SiteBrokerPage.Fields.Pageurl, Oper.Ilike, shortUrl)
+                        .Sort(SiteBrokerPage.Fields.ID, SortDirection.Asc)
                         .AsList();
                 return entities.Select(BuildBrokerPageModel).ToList();
             }, null);
@@ -128,10 +128,10 @@ namespace Project_B.CodeServerSide.DataProvider {
         public StaticPageTransport EditBrokerPage(BrokerPageTransport staticPageTransport, bool isTop) {
             return InvokeSafe(() => {
                 var staticPage = staticPageTransport.ID == default(int)
-                    ? new BrokerPage {
+                    ? new SiteBrokerPage {
                         Datecreatedutc = DateTime.UtcNow
                     }
-                    : BrokerPage.DataSource.GetByKey(staticPageTransport.ID);
+                    : SiteBrokerPage.DataSource.GetByKey(staticPageTransport.ID);
                 var entity = ModelToStaticPage(staticPage, staticPageTransport, isTop);
                 entity.Largeiconclass = staticPageTransport.Largeiconclass;
                 entity.Orderindex = staticPageTransport.Orderindex;
@@ -142,7 +142,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, null);
         }
 
-        private static BrokerPageTransport BuildBrokerPageModel(BrokerPage staticPage) {
+        private static BrokerPageTransport BuildBrokerPageModel(SiteBrokerPage staticPage) {
             var staticPageToModel = StaticPageToModel<BrokerPageTransport>(staticPage);
             staticPageToModel.Largeiconclass = staticPage.Largeiconclass;
             staticPageToModel.Orderindex = staticPage.Orderindex;

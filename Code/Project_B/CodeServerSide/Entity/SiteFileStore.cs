@@ -4,17 +4,16 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
-using Project_B.CodeClientSide.Enums;
 using Project_B.CodeServerSide.Enums;
 
-namespace DbEntity {
+namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("LanguageSiteText")]
+    [DBTable("SiteFileStore")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class LanguageSiteText : AbstractEntityTemplateKey<LanguageSiteText, short> {
+    public sealed class SiteFileStore : AbstractEntityTemplateKey<SiteFileStore, short> {
 
         public enum Fields {
         /// <summary>
@@ -25,35 +24,35 @@ namespace DbEntity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Languagetype,
+            [DBField(DbType.Int16)] Fileformat,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Sitetext,
-
-        /// <summary>
-        /// 
-        /// </summary>
-            [DBField(DbType.String)] Text,
+            [DBField(DbType.Int32)] Accesscount,
 
         /// <summary>
         /// 
         /// </summary>
             [DBField(DbType.DateTime)] Datecreatedutc,
 
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.DateTime)] DateupDatedutc,
+
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public LanguageSiteText() {
+        public SiteFileStore() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public LanguageSiteText(Hashtable ht) : base(ht) {}
+        public SiteFileStore(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
@@ -65,25 +64,17 @@ namespace DbEntity {
         /// <summary>
         /// 
         /// </summary>
-        public LanguageType Languagetype {
-            get { return (LanguageType) (short) this[Fields.Languagetype]; }
-            set { ForceSetData(Fields.Languagetype, (short) value); }
+        public FileFormat Fileformat {
+            get { return (FileFormat) (short) this[Fields.Fileformat]; }
+            set { ForceSetData(Fields.Fileformat, (short) value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public SiteText Sitetext {
-            get { return (SiteText) (short) this[Fields.Sitetext]; }
-            set { ForceSetData(Fields.Sitetext, (short) value); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Text {
-            get { return (string) this[Fields.Text]; }
-            set { ForceSetData(Fields.Text, value); }
+        public int Accesscount {
+            get { return (int) this[Fields.Accesscount]; }
+            set { ForceSetData(Fields.Accesscount, value); }
         }
 
         /// <summary>
@@ -92,6 +83,14 @@ namespace DbEntity {
         public DateTime Datecreatedutc {
             get { return (DateTime) this[Fields.Datecreatedutc]; }
             set { ForceSetData(Fields.Datecreatedutc, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime DateupDatedutc {
+            get { return (DateTime) this[Fields.DateupDatedutc]; }
+            set { ForceSetData(Fields.DateupDatedutc, value); }
         }
 
         public override Enum[] KeyFields {

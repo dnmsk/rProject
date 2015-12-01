@@ -7,16 +7,16 @@
     @Html.AntiForgeryToken()
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderLoginHello) + " " + Model.AccountEmail + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderAccountManageTitle) })
+            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.AccountEmail + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderLogOff)</a></li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogOff)</a></li>
     </ul>
     }
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderRegister), "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteText.HeaderLogin), "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderRegister), "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogin), "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

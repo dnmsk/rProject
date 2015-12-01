@@ -1,5 +1,5 @@
 ﻿namespace Project_B.CodeClientSide.Enums {
-    public enum SiteText : short {
+    public enum SiteTextType : short {
         Unknown = 0,
 
         HeaderSiteName = 10,
@@ -30,7 +30,7 @@
         GridOddTitleOver = 1009,
 
         GridOddFooterSeeMore = 1010,
-        GridResult = 1011,
+        GridOddResult = 1011,
         GridOddRoi1X2 = 1012
     }
 }

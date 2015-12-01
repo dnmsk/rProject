@@ -4,45 +4,45 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {
     public static class DisplayColumnProcessor {
-        private static readonly SiteText[] _shortHeaders = {
-            SiteText.GridOddRoi1X2,
-            SiteText.GridOddTitleWin1,
-            SiteText.GridOddTitleWin2,
-            SiteText.GridOddTitleHcap1,
-            SiteText.GridOddTitleHcap2,
-            SiteText.GridOddTitleUnder,
-            SiteText.GridOddTitleOver,
-            SiteText.GridResult,
+        private static readonly SiteTextType[] _shortHeaders = {
+            SiteTextType.GridOddRoi1X2,
+            SiteTextType.GridOddTitleWin1,
+            SiteTextType.GridOddTitleWin2,
+            SiteTextType.GridOddTitleHcap1,
+            SiteTextType.GridOddTitleHcap2,
+            SiteTextType.GridOddTitleUnder,
+            SiteTextType.GridOddTitleOver,
+            SiteTextType.GridOddResult,
         };
 
-        private static readonly SiteText[] _fullHeaders = {
-            SiteText.GridOddRoi1X2,
-            SiteText.GridOddTitleWin1,
-            SiteText.GridOddTitleDraw,
-            SiteText.GridOddTitleWin2,
-            SiteText.GridOddTitleWin1Draw,
-            SiteText.GridOddTitleWin1Win2,
-            SiteText.GridOddTitleDrawWin2,
-            SiteText.GridOddTitleHcap1,
-            SiteText.GridOddTitleHcap2,
-            SiteText.GridOddTitleUnder,
-            SiteText.GridOddTitleOver,
-            SiteText.GridResult,
+        private static readonly SiteTextType[] _fullHeaders = {
+            SiteTextType.GridOddRoi1X2,
+            SiteTextType.GridOddTitleWin1,
+            SiteTextType.GridOddTitleDraw,
+            SiteTextType.GridOddTitleWin2,
+            SiteTextType.GridOddTitleWin1Draw,
+            SiteTextType.GridOddTitleWin1Win2,
+            SiteTextType.GridOddTitleDrawWin2,
+            SiteTextType.GridOddTitleHcap1,
+            SiteTextType.GridOddTitleHcap2,
+            SiteTextType.GridOddTitleUnder,
+            SiteTextType.GridOddTitleOver,
+            SiteTextType.GridOddResult,
         };
 
-        private static readonly Dictionary<SiteText, DisplayColumnType> _displayColumnHeadersMap = new Dictionary<SiteText, DisplayColumnType> {
-            { SiteText.GridOddTitleWin1, DisplayColumnType.TraditionalOdds},
-            { SiteText.GridOddTitleDraw, DisplayColumnType.TraditionalOdds},
-            { SiteText.GridOddTitleWin2, DisplayColumnType.TraditionalOdds},
-            { SiteText.GridOddTitleWin1Draw, DisplayColumnType.AdditionalOdds},
-            { SiteText.GridOddTitleWin1Win2, DisplayColumnType.AdditionalOdds},
-            { SiteText.GridOddTitleDrawWin2, DisplayColumnType.AdditionalOdds},
-            { SiteText.GridOddTitleHcap1, DisplayColumnType.HandicapOdds},
-            { SiteText.GridOddTitleHcap2, DisplayColumnType.HandicapOdds},
-            { SiteText.GridOddTitleUnder, DisplayColumnType.TotalOdds},
-            { SiteText.GridOddTitleOver, DisplayColumnType.TotalOdds},
-            { SiteText.GridResult, DisplayColumnType.Result},
-            { SiteText.GridOddRoi1X2, DisplayColumnType.Roi1X2},
+        private static readonly Dictionary<SiteTextType, DisplayColumnType> _displayColumnHeadersMap = new Dictionary<SiteTextType, DisplayColumnType> {
+            { SiteTextType.GridOddTitleWin1, DisplayColumnType.TraditionalOdds},
+            { SiteTextType.GridOddTitleDraw, DisplayColumnType.TraditionalOdds},
+            { SiteTextType.GridOddTitleWin2, DisplayColumnType.TraditionalOdds},
+            { SiteTextType.GridOddTitleWin1Draw, DisplayColumnType.AdditionalOdds},
+            { SiteTextType.GridOddTitleWin1Win2, DisplayColumnType.AdditionalOdds},
+            { SiteTextType.GridOddTitleDrawWin2, DisplayColumnType.AdditionalOdds},
+            { SiteTextType.GridOddTitleHcap1, DisplayColumnType.HandicapOdds},
+            { SiteTextType.GridOddTitleHcap2, DisplayColumnType.HandicapOdds},
+            { SiteTextType.GridOddTitleUnder, DisplayColumnType.TotalOdds},
+            { SiteTextType.GridOddTitleOver, DisplayColumnType.TotalOdds},
+            { SiteTextType.GridOddResult, DisplayColumnType.Result},
+            { SiteTextType.GridOddRoi1X2, DisplayColumnType.Roi1X2},
         };
 
         private static readonly Dictionary<BetOddType, DisplayColumnType> _displayColumnOddMap = new Dictionary<BetOddType, DisplayColumnType> {
@@ -66,7 +66,7 @@ namespace Project_B.CodeClientSide.Helper {
             return false;
         }
 
-        public static bool NeedDrawCell(SiteText betOddType, DisplayColumnType displayColumn) {
+        public static bool NeedDrawCell(SiteTextType betOddType, DisplayColumnType displayColumn) {
             DisplayColumnType displayColumnType;
             if (_displayColumnHeadersMap.TryGetValue(betOddType, out displayColumnType)) {
                 return displayColumn.HasFlag(displayColumnType);
@@ -74,8 +74,8 @@ namespace Project_B.CodeClientSide.Helper {
             return false;
         }
 
-        public static readonly Dictionary<SportType, SiteText[]> TableHeaders =
-            new Dictionary<SportType, SiteText[]> {
+        public static readonly Dictionary<SportType, SiteTextType[]> TableHeaders =
+            new Dictionary<SportType, SiteTextType[]> {
                 {SportType.Basketball, _shortHeaders},
                 {SportType.Football, _fullHeaders},
                 {SportType.IceHockey, _fullHeaders},

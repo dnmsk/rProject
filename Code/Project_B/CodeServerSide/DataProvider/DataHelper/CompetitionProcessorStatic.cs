@@ -40,7 +40,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     }
                 }
             }
-            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: {3}/{4} {5} {6}", brokerData.Competitions.First().Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), 
+            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: {3}/{4} {5} {6}", brokerData.Competitions.First(c => c.Matches.Any()).Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), 
                 successCompetitions, brokerData.Competitions.Count,
                 successCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), 
                 brokerData.Broker, brokerData.Language);

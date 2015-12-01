@@ -12,9 +12,9 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("BrokerPage")]
+    [DBTable("SiteBrokerPage")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class BrokerPage : AbstractEntityTemplateKey<BrokerPage, int>, IStaticPage {
+    public sealed class SiteBrokerPage : AbstractEntityTemplateKey<SiteBrokerPage, int>, IStaticPage {
 
         public enum Fields {
         /// <summary>
@@ -97,13 +97,13 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public BrokerPage() {
+        public SiteBrokerPage() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public BrokerPage(Hashtable ht) : base(ht) {}
+        public SiteBrokerPage(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>

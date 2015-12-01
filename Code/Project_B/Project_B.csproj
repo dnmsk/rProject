@@ -221,7 +221,7 @@
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
     <Compile Include="CodeClientSide\CheckCredentialAttribute.cs" />
     <Compile Include="CodeClientSide\Enums\DisplayColumnType.cs" />
-    <Compile Include="CodeClientSide\Enums\SiteText.cs" />
+    <Compile Include="CodeClientSide\Enums\SiteTextType.cs" />
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
@@ -285,7 +285,7 @@
     <Compile Include="CodeServerSide\Entity\BetLive.cs" />
     <Compile Include="CodeServerSide\Entity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
-    <Compile Include="CodeServerSide\Entity\BrokerPage.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteBrokerPage.cs" />
     <Compile Include="CodeServerSide\Entity\Competition.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitionItem.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitionResult.cs" />
@@ -296,8 +296,8 @@
     <Compile Include="CodeServerSide\Entity\CompetitionUniqueAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Competitor.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitorUnique.cs" />
-    <Compile Include="CodeServerSide\Entity\ExternalLink.cs" />
-    <Compile Include="CodeServerSide\Entity\WebFileStore.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteExternalLink.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteFileStore.cs" />
     <Compile Include="CodeServerSide\Entity\Gender.cs" />
     <Compile Include="CodeServerSide\Entity\GenderAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\BetHelper.cs" />
@@ -306,14 +306,14 @@
     <Compile Include="CodeServerSide\Entity\Interface\IBetAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IStaticPage.cs" />
     <Compile Include="CodeServerSide\Entity\Language.cs" />
-    <Compile Include="CodeServerSide\Entity\LanguageSiteText.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteText.cs" />
     <Compile Include="CodeServerSide\Entity\Result.cs" />
     <Compile Include="CodeServerSide\Entity\ResultMode.cs" />
     <Compile Include="CodeServerSide\Entity\ResultModeAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Score.cs" />
     <Compile Include="CodeServerSide\Entity\Sport.cs" />
     <Compile Include="CodeServerSide\Entity\SportName.cs" />
-    <Compile Include="CodeServerSide\Entity\StaticPage.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteStaticPage.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateBet.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateResult.cs" />
     <Compile Include="CodeServerSide\Entity\View\VwBetRoiDetail.cs" />

@@ -20,7 +20,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public short GetNextFileID(FileFormat imageFormat) {
             return InvokeSafeSingleCall(() => {
-                var f = new WebFileStore {
+                var f = new SiteFileStore {
                     Accesscount = default(int),
                     Fileformat = imageFormat
                 };
@@ -30,7 +30,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         }
         public void UpdateFile(short webFileID, FileFormat fileFormat) {
             InvokeSafeSingleCall(() => {
-                var f = WebFileStore.DataSource.GetByKey(webFileID);
+                var f = SiteFileStore.DataSource.GetByKey(webFileID);
                 f.DateupDatedutc = DateTime.UtcNow;
                 f.Fileformat = fileFormat;
                 f.Save();
@@ -40,22 +40,22 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void AccessToFileCounter(short fileID) {
             InvokeSafe(() => {
-                WebFileStore.DataSource
-                    .WhereEquals(WebFileStore.Fields.ID, fileID)
-                    .Update(WebFileStore.Fields.Accesscount, new DbFnSimpleOp(WebFileStore.Fields.Accesscount, FnMathOper.Add, 1));
+                SiteFileStore.DataSource
+                    .WhereEquals(SiteFileStore.Fields.ID, fileID)
+                    .Update(SiteFileStore.Fields.Accesscount, new DbFnSimpleOp(SiteFileStore.Fields.Accesscount, FnMathOper.Add, 1));
             });
         }
 
         public short GetTotalFilesCount() {
-            return InvokeSafe(() => (short) (WebFileStore.DataSource.Max(WebFileStore.Fields.ID) ?? default(decimal)), default(short));
+            return InvokeSafe(() => (short) (SiteFileStore.DataSource.Max(SiteFileStore.Fields.ID) ?? default(decimal)), default(short));
         }
 
         public List<Tuple<short, FileFormat>> GetFileInfos(short startID, int limit) {
             return InvokeSafe(() => {
-                return WebFileStore.DataSource
-                                   .Sort(WebFileStore.Fields.ID, SortDirection.Desc)
-                                   .Where(WebFileStore.Fields.ID, Oper.LessOrEq, startID)
-                                   .AsList(0, limit, WebFileStore.Fields.Fileformat)
+                return SiteFileStore.DataSource
+                                   .Sort(SiteFileStore.Fields.ID, SortDirection.Desc)
+                                   .Where(SiteFileStore.Fields.ID, Oper.LessOrEq, startID)
+                                   .AsList(0, limit, SiteFileStore.Fields.Fileformat)
                                    .Select(fs => new Tuple<short, FileFormat>(fs.ID, fs.Fileformat))
                                    .ToList();
             }, new List<Tuple<short, FileFormat>>());

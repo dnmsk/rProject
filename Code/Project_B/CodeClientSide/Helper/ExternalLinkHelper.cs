@@ -17,7 +17,7 @@ namespace Project_B.CodeClientSide.Helper {
         private const string _externalLinkEndText = "}";
         private readonly MultipleKangooCache<short, string> _externalLinkCache = new MultipleKangooCache<short, string>(MainLogicProvider.WatchfulSloth,
             dictionary => {
-                foreach (var externalLink in ExternalLink.DataSource.AsList(ExternalLink.Fields.Link)) {
+                foreach (var externalLink in SiteExternalLink.DataSource.AsList(SiteExternalLink.Fields.Link)) {
                     dictionary[externalLink.ID] = externalLink.Link;
                 }
             }, TimeSpan.FromHours(6));
@@ -37,9 +37,9 @@ namespace Project_B.CodeClientSide.Helper {
             string externalLink;
             if (_externalLinkCache.TryGetValue(linkID, out externalLink)) {
                 SlothMovePlodding.AddAction(() => {
-                    ExternalLink.DataSource
-                        .WhereEquals(ExternalLink.Fields.ID, linkID)
-                        .Update(ExternalLink.Fields.Followcount, new DbFnSimpleOp(ExternalLink.Fields.Followcount, FnMathOper.Add, 1));
+                    SiteExternalLink.DataSource
+                        .WhereEquals(SiteExternalLink.Fields.ID, linkID)
+                        .Update(SiteExternalLink.Fields.Followcount, new DbFnSimpleOp(SiteExternalLink.Fields.Followcount, FnMathOper.Add, 1));
                 });
             }
             return externalLink;

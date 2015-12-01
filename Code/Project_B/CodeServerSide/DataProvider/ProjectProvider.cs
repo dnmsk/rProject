@@ -27,10 +27,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                 Location = s,
                 Priority = 1
             }));
-            BrokerPage.DataSource
-                .WhereEquals(BrokerPage.Fields.Istop, true)
-                .WhereNotEquals(BrokerPage.Fields.Pageurl, string.Empty)
-                .AsList(BrokerPage.Fields.Pageurl, BrokerPage.Fields.Datemodifiedutc)
+            SiteBrokerPage.DataSource
+                .WhereEquals(SiteBrokerPage.Fields.Istop, true)
+                .WhereNotEquals(SiteBrokerPage.Fields.Pageurl, string.Empty)
+                .AsList(SiteBrokerPage.Fields.Pageurl, SiteBrokerPage.Fields.Datemodifiedutc)
                 .GroupBy(bp => bp.Pageurl.ToLowerInvariant())
                 .Each(brokerPages => result.Add(new SiteMapItem {
                     ChangeFreq = SiteMapChangeFreq.Weekly,
