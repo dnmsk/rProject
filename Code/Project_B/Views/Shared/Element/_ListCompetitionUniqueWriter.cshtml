@@ -81,13 +81,13 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
     if (currentBet !=null && currentBet.Odd != default(float)) {
         <td @if(isSuccess) { @Html.Raw("class=\"success\"") }>
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                <small title="@maxBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@maxBet.Odd</small>
+                <small title="@maxBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@maxBet.Odd</small>
             }
-            <div title="@currentBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">
+            <div title="@currentBet.DateTimeUtc.ToString("dd'/'MM HH:00")">
                 @RenderOddSrcLink(currentBet)<small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
             </div>
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <small title="@minBet.DateTimeUtc.ToString("dd.MM.yyyy HH:00")">@minBet.Odd</small>
+                <small title="@minBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@minBet.Odd</small>
             }
         </td>
     } else {
@@ -124,7 +124,7 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
     var currentYear = DateTime.UtcNow.Year;
 }
 
-<table class="table text-right">
+<table class="table text-right gridOdds">
     <thead>
         <tr>
             <td class="col-md-1"></td>

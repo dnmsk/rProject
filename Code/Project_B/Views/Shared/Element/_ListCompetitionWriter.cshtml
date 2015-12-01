@@ -9,6 +9,14 @@
     Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 
+<style type="text/css">
+    table.gridOdds > tbody > tr > td {
+        line-height: 1.2;
+        padding: 2px 4px;
+        vertical-align: middle;
+    }
+</style>
+
 @foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType).OrderBy(c => (short)c.Key)) {
     <H3><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H3>
     foreach (var competitionModel in bySportTypes) {
