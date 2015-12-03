@@ -7,64 +7,6 @@
 @using Project_B.CodeServerSide.Enums
 @model Tuple<CompetitionTransport, DisplayColumnType>
 
-@functions{
-    static float GetBetPercentile(SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
-        if (bets == null) {
-            return default(int);
-        }
-        var percentileMap = DisplayColumnProcessor.PercentileMap[sportType];
-        var odds = new float[percentileMap.Length];
-        var haveZero = false;
-        for (var i = 0; i < percentileMap.Length; i++) {
-            var odd = bets[percentileMap[i]].Odd;
-            if (odd == default(float)) {
-                haveZero = true;
-                continue;
-            }
-            odds[i] = 1 / (odd);
-        }
-        return haveZero ? default(int) : (100 / odds.Sum() - 100);
-    }
-    static List<BetOddType> GetSuccessOddTypes(SportType sportType, ResultTransport resultTransport, Dictionary<BetOddType, BetItemTransport> currentBets) {
-        var resultScore = ScoreHelper.Instance.GenerateScore(resultTransport.ScoreID);
-        var successActs = new List<BetOddType> { ScoreHelper.Instance.GetResultType(resultScore.Item1, resultScore.Item2) };
-        var totalScore = new Tuple<short, short>(resultScore.Item1, resultScore.Item2);
-        if (DisplayColumnProcessor.SportTypesBySum.Contains(sportType)) {
-            totalScore = new Tuple<short, short>(0, 0);
-            resultTransport.SubScore.Select(ScoreHelper.Instance.GenerateScore).Each(tuple => {
-                totalScore = new Tuple<short, short>((short)(totalScore.Item1 + tuple.Item1), (short)(totalScore.Item2 + tuple.Item2));
-            });
-        }
-        if (currentBets != null) {
-            BetItemTransport betItemTransport;
-            if (currentBets.TryGetValue(BetOddType.Handicap1, out betItemTransport)) {
-                var advancedParam = betItemTransport.AdvancedParam;
-                successActs.Add(advancedParam <= totalScore.Item1 - totalScore.Item2 ? BetOddType.Handicap1 : BetOddType.Handicap2);
-                successActs.Add(advancedParam >= totalScore.Item1 - totalScore.Item2 ? BetOddType.Handicap2 : BetOddType.Handicap1);
-            }
-            if (currentBets.TryGetValue(BetOddType.TotalUnder, out betItemTransport)) {
-                successActs.Add(betItemTransport.AdvancedParam >= totalScore.Item1 + totalScore.Item2 ? BetOddType.TotalUnder : BetOddType.TotalOver);
-                successActs.Add(betItemTransport.AdvancedParam <= totalScore.Item1 + totalScore.Item2 ? BetOddType.TotalOver : BetOddType.TotalUnder);
-            }
-        }
-        return successActs;
-    }
-}
-
-@helper RenderAdvancedParam(BetOddType oddType, float advanced) {
-if (DisplayColumnProcessor.OddsWithAdvanced.Contains(oddType)) {
-    advanced = DisplayColumnProcessor.OddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
-    if (DisplayColumnProcessor.OddsWithSymbol.Contains(oddType)) {
-        @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
-    } else {
-        @Html.Raw(string.Format("({0})", advanced))
-    }
-}
-}
-@helper RenderOddSrcLink(BetItemTransport betItem) {
-var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
-    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))   }></a>
-}
 @helper RenderDateTime(int currentYear, DateTime dateTime, int competitionID) {
     <a href="@Url.Action("Game", "Competition", new {id = competitionID})">
         @if (dateTime.Year != currentYear) {
@@ -79,15 +21,13 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
         return;
     }
     if (currentBet !=null && currentBet.Odd != default(float)) {
-        <td @if(isSuccess) { @Html.Raw("class=\"success\"") }>
+        <td class="small @if(isSuccess) {@Html.Raw("success")}">
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                <small title="@maxBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@maxBet.Odd</small>
+                <div title="@maxBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@maxBet.Odd</div>
             }
-            <div title="@currentBet.DateTimeUtc.ToString("dd'/'MM HH:00")">
-                @RenderOddSrcLink(currentBet)<small>@RenderAdvancedParam(oddType, currentBet.AdvancedParam)</small><b>@currentBet.Odd</b>
-            </div>
+            @BetOddRenderHelper.RenderBetOdd(oddType, currentBet)
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <small title="@minBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@minBet.Odd</small>
+                <div title="@minBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@minBet.Odd</div>
             }
         </td>
     } else {
@@ -96,24 +36,44 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
 }
 
 @helper RenderRoiCell(DisplayColumnType displayColumnType, SportType sportType, Dictionary<BetOddType, BetItemTransport> maxBet, Dictionary<BetOddType, BetItemTransport> currentBet, Dictionary<BetOddType, BetItemTransport> minBet) {
-    if (!DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddRoi1X2, displayColumnType)) {
+    if (!DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddRoi, displayColumnType)) {
         return;
     }
-    var currentPercentile = GetBetPercentile(sportType, currentBet);
+    var currentPercentile = BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, currentBet);
     if (currentPercentile != default(int)) {
-        <td title="ROI">
+        <td class="small" title="ROI">
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                <small>@GetBetPercentile(sportType, maxBet).ToString("#0.#")%</small>
+                @BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, maxBet).ToString("#0.#'%'")
+                <br/>
             }
-            <div>
-                <b>@currentPercentile.ToString("#0.#")%</b>
-            </div>
+            <b>@currentPercentile.ToString("#0.#'%'")</b>
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <small>@GetBetPercentile(sportType, minBet).ToString("#0.#")%</small>
+                <br />
+                @BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, minBet).ToString("#0.#'%'")
             }
         </td>
     } else {
         <td>&mdash;</td>
+    }
+}
+
+@helper RenderResultCell(DisplayColumnType displayMode, CompetitionItemBetShortTransport competition) {
+    if (DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddResult, displayMode)) {
+        <td class="small text-center">
+            @if (competition.Result != null) {
+                var score = ScoreHelper.Instance.GenerateScore(competition.Result.ScoreID);
+                <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
+                if (competition.Result.SubScore != null && competition.Result.SubScore.Length > 0) {
+                    <br />
+                    @competition.Result.SubScore.Select(s => {
+                        var sc = ScoreHelper.Instance.GenerateScore(s);
+                        return string.Format("{0}:{1}", sc.Item1, sc.Item2);
+                    }).StrJoin(", ")
+                }
+            } else {
+                @Html.Raw("&mdash;")
+            }
+        </td>
     }
 }
 
@@ -124,11 +84,11 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
     var currentYear = DateTime.UtcNow.Year;
 }
 
-<table class="table text-right gridOdds">
+<table class="table table-bordered table-hover text-right text-nowrap gridOdds">
     <thead>
-        <tr>
-            <td class="col-md-1"></td>
-            <td class="col-md-2"></td>
+        <tr class="small">
+            <td class="col-xs-1"></td>
+            <td class="col-xs-2"></td>
             @foreach (var header in headers) {
                 if (DisplayColumnProcessor.NeedDrawCell(header, displayMode)) {
                     <td>@Html.Raw(LanguageSiteHelper.Instance.GetText(data.Language, header))</td>
@@ -140,13 +100,13 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
         var competition = data.CompetitionItems[index];
         var successActs = new List<BetOddType>();
         if (competition.Result != null) {
-            successActs.AddRange(GetSuccessOddTypes(data.SportType, competition.Result, competition.CurrentBets));
+            successActs.AddRange(BetOddInterfaceHelper.GetSuccessOddTypes(data.SportType, competition.Result, competition.CurrentBets));
         }
-        <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")     }>
+        <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")}>
             <td>
                 @RenderDateTime(currentYear, competition.DateUtc, competition.CompetitionItemID)
             </td>
-            <td class="text-left">
+            <td class="text-left" style="white-space: normal;">
                 1.&nbsp;<a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
                 <br />
                 2.&nbsp;<a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
@@ -158,25 +118,7 @@ var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
                     competition.CurrentBets.TryGetValueOrDefault(oddType),
                     competition.HistoryMinBets.TryGetValueOrDefault(oddType))
             }
-            @if (DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddResult, displayMode)) {
-                <td class="text-center">
-                    @if (competition.Result != null) {
-                        var score = ScoreHelper.Instance.GenerateScore(competition.Result.ScoreID);
-                        <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
-                        if (competition.Result.SubScore != null && competition.Result.SubScore.Length > 0) {
-                            <br />
-                            <small>
-                                @competition.Result.SubScore.Select(s => {
-                           var sc = ScoreHelper.Instance.GenerateScore(s);
-                           return string.Format("{0}:{1}", sc.Item1, sc.Item2);
-                       }).StrJoin(", ")
-                            </small>
-                        }
-                    } else {
-                        @Html.Raw("&mdash;")
-                    }
-                </td>
-            }
+            @RenderResultCell(displayMode, competition)
         </tr>
     }
 </table>

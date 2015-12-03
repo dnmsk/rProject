@@ -1,7 +1,6 @@
 ﻿@using CommonUtils.ExtendedTypes
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
-@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
@@ -10,23 +9,30 @@
 }
 
 <style type="text/css">
-    table.gridOdds > tbody > tr > td {
+    table.gridOdds {
+        margin-bottom: 0;
+    }
+    table.gridOdds > tbody > tr > td, table.gridOdds > thead > tr > td {
         line-height: 1.2;
         padding: 2px 4px;
         vertical-align: middle;
     }
+    h4.lowHeader {
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
 </style>
 
 @foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType).OrderBy(c => (short)c.Key)) {
-    <H3><a href="@Url.Action("Index", currentController, new {id = bySportTypes.Key})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, bySportTypes.Key)</a></H3>
+    @CompetitionDetailHelper.SportTypeNameHelper(currentController, bySportTypes.Key, Model.CurrentLanguage)
     foreach (var competitionModel in bySportTypes) {
         var totalElements = competitionModel.CompetitionItems.Count;
         var appendSeeAllLink = totalElements > Model.ControllerModel.Filter.LimitToDisplayInGroup;
         competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.Filter.LimitToDisplayInGroup).ToList();
-        <H4><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})">@competitionModel.Name</a></H4>
+        @CompetitionDetailHelper.CompetitionNameWriter(currentController, competitionModel)
         @Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competitionModel, Model.ControllerModel.Filter.DisplayColumn))
         if (appendSeeAllLink) {
-            <div class="text-right">
+            <div class="text-right small">
                 <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(
                    LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.GridOddFooterSeeMore).FormatSafe(totalElements, competitionModel.Name))</a>
             </div>

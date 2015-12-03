@@ -1,0 +1,83 @@
+﻿@using System.Web.Mvc
+@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
+@using Project_B.CodeClientSide.TransportType
+@using Project_B.CodeServerSide.Enums
+@functions {
+    private new static System.Web.Mvc.HtmlHelper Html {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Html;
+        }
+    }
+
+    private new static System.Web.Mvc.UrlHelper Url {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Url;
+        }
+    }
+}
+
+@helper RenderBetOdd(BetOddType oddType, BetItemTransport currentBet, string additionalText = null) {
+<div class="text-" title="@currentBet.DateTimeUtc.ToString("dd'/'MM HH:00")">
+    @RenderAdvancedParam(oddType, currentBet.AdvancedParam)<b>@currentBet.Odd</b>@RenderOddSrcLink(currentBet) @Html.Raw(additionalText ?? string.Empty)
+</div>
+}
+
+@helper RenderOddSrcLink(BetItemTransport betItem) {
+var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
+    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))    }></a>
+}
+
+@helper RenderAdvancedParam(BetOddType oddType, float advanced) {
+if (DisplayColumnProcessor.OddsWithAdvanced.Contains(oddType)) {
+    advanced = DisplayColumnProcessor.OddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
+    if (DisplayColumnProcessor.OddsWithSymbol.Contains(oddType)) {
+        @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
+    } else {
+        @Html.Raw(string.Format("({0})", advanced))
+    }
+}
+}
+
+@helper RenderRoiTable(LanguageType language, SportType sportType, CompetitionTransport competition) {
+var hasAnyRoi = false;
+<div class="col-sm-5">
+    <h3>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiWidgetHeader)</h3>
+    <table class="table table-bordered text-right">
+        <thead>
+            <tr><td></td><td>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GridOddRoi)</td><td title="@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGetAlt)">@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGet)</td></tr>
+        </thead>
+        <tbody>
+            @foreach (var roiType in new[] { RoiType.Roi1X2, RoiType.Roi1X_2, RoiType.Roi12_X, RoiType.Roi1_X2, RoiType.RoiHandicap, RoiType.RoiTotal }) {
+                var betItemTransports = competition.CompetitionItems.FirstOrDefault();
+                if (betItemTransports == null) {
+                    continue;
+                }
+                var roiValue = BetOddInterfaceHelper.GetBetOddRoi(roiType, sportType, betItemTransports.CurrentBets);
+                if (roiValue != default(int)) {
+                    hasAnyRoi = true;
+                    var oddTypes = BetOddInterfaceHelper.GetBetOddTypesForRoi(roiType, sportType);
+                <tr>
+                    <td>@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[roiType])</td>
+                    <td><b>@roiValue.ToString("#0.#'%'")</b></td>
+                    <td>
+                        @if (roiValue > default(int) && oddTypes.Length > 0 || true) {
+                            foreach (var betOddType in oddTypes) {
+                                var currentBet = betItemTransports.CurrentBets[betOddType];
+                                @RenderBetOdd(betOddType, currentBet, string.Format(" <small><b>({0})</b></small> -> <b>{1}</b>", LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.BetOddNames[betOddType]), ((100 + roiValue) / currentBet.Odd).ToString("#0.0")))
+                            }
+                        } else {
+                            <span>&mdash;</span>
+                        }
+                    </td>
+                </tr>
+                }
+            }
+            @if (!hasAnyRoi) {
+                <tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+}

@@ -8,7 +8,7 @@
     var email = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.FooterAdminEmail);
 }
 <footer>
-    <span class="pull-right text-right">Email: <a href="mailto:@email">@email</a><br/>&copy; @DateTime.UtcNow.Year</span>
+    <!--noindex--><span class="pull-right text-right">Email: <a href="mailto:@email">@email</a><br />&copy; @DateTime.UtcNow.Year</span><!--/noindex-->
     @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.FooterSiteLanguage):
     @foreach (var lang in LanguageTypeHelper.Instance.GetLanguages()) {
         var languageName = LanguageTypeHelper.Instance.GetLanguageName(lang);

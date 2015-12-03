@@ -2,7 +2,6 @@
 @using CommonUtils.ExtendedTypes
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
-@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
 @{
@@ -21,10 +20,14 @@
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
 }
 
-<H2><a href="@Url.Action("Index", "Competition", new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, sportType)</a></H2>
-<H3><a href="@Url.Action("Item", "Competition", new {id = competition.ID})">@competition.Name</a></H3>
+@CompetitionDetailHelper.SportTypeNameHelper("Competition", sportType, Model.CurrentLanguage)
+@CompetitionDetailHelper.CompetitionNameWriter("Competition", competition)
 <div class="pull-right">
     <a href="@Url.Action("Game", "Competition", new { id = competition.CompetitionItems.First().CompetitionItemID})">Regular</a>
     <a class="active">Live</a>
 </div>
-@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All))
+@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All.FlagDrop(DisplayColumnType.Roi1X2)))
+
+<div class="row">
+    @BetOddRenderHelper.RenderRoiTable(Model.CurrentLanguage, sportType, competition)
+</div>

@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @RenderSection("Metatags", false)
     <title>@Model.StaticPageTransport.Title - @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderSiteName)</title>
     @if (!Model.StaticPageTransport.Keywords.IsNullOrEmpty()) {
         <meta name="keywords" content="@Model.StaticPageTransport.Keywords"/>
@@ -38,5 +39,4 @@
         document.cookie = '@ProjectControllerBase.GMT_COOKIE_NAME' + '=' + -new Date().getTimezoneOffset() + ';expires=' + expires.toUTCString();
     </script>
 </body>
-
 </html>

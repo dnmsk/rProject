@@ -31,6 +31,16 @@
 
         GridOddFooterSeeMore = 1010,
         GridOddResult = 1011,
-        GridOddRoi1X2 = 1012
+        GridOddRoi = 1012,
+
+        GameRoiWidgetHeader,
+        GameRoiHowToGet,
+        GameRoiHowToGetAlt,
+        GameRoi1X2,
+        GameRoi1X_2,
+        GameRoi12_X,
+        GameRoi1_X2,
+        GameRoiHandicap,
+        GameRoiTotal,
     }
 }

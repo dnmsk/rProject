@@ -1,0 +1,25 @@
+﻿@using System.Web.Mvc
+@using Project_B.CodeClientSide.TransportType
+@using Project_B.CodeServerSide.DataProvider.DataHelper
+@using Project_B.CodeServerSide.Enums
+@functions {
+    private new static System.Web.Mvc.HtmlHelper Html {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Html;
+        }
+    }
+
+    private new static System.Web.Mvc.UrlHelper Url {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Url;
+        }
+    }
+}
+
+@helper SportTypeNameHelper(string currentController, SportType sportType, LanguageType languageType) {
+    <h3><a href="@Url.Action("Index", currentController, new {id=sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(languageType, sportType)</a></h3>
+}
+
+@helper CompetitionNameWriter(string currentController, CompetitionTransport competitionModel) {
+    <h4 class="lowHeader"><a href="@Url.Action("Item", currentController, new {id=competitionModel.ID})">@competitionModel.Name</a></h4>
+}
