@@ -14,7 +14,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, id);
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
@@ -31,7 +31,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, new[] {id});
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, null, new[] {id});
             itemData.Each(FixToUserTime);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
@@ -45,7 +45,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionItemID)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, BrokerType.All, id);
             FixToUserTime(itemData.CompetitionTransport);
             return View(new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData

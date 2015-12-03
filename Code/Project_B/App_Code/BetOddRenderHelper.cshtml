@@ -49,20 +49,20 @@ var hasAnyRoi = false;
             <tr><td></td><td>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GridOddRoi)</td><td title="@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGetAlt)">@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGet)</td></tr>
         </thead>
         <tbody>
-            @foreach (var roiType in new[] { RoiType.Roi1X2, RoiType.Roi1X_2, RoiType.Roi12_X, RoiType.Roi1_X2, RoiType.RoiHandicap, RoiType.RoiTotal }) {
-                var betItemTransports = competition.CompetitionItems.FirstOrDefault();
-                if (betItemTransports == null) {
-                    continue;
-                }
-                var roiValue = BetOddInterfaceHelper.GetBetOddRoi(roiType, sportType, betItemTransports.CurrentBets);
-                if (roiValue != default(int)) {
-                    hasAnyRoi = true;
-                    var oddTypes = BetOddInterfaceHelper.GetBetOddTypesForRoi(roiType, sportType);
-                <tr>
+        @foreach (var roiType in RoiType.All.GetFlags<RoiType>()) {
+            var betItemTransports = competition.CompetitionItems.FirstOrDefault();
+            if (betItemTransports == null) {
+                continue;
+            }
+            var roiValue = BetOddInterfaceHelper.GetBetOddRoi(roiType, sportType, betItemTransports.CurrentBets);
+            if (roiValue != default(int)) {
+                hasAnyRoi = true;
+                var oddTypes = BetOddInterfaceHelper.GetBetOddTypesForRoi(roiType, sportType);
+                <tr @if(roiValue > default(int)) {@Html.Raw("class=\"active\"")}>
                     <td>@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[roiType])</td>
                     <td><b>@roiValue.ToString("#0.#'%'")</b></td>
                     <td>
-                        @if (roiValue > default(int) && oddTypes.Length > 0) {
+                        @if (roiValue > default(int)) {
                             foreach (var betOddType in oddTypes) {
                                 var currentBet = betItemTransports.CurrentBets[betOddType];
                                 @RenderBetOdd(betOddType, currentBet, string.Format(" <small><b>({0})</b></small> -> <b>{1}</b>", LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.BetOddNames[betOddType]), ((100 + roiValue) / currentBet.Odd).ToString("#0.0")))
@@ -72,11 +72,11 @@ var hasAnyRoi = false;
                         }
                     </td>
                 </tr>
-                }
             }
-            @if (!hasAnyRoi) {
-                <tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
-            }
+        }
+        @if (!hasAnyRoi) {
+            <tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+        }
         </tbody>
     </table>
 </div>

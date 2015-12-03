@@ -23,11 +23,11 @@
     if (currentBet !=null && currentBet.Odd != default(float)) {
         <td class="small @if(isSuccess) {@Html.Raw("success")}">
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                <div title="@maxBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@maxBet.Odd</div>
+                <div class="small" title="@(maxBet.DateTimeUtc.ToString("dd'/'MM HH:00") + " - Max")">@maxBet.Odd</div>
             }
             @BetOddRenderHelper.RenderBetOdd(oddType, currentBet)
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <div title="@minBet.DateTimeUtc.ToString("dd'/'MM HH:00")">@minBet.Odd</div>
+                <div class="small" title="@(minBet.DateTimeUtc.ToString("dd'/'MM HH:00") + " - Min")">@minBet.Odd</div>
             }
         </td>
     } else {

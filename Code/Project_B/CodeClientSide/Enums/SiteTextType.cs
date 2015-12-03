@@ -33,14 +33,17 @@
         GridOddResult = 1011,
         GridOddRoi = 1012,
 
-        GameRoiWidgetHeader,
-        GameRoiHowToGet,
-        GameRoiHowToGetAlt,
-        GameRoi1X2,
-        GameRoi1X_2,
-        GameRoi12_X,
-        GameRoi1_X2,
-        GameRoiHandicap,
-        GameRoiTotal,
+        GameRoiWidgetHeader = 1050,
+        GameRoiHowToGet = 1051,
+        GameRoiHowToGetAlt = 1052,
+        GameRoi1X2 = 1053,
+        // ReSharper disable once InconsistentNaming
+        GameRoi1X_2 = 1054,
+        // ReSharper disable once InconsistentNaming
+        GameRoi12_X = 1055,
+        // ReSharper disable once InconsistentNaming
+        GameRoi1_X2 = 1056,
+        GameRoiHandicap = 1057,
+        GameRoiTotal = 1058,
     }
 }

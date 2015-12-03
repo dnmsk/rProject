@@ -112,7 +112,11 @@ namespace CommonUtils.ExtendedTypes {
             source
                 .AsParallel()
                 .WithDegreeOfParallelism(degreeOfParallelism)
-                .ForAll(action);        
+                .ForAll(action);
+        }
+
+        public static IEnumerable<T> GetFlags<T>(this Enum input) where T : struct {
+            return Enum.GetValues(input.GetType()).Cast<T>().Where(v => input.HasFlag((Enum)(object)v));
         }
     }
 }
