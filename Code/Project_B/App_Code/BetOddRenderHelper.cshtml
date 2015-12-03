@@ -62,7 +62,7 @@ var hasAnyRoi = false;
                     <td>@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[roiType])</td>
                     <td><b>@roiValue.ToString("#0.#'%'")</b></td>
                     <td>
-                        @if (roiValue > default(int) && oddTypes.Length > 0 || true) {
+                        @if (roiValue > default(int) && oddTypes.Length > 0) {
                             foreach (var betOddType in oddTypes) {
                                 var currentBet = betItemTransports.CurrentBets[betOddType];
                                 @RenderBetOdd(betOddType, currentBet, string.Format(" <small><b>({0})</b></small> -> <b>{1}</b>", LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.BetOddNames[betOddType]), ((100 + roiValue) / currentBet.Odd).ToString("#0.0")))
