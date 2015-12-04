@@ -17,9 +17,9 @@
 }
 
 @helper SportTypeNameHelper(string currentController, SportType sportType, LanguageType languageType) {
-    <h3><a href="@Url.Action("Index", currentController, new {id=sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(languageType, sportType)</a></h3>
+    <h4><a href="@Url.Action("Index", currentController, new {id=sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(languageType, sportType)</a></h4>
 }
 
 @helper CompetitionNameWriter(string currentController, CompetitionTransport competitionModel) {
-    <h4 class="lowHeader"><a href="@Url.Action("Item", currentController, new {id=competitionModel.ID})">@competitionModel.Name</a></h4>
+    <h5 class="lowHeader bold"><a href="@Url.Action("Item", currentController, new {id = competitionModel.ID})"><b>@competitionModel.Name</b></a></h5>
 }

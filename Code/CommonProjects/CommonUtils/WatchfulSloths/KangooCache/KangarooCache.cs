@@ -26,7 +26,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                                                                             }) {
             _keyActualTime = keyActualTime ?? TimeSpan.FromMinutes(30);
             if (sloth != null) {
-                sloth.SetMove(new SlothMoveByTimeSingle<object>(SelfClean, new TimeSpan(0, 2, 0), null));
+                sloth.SetMove(new SlothMoveByTimeSingle<object>(SelfClean, new TimeSpan(0, 5, 0), null));
             } else {
                 _logger.Warn("Ахтунг!!! Тип {0} будет работать без самоочистки", GetType());
             }

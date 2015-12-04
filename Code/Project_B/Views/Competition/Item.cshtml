@@ -2,14 +2,16 @@
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
-    var competition = Model.ControllerModel.Competitions.First();
-    var source = new {
-        sporttype = competition.SportType,
-        competition = competition.Name
-    };
-    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
-    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
-    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
+    var competition = Model.ControllerModel.Competitions.FirstOrDefault();
+    if (competition != null) {
+        var source = new {
+            sporttype = competition.SportType,
+            competition = competition.Name
+        };
+        Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
+        Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
+        Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
+    }
 }
 
 @Html.Partial("Element/_ListCompetitionWriter", Model)

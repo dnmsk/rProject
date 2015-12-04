@@ -43,7 +43,7 @@ if (DisplayColumnProcessor.OddsWithAdvanced.Contains(oddType)) {
 @helper RenderRoiTable(LanguageType language, SportType sportType, CompetitionTransport competition) {
 var hasAnyRoi = false;
 <div class="col-sm-5">
-    <h3>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiWidgetHeader)</h3>
+    <h4>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiWidgetHeader)</h4>
     <table class="table table-bordered text-right">
         <thead>
             <tr><td></td><td>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GridOddRoi)</td><td title="@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGetAlt)">@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiHowToGet)</td></tr>
@@ -58,7 +58,7 @@ var hasAnyRoi = false;
             if (roiValue != default(int)) {
                 hasAnyRoi = true;
                 var oddTypes = BetOddInterfaceHelper.GetBetOddTypesForRoi(roiType, sportType);
-                <tr @if(roiValue > default(int)) {@Html.Raw("class=\"active\"")}>
+                <tr @if(roiValue > default(int)) {@Html.Raw("class=\"success\"")}>
                     <td>@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[roiType])</td>
                     <td><b>@roiValue.ToString("#0.#'%'")</b></td>
                     <td>

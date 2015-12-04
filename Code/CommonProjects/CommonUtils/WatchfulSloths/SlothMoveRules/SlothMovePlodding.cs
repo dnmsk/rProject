@@ -16,15 +16,14 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
             _selfInstance = new SlothMovePlodding();
         }
 
-        public SlothMovePlodding() : base(RunAllUpdateActions, new TimeSpan(0, 0, 0, 1), RunAllUpdateActions()) {
+        public SlothMovePlodding() : base(RunAllUpdateActions, TimeSpan.FromMilliseconds(100), RunAllUpdateActions()) {
             WatchfulSloth.Instance.SetMove(this);
         }
 
         public static void AddAction(Action act) {
             if (ConfigHelper.TestMode) {
                 act();
-            }
-            else {
+            } else {
                 lock (_actionsToDo) {
                     _actionsToDo.Add(act);
                 }

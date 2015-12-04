@@ -69,20 +69,23 @@ namespace CommonUtils.Code {
                 }
                 _lastQueryTime = DateTime.UtcNow;
             }
-            var webResponse = GetResponse(url, _webRequestParams, postData, encoding, contentType);
-            return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+            using (var webResponse = GetResponse(url, _webRequestParams, postData, encoding, contentType)) {
+                return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+            }
         }
 
         public static Tuple<HttpStatusCode, string> GetContentWithStatus(string url, CookieContainer cookies = null) {
             var def = GetCopyDefParams();
             SetParam(def, WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(cookies));
-            var webResponse = GetResponse(url, def);
-            return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+            using (var webResponse = GetResponse(url, def)) {
+                return new Tuple<HttpStatusCode, string>(((HttpWebResponse) webResponse).StatusCode, GetContent(webResponse));
+            }
         }
 
         public Tuple<HttpStatusCode, byte[]> GetContentRaw(string url) {
-            var webResponse = GetResponse(url, _webRequestParams, null, null, null);
-            return new Tuple<HttpStatusCode, byte[]>(((HttpWebResponse) webResponse).StatusCode, GetContentRaw(webResponse));
+            using (var webResponse = GetResponse(url, _webRequestParams, null, null, null)) {
+                return new Tuple<HttpStatusCode, byte[]>(((HttpWebResponse)webResponse).StatusCode, GetContentRaw(webResponse));
+            }
         }
         
         private static string GetContent(WebResponse response, Encoding encoding = null) {
@@ -116,8 +119,7 @@ namespace CommonUtils.Code {
                 if ((response.Headers["Content-Encoding"] == "gzip" ||
                      response.Headers["Content-Type"] == "application/x-gzip") && stream.CanRead) {
                     stream = new GZipStream(stream, CompressionMode.Decompress);
-                }
-                else if (response.Headers["Content-Encoding"] == "deflate" && stream.CanRead) {
+                } else if (response.Headers["Content-Encoding"] == "deflate" && stream.CanRead) {
                     stream = new DeflateStream(stream, CompressionMode.Decompress);
                 }
 
@@ -142,7 +144,7 @@ namespace CommonUtils.Code {
             }
             finally {
                 if (stream != null) {
-                    stream.Close();
+                    stream.Dispose();
                 }
             }
             return result;
@@ -158,9 +160,9 @@ namespace CommonUtils.Code {
                 var bytes = encoding.GetBytes(postData);
                 request.ContentLength = bytes.Length;
                 try {
-                    Stream stream = request.GetRequestStream();
-                    stream.Write(bytes, 0, bytes.Length);
-                    stream.Close();
+                    using (var stream = request.GetRequestStream()) {
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
                 }
                 catch (WebException ex) {
                     return null;

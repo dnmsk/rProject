@@ -21,7 +21,7 @@ namespace CommonUtils.WatchfulSloths {
     /// брать значение из него напрямую.
     /// </remarks>
     public class WatchfulSloth : Singleton<WatchfulSloth>, IWatchfulSloth {
-        private const int WAKE_UP_INTERVAL_DEFAULT = 5000;
+        private const int WAKE_UP_INTERVAL_DEFAULT = 100;
 
         private readonly int _wakeUpInterval;
 
@@ -32,7 +32,7 @@ namespace CommonUtils.WatchfulSloths {
         /// <summary>
         /// Словарь для хранения правил, для ленивца.
         /// </summary>
-        protected ConcurrentBag<ISlothMoveRule> _rulesMap = new ConcurrentBag<ISlothMoveRule>();
+        private readonly ConcurrentBag<ISlothMoveRule> _rulesMap = new ConcurrentBag<ISlothMoveRule>();
         /// <summary>
         /// Logger для текущего класса
         /// </summary>
@@ -43,7 +43,7 @@ namespace CommonUtils.WatchfulSloths {
             _wakeUpInterval = wakeUpInterval;
             _stopEvent = new ManualResetEvent(false);
             WakeUp();
-            _holder = new WatchfulHolder(12, holderName); //научить владыке хомяков самому создавать их. 
+            _holder = new WatchfulHolder(12, _wakeUpInterval / 2, holderName); //научить владыке хомяков самому создавать их. 
             new Thread(() => {
                 while (!_stopEvent.WaitOne(_wakeUpInterval)) {
                     WakeUp();

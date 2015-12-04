@@ -12,14 +12,16 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
         private readonly Queue<WatchfulThread> _watchfulThreadsInSleep;
         private readonly HashSet<WatchfulThread> _watchfulThreadsInProgress;
         private readonly Queue<Action> _actionsToExecute;
+        private readonly int _delayTimeout = 500;
 
         /// <summary>
         /// Logger для текущего класса
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(WatchfulHolder).FullName);
 
-        public WatchfulHolder(int minWatchfulCount, string holderName) {
+        public WatchfulHolder(int minWatchfulCount, int delayTimeout, string holderName) {
             _holderName = holderName;
+            _delayTimeout = delayTimeout;
             _watchfulThreadsInSleep = new Queue<WatchfulThread>(minWatchfulCount);
             _watchfulThreadsInProgress = new HashSet<WatchfulThread>();
             _actionsToExecute = new Queue<Action>();
@@ -48,10 +50,9 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
         }
 
         private void RunHolder() {
-            int cnt = 0;
-            int runnedTask = 0;
-            const int millisecondsTimeout = 500;
-            const int traceValue = 60 * 4 * 10 * millisecondsTimeout / 1000;
+            var cnt = 0;
+            var launchedTask = 0;
+            var traceValue = 15 * 60 * 1000 / _delayTimeout;
 
             while (_canWork) {
                 cnt++;
@@ -70,7 +71,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                                 var nextThread = _watchfulThreadsInSleep.Dequeue();
                                 nextThread.SetAction(_actionsToExecute.Dequeue());
                                 _watchfulThreadsInProgress.Add(nextThread);
-                                runnedTask++;
+                                launchedTask++;
                             }
                         }
                     }
@@ -86,14 +87,14 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                         waitTasks = _actionsToExecute.Count;
                     }
 
-                    _logger.Info("Статистика хомяков ({0}): занято={1} отдыхают={2} задач_в_ожидании={3} задач_выполнено={4}", _holderName, inProgressSloths, freeSloths, waitTasks, runnedTask);
+                    _logger.Info("Статистика хомяков ({0}): занято={1} отдыхают={2} задач_в_ожидании={3} задач_выполнено={4}", _holderName, inProgressSloths, freeSloths, waitTasks, launchedTask);
                     cnt = 0;
-                    runnedTask = 0;
+                    launchedTask = 0;
                 }
 //                if (haveTask && !haveThreads) {
 //                    
 //                }
-                Thread.Sleep(millisecondsTimeout);
+                Thread.Sleep(_delayTimeout);
             }
             ShutdownAll();
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Web.Script.Serialization;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
@@ -40,16 +41,20 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                                   .Select(s => s.Trim())
                                   .ToList();
         }
-        
+
+        private static int _tries = 2;
         protected string LoadPage(string url, string postData = null, string contentType = null) {
-            try {
-                var loadResult = RequestHelper.GetContent(url, postData, contentType);
-                if (loadResult.Item1 != HttpStatusCode.OK) {
-                    Logger.Error("status = " + loadResult.Item1);
+            for (var i = 0; i < _tries; i++) {
+                try {
+                    var loadResult = RequestHelper.GetContent(url, postData, contentType);
+                    if (loadResult.Item1 != HttpStatusCode.OK) {
+                        Logger.Error("status = " + loadResult.Item1);
+                    }
+                    return loadResult.Item2;
+                } catch (Exception ex) {
+                    Logger.Error("url: {0} \r\n" + ex, url);
                 }
-                return loadResult.Item2;
-            } catch (Exception ex) {
-                Logger.Error("url: {0} \r\n" + ex, url);
+                Thread.Sleep(5*1000);
             }
             return null;
         }
