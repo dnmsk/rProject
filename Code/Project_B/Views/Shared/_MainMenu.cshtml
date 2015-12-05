@@ -51,6 +51,9 @@
                             foreach (var sportType in _sportTypesToNavigation) {
                                 <li><a href="@Url.Action("Index", currentController, new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
                             }
+                            if ("Competition".Equals(currentController, StringComparison.InvariantCultureIgnoreCase)) {
+                                <li><a href="@Url.Action("Profitable", currentController, new {id = string.Empty})">@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderProfitable)</a></li>
+                            }
                             break;
                         case SubNavigationType.Home:
                             break;

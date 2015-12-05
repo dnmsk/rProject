@@ -1,0 +1,17 @@
+﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeServerSide.DataProvider.DataHelper
+@using Project_B.CodeServerSide.Enums
+@using Project_B.Models
+@model StaticPageBaseModel<CompetitionRegularModel>
+@{
+    var filterModel = Model.ControllerModel.Filter;
+    var source = new {
+        date = (filterModel.DateUtc != DateTime.MinValue ? filterModel.DateUtc : DateTime.Today).ToString("dd.MM.yyyy"),
+        sporttype = filterModel.SportType == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.SportType)
+    };
+    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
+    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
+    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
+}
+
+@Html.Partial("Element/_ListCompetitionWriter", Model)

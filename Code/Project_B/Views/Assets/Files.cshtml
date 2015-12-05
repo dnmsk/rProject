@@ -17,29 +17,21 @@
 <hr />
 
 <style type="text/css">
-    .relativeContainer {
-        position: relative;
-        margin-bottom: 5%;
-    }
-    .constElement {
-        position: absolute;
-        left: 5%;
-        top: 0;
-        right: 5%;
-        bottom: 10%;
-        background-size: contain;
-        background-color: greenyellow;
-    }
-
     .textInputInfo {
         width: 100%;
-        margin-top: 100%;
     }
+
     .filePager {
         border: 1px solid;
         border-radius: 10px;
         font-weight: bold;
         padding: 5px 15px;
+    }
+    .fileBlock {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-color: lightslategray;
     }
 </style>
 
@@ -48,10 +40,11 @@
 <div class="container">
     @foreach (var file in (List<Tuple<short, FileFormat>>) Model.ControllerModel.files) {
         var fileWebPath = FileController.GetFileWebPath(file.Item1, file.Item2);
-        <div class="col-lg-3 relativeContainer">
-            <a class="constElement" style="@if (imageFormats.Contains(file.Item2)) {@Html.Raw(string.Format("background-image: url({0});", fileWebPath))
-                                           }" 
-               href="@Url.Action("File", new {id = file.Item1})"></a>
+        <div class="col-lg-3">
+            <div class="container-hw">
+                <a class="element-hw fileBlock" style=" @if (imageFormats.Contains(file.Item2)) {@Html.Raw(string.Format("background-image: url({0});", fileWebPath))}"
+                   href="@Url.Action("File", new {id = file.Item1})"></a>
+            </div>
             <input type="text" readonly="readonly" value="@fileWebPath" class="textInputInfo"/>
         </div>
     }

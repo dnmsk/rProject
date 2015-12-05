@@ -39,17 +39,17 @@
     if (!DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddRoi, displayColumnType)) {
         return;
     }
-    var currentPercentile = BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, currentBet);
+    var currentPercentile = BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, currentBet);
     if (currentPercentile != default(int)) {
-        <td class="small" title="ROI">
+        <td class="small @if(currentPercentile > default(float)) {@Html.Raw("success")}" title="ROI">
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                @BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, maxBet).ToString("#0.#'%'")
+                @BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, maxBet).ToString("#0.#'%'")
                 <br/>
             }
             <b>@currentPercentile.ToString("#0.#'%'")</b>
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
                 <br />
-                @BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, minBet).ToString("#0.#'%'")
+                @BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, minBet).ToString("#0.#'%'")
             }
         </td>
     } else {

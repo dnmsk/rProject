@@ -71,7 +71,11 @@ namespace Project_B.CodeClientSide.Helper {
             {RoiType.Roi1_X2, SiteTextType.GameRoi1_X2 },
             {RoiType.RoiHandicap, SiteTextType.GameRoiHandicap },
             {RoiType.RoiTotal, SiteTextType.GameRoiTotal },
-        }; 
+        };
+
+        public static float GetMaxBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
+            return roiType.GetFlags<RoiType>().Select(r => GetBetOddRoi(r, sportType, bets)).Where(r => r != default(int)).MaxOrDefault(r => r, default(float));
+        }
 
         public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
             if (bets == null) {

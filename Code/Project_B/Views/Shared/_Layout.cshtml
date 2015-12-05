@@ -22,15 +22,11 @@
 <body>
     @SquishItMinifierStatic.Instance.MvcRenderCachedAssetTag(Model.AdditionHtmlAssets)
     @Html.Partial("_MainMenu", Model)
-    <div class="container body-content">
-        <div id="container">
-            @Html.Raw(ExternalLinkHelper.Instance.ProcessStaticContentForExternalLink(Url, Model, Model.StaticPageTransport.Content))
-        </div>
+    <div class="container body-content" id="container">
+        @Html.Raw(ExternalLinkHelper.Instance.ProcessStaticContentForExternalLink(Url, Model, Model.StaticPageTransport.Content))
         @RenderBody()
-        @Html.Partial("PageEditor/WysiwygEditor", Model)
-        <hr />
-        @Html.Partial("_Footer", Model)
     </div>
+    @Html.Partial("_Footer", Model)
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)
     <script type="text/javascript">
@@ -38,5 +34,6 @@
         expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
         document.cookie = '@ProjectControllerBase.GMT_COOKIE_NAME' + '=' + -new Date().getTimezoneOffset() + ';expires=' + expires.toUTCString();
     </script>
+    @Html.Partial("PageEditor/WysiwygEditor", Model)
 </body>
 </html>

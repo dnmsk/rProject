@@ -27,6 +27,7 @@
         PageCompetitionUniqueIDConcrete = 1303,
         PageCompetitionItemID = 1304,
         PageCompetitionItemIDConcrete = 1305,
+        PageCompetitionProfitable = 1306,
 
         PageBookmakerPage = 1500,
         PageBookmakerConcretePage = 1501,
@@ -36,6 +37,6 @@
 
         PageErrorNotFound = 1990,
         PageRedirect = 1998,
-        PageRedirectConcrete = 1999
+        PageRedirectConcrete = 1999,
     }
 }

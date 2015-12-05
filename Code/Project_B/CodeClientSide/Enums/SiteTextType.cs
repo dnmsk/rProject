@@ -17,6 +17,7 @@
         FooterAdminEmail = 51,
 
         SubHeaderAllCompetitions = 100,
+        SubHeaderProfitable = 101,
 
         GridOddTitleWin1 = 1000,
         GridOddTitleDraw = 1001,

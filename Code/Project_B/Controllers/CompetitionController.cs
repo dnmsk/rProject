@@ -51,5 +51,21 @@ namespace Project_B.Controllers {
                 ControllerModel = itemData
             });
         }
+
+        [ActionLog(ProjectBActions.PageCompetitionProfitable)]
+        public ActionResult Profitable(SportType id = SportType.Unknown) {
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, BrokerType.All, id);
+            itemData.Each(FixToUserTime);
+            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                ControllerModel = new CompetitionRegularModel {
+                    Competitions = itemData,
+                    Filter = new FilterModel {
+                        LimitToDisplayInGroup = 4,
+                        SportType = id,
+                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds
+                    }
+                }
+            });
+        }
     }
 }

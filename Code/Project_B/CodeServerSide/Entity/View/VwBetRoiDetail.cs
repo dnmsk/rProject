@@ -109,7 +109,7 @@ namespace Project_B.CodeServerSide.Entity.View {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Maxwin1win2broker,
+            [DBField(DbType.Int32)] Maxwin1win2broker,
 
         /// <summary>
         /// 

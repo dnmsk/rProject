@@ -7,133 +7,140 @@
     if (!Model.GetUserPolicyState<bool>(UserPolicyLocal.IsPageEditor) || Model.PageKey == ProjectBActions.Undefined) {
         return;
     }
+    var boolData = new[] {true, false}.Select(l =>
+                       new SelectListItem {
+                           Value = l.ToString().ToLower(),
+                           Text = l.ToString().ToLower()
+                       }
+                   ).ToArray();
 }
+<div class="container">
+    <hr />
+    <script src="/Content/Tinymce/tinymce.min.js"></script>
+    <div class="btn btn-sm" onclick="editClicked(this);">edit page</div>
+    <script type="text/javascript">
+        function editClicked(eventSrc) {
+            loadPagesForType();
+            $('#pagesForTypeContainer').show();
+            $('#greetingEditor').show();
+            $(eventSrc).hide();
 
-<hr/>
-<script src="/Content/Tinymce/tinymce.min.js"></script>
-
-<div class="btn btn-sm" onclick="editClicked(this);">edit page</div>
-<script type="text/javascript">
-    function editClicked(eventSrc) {
-        loadPagesForType();
-        $('#pagesForTypeContainer').show();
-        $('#greetingEditor').show();
-        $(eventSrc).hide();
-
-        tinymce.init({
-            forced_root_block: false,
-            height: 600,
-            selector: '#staticPageEditorZone textarea',
-            plugins: ["advlist autolink lists link image charmap print preview anchor template", "searchreplace visualblocks code fullscreen", "insertdatetime media table contextmenu paste textcolor", "hr"],
-            setup: function (editor) {
-                editor.on('change', function (ed) {
-                    var content = ed.level.content;
-                    if (content) {
-                        $('#staticPageEditorZone textarea').val(content);
-                    }
-                });
-            },
-        });
-    }
-</script>
-
-<div id="greetingEditor" style="display: none;">
-    <h2>Welcome to Service's editor zone! You're edit "@Model.PageKey" page.</h2>
-</div>
-
-<form action="@Url.Action("StaticPageEdit", "Assets", new {id = (Model.PageKey).ToString()})" id="staticPageEditorZone" style="display: none;">
-    @Html.HiddenFor(m => m.StaticPageTransport.ID)
-    @Html.TextAreaFor(m => m.StaticPageTransport.Content)
-    <br />
-    <table class="table table-hover">
-        <tr><td>Title</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Title)</td></tr>
-        <tr><td>Keywords</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Keywords)</td></tr>
-        <tr><td>Description</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Description)</td></tr>
-        <tr>
-            <td>Language</td>
-            <td>
-                @Html.DropDownListFor(m => m.StaticPageTransport.Languagetype, LanguageTypeHelper.Instance.GetLanguages().Select(l =>
-                   new SelectListItem {
-                       Value = ((short)l).ToString(),
-                       Text = l.ToString()
-                   }
-               ))
-            </td>
-        </tr>
-        <tr><td>IsTop</td><td>@Html.CheckBoxFor(m => m.StaticPageTransport.IsTop)</td></tr>
-        <tr><td>IsPublished</td><td>@Html.CheckBoxFor(m => m.StaticPageTransport.IsPublished)</td></tr>
-    </table>
-    <br />
-    <a class="btn btn-success" onclick="sendData('POST'); return false;">Preview</a>
-    <a class="btn btn-danger" onclick="sendData('PUT'); return false;">Save to DB</a>
-</form>
-<hr />
-<br/>
-<div id="pagesForTypeContainer" style="display: none;"></div>
-
-<script type="text/javascript">
-    function createNewPage() {
-        $.each($('#staticPageEditorZone *[name]'), function(idx, el) {
-            $(el).val('');
-        });
-        sendData("PUT", {}, loadPagesForType);
-    }
-
-    function loadPagesForType() {
-        $.ajax('@Url.Action("PagesForType", "Assets", new {id = Model.PageKey})', {
-            type: 'GET',
-            success: function(data) {
-                $('#pagesForTypeContainer').html(data);
-            }
-        });
-    }
-
-    function beginEdit(rowId) {
-        $('#staticPageEditorZone').show();
-        sendData('GET', {
-            '@Html.NameFor(m => m.StaticPageTransport.ID)': rowId
-        });
-    }
-
-    function sendData(method, data, onSuccess) {
-        data = data || {};
-        if (method != 'GET') {
-            var postData = {};
-            $('#staticPageEditorZone').serializeArray().map(function(item) {
-                if (postData[item.name]) {
-                    if (typeof(postData[item.name]) === "string") {
-                        postData[item.name] = [postData[item.name]];
-                    }
-                    postData[item.name].push(item.value);
-                } else {
-                    postData[item.name] = item.value;
-                }
-            });
-            $.extend(data, postData);
-        }
-        var options = {
-            type: method,
-            data: data,
-            traditional: true,
-            success: function(data) {
-                $.each(data, function(idx, el) {
-                    $.each(el, function(localIdx, val) {
-                        $("#staticPageEditorZone *[name='" + idx + "." + localIdx + "']").val(val);
-                        if (localIdx === 'Content') {
-                            tinyMCE.activeEditor.setContent(val);
-                            $('#container').html(val);
+            tinymce.init({
+                forced_root_block: false,
+                height: 600,
+                selector: '#staticPageEditorZone textarea',
+                plugins: ["advlist autolink lists link image charmap print preview anchor template", "searchreplace visualblocks code fullscreen", "insertdatetime media table contextmenu paste textcolor", "hr"],
+                valid_children : "+body[style]",
+                setup: function (editor) {
+                    editor.on('change', function (ed) {
+                        var content = ed.level.content;
+                        if (content) {
+                            $('#staticPageEditorZone textarea').val(content);
                         }
                     });
-                });
-                if (onSuccess) {
-                    onSuccess();
-                }
-            }
-        };
-        try {
-            $.ajax($('#staticPageEditorZone').attr('action'), options);
-        } catch (ex) {
-            console.log(ex);
+                },
+            });
         }
-    }
-</script>
+    </script>
+
+    <div id="greetingEditor" style="display: none;">
+        <h2>Welcome to Service's editor zone! You're edit "@Model.PageKey" page.</h2>
+    </div>
+
+    <form action="@Url.Action("StaticPageEdit", "Assets", new {id = (Model.PageKey).ToString()})" id="staticPageEditorZone" style="display: none;">
+        @Html.HiddenFor(m => m.StaticPageTransport.ID)
+        @Html.TextAreaFor(m => m.StaticPageTransport.Content)
+        <br />
+        <table class="table table-hover">
+            <tr><td>Title</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Title)</td></tr>
+            <tr><td>Keywords</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Keywords)</td></tr>
+            <tr><td>Description</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Description)</td></tr>
+            <tr>
+                <td>Language</td>
+                <td>
+                    @Html.DropDownListFor(m => m.StaticPageTransport.Languagetype, LanguageTypeHelper.Instance.GetLanguages().Select(l =>
+                       new SelectListItem {
+                           Value = ((short)l).ToString(),
+                           Text = l.ToString()
+                       }
+                   ))
+                </td>
+            </tr>
+            <tr><td>Top</td><td>@Html.DropDownListFor(m => m.StaticPageTransport.IsTop, boolData)</td></tr>
+            <tr><td>Published</td><td>@Html.DropDownListFor(m => m.StaticPageTransport.IsPublished, boolData)</td></tr>
+        </table>
+        <br />
+        <a class="btn btn-success" onclick="sendData('POST'); return false;">Preview</a>
+        <a class="btn btn-danger" onclick="sendData('PUT'); return false;">Save to DB</a>
+    </form>
+    <hr />
+    <br />
+    <div id="pagesForTypeContainer" style="display: none;"></div>
+
+    <script type="text/javascript">
+        function createNewPage() {
+            $.each($('#staticPageEditorZone *[name]'), function (idx, el) {
+                $(el).val('');
+            });
+            sendData("PUT", {}, loadPagesForType);
+        }
+
+        function loadPagesForType() {
+            $.ajax('@Url.Action("PagesForType", "Assets", new {id = Model.PageKey})', {
+                type: 'GET',
+                success: function (data) {
+                    $('#pagesForTypeContainer').html(data);
+                }
+            });
+        }
+
+        function beginEdit(rowId) {
+            $('#staticPageEditorZone').show();
+            sendData('GET', {
+                '@Html.NameFor(m => m.StaticPageTransport.ID)': rowId
+            });
+        }
+
+        function sendData(method, data, onSuccess) {
+            data = data || {};
+            if (method != 'GET') {
+                var postData = {};
+                $('#staticPageEditorZone').serializeArray().map(function (item) {
+                    if (postData[item.name]) {
+                        if (typeof (postData[item.name]) === "string") {
+                            postData[item.name] = [postData[item.name]];
+                        }
+                        postData[item.name].push(item.value);
+                    } else {
+                        postData[item.name] = item.value;
+                    }
+                });
+                $.extend(data, postData);
+            }
+            var options = {
+                type: method,
+                data: data,
+                traditional: true,
+                success: function (data) {
+                    $.each(data, function (idx, el) {
+                        $.each(el, function (localIdx, val) {
+                            $("#staticPageEditorZone *[name='" + idx + "." + localIdx + "']").val(val);
+                            if (localIdx === 'Content') {
+                                tinyMCE.activeEditor.setContent(val);
+                                $('#container').html(val);
+                            }
+                        });
+                    });
+                    if (onSuccess) {
+                        onSuccess();
+                    }
+                }
+            };
+            try {
+                $.ajax($('#staticPageEditorZone').attr('action'), options);
+            } catch (ex) {
+                console.log(ex);
+            }
+        }
+    </script>
+</div>

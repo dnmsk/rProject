@@ -376,6 +376,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap.override.css" />
     <Content Include="Content\Tinymce\tinymce.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -466,6 +467,7 @@
     <Content Include="Views\Assets\Index.cshtml" />
     <Content Include="Views\Assets\Files.cshtml" />
     <Content Include="Views\Assets\File.cshtml" />
+    <Content Include="Views\Competition\Profitable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

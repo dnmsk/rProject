@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeClientSide.TransportType.SubData;
@@ -12,6 +13,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.View;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -243,6 +245,41 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
+                BuildCompetitiontItemFullModel(competitionTransports, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                ProcessBrokerType(brokerTypes, competitionTransports);
+                return competitionTransports;
+            }, new List<CompetitionTransport>());
+        }
+
+        public List<CompetitionTransport> GetCompetitionItemsFuturedProfitable(LanguageType languageType, BrokerType brokerTypes, SportType? sportType = null) {
+            return InvokeSafe(() => {
+                var competitionItemIDs= VwBetRoiDetail.DataSource
+                    .Where(new DaoFilterOr(
+                        new DaoFilter(VwBetRoiDetail.Fields.Roi1x2, Oper.Greater, default(int)),
+                        new DaoFilterAnd(
+                            new DaoFilter(VwBetRoiDetail.Fields.Roihcap, Oper.Greater, default(int)),
+                            new DaoFilter(new DbFnSimpleOp(VwBetRoiDetail.Fields.Maxhcap2detail, FnMathOper.Add, new DbFnEmpty(VwBetRoiDetail.Fields.Maxhcap1detail)), Oper.GreaterOrEq, default(int))
+                        ),
+                        new DaoFilterAnd(
+                            new DaoFilter(VwBetRoiDetail.Fields.Roitotal, Oper.Greater, default(int)),
+                            new DaoFilter(VwBetRoiDetail.Fields.Maxtotalunderdetail, Oper.GreaterOrEq, VwBetRoiDetail.Fields.Maxtotaloverdetail)
+                        )
+                    ))
+                    .AsList(VwBetRoiDetail.Fields.ID)
+                    .Select(vw => vw.ID).ToArray();
+                var competitionItemForDateQuery = CompetitionItem.DataSource
+                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .Join(JoinType.Left, CompetitionResultLive.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
+                    .WhereNull(CompetitionResult.Fields.ID)
+                    .WhereNull(CompetitionResultLive.Fields.ID)
+                    .WhereIn(CompetitionItem.Fields.ID, competitionItemIDs)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow)
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
+                if (sportType.HasValue && sportType != SportType.Unknown) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
+                }
+                var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 BuildCompetitiontItemFullModel(competitionTransports, GetBetMap, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypes, competitionTransports);
                 return competitionTransports;

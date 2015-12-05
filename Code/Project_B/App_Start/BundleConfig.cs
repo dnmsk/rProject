@@ -10,6 +10,7 @@ namespace Project_B {
             Bundle.RegisterScriptPreprocessor(new CoffeeScriptPreprocessor());
             SquishItMinifierStatic.Instance.Css(SquishItMinifierStatic.MAIN)
                                   .AddMinified("~/Content/bootstrap.min.css")
+                                  .Add("~/Content/bootstrap.override.css")
                                   .Add("~/Content/site.css")
                                   //.Add("~/Content/Less/test.less")
                                   .AsCached(SquishItMinifierStatic.MAIN);
