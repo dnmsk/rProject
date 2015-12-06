@@ -16,4 +16,5 @@
         <a href="@(isoPart + Url.Action(ViewContext.RouteData.Values["action"] as string, ViewContext.RouteData.Values["controller"] as string, new {id = ViewContext.RouteData.Values["id"]})
                             .Substring(currentLangIsoLength))" @if (Model.CurrentLanguage == lang) { @Html.Raw("class='active'")  }>@languageName.Item1</a>
     }
+    @Html.Partial("PageEditor/WysiwygEditor", Model)
 </footer>

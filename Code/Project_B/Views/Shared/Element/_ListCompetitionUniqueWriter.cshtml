@@ -61,14 +61,14 @@
     if (DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddResult, displayMode)) {
         <td class="small text-center">
             @if (competition.Result != null) {
-                var score = ScoreHelper.Instance.GenerateScore(competition.Result.ScoreID);
-                <b>@string.Format("{0}:{1}", score.Item1, score.Item2)</b>
+                var score = ScoreHelper.Instance.GenerateScore(competition.Result.ScoreID).With(s => string.Format("{0}:{1}", s.Item1, s.Item2));
+                <b title="@score">@score</b>
                 if (competition.Result.SubScore != null && competition.Result.SubScore.Length > 0) {
-                    <br />
-                    @competition.Result.SubScore.Select(s => {
+                    var subResult = competition.Result.SubScore.Select(s => {
                         var sc = ScoreHelper.Instance.GenerateScore(s);
                         return string.Format("{0}:{1}", sc.Item1, sc.Item2);
-                    }).StrJoin(", ")
+                    }).StrJoin(", ");
+                    <div title="@subResult">@subResult</div>
                 }
             } else {
                 @Html.Raw("&mdash;")
@@ -106,10 +106,10 @@
             <td>
                 @RenderDateTime(currentYear, competition.DateUtc, competition.CompetitionItemID)
             </td>
-            <td class="text-left" style="white-space: normal;">
-                1.&nbsp;<a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})">@competition.Competitor1.Name</a>
+            <td class="text-left">
+                1. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})" title="@competition.Competitor1.Name">@competition.Competitor1.Name</a>
                 <br />
-                2.&nbsp;<a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})">@competition.Competitor2.Name</a>
+                2. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})" title="@competition.Competitor2.Name">@competition.Competitor2.Name</a>
             </td>
             @RenderRoiCell(displayMode, data.SportType, competition.HistoryMaxBets, competition.CurrentBets, competition.HistoryMinBets)
             @foreach (var oddType in BetHelper.SportTypeWithOdds[data.SportType]) {

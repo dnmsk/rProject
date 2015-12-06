@@ -34,6 +34,5 @@
         expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
         document.cookie = '@ProjectControllerBase.GMT_COOKIE_NAME' + '=' + -new Date().getTimezoneOffset() + ';expires=' + expires.toUTCString();
     </script>
-    @Html.Partial("PageEditor/WysiwygEditor", Model)
 </body>
 </html>

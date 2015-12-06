@@ -121,21 +121,27 @@ namespace Project_B.CodeClientSide.Helper {
         public static List<BetOddType> GetSuccessOddTypes(SportType sportType, ResultTransport resultTransport, Dictionary<BetOddType, BetItemTransport> currentBets) {
             var resultScore = ScoreHelper.Instance.GenerateScore(resultTransport.ScoreID);
             var successActs = new List<BetOddType> {ScoreHelper.Instance.GetResultType(resultScore.Item1, resultScore.Item2)};
-            var totalScore = new Tuple<short, short>(resultScore.Item1, resultScore.Item2);
+            var totalScore = Tuple.Create(resultScore.Item1, resultScore.Item2);
             if (_sportTypesTotalScoreBySum.Contains(sportType)) {
-                totalScore = new Tuple<short, short>(0, 0);
-                resultTransport.SubScore.Select(ScoreHelper.Instance.GenerateScore).Each(tuple => { totalScore = new Tuple<short, short>((short) (totalScore.Item1 + tuple.Item1), (short) (totalScore.Item2 + tuple.Item2)); });
+                totalScore = Tuple.Create((short) 0, (short) 0);
+                resultTransport.SubScore.Select(ScoreHelper.Instance.GenerateScore).Each(tuple => { totalScore = Tuple.Create((short) (totalScore.Item1 + tuple.Item1), (short) (totalScore.Item2 + tuple.Item2)); });
             }
             if (currentBets != null) {
                 BetItemTransport betItemTransport;
                 if (currentBets.TryGetValue(BetOddType.Handicap1, out betItemTransport)) {
                     var advancedParam = betItemTransport.AdvancedParam;
-                    successActs.Add(advancedParam <= totalScore.Item1 - totalScore.Item2 ? BetOddType.Handicap1 : BetOddType.Handicap2);
-                    successActs.Add(advancedParam >= totalScore.Item1 - totalScore.Item2 ? BetOddType.Handicap2 : BetOddType.Handicap1);
+                    successActs.Add(advancedParam < totalScore.Item1 - totalScore.Item2 
+                        ? BetOddType.Handicap1 
+                        : advancedParam > totalScore.Item1 - totalScore.Item2 
+                            ? BetOddType.Handicap2 
+                            : BetOddType.Unknown);
                 }
                 if (currentBets.TryGetValue(BetOddType.TotalUnder, out betItemTransport)) {
-                    successActs.Add(betItemTransport.AdvancedParam >= totalScore.Item1 + totalScore.Item2 ? BetOddType.TotalUnder : BetOddType.TotalOver);
-                    successActs.Add(betItemTransport.AdvancedParam <= totalScore.Item1 + totalScore.Item2 ? BetOddType.TotalOver : BetOddType.TotalUnder);
+                    successActs.Add(betItemTransport.AdvancedParam > totalScore.Item1 + totalScore.Item2 
+                        ? BetOddType.TotalUnder 
+                        : betItemTransport.AdvancedParam < totalScore.Item1 + totalScore.Item2 
+                            ? BetOddType.TotalOver 
+                            : BetOddType.Unknown);
                 }
             }
             return successActs;

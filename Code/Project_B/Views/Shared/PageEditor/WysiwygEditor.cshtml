@@ -14,10 +14,9 @@
                        }
                    ).ToArray();
 }
-<div class="container">
-    <hr />
+<a onclick="editClicked(this);" style="float: right;">&part;</a>
+<div class="container" id="greetingEditor" style="display: none;">
     <script src="/Content/Tinymce/tinymce.min.js"></script>
-    <div class="btn btn-sm" onclick="editClicked(this);">edit page</div>
     <script type="text/javascript">
         function editClicked(eventSrc) {
             loadPagesForType();
@@ -42,11 +41,7 @@
             });
         }
     </script>
-
-    <div id="greetingEditor" style="display: none;">
-        <h2>Welcome to Service's editor zone! You're edit "@Model.PageKey" page.</h2>
-    </div>
-
+    <h2>Welcome to Service's editor zone! You're edit "@Model.PageKey" page.</h2>
     <form action="@Url.Action("StaticPageEdit", "Assets", new {id = (Model.PageKey).ToString()})" id="staticPageEditorZone" style="display: none;">
         @Html.HiddenFor(m => m.StaticPageTransport.ID)
         @Html.TextAreaFor(m => m.StaticPageTransport.Content)

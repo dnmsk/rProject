@@ -52,7 +52,7 @@
                                 <li><a href="@Url.Action("Index", currentController, new {id = sportType})">@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
                             }
                             if ("Competition".Equals(currentController, StringComparison.InvariantCultureIgnoreCase)) {
-                                <li><a href="@Url.Action("Profitable", currentController, new {id = string.Empty})">@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderProfitable)</a></li>
+                                <li><a href="@Url.Action("Profitable", currentController, new {id = string.Empty})"><b>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderProfitable)</b></a></li>
                             }
                             break;
                         case SubNavigationType.Home:
