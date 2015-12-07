@@ -183,7 +183,8 @@ namespace MainLogic.WebFiles {
                                     // если заход по прямому урлу
                                     : string.Empty),
                     request.Params.Get(UTM_CAMPAIGN_PARAM_NAME) ?? string.Empty,
-                    request.Params.Get(UTM_MEDIUM_PARAM_NAME) ?? string.Empty
+                    request.Params.Get(UTM_MEDIUM_PARAM_NAME) ?? string.Empty,
+                    true
                 );
                 var utmCookie = new HttpCookie(UTM_COOKIE_NAME, CryptoManager.EncryptString(UtmParam.SerializeStruct())) {
                     Expires = DateTime.UtcNow.AddYears(5)

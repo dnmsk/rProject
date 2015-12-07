@@ -6,11 +6,13 @@ namespace MainLogic.Wrapper {
         public string UtmSource { get; }
         public string UtmCampaign { get; }
         public string UtmMedium { get; }
+        public bool IsNew { get; }
 
-        public UtmParamWrapper(string utmSource, string utmCampaign, string utmMedium) {
+        public UtmParamWrapper(string utmSource, string utmCampaign, string utmMedium, bool isNew) {
             UtmSource = utmSource;
             UtmCampaign = utmCampaign;
             UtmMedium = utmMedium;
+            IsNew = isNew;
         }
 
         public string SerializeStruct() {
@@ -22,7 +24,7 @@ namespace MainLogic.Wrapper {
             if (urlDecode != null) {
                 var data = urlDecode.Split('&');
                 if (data.Length == 3) {
-                    return new UtmParamWrapper(data[0], data[1], data[2]);
+                    return new UtmParamWrapper(data[0], data[1], data[2], false);
                 }
             }
             return new UtmParamWrapper();

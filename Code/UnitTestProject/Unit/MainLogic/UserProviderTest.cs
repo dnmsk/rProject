@@ -65,7 +65,7 @@ namespace UnitTestProject.Unit.MainLogic {
         [Test]
         public void SaveUtm() {
             var guest = Factory.CreateDao<Guest>();
-            var utmParamWrapper = new UtmParamWrapper("src", "cmp","mdm");
+            var utmParamWrapper = new UtmParamWrapper("src", "cmp","mdm", true);
             new UserProvider().SaveUtm(guest.ID, utmParamWrapper);
             Assert.AreEqual(1, UtmGuestReferrer.DataSource.Count());
             var utmEntity = UtmGuestReferrer.DataSource.First();
