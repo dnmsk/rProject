@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
@@ -12,6 +13,16 @@ namespace Project_B.Controllers {
     public class ModerateController : ProjectControllerBase {
         
         public ActionResult Index() {
+            return View(new StaticPageBaseModel(GetBaseModel()));
+        }
+
+        public ActionResult SiteText(SiteTextType siteText = SiteTextType.Unknown, string text = null) {
+
+            return View(new StaticPageBaseModel(GetBaseModel()));
+        }
+
+        public ActionResult ExternalLinks(int linkId = default(int), string text = null) {
+
             return View(new StaticPageBaseModel(GetBaseModel()));
         }
         

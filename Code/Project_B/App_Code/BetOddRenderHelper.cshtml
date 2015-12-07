@@ -19,7 +19,7 @@
 }
 
 @helper RenderBetOdd(BetOddType oddType, BetItemTransport currentBet, string additionalText = null) {
-<div class="text-" title="@currentBet.DateTimeUtc.ToString("dd'/'MM HH:00")">
+<div class="text-" title="@(currentBet.DateTimeUtc.ToString("dd'/'MM HH:") + (currentBet.DateTimeUtc.Minute / 10))0">
     @RenderAdvancedParam(oddType, currentBet.AdvancedParam)<b>@currentBet.Odd</b>@RenderOddSrcLink(currentBet) @Html.Raw(additionalText ?? string.Empty)
 </div>
 }

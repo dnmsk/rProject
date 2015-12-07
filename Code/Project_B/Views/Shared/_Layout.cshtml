@@ -11,11 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @RenderSection("Metatags", false)
     <title>@Model.StaticPageTransport.Title - @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderSiteName)</title>
+    <meta property="og:title" content="@Model.StaticPageTransport.Title - @LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderSiteName)" />
     @if (!Model.StaticPageTransport.Keywords.IsNullOrEmpty()) {
         <meta name="keywords" content="@Model.StaticPageTransport.Keywords"/>
     }
     @if (!Model.StaticPageTransport.Description.IsNullOrEmpty()) {
         <meta name="description" content="@Model.StaticPageTransport.Description"/>
+        <meta property="og:description" content="@Model.StaticPageTransport.Description" />
     }
     @SquishItMinifierStatic.Instance.MvcRenderCachedAssetTag()
 </head>

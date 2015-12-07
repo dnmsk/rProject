@@ -7,12 +7,16 @@
 @using Project_B.CodeServerSide.Enums
 @model Tuple<CompetitionTransport, DisplayColumnType>
 
+@functions{
+    const string timeFormat = "dd'/'MM HH:00";
+}
+
 @helper RenderDateTime(int currentYear, DateTime dateTime, int competitionID) {
     <a href="@Url.Action("Game", "Competition", new {id = competitionID})">
         @if (dateTime.Year != currentYear) {
             @dateTime.ToString("dd.MM.yyyy")<br />@dateTime.ToString("HH:mm")
         } else {
-            @dateTime.ToString("dd'/'MM HH:mm")
+            @dateTime.ToString(timeFormat)
         }
     </a>
 }
@@ -23,11 +27,11 @@
     if (currentBet !=null && currentBet.Odd != default(float)) {
         <td class="small @if(isSuccess) {@Html.Raw("success")}">
             @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                <div class="small" title="@(maxBet.DateTimeUtc.ToString("dd'/'MM HH:00") + " - Max")">@maxBet.Odd</div>
+                <div class="small" title="@(maxBet.DateTimeUtc.ToString(timeFormat) + " - Max")">@maxBet.Odd</div>
             }
             @BetOddRenderHelper.RenderBetOdd(oddType, currentBet)
             @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <div class="small" title="@(minBet.DateTimeUtc.ToString("dd'/'MM HH:00") + " - Min")">@minBet.Odd</div>
+                <div class="small" title="@(minBet.DateTimeUtc.ToString(timeFormat) + " - Min")">@minBet.Odd</div>
             }
         </td>
     } else {

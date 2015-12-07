@@ -48,9 +48,9 @@
         @Html.TextAreaFor(m => m.StaticPageTransport.Content)
         <br />
         <table class="table table-hover">
-            <tr><td>Title</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Title)</td></tr>
-            <tr><td>Keywords</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Keywords)</td></tr>
-            <tr><td>Description</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Description)</td></tr>
+            <tr><td>Title</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Title, new { style = "width: 100%; max-width: none;"})</td></tr>
+            <tr><td>Keywords</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Keywords, new { style = "width: 100%; max-width: none;" })</td></tr>
+            <tr><td>Description</td><td>@Html.TextBoxFor(m => m.StaticPageTransport.Description, new { style = "width: 100%; max-width: none;" })</td></tr>
             <tr>
                 <td>Language</td>
                 <td>

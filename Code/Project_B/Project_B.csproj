@@ -476,6 +476,8 @@
     <Content Include="Views\Moderate\Files.cshtml" />
     <Content Include="Views\Moderate\File.cshtml" />
     <Content Include="Views\Competition\Profitable.cshtml" />
+    <Content Include="Views\Moderate\ExternalLinks.cshtml" />
+    <Content Include="Views\Moderate\SiteText.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
