@@ -59,8 +59,7 @@ namespace MainLogic.WebFiles {
                     }
                 }
                 return _currentUser;
-            }
-            set {
+            } set {
                 if (value == null) {
                     _currentUser = new SessionModule(CurrentUser.GuestID);
                     FormsAuthentication.SignOut();

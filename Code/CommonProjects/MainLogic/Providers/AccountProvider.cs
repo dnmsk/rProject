@@ -25,6 +25,17 @@ namespace MainLogic.Providers {
                         .IsExists()) {
                     return false;
                 }
+                if (AccountIdentity.DataSource
+                                   .WhereEquals(AccountIdentity.Fields.GuestID, guestid)
+                                   .IsExists()) {
+                    var oldGuest = Guest.DataSource.GetByKey(guestid);
+                    var newGuest = new Guest {
+                        Ip = oldGuest.Ip,
+                        Datecreated = DateTime.UtcNow
+                    };
+                    newGuest.Save();
+                    guestid = oldGuest.ID;
+                }
                 return new AccountIdentity {
                     Datecreated = DateTime.UtcNow,
                     GuestID = guestid,

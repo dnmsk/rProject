@@ -114,7 +114,7 @@ namespace Project_B.Controllers {
                 var result = BusinessLogic.AccountProvider.RegisterWithEmail(CurrentUser.GuestID, model.Email, model.Password);// UserManager.Create(user, model.Password);
                 if (result) {
                     var accountID = BusinessLogic.AccountProvider.LoginWithEmail(model.Email, model.Password);
-                    CurrentUser = new SessionModule(CurrentUser.GuestID, accountID.Item2);
+                    CurrentUser = new SessionModule((int) accountID.Item1, accountID.Item2);
                     //SignInManager.SignIn(user, false, false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
