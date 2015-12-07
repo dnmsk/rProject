@@ -3,6 +3,9 @@
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
+@section Metatags{
+    <meta name="document-state" content="Dynamic" />
+}
 @{
     var filterModel = Model.ControllerModel.Filter;
     var source = new {

@@ -4,6 +4,9 @@
 @using Project_B.CodeClientSide.Helper
 @using Project_B.Models
 @model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
+@section Metatags{
+    <meta name="document-state" content="Static" />
+}
 @{
     var sportType = Model.ControllerModel.CompetitionTransport.SportType;
     var competition = Model.ControllerModel.CompetitionTransport;

@@ -1,6 +1,9 @@
 ﻿@using CommonUtils.ExtendedTypes
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
+@section Metatags{
+    <meta name="document-state" content="Dynamic" />
+}
 @{
     var competition = Model.ControllerModel.Competitions.FirstOrDefault();
     if (competition != null) {
