@@ -14,7 +14,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, BrokerType.All, id);
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel { 
@@ -22,7 +22,7 @@ namespace Project_B.Controllers {
                     Filter = new FilterModel {
                         LimitToDisplayInGroup = 4,
                         SportType = id,
-                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
                     }
                }
             });
@@ -31,21 +31,21 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, null, new[] {id});
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, BrokerType.All, null, new[] {id});
             itemData.Each(FixToUserTime);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds;
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds;
             return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageCompetitionItemID)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, BrokerType.All, BrokerType.All, id);
             FixToUserTime(itemData.CompetitionTransport);
             return View(new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
@@ -54,7 +54,7 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageCompetitionProfitable)]
         public ActionResult Profitable(SportType id = SportType.Unknown) {
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, BrokerType.All, BrokerType.All, id);
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
@@ -62,7 +62,7 @@ namespace Project_B.Controllers {
                     Filter = new FilterModel {
                         LimitToDisplayInGroup = 4,
                         SportType = id,
-                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
                     }
                 }
             });

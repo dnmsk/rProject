@@ -1,0 +1,13 @@
+﻿@using System.Web.Mvc
+@using Helper = System.Web.Mvc.HtmlHelper;
+@functions {
+    private static new Helper Html {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Html;
+        }
+    }
+}
+
+@helper SetFullScreenWidth() {
+    @Html.Raw(string.Format("data-fullwidth='true'"))
+}

@@ -42,7 +42,7 @@
         }
     </script>
     <h2>Welcome to Service's editor zone! You're edit "@Model.PageKey" page.</h2>
-    <form action="@Url.Action("StaticPageEdit", "Assets", new {id = (Model.PageKey).ToString()})" id="staticPageEditorZone" style="display: none;">
+    <form action="@Url.Action("StaticPageEdit", "Moderate", new {id = (Model.PageKey).ToString()})" id="staticPageEditorZone" style="display: none;">
         @Html.HiddenFor(m => m.StaticPageTransport.ID)
         @Html.TextAreaFor(m => m.StaticPageTransport.Content)
         <br />
@@ -81,7 +81,7 @@
         }
 
         function loadPagesForType() {
-            $.ajax('@Url.Action("PagesForType", "Assets", new {id = Model.PageKey})', {
+            $.ajax('@Url.Action("PagesForType", "Moderate", new {id = Model.PageKey})', {
                 type: 'GET',
                 success: function (data) {
                     $('#pagesForTypeContainer').html(data);

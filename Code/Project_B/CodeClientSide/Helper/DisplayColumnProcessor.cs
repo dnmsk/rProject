@@ -31,9 +31,9 @@ namespace Project_B.CodeClientSide.Helper {
         };
 
         private static readonly Dictionary<SiteTextType, DisplayColumnType> _displayColumnHeadersMap = new Dictionary<SiteTextType, DisplayColumnType> {
-            { SiteTextType.GridOddTitleWin1, DisplayColumnType.TraditionalOdds},
-            { SiteTextType.GridOddTitleDraw, DisplayColumnType.TraditionalOdds},
-            { SiteTextType.GridOddTitleWin2, DisplayColumnType.TraditionalOdds},
+            { SiteTextType.GridOddTitleWin1, DisplayColumnType.BaseOdds},
+            { SiteTextType.GridOddTitleDraw, DisplayColumnType.BaseOdds},
+            { SiteTextType.GridOddTitleWin2, DisplayColumnType.BaseOdds},
             { SiteTextType.GridOddTitleWin1Draw, DisplayColumnType.AdditionalOdds},
             { SiteTextType.GridOddTitleWin1Win2, DisplayColumnType.AdditionalOdds},
             { SiteTextType.GridOddTitleDrawWin2, DisplayColumnType.AdditionalOdds},
@@ -42,13 +42,13 @@ namespace Project_B.CodeClientSide.Helper {
             { SiteTextType.GridOddTitleUnder, DisplayColumnType.TotalOdds},
             { SiteTextType.GridOddTitleOver, DisplayColumnType.TotalOdds},
             { SiteTextType.GridOddResult, DisplayColumnType.Result},
-            { SiteTextType.GridOddRoi, DisplayColumnType.Roi1X2},
+            { SiteTextType.GridOddRoi, DisplayColumnType.MaxRoi},
         };
 
         private static readonly Dictionary<BetOddType, DisplayColumnType> _displayColumnOddMap = new Dictionary<BetOddType, DisplayColumnType> {
-            { BetOddType.Win1, DisplayColumnType.TraditionalOdds},
-            { BetOddType.Draw, DisplayColumnType.TraditionalOdds},
-            { BetOddType.Win2, DisplayColumnType.TraditionalOdds},
+            { BetOddType.Win1, DisplayColumnType.BaseOdds},
+            { BetOddType.Draw, DisplayColumnType.BaseOdds},
+            { BetOddType.Win2, DisplayColumnType.BaseOdds},
             { BetOddType.Win1Draw, DisplayColumnType.AdditionalOdds},
             { BetOddType.Win1Win2, DisplayColumnType.AdditionalOdds},
             { BetOddType.DrawWin2, DisplayColumnType.AdditionalOdds},

@@ -12,7 +12,7 @@ namespace Project_B {
             routes.Add(new LowercaseRoute(
                 url: "Assets/{action}/{id}",
                 defaults: new RouteValueDictionary(new { controller = "Assets", action = "Index", id = UrlParameter.Optional }),
-                routeHandler:new MvcRouteHandler()));
+                routeHandler: new MvcRouteHandler()));
             routes.Add(new LowercaseRoute(
                 url: "File/{id}/{type}/{hash}",
                 defaults: new RouteValueDictionary(new { controller = "File", action = "Index" }),

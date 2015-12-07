@@ -9,7 +9,7 @@
 }
 
 <h3>File uploading</h3>
-@using (Html.BeginForm("File", "Assets", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+@using (Html.BeginForm("File", "Moderate", FormMethod.Post, new { enctype = "multipart/form-data" })) {
     <input type="file" name="file"/>
     <input type="submit" value="Upload"/>
 }

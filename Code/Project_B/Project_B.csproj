@@ -346,7 +346,9 @@
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ModerateController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -391,10 +393,15 @@
     <None Include=".bin\node.cmd" />
     <Content Include="App_Code\RedirectLinkHelperHtml.cshtml" />
     <Content Include="App_Code\BetOddRenderHelper.cshtml" />
+    <Content Include="App_Code\LogHelper.cshtml" />
+    <Content Include="App_Code\ComponentHelper.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Common.js" />
+    <Content Include="Scripts\Log.js" />
+    <Content Include="Scripts\NinjaBag.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
@@ -413,6 +420,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Custom\Site.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -464,15 +472,17 @@
     <Content Include="Views\Bookmaker\BookmakerPage.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\Element\_ListCompetitionUniqueWriter.cshtml" />
-    <Content Include="Views\Assets\Index.cshtml" />
-    <Content Include="Views\Assets\Files.cshtml" />
-    <Content Include="Views\Assets\File.cshtml" />
+    <Content Include="Views\Moderate\Index.cshtml" />
+    <Content Include="Views\Moderate\Files.cshtml" />
+    <Content Include="Views\Moderate\File.cshtml" />
     <Content Include="Views\Competition\Profitable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Less\" />
+    <Folder Include="Views\Assets\" />
     <Folder Include="Views\File\" />
+    <Folder Include="Views\Log\" />
     <Folder Include="Views\Redirect\" />
   </ItemGroup>
   <ItemGroup>

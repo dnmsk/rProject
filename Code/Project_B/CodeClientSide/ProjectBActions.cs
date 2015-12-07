@@ -1,5 +1,5 @@
 ﻿namespace Project_B.CodeClientSide {
-    public enum ProjectBActions {
+    public enum ProjectBActions : int{
         Undefined = 0,
 
         //NOTE Page open event from 1000 to 2000
@@ -36,6 +36,8 @@
         PageAccountLoginPost = 1901,
 
         PageErrorNotFound = 1990,
+        PageErrorInternal = 1991,
+
         PageRedirect = 1998,
         PageRedirectConcrete = 1999,
     }

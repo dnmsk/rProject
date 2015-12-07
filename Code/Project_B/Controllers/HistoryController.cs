@@ -29,7 +29,7 @@ namespace Project_B.Controllers {
                 toDate = DateTime.UtcNow;
                 fromDate = toDate.Date;
             }
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, fromDate, toDate, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, fromDate, toDate, id);
             itemData.Each(FixToUserTime);
             return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
@@ -37,7 +37,7 @@ namespace Project_B.Controllers {
                     Filter = new FilterModel {
                         SportType = id,
                         DateUtc = fromDate,
-                        DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }
                 }
             });
@@ -46,28 +46,28 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
             itemData.Each(FixToUserTime);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return View(staticPageBaseModel);
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
         public ActionResult Competitor(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, BrokerType.All, BrokerType.Default, id);
             itemData.Each(FixToUserTime);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.Roi1X2 | DisplayColumnType.TraditionalOdds | DisplayColumnType.HandicapOdds | DisplayColumnType.TotalOdds | DisplayColumnType.Result;
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return View(staticPageBaseModel);
         }
     }

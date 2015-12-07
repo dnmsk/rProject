@@ -1,0 +1,18 @@
+﻿@using System.Web.Mvc
+@using Project_B.CodeClientSide
+@using Helper = System.Web.Mvc.HtmlHelper;
+@functions {
+    private static new Helper Html {
+        get {
+            return ((WebViewPage)WebPageContext.Current.Page).Html;
+        }
+    }
+}
+
+@helper Log(ProjectBActions feature) {
+    @Html.Raw(string.Format("data-feature='{0}'", (int) feature))
+}
+
+@helper Log(ProjectBActions feature, string obj) {
+    @Html.Raw(string.Format("data-feature='{0}' data-feature-id=\"{1}\" ", (int) feature, obj))
+}

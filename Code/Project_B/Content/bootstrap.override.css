@@ -47,5 +47,9 @@ footer {
 
 .jumbotron {
     background-color: #323232;
-    background-color: rgba(50, 50, 50, 0.66);
+    background-color: rgba(50, 50, 50, 0.8);
+}
+
+a.active {
+    text-decoration: underline;
 }

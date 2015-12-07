@@ -102,7 +102,7 @@ namespace MainLogic.Providers {
         }
         public void SaveUtm(int guestid, UtmParamWrapper utmParams) {
             InvokeSafe(() => {
-                if (utmParams.Any()) {
+                if (guestid != UserAgentValidationPolicy.BOT_GUID || utmParams.Any()) {
                     new UtmGuestReferrer {
                         Datecreated = DateTime.UtcNow,
                         GuestID = guestid,

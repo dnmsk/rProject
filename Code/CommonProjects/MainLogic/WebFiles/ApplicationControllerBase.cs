@@ -181,7 +181,7 @@ namespace MainLogic.WebFiles {
                                         ? domain
                                         : referrer.GetDomain())
                                     // если заход по прямому урлу
-                                    : "direct"),
+                                    : string.Empty),
                     request.Params.Get(UTM_CAMPAIGN_PARAM_NAME) ?? string.Empty,
                     request.Params.Get(UTM_MEDIUM_PARAM_NAME) ?? string.Empty
                 );

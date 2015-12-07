@@ -21,6 +21,20 @@
 </head>
 <body>
     @SquishItMinifierStatic.Instance.MvcRenderCachedAssetTag(Model.AdditionHtmlAssets)
+    <script type="text/javascript">
+        window.ninjaBag.links = new window.ninjaBag.baseObjects.Store(@Html.Raw(
+            Json.Encode(new {
+                Log = new {
+                    JsError = Url.Action("JsError", "Log"),
+                    Feature = Url.Action("Feature", "Log")
+                }
+            })));
+        window.ninjaBag.documentObjects.append(@Html.Raw(Json.Encode(new {
+                Const = new {
+                    CookieGmt = ProjectControllerBase.GMT_COOKIE_NAME
+                }
+            })));
+    </script>
     @Html.Partial("_MainMenu", Model)
     <div class="container body-content" id="container">
         @Html.Raw(ExternalLinkHelper.Instance.ProcessStaticContentForExternalLink(Url, Model, Model.StaticPageTransport.Content))
@@ -30,9 +44,21 @@
     @Html.Partial("Statistics/YandexMetrika", Model)
     @Html.Partial("Statistics/GoogleAnalytics", Model)
     <script type="text/javascript">
-        var expires = new Date();
-        expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
-        document.cookie = '@ProjectControllerBase.GMT_COOKIE_NAME' + '=' + -new Date().getTimezoneOffset() + ';expires=' + expires.toUTCString();
+        $(document).ready(function() {
+            var keys = Object.keys(window.ninjaBag.functionsOnReady);
+            for (var key in keys) {
+                if (keys.hasOwnProperty(key)) {
+                    var obj = window.ninjaBag.functionsOnReady[keys[key]];
+                    if (typeof(obj) == "function") {
+                        try {
+                            obj();
+                        } catch (ex) {
+                            window.logError(ex, 'onload');
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

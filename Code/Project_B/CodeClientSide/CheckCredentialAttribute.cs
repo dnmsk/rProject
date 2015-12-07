@@ -20,8 +20,7 @@ namespace Project_B.CodeClientSide {
         public override void OnActionExecuting(ActionExecutingContext filterContext) {
             var controller = filterContext.Controller as ApplicationControllerBase;
             if (controller == null || controller.GetBaseModel().GetUserPolicyState<bool>(_policyName) != _successValue) {
-                filterContext.RequestContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                filterContext.Result = new HttpUnauthorizedResult();
+                filterContext.Result = new HttpNotFoundResult();
                 return;
             }
             base.OnActionExecuting(filterContext);

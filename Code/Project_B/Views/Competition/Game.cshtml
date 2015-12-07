@@ -30,7 +30,7 @@
         <a href="@Url.Action("Game", "CompetitionLive", new { id = competition.CompetitionItems.First().CompetitionItemID})">Live</a>
     }
 </div>
-@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All.FlagDrop(DisplayColumnType.Roi1X2)))
+@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All.FlagDrop(DisplayColumnType.MaxRoi)))
 
 <div class="row">
     @BetOddRenderHelper.RenderRoiTable(Model.CurrentLanguage, sportType, competition)

@@ -12,7 +12,7 @@
 }
 
 <h3>File updating</h3>
-@using (Html.BeginForm("File", "Assets", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+@using (Html.BeginForm("File", "Moderate", FormMethod.Post, new { enctype = "multipart/form-data" })) {
     <input type="file" name="file"/>
     <input type="hidden" name="id" value="@file.Item1"/>
     <input type="submit" value="Upload" />
