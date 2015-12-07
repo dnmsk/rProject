@@ -90,6 +90,7 @@
     <Compile Include="MainLogicProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\UserProvider.cs" />
+    <Compile Include="WebFiles\NotModifiedResult.cs" />
     <Compile Include="WebFiles\Policy\ProductionPolicy.cs" />
     <Compile Include="WebFiles\SessionDataManager.cs" />
     <Compile Include="WebFiles\SessionModule.cs" />

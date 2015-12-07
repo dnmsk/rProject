@@ -1,4 +1,5 @@
-﻿using Project_B.CodeServerSide.Enums;
+﻿using System;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.TransportType {
     public class StaticPageTransport {
@@ -29,5 +30,10 @@ namespace Project_B.CodeClientSide.TransportType {
         public string Content { get; set; }
         public bool IsTop { get; set; }
         public bool IsPublished { get; set; }
+        public DateTime LastModifyDateUtc { get; set; }
+
+        public StaticPageTransport() {
+            LastModifyDateUtc = DateTime.MinValue;
+        }
     }
 }

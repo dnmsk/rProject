@@ -23,9 +23,7 @@ namespace Project_B.Models {
                     PageKey = ActionLogAttribute.GetPageActionId(projectController)
                 ) ?? new StaticPageTransport();
             SubNavigationType = projectController.SubNavigationType;
-            AdditionHtmlAssets = new List<string> {
-                "bk"
-            };
+            AdditionHtmlAssets = new List<string>();
         }
 
         public StaticPageBaseModel(BaseModel baseModel) : base(baseModel) {

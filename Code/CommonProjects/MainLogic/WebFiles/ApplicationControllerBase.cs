@@ -146,6 +146,19 @@ namespace MainLogic.WebFiles {
             return refData;
         }
 
+        protected NotModifiedResult TryGetNotModifiedResult(Func<DateTime> lastModifyByServer) {
+            DateTime lastModified;
+            var modifyByServer = lastModifyByServer();
+            if (DateTime.TryParse(Request.Headers["If-Modified-Since"], out lastModified)
+                    && lastModified >= modifyByServer) {
+                return new NotModifiedResult();
+            }
+            if (modifyByServer != DateTime.MinValue) {
+                Response.Cache.SetLastModified(modifyByServer);
+            }
+            return null;
+        }
+
         private static int CreateGuidInfo(HttpContextBase context) {
             var requestContext = context.Request;
             var responseContext = context.Response;

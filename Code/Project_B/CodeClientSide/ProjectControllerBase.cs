@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
@@ -46,5 +49,25 @@ namespace Project_B.CodeClientSide {
         }
 
         public virtual SubNavigationType SubNavigationType => SubNavigationType.None;
+
+        protected ActionResult GetActionResultWithStatus(Func<bool> isFound, Func<NotModifiedResult> notModifiedResult, Func<ActionResult> buildActionResult) {
+            if (!isFound()) {
+                return new HttpNotFoundResult();
+            }
+            return notModifiedResult() ?? buildActionResult();
+        }
+
+        protected NotModifiedResult GetNotModifiedResultForItems(List<CompetitionTransport> competitions) {
+            var utcNow = DateTime.UtcNow;
+            return TryGetNotModifiedResult(() => competitions.MaxOrDefault(c => c.CompetitionItems.MaxOrDefault(ci => {
+                return ci.CurrentBets?.Select(b => b.Value.DateTimeUtc).Union(new[] { ci.DateUtc }).Where(d => d < utcNow).MaxOrDefault(d => d, DateTime.MinValue) ?? DateTime.MinValue;
+            }, DateTime.MinValue), DateTime.MinValue));
+        }
+        protected NotModifiedResult GetNotModifiedResultForGame(CompetitionAdvancedTransport competitionAdvanced) {
+            var utcNow = DateTime.UtcNow;
+            return TryGetNotModifiedResult(() => competitionAdvanced.CompetitionTransport.CompetitionItems.MaxOrDefault(ci => {
+                return ci.CurrentBets?.Select(b => b.Value.DateTimeUtc).Union(new[] { ci.DateUtc }).Where(d => d < utcNow).MaxOrDefault(d => d, DateTime.MinValue) ?? DateTime.MinValue;
+            }, DateTime.MinValue));
+        }
     }
 }

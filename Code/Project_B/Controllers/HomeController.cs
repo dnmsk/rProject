@@ -10,7 +10,11 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
-            return View(new StaticPageBaseModel(this));
+            var model = new StaticPageBaseModel(this);
+            return GetActionResultWithStatus(
+                () => true,
+                () => TryGetNotModifiedResult(() => model.StaticPageTransport.LastModifyDateUtc),
+                () => View(model));
         }
 
         [ActionLog(ProjectBActions.PageHomeAbout)]

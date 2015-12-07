@@ -30,45 +30,60 @@ namespace Project_B.Controllers {
                 fromDate = toDate.Date;
             }
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, fromDate, toDate, id);
-            itemData.Each(FixToUserTime);
-            return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
-                    Competitions = itemData,
-                    Filter = new FilterModel {
-                        SportType = id,
-                        DateUtc = fromDate,
-                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
-                    }
-                }
-            });
+            return GetActionResultWithStatus(
+                () => true,
+                () => GetNotModifiedResultForItems(itemData),
+                () => {
+                    itemData.Each(FixToUserTime);
+                    return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                        ControllerModel = new CompetitionRegularModel {
+                            Competitions = itemData,
+                            Filter = new FilterModel {
+                                SportType = id,
+                                DateUtc = fromDate,
+                                DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                            }
+                        }
+                    });
+                });
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
-            itemData.Each(FixToUserTime);
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
-                    Competitions = itemData,
-                }
-            };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return View(staticPageBaseModel);
+            return GetActionResultWithStatus(
+                () => true,
+                () => GetNotModifiedResultForItems(itemData),
+                () => {
+                    itemData.Each(FixToUserTime);
+                    var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                        ControllerModel = new CompetitionRegularModel {
+                            Competitions = itemData,
+                        }
+                    };
+                    staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
+                    return View(staticPageBaseModel);
+                });
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
         public ActionResult Competitor(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, BrokerType.All, BrokerType.Default, id);
-            itemData.Each(FixToUserTime);
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
-                    Competitions = itemData,
-                }
-            };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return View(staticPageBaseModel);
+            return GetActionResultWithStatus(
+                () => true,
+                () => GetNotModifiedResultForItems(itemData),
+                () => {
+                    itemData.Each(FixToUserTime);
+                    var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                        ControllerModel = new CompetitionRegularModel {
+                            Competitions = itemData,
+                        }
+                    };
+                    staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
+                    return View(staticPageBaseModel);
+                });
         }
     }
 }

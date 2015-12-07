@@ -56,6 +56,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     page = SiteStaticPage.DataSource
                                     .WhereEquals(SiteStaticPage.Fields.Pagetype, (short)(int)pageType)
                                     .GetByKey(data.ID);
+                    page.Datemodifiedutc = DateTime.UtcNow;
                 }
                 page.Content = data.Content;
                 page.Description = data.Description;
@@ -164,6 +165,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     Title = entity.Title,
                     IsPublished = entity.Datepublishedutc.HasValue,
                     IsTop = entity.Istop,
+                    LastModifyDateUtc = entity.Datemodifiedutc
                 };
         }
 
