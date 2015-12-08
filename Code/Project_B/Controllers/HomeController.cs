@@ -11,8 +11,8 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
             var model = new StaticPageBaseModel(this);
-            return GetActionResultWithStatus(
-                () => true,
+            return GetActionResultWithCacheStatus(
+                true,
                 () => TryGetNotModifiedResult(() => model.StaticPageTransport.LastModifyDateUtc),
                 () => View(model));
         }

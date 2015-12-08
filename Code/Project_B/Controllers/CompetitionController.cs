@@ -15,21 +15,22 @@ namespace Project_B.Controllers {
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, BrokerType.All, id);
-            return GetActionResultWithStatus(
-                () => true,
-                () => GetNotModifiedResultForItems(itemData),
+            var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                ControllerModel = new CompetitionRegularModel {
+                    Competitions = itemData,
+                    Filter = new FilterModel {
+                        LimitToDisplayInGroup = 4,
+                        SportType = id,
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
+                    }
+                }
+            };
+            return GetActionResultWithCacheStatus(
+                true,
+                () => TryGetNotModifiedResultForItems(itemData, model.StaticPageTransport.LastModifyDateUtc),
                 () => {
                     itemData.Each(FixToUserTime);
-                    return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                        ControllerModel = new CompetitionRegularModel {
-                            Competitions = itemData,
-                            Filter = new FilterModel {
-                                LimitToDisplayInGroup = 4,
-                                SportType = id,
-                                DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
-                            }
-                        }
-                    });
+                    return View(model);
                 });
         }
 
@@ -37,17 +38,17 @@ namespace Project_B.Controllers {
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, BrokerType.All, BrokerType.All, null, new[] {id});
-            return GetActionResultWithStatus(
-                () => itemData != null && itemData.Count > 0,
-                () => GetNotModifiedResultForItems(itemData),
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                ControllerModel = new CompetitionRegularModel {
+                    Competitions = itemData,
+                }
+            };
+            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds;
+            return GetActionResultWithCacheStatus(
+                itemData != null && itemData.Count > 0,
+                () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
                     itemData.Each(FixToUserTime);
-                    var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                        ControllerModel = new CompetitionRegularModel {
-                            Competitions = itemData,
-                        }
-                    };
-                    staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds;
                     return View(staticPageBaseModel);
                 });
         }
@@ -56,35 +57,37 @@ namespace Project_B.Controllers {
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, BrokerType.All, BrokerType.All, id);
-            return GetActionResultWithStatus(
-                () => itemData?.CompetitionTransport != null,
-                () => GetNotModifiedResultForGame(itemData),
+            var model = new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
+                ControllerModel = itemData
+            };
+            return GetActionResultWithCacheStatus(
+                itemData?.CompetitionTransport != null,
+                () => TryGetNotModifiedResultForGame(itemData, model.StaticPageTransport.LastModifyDateUtc),
                 () => {
                     FixToUserTime(itemData.CompetitionTransport);
-                    return View(new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
-                        ControllerModel = itemData
-                    });
+                    return View(model);
                 });
         }
 
         [ActionLog(ProjectBActions.PageCompetitionProfitable)]
         public ActionResult Profitable(SportType id = SportType.Unknown) {
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, BrokerType.All, BrokerType.All, id);
-            return GetActionResultWithStatus(
-                () => true,
-                () => GetNotModifiedResultForItems(itemData),
+            var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
+                ControllerModel = new CompetitionRegularModel {
+                    Competitions = itemData,
+                    Filter = new FilterModel {
+                        LimitToDisplayInGroup = 4,
+                        SportType = id,
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
+                    }
+                }
+            };
+            return GetActionResultWithCacheStatus(
+                true,
+                () => null,
                 () => {
                     itemData.Each(FixToUserTime);
-                    return View(new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                        ControllerModel = new CompetitionRegularModel {
-                            Competitions = itemData,
-                            Filter = new FilterModel {
-                                LimitToDisplayInGroup = 4,
-                                SportType = id,
-                                DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
-                            }
-                        }
-                    });
+                    return View(model);
                 });
         }
     }

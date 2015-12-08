@@ -150,7 +150,7 @@ namespace MainLogic.WebFiles {
             DateTime lastModified;
             var modifyByServer = lastModifyByServer();
             if (DateTime.TryParse(Request.Headers["If-Modified-Since"], out lastModified)
-                    && lastModified >= modifyByServer) {
+                    && Math.Abs((modifyByServer - lastModified).TotalSeconds) <= 1) {
                 return new NotModifiedResult();
             }
             if (modifyByServer != DateTime.MinValue) {
