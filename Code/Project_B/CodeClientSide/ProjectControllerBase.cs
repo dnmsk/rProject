@@ -64,12 +64,12 @@ namespace Project_B.CodeClientSide {
 
         protected NotModifiedResult TryGetNotModifiedResultForItems(List<CompetitionTransport> competitions, DateTime minModifiedDate) {
             var utcNow = DateTime.UtcNow;
-            return TryGetNotModifiedResult(() => competitions.MaxOrDefault(c =>
+            return TryGetNotModifiedResult(competitions.MaxOrDefault(c =>
                 c.CompetitionItems.SelectMany(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0])).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate));
         }
         protected NotModifiedResult TryGetNotModifiedResultForGame(CompetitionAdvancedTransport competitionAdvanced, DateTime minModifiedDate) {
             var utcNow = DateTime.UtcNow;
-            return TryGetNotModifiedResult(() => competitionAdvanced.CompetitionTransport.
+            return TryGetNotModifiedResult(competitionAdvanced.CompetitionTransport.
                 CompetitionItems.MaxOrDefault(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0]).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate));
         }
     }

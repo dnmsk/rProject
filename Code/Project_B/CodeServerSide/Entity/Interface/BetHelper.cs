@@ -38,7 +38,6 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                         break;
                     case BetOddType.Handicap1:
                         newBet.Hcap1 = odd.Factor;
-                        //newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
                         break;
                     case BetOddType.Handicap2:
                         newBet.Hcap2 = odd.Factor;
@@ -46,7 +45,6 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                         break;
                     case BetOddType.TotalUnder:
                         newBet.Totalunder = odd.Factor;
-                        //newBet.Totaldetail = (odd.AdvancedParam ?? default(float));
                         break;
                     case BetOddType.TotalOver:
                         newBet.Totalover = odd.Factor;
@@ -111,7 +109,8 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                 newBet.Save();
                 if (canCreateNewBetAdvanced && createNewBet) {
                     newBetAdvanced.BetID = newBet.ID;
-                    newBetAdvanced.Save();
+                    newBetAdvanced.ID = newBet.ID;
+                    newBetAdvanced.Insert();
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
@@ -84,7 +85,7 @@ namespace Project_B.Controllers {
             };
             return GetActionResultWithCacheStatus(
                 true,
-                () => null,
+                () => TryGetNotModifiedResult(DateTime.MinValue),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(model);

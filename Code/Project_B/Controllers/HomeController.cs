@@ -13,7 +13,7 @@ namespace Project_B.Controllers {
             var model = new StaticPageBaseModel(this);
             return GetActionResultWithCacheStatus(
                 true,
-                () => TryGetNotModifiedResult(() => model.StaticPageTransport.LastModifyDateUtc),
+                () => TryGetNotModifiedResult(model.StaticPageTransport.LastModifyDateUtc),
                 () => View(model));
         }
 

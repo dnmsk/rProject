@@ -146,15 +146,18 @@ namespace MainLogic.WebFiles {
             return refData;
         }
 
-        protected NotModifiedResult TryGetNotModifiedResult(Func<DateTime> lastModifyByServer) {
+        protected NotModifiedResult TryGetNotModifiedResult(DateTime lastModifyByServer) {
             DateTime lastModified;
-            var modifyByServer = lastModifyByServer();
             if (DateTime.TryParse(Request.Headers["If-Modified-Since"], out lastModified)
-                    && Math.Abs((modifyByServer - lastModified).TotalSeconds) <= 1) {
+                    && Math.Abs((lastModifyByServer - lastModified).TotalSeconds) <= 1) {
                 return new NotModifiedResult();
             }
-            if (modifyByServer != DateTime.MinValue) {
-                Response.Cache.SetLastModified(modifyByServer);
+            if (lastModifyByServer == DateTime.MinValue) {
+                var now = DateTime.UtcNow;
+                Response.Cache.SetLastModified(now);
+                Response.Cache.SetExpires(now);
+            } else {
+                Response.Cache.SetLastModified(lastModifyByServer);
             }
             return null;
         }

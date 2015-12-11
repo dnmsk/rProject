@@ -1,5 +1,6 @@
 ﻿namespace Project_B.CodeServerSide.Entity.Interface {
     public interface IBetAdvanced<T> {
+        T ID { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -26,5 +27,6 @@
         float? Drawwin2 { get; set; }
 
         bool Save();
+        bool Insert();
     }
 }
