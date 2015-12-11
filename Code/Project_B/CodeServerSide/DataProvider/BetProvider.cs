@@ -33,7 +33,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var betWithAdvancedDb = Bet.DataSource
                     .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Bet.Fields.CompetitionitemID, competitionItemID)
-                    .WhereEquals(Bet.Fields.BrokerID, (int) brokerType)
+                    .WhereEquals(Bet.Fields.BrokerID, (short) brokerType)
                     .Sort(Bet.Fields.ID, SortDirection.Desc)
                     .First();
                 var betAdvancedDb = betWithAdvancedDb != null ? betWithAdvancedDb.GetJoinedEntity<BetAdvanced>() : null;
@@ -78,7 +78,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var state = _betTypeByHour[(short)dateUtc.Hour];
                 var systemState = SystemStateBet.DataSource
                     .WhereEquals(SystemStateBet.Fields.Dateutc, dateUtc.Date)
-                    .WhereEquals(SystemStateBet.Fields.Brokerid, (int) brokerType)
+                    .WhereEquals(SystemStateBet.Fields.Brokerid, (short) brokerType)
                     .First();
                 if (systemState == null) {
                     systemState = new SystemStateBet {
@@ -97,7 +97,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var state = _betTypeByHour[(short)dateUtc.Hour];
                 var systemState = SystemStateBet.DataSource
                     .WhereEquals(SystemStateBet.Fields.Dateutc, dateUtc.Date)
-                    .WhereEquals(SystemStateBet.Fields.Brokerid, (int) brokerType)
+                    .WhereEquals(SystemStateBet.Fields.Brokerid, (short) brokerType)
                     .First();
                 if (systemState == null) {
                     systemState = new SystemStateBet {

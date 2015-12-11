@@ -69,7 +69,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }
             var betWithAdvancedDb = BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.ID, BetLive.Fields.ID, RetrieveMode.Retrieve)
-                .WhereEquals(BetLive.Fields.BrokerID, (int) brokerType)
+                .WhereEquals(BetLive.Fields.BrokerID, (short) brokerType)
                 .WhereEquals(BetLive.Fields.CompetitionitemID, competitionItemID)
                 .Sort(BetLive.Fields.ID, SortDirection.Desc)
                 .Sort(BetLiveAdvanced.Fields.ID, SortDirection.Desc)
