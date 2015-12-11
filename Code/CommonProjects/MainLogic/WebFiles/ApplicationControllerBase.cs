@@ -81,22 +81,15 @@ namespace MainLogic.WebFiles {
         
         protected override void ExecuteCore() {
             if (EnableStoreRequestData) {
-                InitCookies(HttpContext);
+                LogAdditionalUserInfo(CurrentUser.GuestID, InitUtmCookies(HttpContext.Request, HttpContext.Response), HttpContext.Request.UrlReferrer, HttpContext.Request.Url, HttpContext.Request.Browser, HttpContext.Request.UserAgent);
             }
             base.ExecuteCore();
         }
-
-        private void InitCookies(HttpContextBase httpContext) {
-            InitUtmCookies(httpContext.Request, httpContext.Response);
-            var guestID = CurrentUser.GuestID;
-            var urlReferrer = httpContext.Request.UrlReferrer;
-            var url = httpContext.Request.Url;
-            var httpBrowserCapabilitiesBase = httpContext.Request.Browser;
-            var userAgent = httpContext.Request.UserAgent;
-
+        
+        private static void LogAdditionalUserInfo(int guestID, UtmParamWrapper utm, Uri urlReferrer, Uri url, HttpBrowserCapabilitiesBase httpBrowserCapabilitiesBase, string userAgent) {
             SlothMovePlodding.AddAction(() => {
                 BusinessLogic.UserProvider.SaveReferrer(guestID, urlReferrer?.ToString() ?? string.Empty, url?.ToString() ?? string.Empty);
-                BusinessLogic.UserProvider.SaveUtm(guestID, UtmParam);
+                BusinessLogic.UserProvider.SaveUtm(guestID, utm);
                 var browserInfo = new BrowserInfo(httpBrowserCapabilitiesBase, userAgent);
                 BusinessLogic.UserProvider.SaveTechInfo(guestID, new GuestTechInfoTransport {
                     Version = browserInfo.CurrentVersion(),
@@ -195,7 +188,7 @@ namespace MainLogic.WebFiles {
             return guid;
         }
 
-        private void InitUtmCookies(HttpRequestBase request, HttpResponseBase response) {
+        private UtmParamWrapper InitUtmCookies(HttpRequestBase request, HttpResponseBase response) {
             var domain = SiteConfiguration.ProductionHostName;
             var referrer = request.UrlReferrer != null ? request.UrlReferrer.ToString() : string.Empty;
             if (request.Cookies[UTM_COOKIE_NAME] == null) {
@@ -221,6 +214,7 @@ namespace MainLogic.WebFiles {
             } else {
                 UtmParam = UtmParamWrapper.DeserializeParamWrapper(CryptoManager.DecryptString(request.Cookies[UTM_COOKIE_NAME].Value));
             }
+            return UtmParam;
         }
     }
 }
