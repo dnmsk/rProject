@@ -14,7 +14,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageLiveIndexConcrete, (short)id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, BrokerType.All, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, null, null, id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -33,7 +33,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, BrokerType.All, BrokerType.All, null, new[] { id });
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, null, null, null, new[] { id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -52,7 +52,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageLiveCompetitionItemID)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, BrokerType.All, BrokerType.All, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, null, null, id);
             var model = new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
             };

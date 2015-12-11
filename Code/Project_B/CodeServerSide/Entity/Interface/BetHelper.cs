@@ -108,7 +108,6 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                 newBet.Datecreatedutc = DateTime.UtcNow;
                 newBet.Save();
                 if (canCreateNewBetAdvanced && createNewBet) {
-                    newBetAdvanced.BetID = newBet.ID;
                     newBetAdvanced.ID = newBet.ID;
                     newBetAdvanced.Insert();
                 }

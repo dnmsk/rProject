@@ -31,7 +31,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     return null;
                 }
                 var betWithAdvancedDb = Bet.DataSource
-                    .Join(JoinType.Left, BetAdvanced.Fields.BetID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                    .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Bet.Fields.CompetitionitemID, competitionItemID)
                     .WhereEquals(Bet.Fields.BrokerID, (int) brokerType)
                     .Sort(Bet.Fields.ID, SortDirection.Desc)

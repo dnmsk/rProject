@@ -1,11 +1,9 @@
 ﻿using System;
 
 namespace Project_B.CodeServerSide.Enums {
-    [Flags]
-    public enum BrokerType : int {
+    public enum BrokerType : short {
         Default = 0,
-        All = RedBlue | GrayBlue,
-        RedBlue = 0x01,
-        GrayBlue = 0x02,
+        RedBlue = 1,
+        GrayBlue = 2,
     }
 }

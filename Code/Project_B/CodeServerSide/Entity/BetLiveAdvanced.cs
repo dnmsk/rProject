@@ -24,11 +24,6 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] BetliveID,
-
-        /// <summary>
-        /// 
-        /// </summary>
             [DBField(DbType.Single)] Draw,
 
         /// <summary>
@@ -65,24 +60,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (long) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public long BetliveID {
-            get { return (long) this[Fields.BetliveID]; }
-            set { ForceSetData(Fields.BetliveID, value); }
-        }
-
-        public long BetID {
-            get {
-                return BetliveID;
-            }
-            set {
-                BetliveID = value;
-            }
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>

@@ -29,7 +29,7 @@ namespace Project_B.Controllers {
                 toDate = DateTime.UtcNow;
                 fromDate = toDate.Date;
             }
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, fromDate, toDate, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, toDate, id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -52,7 +52,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, BrokerType.All, BrokerType.Default, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] { BrokerType.Default }, DateTime.MinValue, DateTime.MaxValue, null, new [] { id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -71,7 +71,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
         public ActionResult Competitor(int id) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, BrokerType.All, BrokerType.Default, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, null, new[] { BrokerType.Default }, id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,

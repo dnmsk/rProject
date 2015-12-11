@@ -4,11 +4,6 @@
         /// <summary>
         /// 
         /// </summary>
-        T BetID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         float? Draw { get; set; }
 
         /// <summary>

@@ -21,11 +21,6 @@ namespace Project_B.CodeServerSide.Entity {
         /// </summary>
             [DBField(DbType.Int32)] ID,
 
-        /// <summary>
-        /// 
-        /// </summary>
-            [DBField(DbType.Int32)] BetID,
-
             /// <summary>
             /// 
             /// </summary>
@@ -70,14 +65,6 @@ namespace Project_B.CodeServerSide.Entity {
             set { ForceSetData(Fields.ID, value); }
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        public int BetID {
-            get { return (int) this[Fields.BetID]; }
-            set { ForceSetData(Fields.BetID, value); }
-        }
-
         /// <summary>
         /// 
         /// </summary>
