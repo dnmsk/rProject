@@ -88,12 +88,17 @@ namespace MainLogic.WebFiles {
 
         private void InitCookies(HttpContextBase httpContext) {
             InitUtmCookies(httpContext.Request, httpContext.Response);
+            var guestID = CurrentUser.GuestID;
+            var urlReferrer = httpContext.Request.UrlReferrer;
+            var url = httpContext.Request.Url;
+            var httpBrowserCapabilitiesBase = httpContext.Request.Browser;
+            var userAgent = httpContext.Request.UserAgent;
 
             SlothMovePlodding.AddAction(() => {
-                BusinessLogic.UserProvider.SaveReferrer(CurrentUser.GuestID, httpContext.Request.UrlReferrer?.ToString() ?? string.Empty, httpContext.Request.Url?.ToString() ?? string.Empty);
-                BusinessLogic.UserProvider.SaveUtm(CurrentUser.GuestID, UtmParam);
-                var browserInfo = new BrowserInfo(httpContext.Request.Browser, httpContext.Request.UserAgent);
-                BusinessLogic.UserProvider.SaveTechInfo(CurrentUser.GuestID, new GuestTechInfoTransport {
+                BusinessLogic.UserProvider.SaveReferrer(guestID, urlReferrer?.ToString() ?? string.Empty, url?.ToString() ?? string.Empty);
+                BusinessLogic.UserProvider.SaveUtm(guestID, UtmParam);
+                var browserInfo = new BrowserInfo(httpBrowserCapabilitiesBase, userAgent);
+                BusinessLogic.UserProvider.SaveTechInfo(guestID, new GuestTechInfoTransport {
                     Version = browserInfo.CurrentVersion(),
                     BrowserType = browserInfo.Name,
                     Os = browserInfo.Os,
