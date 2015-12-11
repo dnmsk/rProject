@@ -40,8 +40,7 @@ namespace MainLogic.WebFiles {
             if (httpContext.User.Identity.IsAuthenticated) {
                 try {
                     return Deserialize(httpContext.User.Identity.Name);
-                }
-                catch (ArgumentException ex) {
+                } catch (ArgumentException ex) {
                     _logger.Error(ex);
                 }
             }

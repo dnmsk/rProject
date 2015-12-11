@@ -21,6 +21,7 @@ namespace Project_B.Controllers {
         private const int _maxFileLength = 1 * 1024 * 1024;
         private static readonly string _imageStorePath;
         private readonly static TimeSpan _cacheDays = TimeSpan.FromDays(365);
+        protected override bool EnableStoreRequestData => false;
 
         static FileController() {
             _imageStorePath = SiteConfiguration.GetConfigurationProperty(_fileStorePathConfig) ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStore");

@@ -23,7 +23,7 @@ namespace CommonUtils.Code {
 
         public string EncryptString(string str) {
             try {
-                return EncryptByte(Encoding.UTF8.GetBytes(str));
+                return HttpUtility.UrlEncode(EncryptByte(Encoding.UTF8.GetBytes(str)));
             } catch (Exception ex) {
                 _logger.Error(ex);
             }
@@ -32,7 +32,7 @@ namespace CommonUtils.Code {
 
         public string DecryptString(string str) {
             try {
-                return Encoding.UTF8.GetString(DecryptBytes(str));
+                return Encoding.UTF8.GetString(DecryptBytes(HttpUtility.UrlDecode(str)));
             } catch (Exception ex) {
                 _logger.Error(ex);
             }
@@ -53,11 +53,6 @@ namespace CommonUtils.Code {
                 return DecriptString(Convert.FromBase64String(str));
             } catch (Exception ex) {
                 _logger.Info(string.Format("String: {0}", str), ex);
-            }
-            try {
-                return DecriptString(Convert.FromBase64String(HttpUtility.UrlDecode(str)));
-            } catch (Exception ex) {
-                _logger.Error(string.Format("Urldecod crushed String: {0}", str), ex);
             }
             return new byte[0];
         }

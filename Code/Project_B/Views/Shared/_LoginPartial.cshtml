@@ -1,4 +1,5 @@
-﻿@using Project_B.CodeClientSide.Enums
+﻿@using MainLogic.WebFiles.UserPolicy.Enum
+@using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @model Project_B.Models.StaticPageBaseModel
 @if (Model.IsAuthenticated())
@@ -7,7 +8,7 @@
     @Html.AntiForgeryToken()
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.AccountEmail + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
+            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.GetUserPolicyState<string>(UserPolicyGlobal.AccountEmail) + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogOff)</a></li>
     </ul>

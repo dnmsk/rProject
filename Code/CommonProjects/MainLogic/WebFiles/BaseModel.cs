@@ -16,11 +16,18 @@ namespace MainLogic.WebFiles {
         private static readonly Dictionary<Enum, IUserPolicy> _userPolicyStore = new Dictionary<Enum, IUserPolicy>();
         
         static BaseModel() {
-            ConfigurePolicyStore(UserPolicyGlobal.IsAuthenticated, sessionModule => sessionModule.AccountID != default(int));
-            ConfigurePolicyStore(UserPolicyGlobal.IsBot, sessionModule => sessionModule.GuestID == UserAgentValidationPolicy.BOT_GUID);
-            ConfigurePolicyStore(UserPolicyGlobal.IsStatisticsDisabled, sessionModule => {
+            ConfigurePolicyStore(UserPolicyGlobal.IsAuthenticated, (sessionModule, mainLogicProvider) => sessionModule.AccountID != default(int));
+            ConfigurePolicyStore(UserPolicyGlobal.IsBot, (sessionModule, mainLogicProvider) => sessionModule.GuestID == UserAgentValidationPolicy.BOT_GUID);
+            ConfigurePolicyStore(UserPolicyGlobal.IsStatisticsDisabled, (sessionModule, mainLogicProvider) => {
                 var configurationProperty = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
                 return configurationProperty == null || configurationProperty.Contains(sessionModule.AccountID);
+            });
+            ConfigurePolicyStore(UserPolicyGlobal.AccountEmail, (sessionModule, mainLogicProvider) => {
+                if (sessionModule.IsAuthenticated()) {
+                    var accountDetails = mainLogicProvider.AccountProvider.GetAccountDescription(sessionModule.AccountID);
+                    return accountDetails.Email;
+                }
+                return string.Empty;
             });
         }
 
@@ -31,7 +38,7 @@ namespace MainLogic.WebFiles {
             _userPolicyStore[userPolicy.PolicySection] = userPolicy;
         }
 
-        public static void ConfigurePolicyStore<T>(Enum policyName, Func<SessionModule, T> policyValueGetter) {
+        public static void ConfigurePolicyStore<T>(Enum policyName, Func<SessionModule, MainLogicProvider, T> policyValueGetter) {
             ConfigurePolicyStore(new SimpleUserPolicy<T>(policyName, policyValueGetter));
         }
 
@@ -43,7 +50,7 @@ namespace MainLogic.WebFiles {
                 key => {
                     IUserPolicy obj;
                     if (_userPolicyStore.TryGetValue(key, out obj) && obj != null) {
-                        return obj.GetUserPolicyObj(SessionModule);
+                        return obj.GetUserPolicyObj(SessionModule, MainLogicProvider);
                     } 
                     _logger.Error("Policy for {0} {1} not found in store", key.GetType(), key);
                     return null;
@@ -67,22 +74,16 @@ namespace MainLogic.WebFiles {
         public bool IsAuthenticated() {
             return GetUserPolicyState<bool>(UserPolicyGlobal.IsAuthenticated);
         }
-
-        public string AccountEmail { get; }
-
+        
         public BaseModel(BaseModel baseModel) : this() {
             MainLogicProvider = baseModel.MainLogicProvider;
             SessionModule = baseModel.SessionModule;
-            AccountEmail = baseModel.AccountEmail;
+            _cachedPolicyData = baseModel._cachedPolicyData;
         }
 
         public BaseModel(SessionModule session, MainLogicProvider mainLogicProvider) : this() {
             MainLogicProvider = mainLogicProvider;
             SessionModule = session;
-            if (SessionModule.IsAuthenticated()) {
-                var accountDetails = MainLogicProvider.AccountProvider.GetAccountDescription(SessionModule.AccountID);
-                AccountEmail = accountDetails.Email;
-            }
         }
     }
 }

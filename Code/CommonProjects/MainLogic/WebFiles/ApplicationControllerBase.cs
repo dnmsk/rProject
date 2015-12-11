@@ -7,6 +7,8 @@ using System.Web.Security;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
+using MainLogic.Code;
 using MainLogic.Transport;
 using MainLogic.WebFiles.UserPolicy.Enum;
 using MainLogic.Wrapper;
@@ -27,6 +29,8 @@ namespace MainLogic.WebFiles {
 
         public UtmParamWrapper UtmParam { get; private set; }
 
+        protected virtual bool EnableStoreRequestData => true;
+
         /// <summary>
         /// базовая модель
         /// </summary>
@@ -43,15 +47,15 @@ namespace MainLogic.WebFiles {
         public SessionModule CurrentUser {
             get {
                 if (_currentUser == null) {
-                    int guid;
+                    var guid = UserAgentValidationPolicy.BOT_GUID;
                     var isFirstTimeOpen = false;
-                    if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null || 
-                                    !int.TryParse(CryptoManager.DecryptString(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value), out guid)) {
-                        guid = CreateGuidInfo(HttpContext);
-                        isFirstTimeOpen = true;
-                    } else if (!BusinessLogic.UserProvider.CheckGuest(guid)) {
-                        guid = CreateGuidInfo(HttpContext);
-                        isFirstTimeOpen = true;
+                    if (HttpContext.Request.Cookies[GUEST_COOKIE_NAME] == null ||
+                        !int.TryParse(CryptoManager.DecryptString(HttpContext.Request.Cookies[GUEST_COOKIE_NAME].Value), out guid) ||
+                        (EnableStoreRequestData && !BusinessLogic.UserProvider.CheckGuest(guid))) {
+                        if (EnableStoreRequestData) {
+                            guid = CreateGuidInfo(HttpContext);
+                            isFirstTimeOpen = true;
+                        }
                     }
                     _currentUser = SessionModule.CreateSessionModule(guid, HttpContext);
                     if (isFirstTimeOpen) {
@@ -76,22 +80,26 @@ namespace MainLogic.WebFiles {
         }
         
         protected override void ExecuteCore() {
-            InitCookies(HttpContext);
+            if (EnableStoreRequestData) {
+                InitCookies(HttpContext);
+            }
             base.ExecuteCore();
         }
 
         private void InitCookies(HttpContextBase httpContext) {
             InitUtmCookies(httpContext.Request, httpContext.Response);
 
-            BusinessLogic.UserProvider.SaveReferrer(CurrentUser.GuestID, httpContext.Request.UrlReferrer?.ToString() ?? string.Empty, httpContext.Request.Url?.ToString() ?? string.Empty);
-            BusinessLogic.UserProvider.SaveUtm(CurrentUser.GuestID, UtmParam);
-            var browserInfo = new BrowserInfo(httpContext.Request.Browser, httpContext.Request.UserAgent);
-            BusinessLogic.UserProvider.SaveTechInfo(CurrentUser.GuestID, new GuestTechInfoTransport {
-                Version = browserInfo.CurrentVersion(),
-                BrowserType = browserInfo.Name,
-                Os = browserInfo.Os,
-                IsMobile = browserInfo.Mobile,
-                UserAgent = browserInfo.UserAgent
+            SlothMovePlodding.AddAction(() => {
+                BusinessLogic.UserProvider.SaveReferrer(CurrentUser.GuestID, httpContext.Request.UrlReferrer?.ToString() ?? string.Empty, httpContext.Request.Url?.ToString() ?? string.Empty);
+                BusinessLogic.UserProvider.SaveUtm(CurrentUser.GuestID, UtmParam);
+                var browserInfo = new BrowserInfo(httpContext.Request.Browser, httpContext.Request.UserAgent);
+                BusinessLogic.UserProvider.SaveTechInfo(CurrentUser.GuestID, new GuestTechInfoTransport {
+                    Version = browserInfo.CurrentVersion(),
+                    BrowserType = browserInfo.Name,
+                    Os = browserInfo.Os,
+                    IsMobile = browserInfo.Mobile,
+                    UserAgent = browserInfo.UserAgent
+                });
             });
         }
 
