@@ -91,7 +91,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// </summary>
         public BrokerType BrokerID {
             get { return (BrokerType)(int)this[Fields.BrokerID]; }
-            set { ForceSetData(Fields.BrokerID, value); }
+            set { ForceSetData(Fields.BrokerID, (short) value); }
         }
 
         public override Enum[] KeyFields {

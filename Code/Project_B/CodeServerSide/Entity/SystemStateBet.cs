@@ -69,7 +69,7 @@ namespace Project_B.CodeServerSide.Entity {
         /// </summary>
         public BrokerType BrokerID {
             get { return (BrokerType) (int) this[Fields.Brokerid]; }
-            set { ForceSetData(Fields.Brokerid, (int) value); }
+            set { ForceSetData(Fields.Brokerid, (short) value); }
         }
 
         /// <summary>
