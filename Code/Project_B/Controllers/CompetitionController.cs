@@ -15,7 +15,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
         public ActionResult Index(SportType id = SportType.Unknown) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, null, id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
@@ -38,7 +38,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFutured(CurrentLanguage, null, null, null, new[] {id});
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, null, new[] {id});
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,

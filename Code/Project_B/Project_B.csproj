@@ -228,7 +228,7 @@
     <Compile Include="CodeClientSide\Helper\BetOddInterfaceHelper.cs" />
     <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
     <Compile Include="CodeClientSide\Helper\DisplayColumnProcessor.cs" />
-    <Compile Include="CodeClientSide\Helper\ExternalLinkHelper.cs" />
+    <Compile Include="CodeClientSide\Helper\RedirectLinkHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
     <Compile Include="CodeClientSide\ProjectBActions.cs" />
     <Compile Include="CodeClientSide\Routes\LeftMatchingRoute.cs" />
@@ -253,6 +253,7 @@
     <Compile Include="CodeServerSide\DataProvider\BetProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitionProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitorProvider.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionBetRoiHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionProcessorStatic.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\GenderDetectorHelper.cs" />
@@ -287,6 +288,7 @@
     <Compile Include="CodeServerSide\Entity\BetLive.cs" />
     <Compile Include="CodeServerSide\Entity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
+    <Compile Include="CodeServerSide\Entity\Data\CompetitionItemRoiRow.cs" />
     <Compile Include="CodeServerSide\Entity\SiteBrokerPage.cs" />
     <Compile Include="CodeServerSide\Entity\Competition.cs" />
     <Compile Include="CodeServerSide\Entity\CompetitionItem.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="CodeServerSide\Entity\Interface\IBetAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IStaticPage.cs" />
     <Compile Include="CodeServerSide\Entity\Language.cs" />
+    <Compile Include="CodeServerSide\Entity\SiteInternalLink.cs" />
     <Compile Include="CodeServerSide\Entity\SiteText.cs" />
     <Compile Include="CodeServerSide\Entity\Result.cs" />
     <Compile Include="CodeServerSide\Entity\ResultMode.cs" />
@@ -318,7 +321,6 @@
     <Compile Include="CodeServerSide\Entity\SiteStaticPage.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateBet.cs" />
     <Compile Include="CodeServerSide\Entity\SystemStateResult.cs" />
-    <Compile Include="CodeServerSide\Entity\View\VwBetRoiDetail.cs" />
     <Compile Include="CodeServerSide\Enums\BetOddType.cs" />
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
@@ -481,6 +483,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="CodeServerSide\Entity\View\" />
     <Folder Include="Content\Less\" />
     <Folder Include="Views\Assets\" />
     <Folder Include="Views\File\" />

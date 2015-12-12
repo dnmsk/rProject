@@ -38,7 +38,9 @@
         PageErrorNotFound = 1990,
         PageErrorInternal = 1991,
 
-        PageRedirect = 1998,
-        PageRedirectConcrete = 1999,
+        PageRedirectInternal = 1996,
+        PageRedirectInternalConcrete = 1997,
+        PageRedirectExternal = 1998,
+        PageRedirectExternalConcrete = 1999,
     }
 }

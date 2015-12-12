@@ -13,7 +13,6 @@ using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.Interface;
-using Project_B.CodeServerSide.Entity.View;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -226,26 +225,15 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, default(int));
         }
 
-        public List<CompetitionTransport> GetCompetitionItemsFutured(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null, int[] competitionUniqueIDs = null) {
+        public List<CompetitionTransport> GetCompetitionItemsFuturedNew(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null, int[] competitionUniqueIDs = null) {
             return InvokeSafe(() => {
+                var competitionInfo = CompetitionBetRoiHelper.GetDataForNow(float.MinValue, sportType ?? SportType.Unknown, competitionUniqueIDs, brokerTypesToRetreive);
                 var competitionItemForDateQuery = CompetitionItem.DataSource
-                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
-                    .Join(JoinType.Left, CompetitionResultLive.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
-                    .WhereNull(CompetitionResult.Fields.ID)
-                    .WhereNull(CompetitionResultLive.Fields.ID)
-                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow)
+                    .WhereIn(CompetitionItem.Fields.ID, competitionInfo.Select(cinfo => cinfo.ID))
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
-                if (sportType.HasValue && sportType != SportType.Unknown) {
-                    competitionItemForDateQuery = competitionItemForDateQuery
-                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
-                }
-                if (competitionUniqueIDs != null) {
-                    competitionItemForDateQuery = competitionItemForDateQuery
-                        .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs);
-                }
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
-                BuildCompetitiontItemFullModel(competitionTransports, ci => GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                BuildCompetitiontItemFullModel(competitionTransports, ci => GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct()), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
             }, new List<CompetitionTransport>());
@@ -253,19 +241,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<CompetitionTransport> GetCompetitionItemsFuturedProfitable(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null) {
             return InvokeSafe(() => {
-                var competitionItemIDs= VwBetRoiDetail.DataSource
-                    .Where(new DaoFilterOr(
-                        new DaoFilter(VwBetRoiDetail.Fields.Roi1x2, Oper.Greater, default(int)),
-                        new DaoFilterAnd(
-                            new DaoFilter(VwBetRoiDetail.Fields.Roihcap, Oper.Greater, default(int)),
-                            new DaoFilter(new DbFnSimpleOp(VwBetRoiDetail.Fields.Maxhcap2detail, FnMathOper.Add, new DbFnEmpty(VwBetRoiDetail.Fields.Maxhcap1detail)), Oper.GreaterOrEq, default(int))
-                        ),
-                        new DaoFilterAnd(
-                            new DaoFilter(VwBetRoiDetail.Fields.Roitotal, Oper.Greater, default(int)),
-                            new DaoFilter(VwBetRoiDetail.Fields.Maxtotalunderdetail, Oper.GreaterOrEq, VwBetRoiDetail.Fields.Maxtotaloverdetail)
-                        )
-                    ))
-                    .AsList(VwBetRoiDetail.Fields.ID)
+                var competitionItemIDs = CompetitionBetRoiHelper.GetDataForNow(0, sportType ?? SportType.Unknown, null, brokerTypesToRetreive)
                     .Select(vw => vw.ID).ToArray();
                 var competitionItemForDateQuery = CompetitionItem.DataSource
                     .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
@@ -301,23 +277,13 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<CompetitionTransport> GetCompetitionItemsHistory(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, DateTime fromDate, DateTime toDate, SportType? sportType = null, int[] competitionUniqueIDs = null) {
             return InvokeSafe(() => {
+                var competitionInfo = CompetitionBetRoiHelper.GetDataForDate(fromDate, toDate, sportType ?? SportType.Unknown, competitionUniqueIDs, brokerTypesToRetreive);
                 var competitionItemForDateQuery = CompetitionItem.DataSource
-                    .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
-                    .WhereNotNull(CompetitionResult.Fields.ID)
-                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
-                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate)
+                    .WhereIn(CompetitionItem.Fields.ID, competitionInfo.Select(cinfo => cinfo.ID))
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc);
-                if (sportType.HasValue && sportType != SportType.Unknown) {
-                    competitionItemForDateQuery = competitionItemForDateQuery
-                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
-                }
-                if (competitionUniqueIDs != null) {
-                    competitionItemForDateQuery = competitionItemForDateQuery
-                        .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs);
-                }
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
-                BuildCompetitiontItemFullModel(competitionTransports, ci => GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                BuildCompetitiontItemFullModel(competitionTransports, ci => GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct()), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
             }, new List<CompetitionTransport>());
@@ -334,6 +300,18 @@ namespace Project_B.CodeServerSide.DataProvider {
                 .AsList()
                 .GroupBy(e => e.CompetitionitemID)
                 .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>) t)
+                .OrderByDescending(t => t.ID)
+                .ToList());
+        }
+        private Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> ids) {
+            var bets = Bet.DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .WhereIn(Bet.Fields.ID, ids);
+            return bets
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>) t)
+                .OrderByDescending(t => t.ID)
                 .ToList());
         }
 
@@ -451,7 +429,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
             }
         }
-
+        
         private static List<CompetitionTransport> GetCompetitionItemShortModel(LanguageType languageType, DbDataSource<CompetitionItem, int> competitionItemQuery) {
             var competitionItemForDate = competitionItemQuery
                .WhereNotEquals(CompetitionItem.Fields.Dateeventutc, DateTime.MinValue)

@@ -5,7 +5,7 @@ using Project_B.CodeClientSide.Routes;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 
 namespace Project_B {
-    public class RouteConfig {
+    public static class RouteConfig {
         public static void RegisterRoutes(RouteCollection routes) {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
@@ -18,8 +18,12 @@ namespace Project_B {
                 defaults: new RouteValueDictionary(new { controller = "File", action = "Index" }),
                 routeHandler:new MvcRouteHandler()));
             routes.Add(new LowercaseRoute(
-                url: "Redirect/{id}",
-                defaults: new RouteValueDictionary(new { controller = "Redirect", action = "Index" }),
+                url: "r/e/{id}",
+                defaults: new RouteValueDictionary(new { controller = "Redirect", action = "External" }),
+                routeHandler:new MvcRouteHandler()));
+            routes.Add(new LowercaseRoute(
+                url: "r/i/{id}",
+                defaults: new RouteValueDictionary(new { controller = "Redirect", action = "Internal" }),
                 routeHandler:new MvcRouteHandler()));
             var valuesConstraint = new ExpectedValuesConstraint(LanguageTypeHelper.Instance.GetIsoNames());
             routes.Add(new LowercaseRoute(

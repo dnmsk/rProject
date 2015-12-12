@@ -14,5 +14,9 @@
 }
 
 @helper UrlActionCreateExternalLink(BaseModel baseModel, short linkID) {
-    @ExternalLinkHelper.Instance.CreateHrefToRedirect(Url, baseModel, linkID)
+    @Html.Raw(RedirectLinkHelper.CreateHrefToExternalRedirect(Url, baseModel.SessionModule.GuestID, linkID))
+}
+
+@helper UrlActionCreateInternalLink(BaseModel baseModel, short linkID) {
+    @Html.Raw(RedirectLinkHelper.CreateHrefToInternalRedirect(Url, baseModel.SessionModule.GuestID, linkID))
 }
