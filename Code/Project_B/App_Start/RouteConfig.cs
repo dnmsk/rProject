@@ -17,12 +17,12 @@ namespace Project_B {
                 url: "File/{id}/{type}/{hash}",
                 defaults: new RouteValueDictionary(new { controller = "File", action = "Index" }),
                 routeHandler:new MvcRouteHandler()));
-            routes.Add(new LowercaseRoute(
-                url: "r/e/{id}",
+            routes.Add(new Route(
+                url: "r/e",
                 defaults: new RouteValueDictionary(new { controller = "Redirect", action = "External" }),
                 routeHandler:new MvcRouteHandler()));
-            routes.Add(new LowercaseRoute(
-                url: "r/i/{id}",
+            routes.Add(new Route(
+                url: "r/i",
                 defaults: new RouteValueDictionary(new { controller = "Redirect", action = "Internal" }),
                 routeHandler:new MvcRouteHandler()));
             var valuesConstraint = new ExpectedValuesConstraint(LanguageTypeHelper.Instance.GetIsoNames());

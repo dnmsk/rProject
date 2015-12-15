@@ -78,11 +78,11 @@ namespace Project_B.CodeClientSide.Helper {
         }
 
         public static string CreateHrefToExternalRedirect(UrlHelper urlHelper, int guestID, short linkID) {
-            return urlHelper.Action("External", "Redirect", new { id = GetRedirectID(guestID, linkID) }) + "\" rel=\"nofollow";
+            return urlHelper.Action("External", "Redirect", new { l = GetRedirectID(guestID, linkID) }) + "\" target=\"_blank\" rel=\"nofollow";
         }
 
         public static string CreateHrefToInternalRedirect(UrlHelper urlHelper, int guestID, short linkID) {
-            return urlHelper.Action("Internal", "Redirect", new { id = GetRedirectID(guestID, linkID) }) + "\" rel=\"nofollow";
+            return urlHelper.Action("Internal", "Redirect", new { l = GetRedirectID(guestID, linkID) }) + "\" rel=\"nofollow";
         }
 
         public string ProcessStaticContentForLinks(UrlHelper urlHelper, BaseModel baseModel, string text) {

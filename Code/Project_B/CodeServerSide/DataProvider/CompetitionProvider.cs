@@ -241,8 +241,12 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<CompetitionTransport> GetCompetitionItemsFuturedProfitable(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null) {
             return InvokeSafe(() => {
-                var competitionItemIDs = CompetitionBetRoiHelper.GetDataForNow(0, sportType ?? SportType.Unknown, null, brokerTypesToRetreive)
-                    .Select(vw => vw.ID).ToArray();
+                int[] competitionItemIDs;
+                var minProfitable = 0f;
+                while((competitionItemIDs = CompetitionBetRoiHelper.GetDataForNow(minProfitable, sportType ?? SportType.Unknown, null, brokerTypesToRetreive)
+                    .Select(vw => vw.ID).ToArray()).Length == 0) {
+                    minProfitable -= 0.5f;
+                }
                 var competitionItemForDateQuery = CompetitionItem.DataSource
                     .Join(JoinType.Left, CompetitionResult.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)
                     .Join(JoinType.Left, CompetitionResultLive.Fields.CompetitionitemID, CompetitionItem.Fields.ID, RetrieveMode.NotRetrieve)

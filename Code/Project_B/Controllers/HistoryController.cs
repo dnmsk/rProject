@@ -15,20 +15,12 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHistoryIndex)]
         public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
             LogAction(ProjectBActions.PageHistoryIndexConcrete, (short) id);
-            DateTime fromDate;
-            DateTime toDate;
-            if (!date.IsNullOrWhiteSpace()) {
-                fromDate = StringParser.ToDateTime(date, DateTime.UtcNow).Date;
-                if (fromDate.Date >= DateTime.UtcNow.Date) {
-                    toDate = DateTime.UtcNow;
-                    fromDate = toDate.Date;
-                } else {
-                    toDate = fromDate.AddDays(1);
-                }
-            } else {
-                toDate = DateTime.UtcNow;
-                fromDate = toDate.Date;
+            var fromDate = StringParser.ToDateTime(date, DateTime.MaxValue).Date;
+            var now = DateTime.UtcNow.Date;
+            if (fromDate >= now) {
+                fromDate = now;
             }
+            var toDate = fromDate.AddDays(1);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, toDate, id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {

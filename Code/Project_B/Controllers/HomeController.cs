@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Web.Mvc;
+using System.Web.Routing;
+using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.Models;
@@ -31,8 +34,7 @@ namespace Project_B.Controllers {
             CultureInfo cul;
             try {
                 cul = CultureInfo.CreateSpecificCulture(Request.UserLanguages[0]);
-            }
-            catch {
+            } catch {
                 cul = CultureInfo.CreateSpecificCulture("en-US");
             }
             var param = "En";
@@ -41,13 +43,21 @@ namespace Project_B.Controllers {
                     param = "Ru";
                     break;
             }
+            var routeValueDict = new RouteValueDictionary {
+                {"language", param },
+                {"id", RouteData.Values["any3"] as string}
+            };
+            Request.Url
+                ?.Query
+                .Split(new [] {"?", "&"}, StringSplitOptions.RemoveEmptyEntries)
+                .Each(kv => {
+                    var splitted = kv.Split('=');
+                    routeValueDict[splitted[0]] = splitted[1];
+                });
             return RedirectToAction(
                 RouteData.Values["any2"] as string ?? "Index", 
                 RouteData.Values["any1"] as string ?? "Home", 
-                new {
-                    language = param,
-                    id = RouteData.Values["any3"] as string
-                });
+                routeValueDict);
         }
     }
 }

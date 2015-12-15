@@ -29,7 +29,7 @@
                 height: 600,
                 selector: '#staticPageEditorZone textarea',
                 plugins: ["advlist autolink lists link image charmap print preview anchor template", "searchreplace visualblocks code fullscreen", "insertdatetime media table contextmenu paste textcolor", "hr"],
-                valid_children: "+body[style]",
+                valid_children: "+body[style],a[href]",
                 extended_valid_elements : "div[*]",
                 setup: function (editor) {
                     editor.on('change', function (ed) {
