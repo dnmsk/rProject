@@ -63,6 +63,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                 page.Keywords = data.Keywords;
                 page.Title = data.Title;
                 page.Pagetype = pageType;
+                if (data.IsPublished && !page.Datepublishedutc.HasValue) {
+                    page.Datepublishedutc = DateTime.UtcNow;
+                }
                 page.Languagetype = data.Languagetype == LanguageType.Default ? LanguageTypeHelper.DefaultLanguageTypeSetted : data.Languagetype;
                 page.Save();
                 return StaticPageToModel<StaticPageTransport>(SiteStaticPage.DataSource.GetByKey(page.ID));

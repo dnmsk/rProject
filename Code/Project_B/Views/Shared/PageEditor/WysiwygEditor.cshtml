@@ -120,7 +120,7 @@
                 success: function (data) {
                     $.each(data, function (idx, el) {
                         $.each(el, function (localIdx, val) {
-                            $("#staticPageEditorZone *[name='" + idx + "." + localIdx + "']").val(val);
+                            $("#staticPageEditorZone *[name='" + idx + "." + localIdx + "']").val(val + '');
                             if (localIdx === 'Content') {
                                 tinyMCE.activeEditor.setContent(val);
                                 $('#container').html(val);
