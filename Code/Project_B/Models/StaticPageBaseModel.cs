@@ -18,10 +18,10 @@ namespace Project_B.Models {
         public LanguageType CurrentLanguage { get; }
         public List<string> AdditionHtmlAssets { get; set; }
         public StaticPageBaseModel(ProjectControllerBase projectController) : base(projectController.GetBaseModel()) {
-            StaticPageTransport = _staticPagesCache.GetPage(
+            StaticPageTransport = (StaticPageTransport) (_staticPagesCache.GetPage(
                     CurrentLanguage = projectController.CurrentLanguage, 
                     PageKey = ActionLogAttribute.GetPageActionId(projectController)
-                ) ?? new StaticPageTransport();
+                ) ?? new StaticPageTransport()).Clone();
             SubNavigationType = projectController.SubNavigationType;
             AdditionHtmlAssets = new List<string>();
         }

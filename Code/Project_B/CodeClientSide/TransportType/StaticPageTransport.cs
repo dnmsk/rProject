@@ -2,7 +2,7 @@
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.TransportType {
-    public class StaticPageTransport {
+    public class StaticPageTransport : ICloneable {
         public int ID { get; set; }
         /// <summary>
         /// 
@@ -34,6 +34,20 @@ namespace Project_B.CodeClientSide.TransportType {
 
         public StaticPageTransport() {
             LastModifyDateUtc = DateTime.MinValue;
+        }
+
+        public object Clone() {
+            return new StaticPageTransport {
+                ID = this.ID,
+                LastModifyDateUtc = this.LastModifyDateUtc,
+                Title = this.Title,
+                Description = this.Description,
+                Languagetype = this.Languagetype,
+                Content = this.Content,
+                IsTop = this.IsTop,
+                IsPublished = this.IsPublished,
+                Keywords = this.Keywords
+            };
         }
     }
 }
