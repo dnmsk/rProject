@@ -11,7 +11,7 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageErrorInternal)]
         public ActionResult Internal() {
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            return View("Error500");
+            return View("Error");
         }
 
         /// <summary>

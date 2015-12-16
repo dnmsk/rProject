@@ -4,7 +4,7 @@
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
     var competition = Model.ControllerModel.Competitions.FirstOrDefault();
-    var competitionItem = competition?.CompetitionItems.FirstOrDefault();
+    var competitionItem = competition != null ? competition.CompetitionItems.FirstOrDefault() : null;
     if (competitionItem != null) {
         var source = new {
             sporttype = SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, competition.SportType),
