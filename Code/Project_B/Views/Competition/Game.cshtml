@@ -3,6 +3,7 @@
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionAdvancedTransport>
 @section Metatags{
@@ -16,9 +17,9 @@
     var source = new {
         player1 = match.Competitor1.Name,
         player2 = match.Competitor2.Name,
-        sporttype = competition.SportType,
+        sporttype = SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, competition.SportType),
         competition = competition.Name,
-        date = match.DateUtc.ToString("dd-MM-YYYY")
+        date = match.DateUtc.ToString("dd.MM.yyyy")
     };
     Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
     Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);

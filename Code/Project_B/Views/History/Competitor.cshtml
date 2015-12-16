@@ -1,4 +1,5 @@
 ﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
@@ -6,7 +7,7 @@
     var competitionItem = competition?.CompetitionItems.FirstOrDefault();
     if (competitionItem != null) {
         var source = new {
-            sporttype = competition.SportType,
+            sporttype = SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, competition.SportType),
             competitor = competitionItem.Competitor1.ID == Model.ControllerModel.Filter.SelectedID ? competitionItem.Competitor1.Name : competitionItem.Competitor2.Name
         };
         Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
