@@ -1,3 +1,3 @@
 ﻿User-agent:* 
 Host: localhost
-Sitemap: http://localhost/Sitemap.xml
+Sitemap: http://localhost/sitemap.xml

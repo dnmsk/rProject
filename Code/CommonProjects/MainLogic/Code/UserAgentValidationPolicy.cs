@@ -41,7 +41,16 @@ namespace MainLogic.Code {
             "MSIE 8",
             "WebIndex",
             "Subscribe.ru",
-            "NetLyzer"
+            "NetLyzer",
+            "site-verification",
+            "curl/",
+            "skypeuripreview",
+            "favicon",
+            "slurp",
+            "crawler",
+            "python-urllib",
+            "http-client",
+            "package http",
         };
 
         /// <summary>
