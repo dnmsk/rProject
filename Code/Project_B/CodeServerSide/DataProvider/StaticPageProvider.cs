@@ -63,6 +63,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 page.Keywords = data.Keywords;
                 page.Title = data.Title;
                 page.Pagetype = pageType;
+                page.Istop = data.IsTop;
                 if (data.IsPublished && !page.Datepublishedutc.HasValue) {
                     page.Datepublishedutc = DateTime.UtcNow;
                 }
