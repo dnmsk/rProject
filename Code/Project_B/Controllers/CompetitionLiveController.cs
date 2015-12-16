@@ -18,6 +18,9 @@ namespace Project_B.Controllers {
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
+                    Filter = new FilterModel {
+                        SportType = id
+                    }
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
