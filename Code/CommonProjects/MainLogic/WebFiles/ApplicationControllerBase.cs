@@ -163,7 +163,7 @@ namespace MainLogic.WebFiles {
                 Response.Cache.SetLastModified(now);
                 Response.Cache.SetExpires(now);
             } else {
-                Response.Cache.SetLastModified(new DateTime(lastModifyByServer.Year, lastModifyByServer.Month, lastModifyByServer.Day, lastModifyByServer.Hour, lastModifyByServer.Minute, lastModifyByServer.Second, DateTimeKind.Utc));
+                Response.Cache.SetLastModified(DateTime.SpecifyKind(lastModifyByServer, DateTimeKind.Utc));
             }
             return null;
         }

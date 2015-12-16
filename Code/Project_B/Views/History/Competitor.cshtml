@@ -1,3 +1,18 @@
-﻿@using Project_B.Models
+﻿@using CommonUtils.ExtendedTypes
+@using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
+@{
+    var competition = Model.ControllerModel.Competitions.FirstOrDefault();
+    var competitionItem = competition?.CompetitionItems.FirstOrDefault();
+    if (competitionItem != null) {
+        var source = new {
+            sporttype = competition.SportType,
+            competitor = competitionItem.Competitor1.ID == Model.ControllerModel.Filter.SelectedID ? competitionItem.Competitor1.Name : competitionItem.Competitor2.Name
+        };
+        Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
+        Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
+        Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
+        Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
+    }
+}
 @Html.Partial("Element/_ListCompetitionWriter", Model)

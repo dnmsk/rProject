@@ -67,6 +67,9 @@ namespace Project_B.Controllers {
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {
                     Competitions = itemData,
+                    Filter = new FilterModel {
+                        SelectedID = id
+                    }
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;

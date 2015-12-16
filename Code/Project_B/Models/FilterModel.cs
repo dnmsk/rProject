@@ -8,7 +8,7 @@ namespace Project_B.Models {
         public SportType SportType { get; set; }
         public DateTime DateUtc { get; set; }
         public DisplayColumnType DisplayColumn { get; set; }
-
+        public int SelectedID { get; set; }
         public FilterModel() {
             DateUtc = DateTime.MinValue;
             DisplayColumn = DisplayColumnType.All;

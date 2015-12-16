@@ -3,12 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using CommonUtils.Core.Logger;
 
 namespace CommonUtils.ExtendedTypes {
     public interface ITextExpression {
         string Eval(object o);
     }
     public static class HaackFormatter {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (HaackFormatter).FullName);
+
+        public static string HaackFormatSafe(this string format, object source) {
+            if (format == null) {
+                return string.Empty;
+                //throw new ArgumentNullException("format");
+            }
+            try {
+                var formattedStrings = (from expression in SplitFormat(format)
+                                        select expression.Eval(source)).ToArray();
+                return string.Join("", formattedStrings);
+            } catch (Exception ex) {
+                _logger.Error(ex);
+            }
+            return format;
+        }
         public static string HaackFormat(this string format, object source) {
             if (format == null) {
                 return string.Empty;

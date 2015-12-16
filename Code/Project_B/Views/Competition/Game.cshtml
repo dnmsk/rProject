@@ -3,9 +3,8 @@
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType
-@using Project_B.CodeServerSide.Enums
 @using Project_B.Models
-@model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
+@model StaticPageBaseModel<CompetitionAdvancedTransport>
 @section Metatags{
     <meta name="document-state" content="Static" />
 }
@@ -18,11 +17,13 @@
         player1 = match.Competitor1.Name,
         player2 = match.Competitor2.Name,
         sporttype = competition.SportType,
-        competition = competition.Name
+        competition = competition.Name,
+        date = match.DateUtc.ToString("dd-MM-YYYY")
     };
-    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
-    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
-    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
+    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
+    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
+    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
+    Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
 
 @CompetitionDetailHelper.SportTypeNameHelper("Competition", sportType, Model.CurrentLanguage)

@@ -9,9 +9,10 @@
         date = (filterModel.DateUtc != DateTime.MinValue ? filterModel.DateUtc : DateTime.Today).ToString("dd.MM.yyyy"),
         sporttype = filterModel.SportType == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.SportType)
     };
-    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormat(source);
-    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormat(source);
-    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormat(source);
+    Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
+    Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
+    Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
+    Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
 
 @Html.Partial("Element/_ListCompetitionWriter", Model)
