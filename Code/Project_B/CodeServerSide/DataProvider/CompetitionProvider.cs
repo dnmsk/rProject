@@ -4,7 +4,6 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
-using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeClientSide.TransportType.SubData;
@@ -407,7 +406,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Where(new DaoFilterOr(
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
-                    )));
+                    ))
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc));
                 BuildCompetitiontItemFullModel(competition, ci => GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competition);
                 return competition;

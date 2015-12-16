@@ -467,7 +467,7 @@
     <Content Include="Views\Shared\Statistics\GoogleAnalytics.cshtml" />
     <Content Include="Views\Shared\Statistics\TopMailru.cshtml" />
     <Content Include="Views\Shared\Statistics\YandexMetrika.cshtml" />
-    <Content Include="Views\Error\Error500.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Error\Error404.cshtml" />
     <Content Include="Views\Shared\PageEditor\PagesForType.cshtml" />
     <Content Include="Views\Shared\PageEditor\WysiwygEditor.cshtml" />

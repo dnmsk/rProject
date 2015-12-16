@@ -9,7 +9,7 @@ namespace MainLogic.WebFiles {
         /// <summary>
         /// Логгер.
         /// </summary>
-        protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof(GlobalAsaxBase).FullName);
+        public static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof(GlobalAsaxBase).FullName);
 
         public void Application_Start() {
             Logger.Info("Web start, RunTask mode: " + SiteConfiguration.NeedRunTask);
