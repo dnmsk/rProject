@@ -21,8 +21,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         public static CompetitionItemRoiRow[] GetDataForDate(DateTime fromDate, DateTime toDate, SportType sportType = SportType.Unknown, int[] competitionUniqueIDs = null, BrokerType[] brokerTypes = null) {
             var proc = new DbStoredProc()
                 .NotRepeatable()
-                .WithParam("argcompetitionmindate", fromDate.Date)
-                .WithParam("argcompetitionmaxdate", toDate.Date);
+                .WithParam("argcompetitionmindate", fromDate)
+                .WithParam("argcompetitionmaxdate", toDate);
             return BuildResult(proc, sportType, competitionUniqueIDs, brokerTypes);
         }
 

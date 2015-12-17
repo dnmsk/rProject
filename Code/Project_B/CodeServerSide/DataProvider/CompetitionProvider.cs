@@ -400,13 +400,16 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, new CompetitionAdvancedTransport());
         }
 
-        public List<CompetitionTransport> GetCompetitionItemsRegularBetForCompetitor(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, int competitorID) {
+        public List<CompetitionTransport> GetCompetitionItemsRegularBetForCompetitor(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, DateTime fromDate, DateTime toDate, int competitorID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource
                     .Where(new DaoFilterOr(
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitorID),
                         new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitorID)
                     ))
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate)
+                    .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate != DateTime.MaxValue ? toDate.AddDays(1) : toDate)
+
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc));
                 BuildCompetitiontItemFullModel(competition, ci => GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competition);

@@ -63,8 +63,13 @@ namespace Project_B.CodeClientSide {
             return this;
         }
 
-        public SquishItMinifier<T> AddDirectory(string path) {
-            _bundle.AddDirectory(path);
+        public SquishItMinifier<T> AddDirectory(string path, bool recursive = true) {
+            _bundle.AddDirectory(path, recursive);
+            return this;
+        }
+
+        public SquishItMinifier<T> AddDirectoryMinified(string path, bool recursive = true) {
+            _bundle.AddMinifiedDirectory(path, recursive);
             return this;
         }
 

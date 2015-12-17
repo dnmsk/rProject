@@ -11,6 +11,8 @@ namespace Project_B {
             SquishItMinifierStatic.Instance.Css(SquishItMinifierStatic.MAIN)
                                   .AddMinified("~/Content/bootstrap.min.css")
                                   .Add("~/Content/bootstrap.override.css")
+                                  .AddDirectory("~/Content/Plugins")
+                                  .AddDirectory("~/Content/Plugins/Custom")
                                   .Add("~/Content/site.css")
                                   //.Add("~/Content/Less/test.less")
                                   .AsCached(SquishItMinifierStatic.MAIN);
@@ -25,6 +27,8 @@ namespace Project_B {
                                   .Add("~/Scripts/Common.js")
                                   .Add("~/Scripts/NinjaBag.js")
                                   .Add("~/Scripts/Log.js")
+                                  .AddDirectory("~/Scripts/Plugins", false)
+                                  .AddDirectory("~/Scripts/Plugins/Custom")
                                   .AddDirectory("~/Scripts/Custom")
                                   .AsCached(SquishItMinifierStatic.MAIN);
         }

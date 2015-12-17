@@ -2,7 +2,9 @@
 @model System.Web.Mvc.HandleErrorInfo
 @{
     Layout = null;
-    GlobalAsaxBase.Logger.Error(Model.Exception);
+    if (Model != null && Model.Exception != null) {
+        GlobalAsaxBase.Logger.Error(Model.Exception);
+    }
 }
 
 <!DOCTYPE html>

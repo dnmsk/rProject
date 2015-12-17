@@ -13,4 +13,25 @@
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
     Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
+@using (Html.BeginForm("Item", "History", FormMethod.Get, new { @class = "row" })) {
+    <div class="input-daterange input-group" id="daterange">
+        <div class="input-group">
+            <input type="text" class="form-control" name="from" />
+            <span class="input-group-addon">&mdash;</span>
+            <input type="text" class="form-control" name="to" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="$(this).closest('form').submit();"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#daterange [name="from"]').val(decodeURIComponent($.urlParam('from') || ''));
+            $('#daterange [name="to"]').val(decodeURIComponent($.urlParam('to') || ''));
+            var datePicker = $('#daterange');
+            datePicker.datepicker($.extend({ endDate: new Date() }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.CurrentLanguage)']));
+        });
+    </script>
+}
+<hr />
 @Html.Partial("Element/_ListCompetitionWriter", Model)

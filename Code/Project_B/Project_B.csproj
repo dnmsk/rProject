@@ -381,6 +381,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.override.css" />
+    <Content Include="Content\Plugins\bootstrap-datepicker.min.css" />
     <Content Include="Content\Tinymce\tinymce.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -412,6 +413,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\Plugins\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\Plugins\Custom\bootstrap-datepicker.lang.js" />
     <Content Include="Scripts\react\JSXTransformer-0.13.1.js" />
     <Content Include="Scripts\react\react-0.13.1.js" />
     <Content Include="Scripts\react\react-0.13.1.min.js" />
@@ -484,6 +487,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="CodeServerSide\Entity\View\" />
     <Folder Include="Content\Less\" />
+    <Folder Include="Content\Plugins\Custom\" />
     <Folder Include="Views\Assets\" />
     <Folder Include="Views\File\" />
     <Folder Include="Views\Log\" />

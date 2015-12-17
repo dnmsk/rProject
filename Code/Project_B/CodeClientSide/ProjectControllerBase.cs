@@ -13,17 +13,28 @@ namespace Project_B.CodeClientSide {
     public abstract class ProjectControllerBase : ApplicationControllerBase {
         public const string GMT_COOKIE_NAME = "GMT";
         private int? _gmtDeltaMinutes;
-        public void FixToUserTime(CompetitionTransport competitionTransport) {
-            if (!_gmtDeltaMinutes.HasValue) {
-                var gmtCookie = Request.Cookies[GMT_COOKIE_NAME];
-                _gmtDeltaMinutes = gmtCookie != null ? StringParser.ToInt(gmtCookie.Value, default(int)) : default(int);
+
+        private int GmtDeltaMinutes {
+            get {
+                if (!_gmtDeltaMinutes.HasValue) {
+                    var gmtCookie = Request.Cookies[GMT_COOKIE_NAME];
+                    _gmtDeltaMinutes = gmtCookie != null ? StringParser.ToInt(gmtCookie.Value, default(int)) : default(int);
+                }
+                return _gmtDeltaMinutes.Value;
             }
+        }
+        public void FixToUserTime(CompetitionTransport competitionTransport) {
+            var delta = GmtDeltaMinutes;
             competitionTransport.CompetitionItems.Each(ci => {
                 ci.DateUtc = ci.DateUtc.AddMinutes(_gmtDeltaMinutes.Value);
-                ci.CurrentBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
-                ci.HistoryMaxBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
-                ci.HistoryMinBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(_gmtDeltaMinutes.Value));
+                ci.CurrentBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
+                ci.HistoryMaxBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
+                ci.HistoryMinBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
             });
+        }
+
+        public DateTime FixUserTimeToSystem(DateTime dateTime) {
+            return dateTime.AddMinutes(-GmtDeltaMinutes);
         }
 
         private LanguageType _currentLanguage = LanguageType.Default;

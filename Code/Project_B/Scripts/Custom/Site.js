@@ -1,5 +1,5 @@
 ﻿window.ninjaBag.functionsOnReady.append({
-    'setGefaultGmtCookie': function () {
+    'setDefaultGmtCookie': function () {
         window.ninjaBag.baseFunctions.setCookie(window.ninjaBag.documentObjects.Const.CookieGmt, -new Date().getTimezoneOffset(), { expires: 365 * 24 * 60 * 60 * 1000 });
     },
     'setFullWidthController': function () {

@@ -3,6 +3,7 @@
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
+@using Project_B.Models
 @model Project_B.Models.StaticPageBaseModel
 
 @functions {
@@ -56,9 +57,17 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                 <ul class="nav navbar-nav">
                     @switch (Model.SubNavigationType) {
                         case SubNavigationType.SportTypes:
-                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty})" @MarkActive("Index", currentController, currentAction, currentController, currentID.IsNullOrWhiteSpace())>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderAllCompetitions)</a></li>
+                            var castedModel = Model as StaticPageBaseModel<CompetitionRegularModel>;
+                            var dateSelected = string.Empty;
+                            if (castedModel != null && castedModel.ControllerModel.Filter != null) {
+                                var date = castedModel.ControllerModel.Filter.DateUtc.Date;
+                                if (date != DateTime.MinValue && date.Date != DateTime.UtcNow.Date) {
+                                    dateSelected = date.ToString("dd.MM.yyyy");
+                                }
+                            }
+                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty, date = dateSelected})" @MarkActive("Index", currentController, currentAction, currentController, currentID.IsNullOrWhiteSpace())>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderAllCompetitions)</a></li>
                             foreach (var sportType in _sportTypesToNavigation) {
-                                <li><a href="@Url.Action("Index", currentController, new {id = sportType})" @MarkActive("Index", currentController, currentAction, currentController, currentID.Equals(sportType.ToString(), StringComparison.InvariantCultureIgnoreCase))>@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
+                                <li><a href="@Url.Action("Index", currentController, new {id = sportType, date = dateSelected})" @MarkActive("Index", currentController, currentAction, currentController, currentID.Equals(sportType.ToString(), StringComparison.InvariantCultureIgnoreCase))>@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
                             }
                             if ("Competition".Equals(currentController, StringComparison.InvariantCultureIgnoreCase)) {
                                 <li><a href="@Url.Action("Profitable", currentController, new {id = string.Empty})" @MarkActive("Profitable", "Competition", currentAction, currentController)><b>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderProfitable)</b></a></li>
