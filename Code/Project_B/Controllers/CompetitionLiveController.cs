@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
+using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
@@ -24,7 +25,7 @@ namespace Project_B.Controllers {
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
@@ -43,7 +44,7 @@ namespace Project_B.Controllers {
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 itemData != null && itemData.Count > 0,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
@@ -59,7 +60,7 @@ namespace Project_B.Controllers {
             var model = new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
             };
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 itemData?.CompetitionTransport != null,
                 () => TryGetNotModifiedResultForGame(itemData, model.StaticPageTransport.LastModifyDateUtc),
                 () => {

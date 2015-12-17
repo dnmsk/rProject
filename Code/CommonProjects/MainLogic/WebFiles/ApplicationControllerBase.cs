@@ -44,7 +44,7 @@ namespace MainLogic.WebFiles {
         }
 
         private SessionModule _currentUser;
-        public SessionModule CurrentUser {
+        protected SessionModule CurrentUser {
             get {
                 if (_currentUser == null) {
                     var guid = UserAgentValidationPolicy.BOT_GUID;
@@ -80,7 +80,7 @@ namespace MainLogic.WebFiles {
         }
         
         protected override void ExecuteCore() {
-            if (EnableStoreRequestData) {
+            if (EnableStoreRequestData && !GetBaseModel().GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled)) {
                 LogAdditionalUserInfo(CurrentUser.GuestID, InitUtmCookies(HttpContext.Request, HttpContext.Response), HttpContext.Request.UrlReferrer, HttpContext.Request.Url, HttpContext.Request.Browser, HttpContext.Request.UserAgent);
             }
             base.ExecuteCore();
@@ -142,7 +142,7 @@ namespace MainLogic.WebFiles {
             return requestContext.UserHostAddress;
         }
 
-        protected static string GetUrlReffererString(HttpRequestBase requestContext) {
+        private static string GetUrlReffererString(HttpRequestBase requestContext) {
             var prevUri = requestContext.UrlReferrer;
             var refData = string.Empty;
             if (prevUri != null && requestContext.Cookies[_urlReferrerCookieName] == null) {
@@ -151,23 +151,7 @@ namespace MainLogic.WebFiles {
             requestContext.QueryString["url_from"].Do(urlFrom => { refData += string.Format(";{0}", urlFrom); });
             return refData;
         }
-
-        protected NotModifiedResult TryGetNotModifiedResult(DateTime lastModifyByServer) {
-            DateTime lastModified;
-            if (DateTime.TryParse(Request.Headers["If-Modified-Since"], out lastModified)
-                    && Math.Abs((lastModifyByServer - lastModified).TotalSeconds) <= 1) {
-                return new NotModifiedResult();
-            }
-            if (lastModifyByServer == DateTime.MinValue) {
-                var now = DateTime.UtcNow;
-                Response.Cache.SetLastModified(now);
-                Response.Cache.SetExpires(now);
-            } else {
-                Response.Cache.SetLastModified(DateTime.SpecifyKind(lastModifyByServer, DateTimeKind.Utc));
-            }
-            return null;
-        }
-
+        
         private static int CreateGuidInfo(HttpContextBase context) {
             var requestContext = context.Request;
             var responseContext = context.Response;

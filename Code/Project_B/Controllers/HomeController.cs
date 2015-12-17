@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
+using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.Models;
@@ -14,9 +15,9 @@ namespace Project_B.Controllers {
         [ActionLog(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
             var model = new StaticPageBaseModel(this);
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 true,
-                () => TryGetNotModifiedResult(model.StaticPageTransport.LastModifyDateUtc),
+                () => model.StaticPageTransport.LastModifyDateUtc,
                 () => View(model));
         }
 

@@ -71,6 +71,7 @@
     <Compile Include="Entities\AccountIdentity.cs" />
     <Compile Include="Providers\AccountProvider.cs" />
     <Compile Include="Transport\AccountDetailsTransport.cs" />
+    <Compile Include="WebFiles\ActionResultCached.cs" />
     <Compile Include="WebFiles\ApplicationControllerBase.cs" />
     <Compile Include="Code\UserAgentValidationPolicy.cs" />
     <Compile Include="Consts\DbRestrictions.cs" />

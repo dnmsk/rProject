@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
@@ -49,28 +48,16 @@ namespace Project_B.CodeClientSide {
         }
 
         public virtual SubNavigationType SubNavigationType => SubNavigationType.None;
-
-        protected ActionResult GetActionResultWithCacheStatus(bool isFound, Func<NotModifiedResult> notModifiedResult, Func<ActionResult> buildActionResult) {
-            ActionResult result = null;
-            if (!isFound) {
-                result = new HttpNotFoundResult();
-            } else {
-                if (notModifiedResult != null) {
-                    result = notModifiedResult();
-                }
-            }
-            return result ?? buildActionResult();
-        }
-
-        protected NotModifiedResult TryGetNotModifiedResultForItems(List<CompetitionTransport> competitions, DateTime minModifiedDate) {
+        
+        protected DateTime TryGetNotModifiedResultForItems(List<CompetitionTransport> competitions, DateTime minModifiedDate) {
             var utcNow = DateTime.UtcNow;
-            return TryGetNotModifiedResult(competitions.MaxOrDefault(c =>
-                c.CompetitionItems.SelectMany(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0])).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate));
+            return competitions.MaxOrDefault(c =>
+                c.CompetitionItems.SelectMany(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0])).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate);
         }
-        protected NotModifiedResult TryGetNotModifiedResultForGame(CompetitionAdvancedTransport competitionAdvanced, DateTime minModifiedDate) {
+        protected DateTime TryGetNotModifiedResultForGame(CompetitionAdvancedTransport competitionAdvanced, DateTime minModifiedDate) {
             var utcNow = DateTime.UtcNow;
-            return TryGetNotModifiedResult(competitionAdvanced.CompetitionTransport.
-                CompetitionItems.MaxOrDefault(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0]).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate));
+            return competitionAdvanced.CompetitionTransport.
+                CompetitionItems.MaxOrDefault(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0]).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate);
         }
     }
 }

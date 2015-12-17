@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
+using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeServerSide.DataProvider;
@@ -32,7 +33,7 @@ namespace Project_B.Controllers {
                     }
                 }
             };
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, model.StaticPageTransport.LastModifyDateUtc),
                 () => {
@@ -51,7 +52,7 @@ namespace Project_B.Controllers {
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
@@ -73,7 +74,7 @@ namespace Project_B.Controllers {
                 }
             };
             staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
-            return GetActionResultWithCacheStatus(
+            return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
