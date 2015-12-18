@@ -70,5 +70,22 @@ namespace Project_B.CodeClientSide {
             return competitionAdvanced.CompetitionTransport.
                 CompetitionItems.MaxOrDefault(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0]).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate);
         }
+
+        private static readonly string[] _dateTimeFormats = { "dd.MM.yyyy", "MM/dd/yyyy" };
+        protected DateTime ParseToUserTime(string date, DateTime dateDef, DateTime minDate, DateTime maxDate) {
+            var dateParsed = dateDef;
+            foreach (var dateTimeFormat in _dateTimeFormats) {
+                if ((dateParsed = StringParser.ToDateTime(date, dateDef, dateTimeFormat)) != dateDef) {
+                    break;
+                }
+            }
+            if (dateParsed < minDate) {
+                dateParsed = minDate;
+            }
+            if (dateParsed > maxDate) {
+                dateParsed = maxDate;
+            }
+            return FixUserTimeToSystem(dateParsed.Date);
+        }
     }
 }

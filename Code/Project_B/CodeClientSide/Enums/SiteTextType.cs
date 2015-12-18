@@ -46,5 +46,8 @@
         GameRoi1_X2 = 1056,
         GameRoiHandicap = 1057,
         GameRoiTotal = 1058,
+
+        ChartTitle = 1070,
+
     }
 }

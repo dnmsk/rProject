@@ -14,8 +14,10 @@ namespace Project_B.Controllers {
         public override SubNavigationType SubNavigationType => SubNavigationType.SportTypes;
 
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
-        public ActionResult Index(SportType id = SportType.Unknown) {
+        public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
+            var fromDateUtc = ParseToUserTime(date, DateTime.MaxValue, DateTime.UtcNow.Date, DateTime.MaxValue);
+            var fromDate = FixUserTimeToSystem(fromDateUtc);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel {

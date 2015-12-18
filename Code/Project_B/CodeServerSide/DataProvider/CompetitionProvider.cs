@@ -292,10 +292,10 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, new List<CompetitionTransport>());
         }
 
-        private Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> ints, BrokerType[] brokerTypesToRetreive) {
+        private Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(Bet.Fields.CompetitionitemID, ints);
+                .WhereIn(Bet.Fields.CompetitionitemID, competitionItemIDs);
             if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
                 bets = bets.WhereIn(Bet.Fields.BrokerID, brokerTypesToRetreive);
             }
@@ -306,10 +306,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                 .OrderByDescending(t => t.ID)
                 .ToList());
         }
-        private Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> ids) {
+        private Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> betIDs) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(Bet.Fields.ID, ids);
+                .WhereIn(Bet.Fields.ID, betIDs);
             return bets
                 .AsList()
                 .GroupBy(e => e.CompetitionitemID)
@@ -416,7 +416,62 @@ namespace Project_B.CodeServerSide.DataProvider {
                 return competition;
             }, new List<CompetitionTransport>());
         }
-        
+
+        public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetition(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
+            return InvokeSafe(() => {
+                return BuildOddsByDateByBroker(ints => GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID);
+            }, null);
+        }
+
+        public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetitionLive(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
+            return InvokeSafe(() => {
+                return BuildOddsByDateByBroker(ints => GetLiveBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID);
+            }, null);
+        }
+
+        private static Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> BuildOddsByDateByBroker<T>(Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, SportType sportType, int competitionItemID) {
+            var betMap = getBetMap(new[] { competitionItemID });
+            if (betMap == null || !betMap.Any()) {
+                return null;
+            }
+
+            var mapBetsByDates = new Dictionary<DateTime, List<IBet<T>>>();
+            foreach (var ibet in betMap.Values.First()) {
+                var ibetDate = ibet.Datecreatedutc.Round(DateTimeExtensions.DateRoundType.Minute, 10);
+                List<IBet<T>> listBets;
+                if (!mapBetsByDates.TryGetValue(ibetDate, out listBets)) {
+                    listBets = new List<IBet<T>>();
+                    mapBetsByDates[ibetDate] = listBets;
+                }
+                listBets.Add(ibet);
+            }
+
+            var orderByDescending = mapBetsByDates.OrderByDescending(mb => mb.Key);
+            var previousList = orderByDescending.First();
+            foreach (var ibetsForTime in orderByDescending.Skip(1)) {
+                mapBetsByDates[ibetsForTime.Key.AddSeconds(1)] = previousList.Value;
+                ibetsForTime.Value.AddRange(
+                    previousList.Value.Where(prev => ibetsForTime.Value.All(i => i.BrokerID != prev.BrokerID)));
+                previousList = ibetsForTime;
+            }
+            mapBetsByDates[previousList.Key.AddMinutes((mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes / 8)] = previousList.Value;
+
+            var betOddTypes = BetHelper.SportTypeWithOdds[sportType];
+            var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
+            foreach (var mapBets in mapBetsByDates) {
+                var forDate = new List<Dictionary<BetOddType, BetItemTransport>>();
+                foreach (var ibet in mapBets.Value) {
+                    var betOddsMap = new Dictionary<BetOddType, BetItemTransport>();
+                    foreach (var betOddType in betOddTypes) {
+                        betOddsMap[betOddType] = BetMappingHelper<T>.OddsGetterMap[betOddType](ibet);
+                    }
+                    forDate.Add(betOddsMap);
+                }
+                oddsByDateByBroker[mapBets.Key] = forDate;
+            }
+            return oddsByDateByBroker;
+        }
+
         private static void BuildCompetitiontItemFullModel<T>(List<CompetitionTransport> competitions, Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, Func<int[], Dictionary<int, ResultTransport>> getResultMap) {
             var competitionItemIDs = competitions.SelectMany(c => c.CompetitionItems.Select(ci => ci.CompetitionItemID)).Distinct().ToArray();
             var betGrouped = getBetMap(competitionItemIDs);

@@ -5,6 +5,7 @@ using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {
@@ -73,22 +74,33 @@ namespace Project_B.CodeClientSide.Helper {
             {RoiType.RoiTotal, SiteTextType.GameRoiTotal },
         };
 
+        public static float GetAverageOddValue(SportType sportType, BetOddType betOddType, List<Dictionary<BetOddType, BetItemTransport>> bets) {
+            if (bets == null || !BetHelper.SportTypeWithOdds[sportType].Contains(betOddType)) {
+                return default(int);
+            }
+            return bets.Average(b => b[betOddType].Odd);
+        }
+
         public static float GetMaxBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
             return roiType.GetFlags<RoiType>().Select(r => GetBetOddRoi(r, sportType, bets)).Where(r => r != default(int)).MaxOrDefault(r => r, default(float));
         }
 
-        public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
-            if (bets == null) {
+        public static float GetBetOddRoi(RoiType roiType, SportType sportType, List<Dictionary<BetOddType, BetItemTransport>> bets) {
+            if (bets == null || bets.Count == 0) {
                 return default(int);
             }
             var roiOdds = GetBetOddTypesForRoi(roiType, sportType);
+            if (roiOdds.Length == 0) {
+                return default(int);
+            }
             var odds = new float[roiOdds.Length];
-            var dataIsGood = roiOdds.All(bets.ContainsKey) && roiOdds.Select(betType => bets[betType].AdvancedParam)
+            var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd))) && 
+                             roiOdds.All(rodd => bets.Select(b => b[rodd].AdvancedParam)
                                                                      .Distinct()
-                                                                     .Count() == 1;
+                                                                     .Count() == 1);
             if (dataIsGood) {
                 for (var i = 0; i < roiOdds.Length; i++) {
-                    var odd = bets[roiOdds[i]].Odd;
+                    var odd = bets.Max(b => b[roiOdds[i]].Odd);
                     if (odd == default(float)) {
                         dataIsGood = false;
                         continue;
@@ -97,6 +109,13 @@ namespace Project_B.CodeClientSide.Helper {
                 }
             }
             return dataIsGood ? (100 / odds.Sum() - 100) : default(int);
+        }
+
+        public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
+            if (bets == null) {
+                return default(int);
+            }
+            return GetBetOddRoi(roiType, sportType, new List<Dictionary<BetOddType, BetItemTransport>> {bets});
         }
 
         public static BetOddType[] GetBetOddTypesForRoi(RoiType roiType, SportType sportType) {

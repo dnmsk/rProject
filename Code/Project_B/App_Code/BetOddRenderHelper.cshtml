@@ -81,3 +81,95 @@ var hasAnyRoi = false;
     </table>
 </div>
 }
+@helper RenderRoiGraph(string dataSource, LanguageType language, CompetitionItemBetShortTransport match) {
+    <div class="col-sm-7">
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <h4>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.ChartTitle)</h4>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="window.ninjaBag.functions.drawChart('arr');">@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[RoiType.Roi1X2])</button>
+            <button type="button" class="btn btn-default" onclick="window.ninjaBag.functions.drawChart('hcap');">@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[RoiType.RoiHandicap])</button>
+            <button type="button" class="btn btn-default" onclick="window.ninjaBag.functions.drawChart('tot');">@LanguageSiteHelper.Instance.GetText(language, BetOddInterfaceHelper.RoiTexts[RoiType.RoiTotal])</button>
+        </div>
+        <br/><br/>
+        <div id="linechart_material"></div>
+        <script type="text/javascript">
+            google.load('visualization', '1.1', { packages: ['line'] });
+            google.setOnLoadCallback(function () {
+                window.ninjaBag.functions.append({drawChart: function(key) {
+                    var col = window.ninjaBag.documentObjects.chartColumn[key].col();
+                    var rows = window.ninjaBag.documentObjects.chartColumn[key].data();
+                    col.addRows(rows);
+                    var chart = new google.charts.Line(document.getElementById('linechart_material'));
+                    chart.draw(col, {
+                        width: 650,
+                        height: 400
+                    });
+                }});
+                window.ninjaBag.documentObjects.append({
+                    chartColumn: {
+                        arr: {
+                            col: function() {
+                                var data = new google.visualization.DataTable();
+                                data.addColumn('datetime');
+                                data.addColumn('number', '@match.Competitor1.Name.Substring(0, Math.Min(match.Competitor1.Name.Length, 3))');
+                                data.addColumn('number', 'X');
+                                data.addColumn('number', '@match.Competitor2.Name.Substring(0, Math.Min(match.Competitor2.Name.Length, 3))');
+                                data.addColumn('number', 'Roi, %');
+                                return data;
+                            },
+                            data: function() {
+                                var rows = [];
+                                $.each(window.ninjaBag.documentObjects.chartData, function(idx, el) {
+                                    rows.push([new Date(el.d), el.w1, el.x, el.w2, el.r1x2 || 0]);
+                                });
+                                return rows;
+                            }
+                        },
+                        hcap: {
+                            col: function() {
+                                var data = new google.visualization.DataTable();
+                                data.addColumn('datetime');
+                                data.addColumn('number', '1');
+                                data.addColumn('number', '2');
+                                data.addColumn('number', 'Roi, %');
+                                return data;
+                            },
+                            data: function() {
+                                var rows = [];
+                                $.each(window.ninjaBag.documentObjects.chartData, function(idx, el) {
+                                    rows.push([new Date(el.d), el.h1, el.h2, el.rh]);
+                                });
+                                return rows;
+                            }
+                        },
+                        tot: {
+                            col: function() {
+                                var data = new google.visualization.DataTable();
+                                data.addColumn('datetime');
+                                data.addColumn('number', 'Under');
+                                data.addColumn('number', 'Over');
+                                data.addColumn('number', 'Roi, %');
+                                return data;
+                            },
+                            data: function() {
+                                var rows = [];
+                                $.each(window.ninjaBag.documentObjects.chartData, function(idx, el) {
+                                    rows.push([new Date(el.d), el.tu, el.to, el.rt]);
+                                });
+                                return rows;
+                            }
+                        }
+                    }
+                });
+                $.ajax('@dataSource', {
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function(jsResult) {
+                        window.ninjaBag.documentObjects.append({ chartData: jsResult });
+                        window.ninjaBag.functions.drawChart('arr');
+                    }
+                });
+            });
+        </script>
+    </div>
+}
