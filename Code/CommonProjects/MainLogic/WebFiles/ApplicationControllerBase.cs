@@ -89,7 +89,10 @@ namespace MainLogic.WebFiles {
                 LogAdditionalUserInfo(CurrentUser.GuestID, InitUtmCookies(HttpContext.Request, HttpContext.Response), HttpContext.Request.UrlReferrer, HttpContext.Request.Url, HttpContext.Request.Browser, HttpContext.Request.UserAgent);
             }
             if (CurrentUser.GuestID == UserAgentValidationPolicy.BOT_GUID) {
-                _loggerBot.Info(string.Format("ip: {0} url: {1}, userAgent: {2}", GetUserIp(System.Web.HttpContext.Current.Request), Request.Url, Request.UserAgent ?? string.Empty));
+                var userAgent = Request.UserAgent ?? string.Empty;
+                if (userAgent.IndexOf("wget/", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                    _loggerBot.Info(string.Format("ip: {0} url: {1}, userAgent: {2}", GetUserIp(System.Web.HttpContext.Current.Request), Request.Url, userAgent));
+                }
             }
             base.ExecuteCore();
         }
