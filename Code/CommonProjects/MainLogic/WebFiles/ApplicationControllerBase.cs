@@ -15,6 +15,11 @@ using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {
     public abstract class ApplicationControllerBase : Controller {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _loggerBot = LoggerManager.GetLogger("WebBotInfo");
+
         public static readonly StringCryptoManagerDES CryptoManager = new StringCryptoManagerDES(SiteConfiguration.GetConfigurationProperty<string>("DataEncryptorKey"));
         protected override bool DisableAsyncSupport => true;
 
@@ -82,6 +87,9 @@ namespace MainLogic.WebFiles {
         protected override void ExecuteCore() {
             if (EnableStoreRequestData && !GetBaseModel().GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled)) {
                 LogAdditionalUserInfo(CurrentUser.GuestID, InitUtmCookies(HttpContext.Request, HttpContext.Response), HttpContext.Request.UrlReferrer, HttpContext.Request.Url, HttpContext.Request.Browser, HttpContext.Request.UserAgent);
+            }
+            if (CurrentUser.GuestID == UserAgentValidationPolicy.BOT_GUID) {
+                _loggerBot.Info(string.Format("ip: {0} url: {1}, userAgent: {2}", GetUserIp(System.Web.HttpContext.Current.Request), Request.Url, Request.UserAgent ?? string.Empty));
             }
             base.ExecuteCore();
         }

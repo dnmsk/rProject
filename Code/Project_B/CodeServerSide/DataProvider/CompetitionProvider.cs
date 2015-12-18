@@ -454,7 +454,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     previousList.Value.Where(prev => ibetsForTime.Value.All(i => i.BrokerID != prev.BrokerID)));
                 previousList = ibetsForTime;
             }
-            mapBetsByDates[previousList.Key.AddMinutes((mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes / 8)] = previousList.Value;
+            mapBetsByDates[previousList.Key.AddMinutes((mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes / 16)] = previousList.Value;
 
             var betOddTypes = BetHelper.SportTypeWithOdds[sportType];
             var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
