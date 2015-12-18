@@ -78,7 +78,11 @@ namespace Project_B.CodeClientSide.Helper {
             if (bets == null || !BetHelper.SportTypeWithOdds[sportType].Contains(betOddType)) {
                 return default(int);
             }
-            return bets.Average(b => b[betOddType].Odd);
+            var betsToCalc = bets.Where(b => {
+                BetItemTransport betItem;
+                return b.TryGetValue(betOddType, out betItem) && betItem.Odd != default(float);
+            }).ToArray();
+            return betsToCalc.Any() ? betsToCalc.Average(b => b[betOddType].Odd) : default(float);
         }
 
         public static float GetMaxBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
@@ -87,11 +91,11 @@ namespace Project_B.CodeClientSide.Helper {
 
         public static float GetBetOddRoi(RoiType roiType, SportType sportType, List<Dictionary<BetOddType, BetItemTransport>> bets) {
             if (bets == null || bets.Count == 0) {
-                return default(int);
+                return default(float);
             }
             var roiOdds = GetBetOddTypesForRoi(roiType, sportType);
             if (roiOdds.Length == 0) {
-                return default(int);
+                return default(float);
             }
             var odds = new float[roiOdds.Length];
             var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd))) &&
@@ -113,7 +117,7 @@ namespace Project_B.CodeClientSide.Helper {
 
         public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {
             if (bets == null) {
-                return default(int);
+                return default(float);
             }
             return GetBetOddRoi(roiType, sportType, new List<Dictionary<BetOddType, BetItemTransport>> {bets});
         }
