@@ -94,8 +94,8 @@ namespace Project_B.CodeClientSide.Helper {
                 return default(int);
             }
             var odds = new float[roiOdds.Length];
-            var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd))) && 
-                             roiOdds.All(rodd => bets.Select(b => b[rodd].AdvancedParam)
+            var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd))) &&
+                             bets.All(b => roiOdds.Select(rodd => b[rodd].AdvancedParam)
                                                                      .Distinct()
                                                                      .Count() == 1);
             if (dataIsGood) {
