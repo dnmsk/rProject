@@ -35,7 +35,7 @@ namespace Project_B.CodeClientSide {
             }
             base.OnActionExecuting(filterContext);
         }
-
+        
         public static ProjectBActions GetPageActionId(RequestContext requestContext, string controllerName, string actionName) {
             var key = string.Format("{0}/{1}", controllerName, actionName).ToLowerInvariant();
             ProjectBActions value;

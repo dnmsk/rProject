@@ -220,6 +220,7 @@
     <Compile Include="App_Start\ReactConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
+    <Compile Include="CodeClientSide\ActionProfileAttribute.cs" />
     <Compile Include="CodeClientSide\CheckCredentialAttribute.cs" />
     <Compile Include="CodeClientSide\Enums\DisplayColumnType.cs" />
     <Compile Include="CodeClientSide\Enums\SiteTextType.cs" />

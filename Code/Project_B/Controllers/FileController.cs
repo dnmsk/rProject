@@ -10,6 +10,7 @@ using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic.WebFiles;
 using MainLogic.WebFiles.Policy;
 using MainLogic.WebFiles.UserPolicy.Enum;
+using Project_B.CodeClientSide;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 
@@ -28,6 +29,7 @@ namespace Project_B.Controllers {
         }
 
         [HttpGet]
+        [ActionProfile(ProjectBActions.PageFileIndex)]
         public ActionResult Index(short id, string type, string hash) {
             var path = Path.Combine(CombinePathFromID(id), id  + "." + type);
             if (!id.ToString().GetMD5(_fileHashLength).Equals(hash, StringComparison.InvariantCultureIgnoreCase)

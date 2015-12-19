@@ -14,6 +14,7 @@ namespace Project_B.Controllers {
         public override SubNavigationType SubNavigationType => SubNavigationType.SportTypes;
 
         [ActionLog(ProjectBActions.PageCompetitionIndex)]
+        [ActionProfile(ProjectBActions.PageCompetitionIndex)]
         public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)id);
             var fromDateUtc = ParseToUserTime(date, DateTime.MaxValue, DateTime.UtcNow.Date, DateTime.MaxValue);
@@ -39,6 +40,7 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageCompetitionUniqueID)]
+        [ActionProfile(ProjectBActions.PageCompetitionUniqueID)]
         public ActionResult Item(int id) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, null, new[] {id});
@@ -58,6 +60,7 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageCompetitionItemID)]
+        [ActionProfile(ProjectBActions.PageCompetitionItemID)]
         public ActionResult Game(int id) {
             LogAction(ProjectBActions.PageCompetitionItemIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemRegularBet(CurrentLanguage, null, null, id);
@@ -74,6 +77,7 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageCompetitionProfitable)]
+        [ActionProfile(ProjectBActions.PageCompetitionProfitable)]
         public ActionResult Profitable(SportType id = SportType.Unknown) {
             var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, null, null, id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {

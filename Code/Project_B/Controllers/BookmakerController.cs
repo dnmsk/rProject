@@ -11,6 +11,7 @@ namespace Project_B.Controllers {
 
         // GET: Bookmaker
         [ActionLog(ProjectBActions.PageBookmakerPage)]
+        [ActionProfile(ProjectBActions.PageBookmakerPage)]
         public ActionResult Index(string id) {
             if (id.IsNullOrEmpty()) {
                 return View(new StaticPageBaseModel(this));

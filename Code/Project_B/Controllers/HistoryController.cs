@@ -15,6 +15,7 @@ namespace Project_B.Controllers {
         public override SubNavigationType SubNavigationType => SubNavigationType.SportTypes;
 
         [ActionLog(ProjectBActions.PageHistoryIndex)]
+        [ActionProfile(ProjectBActions.PageHistoryIndex)]
         public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
             LogAction(ProjectBActions.PageHistoryIndexConcrete, (short) id);
             var fromDateUtc = ParseToUserTime(date, DateTime.MaxValue, _minDateTime, MaxDateTime);
@@ -40,6 +41,7 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
+        [ActionProfile(ProjectBActions.PageHistoryCompetitionUniqueID)]
         public ActionResult Item(int id, string from = null, string to = null) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider
@@ -60,6 +62,7 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
+        [ActionProfile(ProjectBActions.PageHistoryCompetitorID)]
         public ActionResult Competitor(int id, string from = null, string to = null) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
             var itemData = ProjectProvider.Instance.CompetitionProvider

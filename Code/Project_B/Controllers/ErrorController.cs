@@ -9,6 +9,7 @@ namespace Project_B.Controllers {
         /// Показывает 500 ошибку
         /// </summary>
         [ActionLog(ProjectBActions.PageErrorInternal)]
+        [ActionProfile(ProjectBActions.PageErrorInternal)]
         public ActionResult Internal() {
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return View("Error");
@@ -18,6 +19,7 @@ namespace Project_B.Controllers {
         /// Показывает 404 ошибку
         /// </summary>
         [ActionLog(ProjectBActions.PageErrorNotFound)]
+        [ActionProfile(ProjectBActions.PageErrorNotFound)]
         public ActionResult NotFound() {
             Response.StatusCode = (int)HttpStatusCode.NotFound;
             return View("Error404", new StaticPageBaseModel(this));

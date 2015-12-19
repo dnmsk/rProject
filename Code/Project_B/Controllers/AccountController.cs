@@ -10,6 +10,7 @@ namespace Project_B.Controllers {
         // GET: /Account/Login
         [AllowAnonymous]
         [ActionLog(ProjectBActions.PageAccountLoginIndex)]
+        [ActionProfile(ProjectBActions.PageAccountLoginIndex)]
         public ActionResult Login(string returnUrl) {
             ViewBag.ReturnUrl = returnUrl;
             return View(new LoginViewModel(this));
@@ -21,6 +22,7 @@ namespace Project_B.Controllers {
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [ActionLog(ProjectBActions.PageAccountLoginPost)]
+        [ActionProfile(ProjectBActions.PageAccountLoginPost)]
         public ActionResult Login(LoginViewModel model, string returnUrl) {
             var loginModel = new LoginViewModel(this, model);
             if (!ModelState.IsValid) {

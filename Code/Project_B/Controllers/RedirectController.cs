@@ -7,6 +7,7 @@ namespace Project_B.Controllers {
     public class RedirectController : ProjectControllerBase {
         
         [ActionLog(ProjectBActions.PageRedirectExternal)]
+        [ActionProfile(ProjectBActions.PageRedirectExternal)]
         public ActionResult External(string l) {
             var guestID = GetBaseModel().SessionModule.GuestID;
             var linkID = RedirectLinkHelper.Instance.GetRedirectID(guestID, l);
@@ -19,6 +20,7 @@ namespace Project_B.Controllers {
         }
         
         [ActionLog(ProjectBActions.PageRedirectInternal)]
+        [ActionProfile(ProjectBActions.PageRedirectInternal)]
         public ActionResult Internal(string l) {
             var guestID = GetBaseModel().SessionModule.GuestID;
             var linkID = RedirectLinkHelper.Instance.GetRedirectID(guestID, l);

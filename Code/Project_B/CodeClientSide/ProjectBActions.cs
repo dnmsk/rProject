@@ -29,6 +29,12 @@
         PageCompetitionItemIDConcrete = 1305,
         PageCompetitionProfitable = 1306,
 
+        PageAssetsJs = 1400,
+        PageAssetsCss = 1401,
+        PageDataCompetitionItemGraph = 1405,
+        PageDataCompetitionItemLiveGraph = 1406,
+        PageFileIndex = 1410,
+
         PageBookmakerPage = 1500,
         PageBookmakerConcretePage = 1501,
 

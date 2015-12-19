@@ -15,12 +15,14 @@ using Project_B.CodeServerSide.Enums;
 namespace Project_B.Controllers {
     public class DataController : ProjectControllerBase {
         [HttpPost]
+        [ActionProfile(ProjectBActions.PageDataCompetitionItemGraph)]
         public ActionResult CompetitionItemGraph(int id, SportType sportType) {
             var data = ProjectProvider.Instance.CompetitionProvider.GetRowDataForGraphCompetition(null, sportType, id);
             return BuildActionResult(sportType, data);
         }
 
         [HttpPost]
+        [ActionProfile(ProjectBActions.PageDataCompetitionItemLiveGraph)]
         public ActionResult CompetitionItemLiveGraph(int id, SportType sportType) {
             var data = ProjectProvider.Instance.CompetitionProvider.GetRowDataForGraphCompetitionLive(null, sportType, id);
             return BuildActionResult(sportType, data);

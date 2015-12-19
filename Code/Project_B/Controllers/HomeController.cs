@@ -13,6 +13,7 @@ namespace Project_B.Controllers {
         public override SubNavigationType SubNavigationType => SubNavigationType.Home;
 
         [ActionLog(ProjectBActions.PageHomeIndex)]
+        [ActionProfile(ProjectBActions.PageHomeIndex)]
         public ActionResult Index() {
             var model = new StaticPageBaseModel(this);
             return new ActionResultCached(
@@ -22,11 +23,13 @@ namespace Project_B.Controllers {
         }
 
         [ActionLog(ProjectBActions.PageHomeAbout)]
+        [ActionProfile(ProjectBActions.PageHomeAbout)]
         public ActionResult About() {
             return View(new StaticPageBaseModel(this));
         }
 
         [ActionLog(ProjectBActions.PageHomeContact)]
+        [ActionProfile(ProjectBActions.PageHomeContact)]
         public ActionResult Contact() {
             return View(new StaticPageBaseModel(this));
         }

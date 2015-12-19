@@ -108,8 +108,8 @@ namespace Project_B.CodeClientSide.Helper {
                         var vals = gi.ToArray();
                         for (var i = 0; i < roiOdds.Length; i++) {
                             var roiOdd = roiOdds[i];
-                            var odd = vals.Where(v => v.Key == roiOdd).MaxOrDefault(v => v.Value.Odd, float.MinValue);
-                            if (odd == float.MinValue) {
+                            var odd = vals.Where(v => v.Key == roiOdd).MaxOrDefault(v => v.Value.Odd, default(float));
+                            if (odd == default(float)) {
                                 internalDataGood = false;
                                 continue;
                             }
