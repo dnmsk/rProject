@@ -91,7 +91,7 @@ namespace MainLogic.WebFiles {
             if (CurrentUser.GuestID == UserAgentValidationPolicy.BOT_GUID) {
                 var userAgent = Request.UserAgent ?? string.Empty;
                 if (userAgent.IndexOf("wget/", StringComparison.InvariantCultureIgnoreCase) == -1) {
-                    _loggerBot.Info(string.Format("ip: {0} url: {1}, userAgent: {2}", GetUserIp(System.Web.HttpContext.Current.Request), Request.Url, userAgent));
+                    _loggerBot.Info(string.Format("ip: {0} {1}: {2}, userAgent: {3}", GetUserIp(System.Web.HttpContext.Current.Request), Request.HttpMethod, Request.Url, userAgent));
                 }
             }
             base.ExecuteCore();

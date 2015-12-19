@@ -97,22 +97,29 @@ namespace Project_B.CodeClientSide.Helper {
             if (roiOdds.Length == 0) {
                 return default(float);
             }
-            var odds = new float[roiOdds.Length];
-            var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd))) &&
-                             bets.All(b => roiOdds.Select(rodd => b[rodd].AdvancedParam)
-                                                                     .Distinct()
-                                                                     .Count() == 1);
+            var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd)));
             if (dataIsGood) {
-                for (var i = 0; i < roiOdds.Length; i++) {
-                    var odd = bets.Max(b => b[roiOdds[i]].Odd);
-                    if (odd == default(float)) {
-                        dataIsGood = false;
-                        continue;
-                    }
-                    odds[i] = 1 / (odd);
-                }
+                return bets
+                    .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd])))
+                    .GroupBy(kv => kv.Value.AdvancedParam)
+                    .Select(gi => {
+                        var oddInternal = new float[roiOdds.Length];
+                        var internalDataGood = true;
+                        var vals = gi.ToArray();
+                        for (var i = 0; i < roiOdds.Length; i++) {
+                            var roiOdd = roiOdds[i];
+                            var odd = vals.Where(v => v.Key == roiOdd).MaxOrDefault(v => v.Value.Odd, float.MinValue);
+                            if (odd == float.MinValue) {
+                                internalDataGood = false;
+                                continue;
+                            }
+                            oddInternal[i] = 1 / (odd);
+                        }
+                        return internalDataGood ? (100 / oddInternal.Sum() - 100) : default(float);
+                    })
+                    .MaxOrDefault(v => v, default(float));
             }
-            return dataIsGood ? (100 / odds.Sum() - 100) : default(int);
+            return default(float);
         }
 
         public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {

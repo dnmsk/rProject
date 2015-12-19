@@ -51,6 +51,7 @@ namespace MainLogic.Code {
             "python-urllib",
             "http-client",
             "package http",
+            "google web preview",
         };
 
         /// <summary>

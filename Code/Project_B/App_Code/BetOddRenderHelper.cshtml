@@ -19,14 +19,14 @@
 }
 
 @helper RenderBetOdd(BetOddType oddType, BetItemTransport currentBet, string additionalText = null) {
-<div class="text-" title="@(currentBet.DateTimeUtc.ToString("dd'/'MM HH:") + (currentBet.DateTimeUtc.Minute / 10))0">
+<div title="@(currentBet.DateTimeUtc.ToString("dd'/'MM HH:") + (currentBet.DateTimeUtc.Minute / 10))0">
     @RenderAdvancedParam(oddType, currentBet.AdvancedParam)<b>@currentBet.Odd</b>@RenderOddSrcLink(currentBet) @Html.Raw(additionalText ?? string.Empty)
 </div>
 }
 
 @helper RenderOddSrcLink(BetItemTransport betItem) {
 var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
-    <a class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))    }></a>
+    <a rel="nofollow" class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))    }></a>
 }
 
 @helper RenderAdvancedParam(BetOddType oddType, float advanced) {
