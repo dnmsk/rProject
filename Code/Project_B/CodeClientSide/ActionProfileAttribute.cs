@@ -20,7 +20,7 @@ namespace Project_B.CodeClientSide {
         private static ConcurrentBag<InfoObject> _bag = new ConcurrentBag<InfoObject>();
 
         static ActionProfileAttribute() {
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(SaveBagData, TimeSpan.FromMinutes(1), null));
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(SaveBagData, TimeSpan.FromHours(1), null));
         }
 
         private static object SaveBagData() {
