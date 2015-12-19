@@ -430,14 +430,22 @@ namespace Project_B.CodeServerSide.DataProvider {
         }
 
         private static Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> BuildOddsByDateByBroker<T>(Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, SportType sportType, int competitionItemID) {
+            const int RESOLUTION = 10;
             var betMap = getBetMap(new[] { competitionItemID });
             if (betMap == null || !betMap.Any()) {
                 return null;
             }
 
             var mapBetsByDates = new Dictionary<DateTime, List<IBet<T>>>();
+            var mapByBrokers = new Dictionary<BrokerType, List<KeyValuePair<DateTime, IBet<T>>>>();
             foreach (var ibet in betMap.Values.First()) {
-                var ibetDate = ibet.Datecreatedutc.Round(DateTimeExtensions.DateRoundType.Minute, 10);
+                var ibetDate = ibet.Datecreatedutc.Round(DateTimeExtensions.DateRoundType.Minute, RESOLUTION);
+                List<KeyValuePair<DateTime, IBet<T>>> ibetsForBroker;
+                if (!mapByBrokers.TryGetValue(ibet.BrokerID, out ibetsForBroker)) {
+                    ibetsForBroker = new List<KeyValuePair<DateTime, IBet<T>>>();
+                    mapByBrokers[ibet.BrokerID] = ibetsForBroker;
+                }
+                ibetsForBroker.Add(new KeyValuePair<DateTime, IBet<T>>(ibetDate, ibet));
                 List<IBet<T>> listBets;
                 if (!mapBetsByDates.TryGetValue(ibetDate, out listBets)) {
                     listBets = new List<IBet<T>>();
@@ -445,17 +453,38 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 listBets.Add(ibet);
             }
-
+            var totalDeltaMinutes = (mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes;
+            //minimum interpolation area for each broker
+            var minDateForBroker = mapByBrokers
+                .Select(byBroker => {
+                    var keyValuePairs = byBroker.Value.OrderBy(kv => kv.Key).ToArray();
+                    var firstBet = keyValuePairs.First();
+                    var lastBet = keyValuePairs.Last();
+                    var localDeltaMinutes = (firstBet.Key == lastBet.Key ? totalDeltaMinutes : (firstBet.Key - lastBet.Key).TotalMinutes) / 16;
+                    var newLastiBetDate = firstBet.Key.AddMinutes(localDeltaMinutes).Round(DateTimeExtensions.DateRoundType.Minute, RESOLUTION);
+                    List<IBet<T>> listBets;
+                    if (!mapBetsByDates.TryGetValue(newLastiBetDate, out listBets)) {
+                        listBets = new List<IBet<T>>();
+                        mapBetsByDates[newLastiBetDate] = listBets;
+                    }
+                    if (listBets.All(iBet => iBet.BrokerID != firstBet.Value.BrokerID)) {
+                        listBets.Add(firstBet.Value);
+                        byBroker.Value.Add(new KeyValuePair<DateTime, IBet<T>>(newLastiBetDate, firstBet.Value));
+                    }
+                    return byBroker;
+                })
+                .ToDictionary(byBroker => byBroker.Key, byBroker => byBroker.Value.Min(ibet => ibet.Key));
+            
             var orderByDescending = mapBetsByDates.OrderByDescending(mb => mb.Key);
             var previousList = orderByDescending.First();
             foreach (var ibetsForTime in orderByDescending.Skip(1)) {
                 mapBetsByDates[ibetsForTime.Key.AddSeconds(1)] = previousList.Value;
-                ibetsForTime.Value.AddRange(
-                    previousList.Value.Where(prev => ibetsForTime.Value.All(i => i.BrokerID != prev.BrokerID)));
+                ibetsForTime.Value.AddRange(previousList.Value
+                    .Where(prev => minDateForBroker[prev.BrokerID] < ibetsForTime.Key)
+                    .Where(prev => ibetsForTime.Value.All(i => i.BrokerID != prev.BrokerID)));
                 previousList = ibetsForTime;
             }
-            mapBetsByDates[previousList.Key.AddMinutes((mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes / 16)] = previousList.Value;
-
+            
             var betOddTypes = BetHelper.SportTypeWithOdds[sportType];
             var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
             foreach (var mapBets in mapBetsByDates) {
