@@ -20,7 +20,7 @@ namespace Project_B.CodeClientSide {
         private static ConcurrentBag<InfoObject> _bag = new ConcurrentBag<InfoObject>();
 
         static ActionProfileAttribute() {
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(SaveBagData, TimeSpan.FromHours(1), null));
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(SaveBagData, TimeSpan.FromMinutes(1), null));
         }
 
         private static object SaveBagData() {
@@ -29,41 +29,47 @@ namespace Project_B.CodeClientSide {
             if (oldData.Any()) { 
                 _logger.Info(Environment.NewLine + 
                     oldData.GroupBy(old => old.Action)
-                            .Select(grouped => string.Format("{0};{1};{2};{3};{4};{5};", 
-                                                            grouped.Key, 
-                                                            grouped.Count(), 
-                                                            (int) grouped.Average(d => d.ActionExecuted),
-                                                            grouped.MaxOrDefault(d => d.ActionExecuted, default(int)),
-                                                            (int) grouped.Average(d => d.ResultExecuted),
-                                                            grouped.MaxOrDefault(d => d.ResultExecuted, default(int))
-                            )).StrJoin(Environment.NewLine));
+                            .Select(grouped => {
+                                var count = grouped.Count();
+                                return string.Format("{0};{1};{2};{3};{4};{5};",
+                                    grouped.Key,
+                                    count,
+                                    grouped.Sum(d => d.ActionExecuted) / count,
+                                    grouped.Max(d => d.ActionExecuted),
+                                    grouped.Sum(d => d.ResultExecuted) / count,
+                                    grouped.Max(d => d.ResultExecuted));
+                            })
+                            .StrJoin(Environment.NewLine));
             }
             return null;
         }
-
-        private readonly InfoObject _infoObject;
-        private Stopwatch _stopwatch;
+        
         public ActionProfileAttribute(ProjectBActions actionToLog) {
             ActionToLog = actionToLog;
-            _infoObject = new InfoObject {
-                Action = ActionToLog
-            };
         }
 
+        const string profile = "profile";
+        const string stopwatch = "stopwatch";
         public override void OnActionExecuting(ActionExecutingContext filterContext) {
-            _stopwatch = Stopwatch.StartNew();
+            var infoObject = new InfoObject {
+                Action = ActionToLog
+            };
+            filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[profile] = infoObject;
+            filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[stopwatch] = Stopwatch.StartNew();
             base.OnActionExecuting(filterContext);
         }
 
         public override void OnActionExecuted(ActionExecutedContext filterContext) {
-            _infoObject.ActionExecuted = (int) _stopwatch.ElapsedMilliseconds;
+            ((InfoObject)filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[profile]).ActionExecuted = 
+                (int)((Stopwatch)filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[stopwatch]).ElapsedMilliseconds;
             base.OnActionExecuted(filterContext);
         }
         
         public override void OnResultExecuted(ResultExecutedContext filterContext) {
             base.OnResultExecuted(filterContext);
-            _infoObject.ResultExecuted = (int)_stopwatch.ElapsedMilliseconds;
-            _bag.Add(_infoObject);
+            var infoObject = (InfoObject)filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[profile];
+            infoObject.ResultExecuted = (int)((Stopwatch)filterContext.RequestContext.HttpContext.Request.RequestContext.RouteData.DataTokens[stopwatch]).ElapsedMilliseconds;
+            _bag.Add(infoObject);
         }
 
         private class InfoObject {
