@@ -44,6 +44,7 @@ namespace Project_B.Controllers {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
+                    Filter = filter
                 }
             };
             return new ActionResultCached(

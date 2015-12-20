@@ -54,7 +54,8 @@ namespace Project_B.Controllers {
                         DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
-                }
+                        Filter = filter
+                    }
             };
             return new ActionResultCached(
                 true,
