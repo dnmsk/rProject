@@ -18,9 +18,9 @@ namespace Project_B.Controllers {
         public ActionResult Index(FilterModel<SportType> filter) {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)filter.id);
             var dateDef = DateTime.UtcNow.Date;
-            filter.date = FixDateTime(filter.date, dateDef, dateDef.AddDays(14));
-            var fromDate = FixUserTimeToSystem(filter.date);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, filter.id);
+            var maxDateDef = dateDef.AddDays(14);
+            filter.date = FixDateTime(filter.date, dateDef, maxDateDef);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, filter.all ? null : (DateTime?)FixUserTimeToSystem(filter.date), null, null, filter.id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                     LimitToDisplayInGroup = 4,
@@ -29,7 +29,7 @@ namespace Project_B.Controllers {
                     Competitions = itemData,
                     Filter = new FilterModel<SportType>("Index", "Competition", CurrentLanguage, FilterSettings.BtnAll | FilterSettings.ToDate, filter) {
                         MinDate = dateDef,
-                        MaxDate = dateDef.AddDays(7)
+                        MaxDate = maxDateDef
                     }
                 }
             };
@@ -46,7 +46,7 @@ namespace Project_B.Controllers {
         [ActionProfile(ProjectBActions.PageCompetitionUniqueID)]
         public ActionResult Item(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, filter.id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, null, new[] {filter.id});
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, null, null, new[] {filter.id});
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                     DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds

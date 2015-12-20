@@ -224,12 +224,17 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, default(int));
         }
 
-        public List<CompetitionTransport> GetCompetitionItemsFuturedNew(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null, int[] competitionUniqueIDs = null) {
+        public List<CompetitionTransport> GetCompetitionItemsFuturedNew(LanguageType languageType, DateTime? competitionItemDate, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, SportType? sportType = null, int[] competitionUniqueIDs = null) {
             return InvokeSafe(() => {
                 var competitionInfo = CompetitionBetRoiHelper.GetDataForNow(float.MinValue, sportType ?? SportType.Unknown, competitionUniqueIDs, brokerTypesToRetreive);
                 var competitionItemForDateQuery = CompetitionItem.DataSource
                     .WhereIn(CompetitionItem.Fields.ID, competitionInfo.Select(cinfo => cinfo.ID))
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Asc);
+                if (competitionItemDate.HasValue) {
+                    competitionItemForDateQuery = competitionItemForDateQuery
+                        .Where(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, competitionItemDate.Value)
+                        .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, competitionItemDate.Value.AddDays(1));
+                }
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
                 BuildCompetitiontItemFullModel(competitionTransports, ci => GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct()), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
