@@ -59,7 +59,7 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                         case SubNavigationType.SportTypes:
                             var castedModel = Model as StaticPageBaseModel<CompetitionRegularModel>;
                             var dateSelected = string.Empty;
-                            if (castedModel != null && !castedModel.ControllerModel.Filter.Equals(default(FilterModelBase))) {
+                            if (castedModel != null && castedModel.ControllerModel.Filter != null) {
                                 var date = castedModel.ControllerModel.Filter.date.Date;
                                 if (date != DateTime.MinValue && date.Date != DateTime.UtcNow.Date) {
                                     dateSelected = date.ToString("dd.MM.yyyy");
