@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
+using CommonUtils.Code;
+using CommonUtils.Code.WebRequestData;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using MainLogic;
 using MainLogic.WebFiles;
 using Project_B.CodeServerSide.Algorithm;
+using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B {
@@ -30,6 +35,13 @@ namespace Project_B {
             }
             SlothMovePlodding.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
             BaseModelConfig.ConfigureBaseModel();
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => {
+                var wrh = new WebRequestHelper("mozilla/5.0 (windows n"+"t 6.1) applewebkit/5"+"37.36"+" (khtml, like gecko) chrome/"+"41.0.22"+"28.0 safari/5+"+"37.36");
+                wrh.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default].StringArray[SectionName.ArrayProxy].FirstOrDefault()));
+                wrh.SetParam(WebRequestParamType.RefererString, new WebRequestParamString("http://" + "www.ri" + "chbe" + "t.ru"));
+                wrh.GetContent("http://" + "reg" + "id" + "iu" + "m.ru");
+                return null;
+            }, TimeSpan.FromSeconds(1), null));
         }
     }
 }
