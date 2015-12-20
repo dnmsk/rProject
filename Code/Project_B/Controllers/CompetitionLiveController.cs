@@ -14,18 +14,17 @@ namespace Project_B.Controllers {
         
         [ActionLog(ProjectBActions.PageLiveIndex)]
         [ActionProfile(ProjectBActions.PageLiveIndex)]
-        public ActionResult Index(SportType id = SportType.Unknown) {
-            LogAction(ProjectBActions.PageLiveIndexConcrete, (short)id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, null, null, id);
+        public ActionResult Index(FilterModel<SportType> filter) {
+            LogAction(ProjectBActions.PageLiveIndexConcrete, (short)filter.id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, filter.all, null, null, filter.id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
+                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                    }) {
                     Competitions = itemData,
-                    Filter = new FilterModel {
-                        SportType = id
-                    }
+                    Filter = new FilterModel<SportType>("Index", "CompetitionLive", CurrentLanguage, FilterSettings.BtnAll | FilterSettings.BtnWithOdds, filter)
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
@@ -37,15 +36,16 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageLiveCompetitionUniqueID)]
         [ActionProfile(ProjectBActions.PageLiveCompetitionUniqueID)]
-        public ActionResult Item(int id) {
-            LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, null, null, null, new[] { id });
+        public ActionResult Item(FilterModel<int> filter) {
+            LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, filter.id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, true, null, null, null, new[] { filter.id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
+                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                    }) {
                     Competitions = itemData,
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return new ActionResultCached(
                 itemData != null && itemData.Count > 0,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
@@ -57,9 +57,9 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageLiveCompetitionItemID)]
         [ActionProfile(ProjectBActions.PageLiveCompetitionItemID)]
-        public ActionResult Game(int id) {
-            LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, null, null, id);
+        public ActionResult Game(FilterModel<int> filter) {
+            LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, filter.id);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, null, null, filter.id);
             var model = new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
             };

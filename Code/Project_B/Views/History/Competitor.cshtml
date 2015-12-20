@@ -8,7 +8,7 @@
     var source = competitionItem != null 
         ? new {
             sporttype = SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, competition.SportType),
-            competitor = competitionItem.Competitor1.ID == Model.ControllerModel.Filter.SelectedID ? competitionItem.Competitor1.Name : competitionItem.Competitor2.Name
+            competitor = competitionItem.Competitor1.ID == ((FilterModel<int>)Model.ControllerModel.Filter).id ? competitionItem.Competitor1.Name : competitionItem.Competitor2.Name
         } 
         : new {
             sporttype = string.Empty,
@@ -19,26 +19,6 @@
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
     Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
-
-@using (Html.BeginForm("Competitor", "History", FormMethod.Get, new { @class = "row" })) {
-    <div class="input-daterange input-group" id="daterange">
-        <div class="input-group">
-            <input type="text" class="form-control" name="from" />
-            <span class="input-group-addon">&mdash;</span>
-            <input type="text" class="form-control" name="to" />
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button" onclick="$(this).closest('form').submit();"><span class="glyphicon glyphicon-search"></span></button>
-            </span>
-        </div>
-    </div>
-    <script type="text/javascript">
-        $(function () {
-            $('#daterange [name="from"]').val(decodeURIComponent($.urlParam('from') || ''));
-            $('#daterange [name="to"]').val(decodeURIComponent($.urlParam('to') || ''));
-            var datePicker = $('#daterange');
-            datePicker.datepicker($.extend({ endDate: new Date() }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.CurrentLanguage)']));
-        });
-    </script>
-}
+@Html.Partial("Element/_SearchFilter", Model.ControllerModel.Filter)
 <hr/>
 @Html.Partial("Element/_ListCompetitionWriter", Model)

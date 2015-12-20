@@ -368,7 +368,7 @@
     <Compile Include="Models\CompetitionRegularModel.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitionResultItem.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitorTransport.cs" />
-    <Compile Include="Models\FilterModel.cs" />
+    <Compile Include="Models\FilterModelBase.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="CodeClientSide\TransportType\OddsTransport.cs" />
     <Compile Include="CodeClientSide\TransportType\ResultTransport.cs" />
@@ -484,6 +484,7 @@
     <Content Include="Views\Competition\Profitable.cshtml" />
     <Content Include="Views\Moderate\ExternalLinks.cshtml" />
     <Content Include="Views\Moderate\SiteText.cshtml" />
+    <Content Include="Views\Shared\Element\_SearchFilter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

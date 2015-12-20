@@ -49,5 +49,9 @@
 
         ChartTitle = 1070,
 
+        FilterBtnDateName = 1100,
+        FilterBtnOnlyBetName = 1101,
+        FilterBtnAllName = 1102,
+
     }
 }

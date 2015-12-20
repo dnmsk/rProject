@@ -30,10 +30,10 @@
     @CompetitionDetailHelper.SportTypeNameHelper(currentController, bySportTypes.Key, Model.CurrentLanguage)
     foreach (var competitionModel in bySportTypes) {
         var totalElements = competitionModel.CompetitionItems.Count;
-        var appendSeeAllLink = totalElements > Model.ControllerModel.Filter.LimitToDisplayInGroup;
-        competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.Filter.LimitToDisplayInGroup).ToList();
+        var appendSeeAllLink = totalElements > Model.ControllerModel.DisplaySettings.LimitToDisplayInGroup;
+        competitionModel.CompetitionItems = competitionModel.CompetitionItems.Take(Model.ControllerModel.DisplaySettings.LimitToDisplayInGroup).ToList();
         @CompetitionDetailHelper.CompetitionNameWriter(currentController, competitionModel)
-        @Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competitionModel, Model.ControllerModel.Filter.DisplayColumn))
+        @Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competitionModel, Model.ControllerModel.DisplaySettings.DisplayColumn))
         if (appendSeeAllLink) {
             <div class="text-right small">
                 <a href="@Url.Action("Item", "Competition", new {id = competitionModel.ID})">@Html.Raw(

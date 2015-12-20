@@ -33,6 +33,16 @@ namespace Project_B.CodeClientSide {
             });
         }
 
+        protected static DateTime FixDateTime(DateTime dateTime, DateTime minDate, DateTime maxDate) {
+            if (dateTime < minDate) {
+                dateTime = minDate;
+            }
+            if (dateTime > maxDate) {
+                dateTime = maxDate;
+            }
+            return dateTime;
+        }
+
         public DateTime FixUserTimeToSystem(DateTime dateTime) {
             return dateTime.AddMinutes(-GmtDeltaMinutes);
         }
@@ -79,13 +89,7 @@ namespace Project_B.CodeClientSide {
                     break;
                 }
             }
-            if (dateParsed < minDate) {
-                dateParsed = minDate;
-            }
-            if (dateParsed > maxDate) {
-                dateParsed = maxDate;
-            }
-            return FixUserTimeToSystem(dateParsed.Date);
+            return FixUserTimeToSystem(FixDateTime(dateParsed.Date, minDate, maxDate));
         }
     }
 }

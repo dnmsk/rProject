@@ -7,10 +7,10 @@
     <meta name="document-state" content="Dynamic" />
 }
 @{
-    var filterModel = Model.ControllerModel.Filter;
+    var filterModel = (FilterModel<SportType>) Model.ControllerModel.Filter;
     var source = new {
-        date = (filterModel.DateUtc != DateTime.MinValue ? filterModel.DateUtc : DateTime.Today).ToString("dd.MM.yyyy"),
-        sporttype = filterModel.SportType == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.SportType)
+        date = (filterModel.date != DateTime.MinValue ? filterModel.date : DateTime.Today).ToString("dd.MM.yyyy"),
+        sporttype = filterModel.id == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.id)
     };
     Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);

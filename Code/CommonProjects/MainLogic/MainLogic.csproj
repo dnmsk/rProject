@@ -93,6 +93,9 @@
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="WebFiles\NotModifiedResult.cs" />
     <Compile Include="WebFiles\Policy\ProductionPolicy.cs" />
+    <Compile Include="WebFiles\PropertyBinderAdvanced\DateTimeBinder.cs" />
+    <Compile Include="WebFiles\PropertyBinderAdvanced\IPropertyBinder.cs" />
+    <Compile Include="WebFiles\PropertyBinderAdvanced\PropertyBinderAttribute.cs" />
     <Compile Include="WebFiles\SessionDataManager.cs" />
     <Compile Include="WebFiles\SessionModule.cs" />
     <Compile Include="WebFiles\SiteConfiguration.cs" />

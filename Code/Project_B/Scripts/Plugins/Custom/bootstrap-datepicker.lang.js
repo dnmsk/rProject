@@ -1,4 +1,4 @@
-﻿window.ninjaBag.documentObjects.append({lang: {
+﻿; window.ninjaBag.documentObjects.append({lang: {
     datapicker: {
         English: {
             format: 'mm/dd/yyyy',
@@ -11,7 +11,7 @@
     }
 }});
 
-; (function ($) {
+(function ($) {
     $.fn.datepicker.dates['ru'] = {
         days: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"],
         daysShort: ["Вск", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Суб"],

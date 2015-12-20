@@ -1,36 +1,20 @@
-﻿@using System.Globalization
-@using CommonUtils.ExtendedTypes
+﻿@using CommonUtils.ExtendedTypes
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
 @model StaticPageBaseModel<CompetitionRegularModel>
 @{
-    var filterModel = Model.ControllerModel.Filter;
+    var filterModel = Model.ControllerModel.Filter as FilterModel<SportType>;
     var source = new {
-        date = (filterModel.DateUtc != DateTime.MinValue ? filterModel.DateUtc : DateTime.Today).ToString("dd.MM.yyyy"),
-        sporttype = filterModel.SportType == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.SportType)
+        date = (filterModel.date != DateTime.MinValue ? filterModel.date : DateTime.Today).ToString("dd.MM.yyyy"),
+        sporttype = filterModel.id == SportType.Unknown ? string.Empty : SportTypeHelper.Instance.GetSportNameForLanguage(Model.CurrentLanguage, filterModel.id)
     };
     Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
     Model.StaticPageTransport.Title = Model.StaticPageTransport.Title.HaackFormatSafe(source);
     Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
-@using (Html.BeginForm("Index", "History", FormMethod.Get, new {@class="row"})) {
-<div class="col-xs-2">
-    <div class="input-group">
-        <input type="text" id="date" name="date" class="form-control"/>
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" onclick="$(this).closest('form').submit();"><span class="glyphicon glyphicon-search"></span></button>
-        </span>
-    </div>
-</div>
-<script type="text/javascript">
-    $(function() {
-        var datePicker = $('#date');
-        datePicker.datepicker($.extend({ endDate: new Date() }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.CurrentLanguage)']));
-        datePicker.datepicker('update', new Date('@Model.ControllerModel.Filter.DateUtc.ToString(CultureInfo.InvariantCulture)'));
-    });
-</script>
-}
+
+@Html.Partial("Element/_SearchFilter", Model.ControllerModel.Filter)
 <hr />
 @Html.Partial("Element/_ListCompetitionWriter", Model)

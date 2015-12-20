@@ -1,0 +1,71 @@
+﻿@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
+@using Project_B.CodeServerSide.BrokerProvider
+@using Project_B.Models
+@model FilterModelBase
+@{
+    var fromDate = Model.FilterSettings.HasFlag(FilterSettings.FromDate);
+    var toDate = Model.FilterSettings.HasFlag(FilterSettings.ToDate);
+    var buttonAll = Model.FilterSettings.HasFlag(FilterSettings.BtnAll);
+    var buttonWithOdds = Model.FilterSettings.HasFlag(FilterSettings.BtnWithOdds);
+}
+
+@helper ActiveClassRenderer(bool isButtons, bool isActive) {
+    @Html.Raw(isButtons && isActive ? "active" : string.Empty)
+}
+
+@using (Html.BeginForm(Model.ActionName, Model.ControllerName, FormMethod.Get, new { @class = "row", id = "filter" })) {
+    <div class="col-xs-5">
+        <div class="btn-group" @if (buttonAll) {@Html.Raw("data-toggle=\"buttons\"")}>
+        @if (fromDate || toDate) {
+            <label class="btn btn-default active" style="padding: 13px;">
+                @LanguageSiteHelper.Instance.GetText(Model.LanguageType, SiteTextType.FilterBtnDateName)
+            </label>
+        }
+        @if (fromDate) {
+            <label class="btn btn-default">
+            @Html.TextBoxFor(m => m.from, new { @class = "form-control", style = "display: inline-block; width: 100px;", @data_type = "date" })
+                <script type="text/javascript">
+                    $('#filter input[name="from"]').val(decodeURIComponent($.urlParam('from') || ''));
+                </script>
+            </label>
+        }
+        @if (fromDate && toDate) {
+            <label class="btn btn-default active" style="padding: 13px;">
+            &mdash;
+            </label>
+        }
+        @if (toDate) {
+            <label class="btn btn-default @ActiveClassRenderer(buttonAll, !Model.all)">
+            @if (buttonAll) {
+                @Html.RadioButtonFor(m => m.all, false, !Model.all ? new { autocomplete = "off", @checked = "checked" } : (object)new { autocomplete = "off" })
+            }
+            @Html.TextBoxFor(m => m.date, new { id = "date", @class = "form-control", style = "display: inline-block; width: 100px;", @data_type = "date" })
+                <script type="text/javascript">
+                    $('#filter input[name="date"]').val(decodeURIComponent($.urlParam('date') || ''));
+                </script>
+            </label>
+        }
+        @if (buttonWithOdds) {
+            <label class="btn btn-default @ActiveClassRenderer(true, !Model.all)" style="padding: 13px 26px;">
+                @Html.RadioButtonFor(m => m.all, false, !Model.all ? new { autocomplete = "off", @checked = "checked" } : (object)new { autocomplete = "off" })
+                @LanguageSiteHelper.Instance.GetText(Model.LanguageType, SiteTextType.FilterBtnOnlyBetName)
+            </label>
+        }
+        @if (buttonAll) {
+            <label class="btn btn-default @ActiveClassRenderer(true, Model.all)" style="padding: 13px 26px;">
+            @Html.RadioButtonFor(m => m.all, true, Model.all ? new { autocomplete = "off", @checked = "checked" } : (object)new { autocomplete = "off" })
+            @LanguageSiteHelper.Instance.GetText(Model.LanguageType, SiteTextType.FilterBtnAllName)
+            </label>
+        }
+            <button class="btn btn-success" type="button" onclick="$(this).closest('form').submit();" style="padding: 13px 26px;"><span class="glyphicon glyphicon-search"></span></button>
+        </div>
+    </div>
+    if (fromDate || toDate) {
+        <script type="text/javascript">
+            $(function () {
+                $('#filter input[data-type="date"]').datepicker($.extend({ startDate: new Date(@((Model.MinDate - BrokerBase.LinuxUtc).TotalMilliseconds)), endDate: new Date(@((Model.MaxDate - BrokerBase.LinuxUtc).TotalMilliseconds)) }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.LanguageType)']));
+            });
+        </script>
+    }
+}

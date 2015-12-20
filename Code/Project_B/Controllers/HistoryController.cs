@@ -16,18 +16,19 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageHistoryIndex)]
         [ActionProfile(ProjectBActions.PageHistoryIndex)]
-        public ActionResult Index(SportType id = SportType.Unknown, string date = null) {
-            LogAction(ProjectBActions.PageHistoryIndexConcrete, (short) id);
-            var fromDateUtc = ParseToUserTime(date, DateTime.MaxValue, _minDateTime, MaxDateTime);
-            var fromDate = FixUserTimeToSystem(fromDateUtc);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, fromDate.AddDays(1), id);
+        public ActionResult Index(FilterModel<SportType> filter) {
+            LogAction(ProjectBActions.PageHistoryIndexConcrete, (short)filter.id);
+            filter.date = FixDateTime(filter.date, _minDateTime, MaxDateTime);
+            var fromDate = FixUserTimeToSystem(filter.date);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, fromDate.AddDays(1), filter.id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
-                    Competitions = itemData,
-                    Filter = new FilterModel {
-                        SportType = id,
-                        DateUtc = fromDateUtc,
+                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                    }) {
+                    Competitions = itemData,
+                    Filter = new FilterModel<SportType>("Index", "History" , CurrentLanguage, FilterSettings.ToDate, filter) {
+                        MinDate = _minDateTime,
+                        MaxDate = MaxDateTime
                     }
                 }
             };
@@ -42,16 +43,19 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageHistoryCompetitionUniqueID)]
         [ActionProfile(ProjectBActions.PageHistoryCompetitionUniqueID)]
-        public ActionResult Item(int id, string from = null, string to = null) {
-            LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, id);
+        public ActionResult Item(FilterModel<int> filter) {
+            LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, filter.id);
             var itemData = ProjectProvider.Instance.CompetitionProvider
-                .GetCompetitionItemsHistory(CurrentLanguage, null, new[] { BrokerType.Default }, ParseToUserTime(from, _minDateTime, _minDateTime, MaxDateTime), ParseToUserTime(to, MaxDateTime, _minDateTime, MaxDateTime), null, new [] { id });
+                .GetCompetitionItemsHistory(CurrentLanguage, null, new[] { BrokerType.Default }, 
+                        FixDateTime(filter.from, _minDateTime, MaxDateTime), 
+                        FixDateTime(filter.date, _minDateTime, MaxDateTime), null, new [] { filter.id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
+                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                    }) {
                     Competitions = itemData,
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
@@ -63,19 +67,24 @@ namespace Project_B.Controllers {
 
         [ActionLog(ProjectBActions.PageHistoryCompetitorID)]
         [ActionProfile(ProjectBActions.PageHistoryCompetitorID)]
-        public ActionResult Competitor(int id, string from = null, string to = null) {
-            LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, id);
+        public ActionResult Competitor(FilterModel<int> filter) {
+            LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, filter.id);
             var itemData = ProjectProvider.Instance.CompetitionProvider
-                .GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, null, new[] { BrokerType.Default }, ParseToUserTime(from, _minDateTime, _minDateTime, MaxDateTime), ParseToUserTime(to, MaxDateTime, _minDateTime, MaxDateTime), id);
+                .GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, null, new[] { BrokerType.Default }, 
+                            FixDateTime(filter.from, _minDateTime, MaxDateTime), 
+                            FixDateTime(filter.date, _minDateTime, MaxDateTime),
+                            filter.id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel {
+                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+                    }) {
                     Competitions = itemData,
-                    Filter = new FilterModel {
-                        SelectedID = id
+                    Filter = new FilterModel<int>("Competitor", "History", CurrentLanguage, FilterSettings.FromDate | FilterSettings.ToDate, filter) {
+                        MinDate = _minDateTime,
+                        MaxDate = MaxDateTime
                     }
                 }
             };
-            staticPageBaseModel.ControllerModel.Filter.DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result;
             return new ActionResultCached(
                 true,
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
