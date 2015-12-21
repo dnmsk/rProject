@@ -63,7 +63,7 @@ namespace MainLogic.Providers {
             guestID => {
                 var techInfo = GuestTechInfo.DataSource
                     .WhereEquals(GuestTechInfo.Fields.GuestID, guestID)
-                    .Sort(GuestTechInfo.Fields.Datecreated, SortDirection.Desc)
+                    .Sort(GuestTechInfo.Fields.ID, SortDirection.Desc)
                     .First(GuestTechInfo.Fields.GuestexistsbrowserID);
                 return techInfo != null ? techInfo.GuestexistsbrowserID : default(int);
             }, TimeSpan.FromMinutes(30));
