@@ -10,7 +10,7 @@ namespace MainLogic.WebFiles.PropertyBinderAdvanced {
             var timeString = controllerContext.HttpContext.Request.Params[memberDescriptor.Name];
             var def = default(DateTime);
             if (timeString.IsNullOrWhiteSpace()) {
-                return DateTime.UtcNow;
+                return DateTime.MinValue;
             }
             var formats = bindParam as string[];
             DateTime dateTimeParsed;
@@ -23,7 +23,7 @@ namespace MainLogic.WebFiles.PropertyBinderAdvanced {
                 }
             }
             dateTimeParsed = StringParser.ToDateTime(timeString, def);
-            return dateTimeParsed == def ? DateTime.UtcNow : dateTimeParsed;
+            return dateTimeParsed == def ? DateTime.MinValue : dateTimeParsed;
         }
     }
 }

@@ -32,17 +32,7 @@ namespace Project_B.CodeClientSide {
                 ci.HistoryMinBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
             });
         }
-
-        protected static DateTime FixDateTime(DateTime dateTime, DateTime minDate, DateTime maxDate) {
-            if (dateTime < minDate) {
-                dateTime = minDate;
-            }
-            if (dateTime > maxDate) {
-                dateTime = maxDate;
-            }
-            return dateTime;
-        }
-
+        
         public DateTime FixUserTimeToSystem(DateTime dateTime) {
             return dateTime.AddMinutes(-GmtDeltaMinutes);
         }
@@ -79,17 +69,6 @@ namespace Project_B.CodeClientSide {
             var utcNow = DateTime.UtcNow;
             return competitionAdvanced.CompetitionTransport.
                 CompetitionItems.MaxOrDefault(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0]).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate);
-        }
-
-        private static readonly string[] _dateTimeFormats = { "dd.MM.yyyy", "MM/dd/yyyy" };
-        protected DateTime ParseToUserTime(string date, DateTime dateDef, DateTime minDate, DateTime maxDate) {
-            var dateParsed = dateDef;
-            foreach (var dateTimeFormat in _dateTimeFormats) {
-                if ((dateParsed = StringParser.ToDateTime(date, dateDef, dateTimeFormat)) != dateDef) {
-                    break;
-                }
-            }
-            return FixUserTimeToSystem(FixDateTime(dateParsed.Date, minDate, maxDate));
         }
     }
 }

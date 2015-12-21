@@ -19,18 +19,15 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageCompetitionIndexConcrete, (short)filter.id);
             var dateDef = DateTime.UtcNow.Date;
             var maxDateDef = dateDef.AddDays(14);
-            filter.date = FixDateTime(filter.date, dateDef, maxDateDef);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, filter.all ? null : (DateTime?)FixUserTimeToSystem(filter.date), null, null, filter.id);
+            filter.FixDates(dateDef, maxDateDef);
+            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, filter.all ? null : (DateTime?)FixUserTimeToSystem(filter.from), null, null, filter.id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                     LimitToDisplayInGroup = 4,
                     DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
                 }) {
                     Competitions = itemData,
-                    Filter = new FilterModel<SportType>("Index", "Competition", CurrentLanguage, FilterSettings.BtnAll | FilterSettings.ToDate, filter) {
-                        MinDate = dateDef,
-                        MaxDate = maxDateDef
-                    }
+                    Filter = new FilterModel<SportType>("Index", "Competition", CurrentLanguage, FilterSettings.BtnAll | FilterSettings.FromDate, filter)
                 }
             };
             return new ActionResultCached(
@@ -51,8 +48,7 @@ namespace Project_B.Controllers {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                     DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
                 }) {
-                    Competitions = itemData,
-                    Filter = filter
+                    Competitions = itemData
                 }
             };
             return new ActionResultCached(

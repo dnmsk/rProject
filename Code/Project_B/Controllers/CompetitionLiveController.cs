@@ -43,8 +43,7 @@ namespace Project_B.Controllers {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
-                    Competitions = itemData,
-                    Filter = filter
+                    Competitions = itemData
                 }
             };
             return new ActionResultCached(

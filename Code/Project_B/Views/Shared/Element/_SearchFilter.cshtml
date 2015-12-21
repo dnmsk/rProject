@@ -10,12 +10,19 @@
     var buttonWithOdds = Model.FilterSettings.HasFlag(FilterSettings.BtnWithOdds);
 }
 
-@helper ActiveClassRenderer(bool isButtons, bool isActive) {
-    @Html.Raw(isButtons && isActive ? "active" : string.Empty)
+@functions {
+
+    public static long GetMillsFromUnix(DateTime dateTime) {
+        return (long) (dateTime - BrokerBase.LinuxUtc).TotalMilliseconds;
+    }
+}
+
+@helper ActiveClassRenderer(params bool[] vals) {
+    @Html.Raw(vals.All(v => v) ? "active" : string.Empty)
 }
 
 @using (Html.BeginForm(Model.ActionName, Model.ControllerName, FormMethod.Get, new { @class = "row", id = "filter" })) {
-    <div class="col-xs-5">
+    <div class="col-xs-12">
         <div class="btn-group" @if (buttonAll) {@Html.Raw("data-toggle=\"buttons\"")}>
         @if (fromDate || toDate) {
             <label class="btn btn-default active" style="padding: 13px;">
@@ -23,17 +30,15 @@
             </label>
         }
         @if (fromDate) {
-            <label class="btn btn-default">
+            <label class="btn btn-default @ActiveClassRenderer(buttonAll, !Model.all)">
+            @if (buttonAll) {
+                @Html.RadioButtonFor(m => m.all, false, !Model.all ? new { autocomplete = "off", @checked = "checked" } : (object)new { autocomplete = "off" })
+            }
             @Html.TextBoxFor(m => m.from, new { @class = "form-control", style = "display: inline-block; width: 100px;", @data_type = "date" })
-                <script type="text/javascript">
-                    $('#filter input[name="from"]').val(decodeURIComponent($.urlParam('from') || ''));
-                </script>
             </label>
         }
         @if (fromDate && toDate) {
-            <label class="btn btn-default active" style="padding: 13px;">
-            &mdash;
-            </label>
+            <label class="btn btn-default active" style="padding: 13px;">&mdash;</label>
         }
         @if (toDate) {
             <label class="btn btn-default @ActiveClassRenderer(buttonAll, !Model.all)">
@@ -41,9 +46,6 @@
                 @Html.RadioButtonFor(m => m.all, false, !Model.all ? new { autocomplete = "off", @checked = "checked" } : (object)new { autocomplete = "off" })
             }
             @Html.TextBoxFor(m => m.date, new { id = "date", @class = "form-control", style = "display: inline-block; width: 100px;", @data_type = "date" })
-                <script type="text/javascript">
-                    $('#filter input[name="date"]').val(decodeURIComponent($.urlParam('date') || ''));
-                </script>
             </label>
         }
         @if (buttonWithOdds) {
@@ -63,9 +65,23 @@
     </div>
     if (fromDate || toDate) {
         <script type="text/javascript">
-            $(function () {
-                $('#filter input[data-type="date"]').datepicker($.extend({ startDate: new Date(@((Model.MinDate - BrokerBase.LinuxUtc).TotalMilliseconds)), endDate: new Date(@((Model.MaxDate - BrokerBase.LinuxUtc).TotalMilliseconds)) }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.LanguageType)']));
+            $(function() {
+                $('#filter input[data-type="date"]').datepicker($.extend({ startDate: new Date(@GetMillsFromUnix(Model.MinDate)), endDate: new Date(@GetMillsFromUnix(Model.MaxDate)) }, window.ninjaBag.documentObjects.lang.datapicker['@(Model.LanguageType)']));
             });
         </script>
+        if (fromDate) {
+            <script type="text/javascript">
+                $(function() {
+                    $('#filter input[name="from"]').datepicker('update', new Date(@GetMillsFromUnix(Model.from)));
+                });
+            </script>
+        }
+        if (toDate) {
+            <script type="text/javascript">
+                $(function() {
+                    $('#filter input[name="date"]').datepicker('update', new Date(@GetMillsFromUnix(Model.date)));
+                });
+            </script>
+        }
     }
 }

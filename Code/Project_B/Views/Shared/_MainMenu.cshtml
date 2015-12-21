@@ -58,16 +58,13 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                     @switch (Model.SubNavigationType) {
                         case SubNavigationType.SportTypes:
                             var castedModel = Model as StaticPageBaseModel<CompetitionRegularModel>;
-                            var dateSelected = string.Empty;
-                            if (castedModel != null && castedModel.ControllerModel.Filter != null) {
-                                var date = castedModel.ControllerModel.Filter.date.Date;
-                                if (date != DateTime.MinValue && date.Date != DateTime.UtcNow.Date) {
-                                    dateSelected = date.ToString("dd.MM.yyyy");
-                                }
-                            }
-                            <li><a href="@Url.Action("Index", currentController, new {id = string.Empty, date = dateSelected})" @MarkActive("Index", currentController, currentAction, currentController, currentID.IsNullOrWhiteSpace())>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderAllCompetitions)</a></li>
+                            var routeDict = castedModel != null && castedModel.ControllerModel.Filter != null
+                                ? castedModel.ControllerModel.Filter.ToRoute()
+                                : new RouteValueDictionary();
+                            <li><a href="@Url.Action("Index", currentController, routeDict)" @MarkActive("Index", currentController, currentAction, currentController, currentID.IsNullOrWhiteSpace())>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderAllCompetitions)</a></li>
                             foreach (var sportType in _sportTypesToNavigation) {
-                                <li><a href="@Url.Action("Index", currentController, new {id = sportType, date = dateSelected})" @MarkActive("Index", currentController, currentAction, currentController, currentID.Equals(sportType.ToString(), StringComparison.InvariantCultureIgnoreCase))>@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
+                                routeDict["id"] = sportType;
+                                <li><a href="@Url.Action("Index", currentController, routeDict)" @MarkActive("Index", currentController, currentAction, currentController, currentID.Equals(sportType.ToString(), StringComparison.InvariantCultureIgnoreCase))>@SportTypeHelper.Instance.GetSportNameForLanguage(currentLanguage, sportType)</a></li>
                             }
                             if ("Competition".Equals(currentController, StringComparison.InvariantCultureIgnoreCase)) {
                                 <li><a href="@Url.Action("Profitable", currentController, new {id = string.Empty})" @MarkActive("Profitable", "Competition", currentAction, currentController)><b>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderProfitable)</b></a></li>
@@ -79,6 +76,8 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                             break;
                     }
                 </ul>
+
+
             </div>
         </div>
     </div>
