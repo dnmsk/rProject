@@ -207,9 +207,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 &&
-                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .5) ||
-                        (suitableCompetitors[0].Value >= .8 || 
-                            suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .5 && (suitableCompetitors[1].Value / suitableCompetitors[0].Value < .7))) {
+                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .4) ||
+                        (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .4 && (suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
                 _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)

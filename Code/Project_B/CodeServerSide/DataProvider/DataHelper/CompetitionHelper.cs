@@ -218,8 +218,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 if (orderedCompetitionCoeffs.Count == 0) {
                     return null;
                 }
-                if (orderedCompetitionCoeffs.First().Value > .9 || orderedCompetitionCoeffs.First().Value > .6 &&
-                        (orderedCompetitionCoeffs.Count == 1 ||
+                if (orderedCompetitionCoeffs.First().Value > .5 && 
+                        (orderedCompetitionCoeffs.Count == 1 || 
                          orderedCompetitionCoeffs.Count > 1 && (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key,
