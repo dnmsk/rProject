@@ -4,15 +4,16 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("CompetitionResultLiveAdvanced")]
+    [DBTable("BetLiveAdvanced")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class CompetitionResultLiveAdvanced : AbstractEntityTemplateKey<CompetitionResultLiveAdvanced, long> {
+    public sealed class BetLiveAdvanced : AbstractEntityTemplateKey<BetLiveAdvanced, long>, IBetAdvanced<long> {
 
         public enum Fields {
         /// <summary>
@@ -23,35 +24,35 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] CompetitionresultliveID,
+            [DBField(DbType.Single)] Draw,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] ScoreID,
+            [DBField(DbType.Single)] Win1draw,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Advancedparam,
+            [DBField(DbType.Single)] Win1win2,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.DateTime)] Datecreatedutc,
+            [DBField(DbType.Single)] Drawwin2,
 
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionResultLiveAdvanced() {
+        public BetLiveAdvanced() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionResultLiveAdvanced(Hashtable ht) : base(ht) {}
+        public BetLiveAdvanced(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
@@ -59,37 +60,37 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (long) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
-        public long CompetitionresultliveID {
-            get { return (long) this[Fields.CompetitionresultliveID]; }
-            set { ForceSetData(Fields.CompetitionresultliveID, value); }
+        public float? Draw {
+            get { return (float?) this[Fields.Draw]; }
+            set { ForceSetData(Fields.Draw, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public short ScoreID {
-            get { return (short) this[Fields.ScoreID]; }
-            set { ForceSetData(Fields.ScoreID, value); }
+        public float? Win1draw {
+            get { return (float?) this[Fields.Win1draw]; }
+            set { ForceSetData(Fields.Win1draw, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public short Advancedparam {
-            get { return (short) this[Fields.Advancedparam]; }
-            set { ForceSetData(Fields.Advancedparam, value); }
+        public float? Win1win2 {
+            get { return (float?) this[Fields.Win1win2]; }
+            set { ForceSetData(Fields.Win1win2, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime Datecreatedutc {
-            get { return (DateTime) this[Fields.Datecreatedutc]; }
-            set { ForceSetData(Fields.Datecreatedutc, value); }
+        public float? Drawwin2 {
+            get { return (float?) this[Fields.Drawwin2]; }
+            set { ForceSetData(Fields.Drawwin2, value); }
         }
 
         public override Enum[] KeyFields {

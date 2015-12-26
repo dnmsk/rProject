@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
+using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Data.Result {
@@ -11,12 +12,24 @@ namespace Project_B.CodeServerSide.Data.Result {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (ResultBuilder).FullName);
 
+        private const char _resLeftSide = '(';
+        private const char _resRightSide = ')';
+        private const char _resDelim = '-';
+        private static readonly string _resultSerializeTpl = _resLeftSide + "{0}" + _resDelim + "{1}" + _resRightSide;
+
+        public static string BuildStringFromResult(FullResult res) {
+            return string.Format(_resultSerializeTpl, res.CompetitorResultOne, res.CompetitorResultTwo) + 
+                (res.SubResult != null && res.SubResult.Any()
+                    ? res.SubResult.Select(sr => string.Format(_resultSerializeTpl, sr.CompetitorResultOne, sr.CompetitorResultTwo)).StrJoin(string.Empty)
+                    : string.Empty);
+        }
+
         public static FullResult BuildResultFromString(SportType sportType, string resString) {
             FullResult result ;
             switch (sportType) {
                 case SportType.Tennis:
                 case SportType.Volleyball:
-                    var buildTennisResult = BuildTennisResult(resString);
+                    var buildTennisResult = BuildFullResult(resString);
                     if (buildTennisResult.SubResult.Count == 1) {
                         var tempTennisResult = new FullResult {
                             CompetitorResultOne = 0,
@@ -32,13 +45,13 @@ namespace Project_B.CodeServerSide.Data.Result {
                     result = buildTennisResult;
                     break;
                 case SportType.IceHockey:
-                    result = BuildIceHockeyResult(resString);
+                    result = BuildFullResult(resString);
                     break;
                 case SportType.Basketball:
-                    result = BuildBasketballResult(resString);
+                    result = BuildFullResult(resString);
                     break;
                 case SportType.Football:
-                    result = BuildFootballResult(resString);
+                    result = BuildFullResult(resString);
                     break;
                 default:
                     result = BuildFullResult(resString);
@@ -47,22 +60,6 @@ namespace Project_B.CodeServerSide.Data.Result {
             return result;
         }
         
-        private static FullResult BuildFootballResult(string resString) {
-            return BuildFullResult(resString);
-        }
-
-        private static FullResult BuildBasketballResult(string resString) {
-            return BuildFullResult(resString);
-        }
-
-        private static FullResult BuildIceHockeyResult(string resString) {
-            return BuildFullResult(resString);
-        }
-
-        private static FullResult BuildTennisResult(string resString) {
-            return BuildFullResult(resString);
-        }
-
         private static FullResult BuildFullResult(string resString) {
             try {
                 var tempResult = ParseStringToSimpleResults(resString).ToList();
@@ -114,10 +111,10 @@ namespace Project_B.CodeServerSide.Data.Result {
                     continue;
                 }
                 switch (ch) {
-                    case '(':
+                    case _resLeftSide:
                         canDetectServe = true;
                         break;
-                    case ')':
+                    case _resRightSide:
                         canDetectServe = false;
                         break;
                     case '<':
@@ -126,7 +123,7 @@ namespace Project_B.CodeServerSide.Data.Result {
                     case '>':
                         canDetectDidit = true;
                         break;
-                    case '-':
+                    case _resDelim:
                     case ':':
                         if (canDetectDidit) {
                             isFirstDigitCollect = true;

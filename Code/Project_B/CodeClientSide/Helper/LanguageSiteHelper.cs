@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.KangooCache;
-using DbEntity;
 using MainLogic;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {

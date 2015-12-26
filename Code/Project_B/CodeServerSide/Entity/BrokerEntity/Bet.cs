@@ -5,22 +5,23 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
-        /// <summary>
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
+    /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("BetLive")]
+    [DBTable("Bet")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class BetLive : AbstractEntityTemplateKey<BetLive, long>, IBet<long> {
+    public sealed class Bet : AbstractEntityTemplateKey<Bet, int>, IBet<int>, IBrokerTyped, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] ID,
+            [DBField(DbType.Int32)] ID,
 
         /// <summary>
         /// 
@@ -32,44 +33,52 @@ namespace Project_B.CodeServerSide.Entity {
         /// </summary>
             [DBField(DbType.Int32)] BrokerID,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Win1,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Win2,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Hcap1,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Hcap2,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Hcapdetail,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Totalunder,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Totalover,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Totaldetail,
 
         /// <summary>
@@ -82,18 +91,18 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public BetLive() {
+        public Bet() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public BetLive(Hashtable ht) : base(ht) {}
+        public Bet(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
-        public long ID {
-            get { return (long) this[Fields.ID]; }
+        public int ID {
+            get { return (int) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
 

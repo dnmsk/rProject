@@ -4,7 +4,6 @@ using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
-using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
@@ -20,7 +19,7 @@ namespace Project_B.Controllers {
             LogAction(ProjectBActions.PageHistoryIndexConcrete, (short)filter.id);
             filter.FixDates(_minDateTime, MaxDateTime);
             var fromDate = FixUserTimeToSystem(filter.date);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, fromDate.AddDays(1), filter.id);
+            var itemData = FrontCompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, fromDate.AddDays(1), filter.id);
             var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
@@ -43,7 +42,7 @@ namespace Project_B.Controllers {
         public ActionResult Item(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageHistoryCompetitionUniqueIDConcrete, filter.id);
             filter.FixDates(_minDateTime, MaxDateTime);
-            var itemData = ProjectProvider.Instance.CompetitionProvider
+            var itemData = FrontCompetitionProvider
                 .GetCompetitionItemsHistory(CurrentLanguage, null, new[] { BrokerType.Default }, filter.from, filter.date, null, new [] { filter.id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                     ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
@@ -67,7 +66,7 @@ namespace Project_B.Controllers {
         public ActionResult Competitor(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageHistoryCompetitorIDConcrete, filter.id);
             filter.FixDates(_minDateTime, MaxDateTime);
-            var itemData = ProjectProvider.Instance.CompetitionProvider
+            var itemData = FrontCompetitionProvider
                 .GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, null, new[] { BrokerType.Default }, filter.from, filter.date, filter.id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                     ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {

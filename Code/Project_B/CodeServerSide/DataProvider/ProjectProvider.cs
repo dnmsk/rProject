@@ -16,6 +16,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public readonly LiveProvider LiveProvider = new LiveProvider();
         public readonly StaticPageProvider StaticPageProvider = new StaticPageProvider();
         public readonly WebFileProvider WebFileProvider = new WebFileProvider();
+        public readonly FrontCompetitionProvider FrontCompetitionProvider = new FrontCompetitionProvider();
 
         public List<SiteMapItem> GetSiteMapItems() {
             var result = new List<SiteMapItem>();

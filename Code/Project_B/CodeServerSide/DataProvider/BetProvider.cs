@@ -6,7 +6,7 @@ using IDEV.Hydra.DAO;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity;
-using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -21,7 +21,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public void SaveRegular(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
                 CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
-                    (type, sportType, competitionItemID, matchParsed) => AddBetParsed(competitionItemID, type, sportType, matchParsed.Odds));
+                    (type, sportType, itemRawTransport, matchParsed) => AddBetParsed(itemRawTransport.CompetitionItemID, type, sportType, matchParsed.Odds));
             });
         }
 

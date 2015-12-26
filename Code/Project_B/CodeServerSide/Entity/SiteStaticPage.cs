@@ -6,6 +6,7 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeClientSide;
 using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity {
@@ -15,7 +16,7 @@ namespace Project_B.CodeServerSide.Entity {
     [Serializable]
     [DBTable("SiteStaticPage")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SiteStaticPage : AbstractEntityTemplateKey<SiteStaticPage, int>, IStaticPage {
+    public sealed class SiteStaticPage : AbstractEntityTemplateKey<SiteStaticPage, int>, IStaticPage, ILanguageTyped, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>

@@ -4,7 +4,6 @@ using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
-using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
@@ -16,7 +15,7 @@ namespace Project_B.Controllers {
         [ActionProfile(ProjectBActions.PageLiveIndex)]
         public ActionResult Index(FilterModel<SportType> filter) {
             LogAction(ProjectBActions.PageLiveIndexConcrete, (short)filter.id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, filter.all, null, null, filter.id);
+            var itemData = FrontCompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, filter.all, null, null, filter.id);
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                     ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
@@ -38,7 +37,7 @@ namespace Project_B.Controllers {
         [ActionProfile(ProjectBActions.PageLiveCompetitionUniqueID)]
         public ActionResult Item(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, filter.id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, true, null, null, null, new[] { filter.id });
+            var itemData = FrontCompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, true, null, null, null, new[] { filter.id });
             var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
                 ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
@@ -59,7 +58,7 @@ namespace Project_B.Controllers {
         [ActionProfile(ProjectBActions.PageLiveCompetitionItemID)]
         public ActionResult Game(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageLiveCompetitionItemIDConcrete, filter.id);
-            var itemData = ProjectProvider.Instance.CompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, null, null, filter.id);
+            var itemData = FrontCompetitionProvider.GetCompetitionItemLiveBetForCompetition(CurrentLanguage, null, null, filter.id);
             var model = new StaticPageBaseModel<CompetitionAdvancedTransport>(this) {
                 ControllerModel = itemData
             };

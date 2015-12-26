@@ -4,6 +4,8 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity {
@@ -13,7 +15,7 @@ namespace Project_B.CodeServerSide.Entity {
     [Serializable]
     [DBTable("SiteFileStore")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SiteFileStore : AbstractEntityTemplateKey<SiteFileStore, short> {
+    public sealed class SiteFileStore : AbstractEntityTemplateKey<SiteFileStore, short>, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>

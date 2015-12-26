@@ -8,7 +8,8 @@ using IDEV.Hydra.DAO.MassTools;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
-using Project_B.CodeServerSide.Entity;
+using Project_B.CodeServerSide.DataProvider.Transport;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -20,11 +21,16 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public ResultProvider() : base(_logger) {}
 
-        public void SaveResults(int competitionItemID, SportType sportType, FullResult fullResult) {
+        public void SaveResults(CompetitionItemRawTransport competitionRawTransport, SportType sportType, FullResult fullResult) {
             InvokeSafeSingleCall(() => {
-                if (competitionItemID == default(int) || fullResult == null) {
+                if (competitionRawTransport == null || fullResult == null) {
                     return null;
                 }
+                RawCompetitionResultHelper.TrySaveOrUpdateResult(competitionRawTransport.RawCompetitionItemID, fullResult);
+                if (competitionRawTransport.CompetitionItemID == default(int)) {
+                    return null;
+                }
+                var competitionItemID = Math.Abs(competitionRawTransport.CompetitionItemID);
                 if (!CompetitionResult.DataSource
                             .WhereEquals(CompetitionResult.Fields.CompetitionitemID, competitionItemID)
                             .IsExists()) {

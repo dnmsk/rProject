@@ -5,6 +5,7 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity {
@@ -14,7 +15,7 @@ namespace Project_B.CodeServerSide.Entity {
     [Serializable]
     [DBTable("SiteBrokerPage")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SiteBrokerPage : AbstractEntityTemplateKey<SiteBrokerPage, int>, IStaticPage {
+    public sealed class SiteBrokerPage : AbstractEntityTemplateKey<SiteBrokerPage, int>, IStaticPage, ILanguageTyped, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>

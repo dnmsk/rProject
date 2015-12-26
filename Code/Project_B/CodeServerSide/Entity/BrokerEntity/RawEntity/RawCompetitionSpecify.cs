@@ -4,16 +4,18 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("Competition")]
+    [DBTable("RawCompetitionSpecify")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class Competition : AbstractEntityTemplateKey<Competition, int> {
+    public sealed class RawCompetitionSpecify : AbstractEntityTemplateKey<RawCompetitionSpecify, int>, ICompetitionSpecify, IBrokerTyped {
 
         public enum Fields {
         /// <summary>
@@ -21,20 +23,27 @@ namespace Project_B.CodeServerSide.Entity {
         /// </summary>
             [DBField(DbType.Int32)] ID,
 
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
+            [DBField(DbType.Int32)] CompetitionspecifyuniqueID,
+
         /// <summary>
         /// 
         /// </summary>
+        [Nullable]
             [DBField(DbType.Int32)] CompetitionuniqueID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Languagetype,
+            [DBField(DbType.String)] Name,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.String)] Name,
+            [DBField(DbType.Int16)] Languagetype,
 
         /// <summary>
         /// 
@@ -49,20 +58,35 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
+            [DBField(DbType.Int16)] Brokerid,
+
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.Int16)] Linkstatus,
+
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.DateTime)] Datecreatedutc,
+            /// <summary>
+            /// 
+            /// </summary>
+            [DBField(DbType.Int32)]
+            RawCompetitionID,
 
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public Competition() {
+        public RawCompetitionSpecify() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public Competition(Hashtable ht) : base(ht) {}
+        public RawCompetitionSpecify(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
@@ -74,17 +98,25 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
+        public int CompetitionSpecifyUniqueID {
+            get { return (int) (this[Fields.CompetitionspecifyuniqueID] ?? default(int)); }
+            set { ForceSetData(Fields.CompetitionspecifyuniqueID, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int CompetitionuniqueID {
-            get { return (int) this[Fields.CompetitionuniqueID]; }
+            get { return (int) (this[Fields.CompetitionuniqueID] ?? default(int)); }
             set { ForceSetData(Fields.CompetitionuniqueID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public LanguageType Languagetype {
-            get { return (LanguageType)(short) this[Fields.Languagetype]; }
-            set { ForceSetData(Fields.Languagetype, value); }
+        public int RawCompetitionID {
+            get { return (int) this[Fields.RawCompetitionID]; }
+            set { ForceSetData(Fields.RawCompetitionID, value); }
         }
 
         /// <summary>
@@ -98,8 +130,16 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
+        public LanguageType Languagetype {
+            get { return (LanguageType)(short)this[Fields.Languagetype]; }
+            set { ForceSetData(Fields.Languagetype, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public SportType SportType {
-            get { return (SportType)(short) this[Fields.Sporttype]; }
+            get { return (SportType)(short)this[Fields.Sporttype]; }
             set { ForceSetData(Fields.Sporttype, value); }
         }
 
@@ -109,6 +149,22 @@ namespace Project_B.CodeServerSide.Entity {
         public GenderType Gendertype {
             get { return (GenderType)(short)this[Fields.Gendertype]; }
             set { ForceSetData(Fields.Gendertype, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BrokerType BrokerID {
+            get { return (BrokerType)(short)this[Fields.Brokerid]; }
+            set { ForceSetData(Fields.Brokerid, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public LinkEntityStatus Linkstatus {
+            get { return (LinkEntityStatus) (short) this[Fields.Linkstatus]; }
+            set { ForceSetData(Fields.Linkstatus, value); }
         }
 
         /// <summary>

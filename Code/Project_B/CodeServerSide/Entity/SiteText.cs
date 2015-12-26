@@ -5,16 +5,17 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeClientSide.Enums;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
-namespace DbEntity {
+namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
     [DBTable("SiteText")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SiteText : AbstractEntityTemplateKey<SiteText, short> {
+    public sealed class SiteText : AbstractEntityTemplateKey<SiteText, short>, ILanguageTyped, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>

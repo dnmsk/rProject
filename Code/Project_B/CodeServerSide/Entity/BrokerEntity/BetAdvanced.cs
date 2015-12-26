@@ -6,39 +6,43 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeServerSide.Entity.Interface;
 
-namespace Project_B.CodeServerSide.Entity {
-        /// <summary>
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
+    /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("BetLiveAdvanced")]
+    [DBTable("BetAdvanced")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class BetLiveAdvanced : AbstractEntityTemplateKey<BetLiveAdvanced, long>, IBetAdvanced<long> {
+    public sealed class BetAdvanced : AbstractEntityTemplateKey<BetAdvanced, int>, IBetAdvanced<int> {
 
         public enum Fields {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int64)] ID,
+            [DBField(DbType.Int32)] ID,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Draw,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Win1draw,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Win1win2,
 
-        /// <summary>
-        /// 
-        /// </summary>
+            /// <summary>
+            /// 
+            /// </summary>
+            [Nullable]
             [DBField(DbType.Single)] Drawwin2,
 
         }
@@ -46,30 +50,21 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public BetLiveAdvanced() {
+        public BetAdvanced() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public BetLiveAdvanced(Hashtable ht) : base(ht) {}
+        public BetAdvanced(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
-        public long ID {
-            get { return (long) this[Fields.ID]; }
+        public int ID {
+            get { return (int) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        public float? Draw {
-            get { return (float?) this[Fields.Draw]; }
-            set { ForceSetData(Fields.Draw, value); }
-        }
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -92,6 +87,14 @@ namespace Project_B.CodeServerSide.Entity {
         public float? Drawwin2 {
             get { return (float?) this[Fields.Drawwin2]; }
             set { ForceSetData(Fields.Drawwin2, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public float? Draw {
+            get { return (float?) this[Fields.Draw]; }
+            set { ForceSetData(Fields.Draw, value); }
         }
 
         public override Enum[] KeyFields {

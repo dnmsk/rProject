@@ -4,82 +4,80 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
-using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
-using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("SystemStateBet")]
+    [DBTable("CompetitionResultLive")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class SystemStateBet : AbstractEntityTemplateKey<SystemStateBet, int>, IBrokerTyped {
+    public sealed class CompetitionResultLive : AbstractEntityTemplateKey<CompetitionResultLive, long>, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] ID,
+            [DBField(DbType.Int64)] ID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] Statebet,
+            [DBField(DbType.Int32)] CompetitionitemID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] Brokerid,
+            [DBField(DbType.Int16)] ScoreID,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.DateTime)] Dateutc,
+            [DBField(DbType.DateTime)] Datecreatedutc,
 
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public SystemStateBet() {
+        public CompetitionResultLive() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public SystemStateBet(Hashtable ht) : base(ht) {}
+        public CompetitionResultLive(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
-        public int ID {
-            get { return (int) this[Fields.ID]; }
+        public long ID {
+            get { return (long) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public SystemStateBetType Statebet {
-            get { return (SystemStateBetType) (int) this[Fields.Statebet]; }
-            set { ForceSetData(Fields.Statebet, (int) value); }
+        public int CompetitionitemID {
+            get { return (int) this[Fields.CompetitionitemID]; }
+            set { ForceSetData(Fields.CompetitionitemID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public BrokerType BrokerID {
-            get { return (BrokerType) (int) this[Fields.Brokerid]; }
-            set { ForceSetData(Fields.Brokerid, (short) value); }
+        public short ScoreID {
+            get { return (short) this[Fields.ScoreID]; }
+            set { ForceSetData(Fields.ScoreID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime Dateutc {
-            get { return (DateTime) this[Fields.Dateutc]; }
-            set { ForceSetData(Fields.Dateutc, value); }
+        public DateTime Datecreatedutc {
+            get { return (DateTime) this[Fields.Datecreatedutc]; }
+            set { ForceSetData(Fields.Datecreatedutc, value); }
         }
 
         public override Enum[] KeyFields {

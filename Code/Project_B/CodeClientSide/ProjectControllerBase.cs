@@ -6,6 +6,7 @@ using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
@@ -13,6 +14,7 @@ namespace Project_B.CodeClientSide {
     public abstract class ProjectControllerBase : ApplicationControllerBase {
         public const string GMT_COOKIE_NAME = "GMT";
         private int? _gmtDeltaMinutes;
+        protected FrontCompetitionProvider FrontCompetitionProvider => ProjectProvider.Instance.FrontCompetitionProvider;
 
         private int GmtDeltaMinutes {
             get {

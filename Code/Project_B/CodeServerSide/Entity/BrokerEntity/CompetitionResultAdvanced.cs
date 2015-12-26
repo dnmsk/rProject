@@ -6,7 +6,7 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>

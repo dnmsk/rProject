@@ -5,7 +5,6 @@ using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
-using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.Helper {

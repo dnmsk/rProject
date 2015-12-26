@@ -8,8 +8,7 @@ using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Helper;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.BrokerProvider;
-using Project_B.CodeServerSide.DataProvider;
-using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.Controllers {
@@ -17,14 +16,14 @@ namespace Project_B.Controllers {
         [HttpPost]
         [ActionProfile(ProjectBActions.PageDataCompetitionItemGraph)]
         public ActionResult CompetitionItemGraph(int id, SportType sportType) {
-            var data = ProjectProvider.Instance.CompetitionProvider.GetRowDataForGraphCompetition(null, sportType, id);
+            var data = FrontCompetitionProvider.GetRowDataForGraphCompetition(null, sportType, id);
             return BuildActionResult(sportType, data);
         }
 
         [HttpPost]
         [ActionProfile(ProjectBActions.PageDataCompetitionItemLiveGraph)]
         public ActionResult CompetitionItemLiveGraph(int id, SportType sportType) {
-            var data = ProjectProvider.Instance.CompetitionProvider.GetRowDataForGraphCompetitionLive(null, sportType, id);
+            var data = FrontCompetitionProvider.GetRowDataForGraphCompetitionLive(null, sportType, id);
             return BuildActionResult(sportType, data);
         }
 

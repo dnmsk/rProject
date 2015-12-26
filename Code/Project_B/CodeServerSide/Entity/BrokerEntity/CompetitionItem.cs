@@ -4,16 +4,17 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
-        /// <summary>
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
+    /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("CompetitionUniqueAdvanced")]
+    [DBTable("CompetitionItem")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class CompetitionUniqueAdvanced : AbstractEntityTemplateKey<CompetitionUniqueAdvanced, int> {
+    public sealed class CompetitionItem : AbstractEntityTemplateKey<CompetitionItem, int>, ICompetitionItem {
 
         public enum Fields {
         /// <summary>
@@ -29,40 +30,48 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Languagetype,
-
-        /// <summary>
-        /// 
-        /// </summary>
-            [DBField(DbType.String)] Name,
+            [DBField(DbType.Int32)]
+            [Nullable]
+            CompetitionSpecifyUniqueID,
 
         /// <summary>
         /// 
         /// </summary>
             [DBField(DbType.Int16)] Sporttype,
+            
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.Int32)] Competitoruniqueid1,
 
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int16)] Gendertype,
+            [DBField(DbType.Int32)] Competitoruniqueid2,
 
         /// <summary>
         /// 
         /// </summary>
             [DBField(DbType.DateTime)] Datecreatedutc,
 
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.DateTime)] Dateeventutc,
+
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionUniqueAdvanced() {
+        public CompetitionItem() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionUniqueAdvanced(Hashtable ht) : base(ht) {}
+        public CompetitionItem(Hashtable ht) : base(ht) {}
+
         /// <summary>
         /// 
         /// </summary>
@@ -82,33 +91,33 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public LanguageType Languagetype {
-            get { return (LanguageType) (short) this[Fields.Languagetype]; }
-            set { ForceSetData(Fields.Languagetype, value); }
+        public int CompetitionSpecifyUniqueID {
+            get { return (int) (this[Fields.CompetitionSpecifyUniqueID] ?? default(int)); }
+            set { ForceSetData(Fields.CompetitionSpecifyUniqueID, value); }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Name {
-            get { return (string) this[Fields.Name]; }
-            set { ForceSetData(Fields.Name, value); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public SportType Sporttype {
-            get { return (SportType) (short) this[Fields.Sporttype]; }
+        public SportType SportType {
+            get { return (SportType)(short) this[Fields.Sporttype]; }
             set { ForceSetData(Fields.Sporttype, value); }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Competitoruniqueid1 {
+            get { return (int) this[Fields.Competitoruniqueid1]; }
+            set { ForceSetData(Fields.Competitoruniqueid1, value); }
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        public GenderType Gendertype {
-            get { return (GenderType) (short) this[Fields.Gendertype]; }
-            set { ForceSetData(Fields.Gendertype, value); }
+        public int Competitoruniqueid2 {
+            get { return (int) this[Fields.Competitoruniqueid2]; }
+            set { ForceSetData(Fields.Competitoruniqueid2, value); }
         }
 
         /// <summary>
@@ -119,11 +128,16 @@ namespace Project_B.CodeServerSide.Entity {
             set { ForceSetData(Fields.Datecreatedutc, value); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime Dateeventutc {
+            get { return (DateTime) this[Fields.Dateeventutc]; }
+            set { ForceSetData(Fields.Dateeventutc, value); }
+        }
+
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
         }
-    }
-
-    public class TargetDb {
     }
 }

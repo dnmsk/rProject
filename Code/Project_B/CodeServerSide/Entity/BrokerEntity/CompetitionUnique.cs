@@ -5,7 +5,7 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>

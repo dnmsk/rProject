@@ -7,8 +7,7 @@ using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.DataHelper.LiveResultToDbProc;
-using Project_B.CodeServerSide.Entity;
-using Project_B.CodeServerSide.Entity.Interface;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -23,7 +22,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public void ProcessdLiveParsed(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
                 CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
-                    (type, sportType, competitionItemID, matchParsed) => AddLive(competitionItemID, type, sportType, matchParsed));
+                    (type, sportType, itemRawTransport, matchParsed) => AddLive(itemRawTransport.CompetitionItemID, type, sportType, matchParsed));
             });
         }
 

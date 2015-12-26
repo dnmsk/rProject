@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IDEV.Hydra.DAO;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity.Interface {
+namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class BetHelper {
         private static readonly SportType[] _sportWithAdvancedDetail = {
             SportType.Football, SportType.IceHockey
         };
 
         public static bool IsEqualsTo<T>(this IBet<T> t, IBet<T> bet) {
-            return t != null 
+            return t != null
                    && bet != null
                    && t.Win1 == bet.Win1
                    && t.Win2 == bet.Win2
@@ -59,7 +62,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         }
 
         public static bool IsEqualsTo<T>(this IBetAdvanced<T> t, IBetAdvanced<T> betAdvanced) {
-            return t != null 
+            return t != null
                    && betAdvanced != null
                    && t.Win1draw == betAdvanced.Win1draw
                    && t.Draw == betAdvanced.Draw
@@ -143,5 +146,46 @@ namespace Project_B.CodeServerSide.Entity.Interface {
             {SportType.Tennis, _standartOdds },
             {SportType.Volleyball, _standartOdds },
         };
+
+        public static Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
+            var bets = Bet.DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .WhereIn(Bet.Fields.CompetitionitemID, competitionItemIDs);
+            if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
+                bets = bets.WhereIn(Bet.Fields.BrokerID, brokerTypesToRetreive);
+            }
+            return bets
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>)t)
+                .OrderByDescending(t => t.ID)
+                .ToList());
+        }
+        public static Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> betIDs) {
+            var bets = Bet.DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .WhereIn(Bet.Fields.ID, betIDs);
+            return bets
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<int>)t)
+                .OrderByDescending(t => t.ID)
+                .ToList());
+        }
+
+        public static Dictionary<int, List<IBet<long>>> GetLiveBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
+            var bets = BetLive.DataSource
+                .Join(JoinType.Left, BetLiveAdvanced.Fields.ID, BetLive.Fields.ID, RetrieveMode.Retrieve)
+                .WhereIn(BetLive.Fields.CompetitionitemID, competitionItemIDs);
+            if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
+                bets = bets.WhereIn(BetLive.Fields.BrokerID, brokerTypesToRetreive);
+            }
+            return bets
+                .AsList()
+                .GroupBy(e => e.CompetitionitemID)
+                .ToDictionary(e => e.Key, e => e.Select(t => (IBet<long>)t)
+                .ToList());
+        }
+
     }
 }

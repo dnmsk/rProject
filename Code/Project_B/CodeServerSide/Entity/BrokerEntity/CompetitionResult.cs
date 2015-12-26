@@ -4,16 +4,17 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
     [DBTable("CompetitionResult")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class CompetitionResult : AbstractEntityTemplateKey<CompetitionResult, int> {
+    public sealed class CompetitionResult : AbstractEntityTemplateKey<CompetitionResult, int>, IDateCreatedTyped {
 
         public enum Fields {
         /// <summary>

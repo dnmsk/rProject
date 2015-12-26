@@ -5,14 +5,14 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 
-namespace Project_B.CodeServerSide.Entity {
+namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>
     [Serializable]
-    [DBTable("CompetitionResultLive")]
+    [DBTable("CompetitionResultLiveAdvanced")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class CompetitionResultLive : AbstractEntityTemplateKey<CompetitionResultLive, long> {
+    public sealed class CompetitionResultLiveAdvanced : AbstractEntityTemplateKey<CompetitionResultLiveAdvanced, long> {
 
         public enum Fields {
         /// <summary>
@@ -23,12 +23,17 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-            [DBField(DbType.Int32)] CompetitionitemID,
+            [DBField(DbType.Int64)] CompetitionresultliveID,
 
         /// <summary>
         /// 
         /// </summary>
             [DBField(DbType.Int16)] ScoreID,
+
+        /// <summary>
+        /// 
+        /// </summary>
+            [DBField(DbType.Int16)] Advancedparam,
 
         /// <summary>
         /// 
@@ -40,13 +45,13 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionResultLive() {
+        public CompetitionResultLiveAdvanced() {
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public CompetitionResultLive(Hashtable ht) : base(ht) {}
+        public CompetitionResultLiveAdvanced(Hashtable ht) : base(ht) {}
         /// <summary>
         /// 
         /// </summary>
@@ -58,9 +63,9 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
-        public int CompetitionitemID {
-            get { return (int) this[Fields.CompetitionitemID]; }
-            set { ForceSetData(Fields.CompetitionitemID, value); }
+        public long CompetitionresultliveID {
+            get { return (long) this[Fields.CompetitionresultliveID]; }
+            set { ForceSetData(Fields.CompetitionresultliveID, value); }
         }
 
         /// <summary>
@@ -69,6 +74,14 @@ namespace Project_B.CodeServerSide.Entity {
         public short ScoreID {
             get { return (short) this[Fields.ScoreID]; }
             set { ForceSetData(Fields.ScoreID, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public short Advancedparam {
+            get { return (short) this[Fields.Advancedparam]; }
+            set { ForceSetData(Fields.Advancedparam, value); }
         }
 
         /// <summary>

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Project_B.CodeClientSide.TransportType;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
-namespace Project_B.CodeServerSide.Entity.Interface {
+namespace Project_B.CodeServerSide.Entity.Helper {
     public static class BetMappingHelper<T> {
         public static readonly Dictionary<BetOddType, Func<IBet<T>, BetItemTransport>> OddsGetterMap = new Dictionary<BetOddType, Func<IBet<T>, BetItemTransport>> {
             {BetOddType.Win1, bet => FillBetItem(BuildBetItem(bet), bet.Win1, null) },
