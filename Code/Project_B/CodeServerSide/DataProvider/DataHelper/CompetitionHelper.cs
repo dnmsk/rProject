@@ -101,7 +101,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 return competitionParsedFromRaw;
             }
             if (!algoMode.HasFlag(GatherBehaviorMode.CreateOriginal)) {
-                return null;
+                return competitionParsedFromRaw;
             }
             lock(_lockObject) { 
                 if (competitionParsedFromRaw.CompetitionUniqueID == default(int)) {
