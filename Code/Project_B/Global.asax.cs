@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic.WebFiles;
 using Project_B.CodeServerSide.Algorithm;
 using Project_B.CodeServerSide.Enums;
@@ -30,6 +32,8 @@ namespace Project_B {
                 };
                 _taskObjects.Each(t => t.Schedule());
             }
+            SlothMovePlodding.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
+            BaseModelConfig.ConfigureBaseModel();
         }
     }
 }
