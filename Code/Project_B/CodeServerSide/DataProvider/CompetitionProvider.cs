@@ -124,6 +124,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     };
                     competitionItem.Save();
                     competitionItemRaw.Linkstatus = LinkEntityStatus.Original;
+                    competitionItemRaw.CompetitionitemID = competitionItem.ID;
                     competitionItemRaw.Save();
                 }
                 result.CompetitionItemID = competitionItem.Competitoruniqueid1 == competitor1ParsedTransport.UniqueID &&
