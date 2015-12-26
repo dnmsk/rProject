@@ -60,9 +60,6 @@ namespace CommonUtils.ExtendedTypes {
             if (action == null) {
                 throw new ArgumentNullException("action");
             }
-            if (list == null || !list.Any()) {
-                return;
-            }
             foreach (var elem in list) {
                 action(elem);
             }
@@ -78,10 +75,6 @@ namespace CommonUtils.ExtendedTypes {
             if (action == null) {
                 throw new ArgumentNullException("action");
             }
-            if (list == null || !list.Any()) {
-                return;
-            }
-
             int index = 0;
             foreach (var elem in list) {
                 action(index++, elem);

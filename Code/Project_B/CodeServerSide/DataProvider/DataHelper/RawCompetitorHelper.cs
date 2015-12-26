@@ -44,7 +44,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     return null;
                 }
             }
-            if (!nameFull.Equals(nameShort, StringComparison.InvariantCultureIgnoreCase)) {
+            if (!nameFull.Equals(nameShort, StringComparison.InvariantCultureIgnoreCase) && competitors.Any()) {
                 new[] {nameShort, nameFull }
                     .Where(name => !competitors.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                     .Each(name => {
