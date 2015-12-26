@@ -54,12 +54,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             competition.Save();
 
             var competitionSpecify = RawCompetitionSpecify.DataSource
-                .WhereEquals(RawCompetitionSpecify.Fields.Gendertype, (short)genderDetected)
                 .Where(QueryHelper.GetFilterByGenger(genderDetected, RawCompetitionSpecify.Fields.Gendertype))
                 .WhereEquals(RawCompetitionSpecify.Fields.Languagetype, (short)language)
                 .WhereEquals(RawCompetitionSpecify.Fields.Sporttype, (short)sportType)
                 .WhereEquals(RawCompetitionSpecify.Fields.Brokerid, (short)brokerType)
-                .WhereEquals(RawCompetitionSpecify.Fields.CompetitionuniqueID, competition.CompetitionuniqueID)
+                .WhereEquals(RawCompetitionSpecify.Fields.RawCompetitionID, competition.ID)
                 .Where(QueryHelper.GetFilterByWordsForField(nameOrigin, RawCompetitionSpecify.Fields.Name))
                 .First()
                 ?? new RawCompetitionSpecify {
