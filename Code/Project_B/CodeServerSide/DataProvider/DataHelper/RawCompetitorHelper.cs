@@ -23,7 +23,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static List<RawCompetitor> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameShort, string nameFull) {
             var competitors = RawCompetitor.DataSource
-                    .WhereEquals(RawCompetitor.Fields.Gendertype, (short)genderType)
+                    .Where(QueryHelper.GetFilterByGenger(genderType, RawCompetitor.Fields.Gendertype))
                     .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
                     .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
                     .WhereEquals(RawCompetitor.Fields.Brokerid, (short)brokerType)

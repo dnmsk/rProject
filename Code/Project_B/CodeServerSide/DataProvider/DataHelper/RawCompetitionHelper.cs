@@ -11,7 +11,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionHelper {
         public static RawCompetitionSpecify GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin) {
             return RawCompetitionSpecify.DataSource
-                        .WhereEquals(RawCompetitionSpecify.Fields.Gendertype, (short)genderDetected)
+                        .Where(QueryHelper.GetFilterByGenger(genderDetected, RawCompetitionSpecify.Fields.Gendertype))
                         .WhereEquals(RawCompetitionSpecify.Fields.Languagetype, (short)language)
                         .WhereEquals(RawCompetitionSpecify.Fields.Sporttype, (short)sportType)
                         .WhereEquals(RawCompetitionSpecify.Fields.Brokerid, (short)brokerType)
@@ -27,7 +27,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static CompetitionSpecifyTransport CreateCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, List<string> nameOriginShort, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             var competition = RawCompetition.DataSource
-                .WhereEquals(RawCompetition.Fields.Gendertype, (short)genderDetected)
+                .Where(QueryHelper.GetFilterByGenger(genderDetected, RawCompetition.Fields.Gendertype))
                 .WhereEquals(RawCompetition.Fields.Languagetype, (short)language)
                 .WhereEquals(RawCompetition.Fields.Sporttype, (short)sportType)
                 .WhereEquals(RawCompetition.Fields.Brokerid, (short)brokerType)
@@ -55,6 +55,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
             var competitionSpecify = RawCompetitionSpecify.DataSource
                 .WhereEquals(RawCompetitionSpecify.Fields.Gendertype, (short)genderDetected)
+                .Where(QueryHelper.GetFilterByGenger(genderDetected, RawCompetitionSpecify.Fields.Gendertype))
                 .WhereEquals(RawCompetitionSpecify.Fields.Languagetype, (short)language)
                 .WhereEquals(RawCompetitionSpecify.Fields.Sporttype, (short)sportType)
                 .WhereEquals(RawCompetitionSpecify.Fields.Brokerid, (short)brokerType)

@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class QueryHelper {
@@ -21,6 +22,19 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static DaoFilterBase GetIndexedFilterByWordIgnoreCase(string word, Enum field, bool fullyEq = true) {
             return new DaoFilter(new DbFnSimpleFieldOp("lower", field), Oper.Like, string.Format(fullyEq ? "{0}" : "%{0}%", word.ToLower()));
+        }
+        public static DaoFilterBase GetFilterByGenger(GenderType genderType, Enum field) {
+            var types = new List<GenderType> {genderType};
+            switch (genderType) {
+                case GenderType.Default:
+                    types.AddRange(new[] { GenderType.Female });
+                    break;
+                case GenderType.Female:
+                case GenderType.Male:
+                    types.Add(GenderType.Default);
+                    break;
+            }
+            return new DaoFilterOr(types.Select(type => new DaoFilterEq(field, (short) type)));
         }
 
         public static string[] StringToArray(string str) {

@@ -106,6 +106,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             lock(_lockObject) { 
                 if (competitionParsedFromRaw.CompetitionUniqueID == default(int)) {
                     var competition = Competition.DataSource
+                            .Where(QueryHelper.GetFilterByGenger(genderDetected, Competition.Fields.Gendertype))
                             .WhereEquals(Competition.Fields.Gendertype, (short)genderDetected)
                             .WhereEquals(Competition.Fields.Languagetype, (short)language)
                             .WhereEquals(Competition.Fields.Sporttype, (short)sportType)
@@ -130,6 +131,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 }
 
                 var competitionSpecify = CompetitionSpecify.DataSource
+                    .Where(QueryHelper.GetFilterByGenger(genderDetected, genderDetected))
                     .WhereEquals(CompetitionSpecify.Fields.Gendertype, (short)genderDetected)
                     .WhereEquals(CompetitionSpecify.Fields.Languagetype, (short)language)
                     .WhereEquals(CompetitionSpecify.Fields.Sporttype, (short)sportType)
