@@ -38,7 +38,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
 
                 if (!competitorFromRaw.Any() || competitorFromRaw.All(c => c.CompetitoruniqueID == default(int))) {
-                    competitorFromRaw = RawCompetitorHelper.CreateCompetitorAndDetect(brokerType, languageType, sportType, genderType, nameShort, nameFull, competitionUnique, matchParsed, algoMode);
+                    competitorFromRaw = RawCompetitorHelper.CreateCompetitorAndDetect(brokerType, languageType, sportType, genderType, nameShort, nameFull, competitionUnique, matchParsed, algoMode, competitorFromRaw);
                 }
                 var firstRow = competitorFromRaw.First(c => c.CompetitoruniqueID != default(int));
                 return new CompetitorParsedTransport {

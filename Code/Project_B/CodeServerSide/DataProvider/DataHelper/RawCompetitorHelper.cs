@@ -67,23 +67,26 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return competitors;
         }
 
-        public static List<RawCompetitor> CreateCompetitorAndDetect(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameShort, string nameFull, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public static List<RawCompetitor> CreateCompetitorAndDetect(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameShort, string nameFull, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawCompetitor> competitorFromRaw) {
             lock (_lockObj) {
-                var names = nameShort.Equals(nameFull, StringComparison.InvariantCultureIgnoreCase) ? new[] {nameFull } : new []{nameShort, nameFull };
-                var competitors = names.Select(name => {
-                    var competitorRaw = new RawCompetitor {
-                        BrokerID = brokerType,
-                        Datecreatedutc = DateTime.UtcNow,
-                        Languagetype = languageType,
-                        Name = name,
-                        Gendertype = genderType,
-                        SportType = sportType,
-                        Linkstatus = LinkEntityStatus.ToLink
-                    };
-                    competitorRaw.Save();
-                    return competitorRaw;
-                }).ToList();
-
+                if (!competitorFromRaw.Any()) {
+                    var names = nameShort.Equals(nameFull, StringComparison.InvariantCultureIgnoreCase)
+                        ? new[] {nameFull}
+                        : new[] {nameShort, nameFull};
+                    competitorFromRaw = names.Select(name => {
+                        var competitorRaw = new RawCompetitor {
+                            BrokerID = brokerType,
+                            Datecreatedutc = DateTime.UtcNow,
+                            Languagetype = languageType,
+                            Name = name,
+                            Gendertype = genderType,
+                            SportType = sportType,
+                            Linkstatus = LinkEntityStatus.ToLink
+                        };
+                        competitorRaw.Save();
+                        return competitorRaw;
+                    }).ToList();
+                }
                 CompetitorUnique uniqueID = null;
                 if (algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetitor)) {
                     uniqueID = TryGetCompetitorUniqueByResult(nameFull, nameShort, competitionUnique, matchParsed);
@@ -125,13 +128,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     linkStatus = linkStatus == LinkEntityStatus.Undefined
                         ? LinkEntityStatus.LinkByStatistics
                         : linkStatus;
-                    competitors.Each(raw => {
+                    competitorFromRaw.Each(raw => {
                         raw.CompetitoruniqueID = uniqueID.ID;
                         raw.Linkstatus = linkStatus;
                         raw.Save();
                     });
                 }
-                return competitors;
+                return competitorFromRaw;
             }
         }
 
