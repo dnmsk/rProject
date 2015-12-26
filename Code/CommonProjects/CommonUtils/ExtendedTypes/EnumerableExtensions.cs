@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CommonUtils.ExtendedTypes {
@@ -59,7 +60,9 @@ namespace CommonUtils.ExtendedTypes {
             if (action == null) {
                 throw new ArgumentNullException("action");
             }
-
+            if (list == null || !list.Any()) {
+                return;
+            }
             foreach (var elem in list) {
                 action(elem);
             }
@@ -74,6 +77,9 @@ namespace CommonUtils.ExtendedTypes {
         public static void Each<T>(this IEnumerable<T> list, Action<int, T> action) {
             if (action == null) {
                 throw new ArgumentNullException("action");
+            }
+            if (list == null || !list.Any()) {
+                return;
             }
 
             int index = 0;
