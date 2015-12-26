@@ -18,7 +18,7 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.CreateOriginal | GatherBehaviorMode.TryDetectAll | GatherBehaviorMode.CreateNewLanguageName, RunTaskMode.AllTasks) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, /*GatherBehaviorMode.CreateOriginal | */GatherBehaviorMode.TryDetectAll | GatherBehaviorMode.CreateNewLanguageName, RunTaskMode.AllTasks) {
                         PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
                     /*

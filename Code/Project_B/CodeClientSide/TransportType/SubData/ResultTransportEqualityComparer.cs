@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.ExtendedTypes;
 
 namespace Project_B.CodeClientSide.TransportType.SubData {
@@ -8,7 +9,7 @@ namespace Project_B.CodeClientSide.TransportType.SubData {
                 return false;
             }
             if (x.SubScore == null || y.SubScore == null) {
-                return x.SubScore == null && y.SubScore == null;
+                return x.SubScore.SafeAny() == y.SubScore.SafeAny();
             }
             if (x.SubScore.Length != y.SubScore.Length) {
                 return false;
