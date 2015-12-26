@@ -54,7 +54,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 BrokerID = brokerType,
                 SportType = competitionSpecifyTransport.SportType,
                 Languagetype = competitionSpecifyTransport.LanguageType,
-                Dateeventutc = eventDateUtc,
+                Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow,
                 Datecreatedutc = utcNow,
                 RawcompetitionID = competitionSpecifyTransport.RawCompetitionID,
                 RawcompetitionspecifyID = competitionSpecifyTransport.RawCompetitionSpecifyID,
