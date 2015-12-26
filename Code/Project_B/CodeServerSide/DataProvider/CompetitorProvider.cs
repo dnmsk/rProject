@@ -14,6 +14,8 @@ namespace Project_B.CodeServerSide.DataProvider {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (CompetitorProvider).FullName);
 
+        private readonly char[] _trimChars = { '(', ')', ' ', '.', '\'', ';', ':', '-' };
+
         public CompetitorProvider() : base(_logger) { }
 
         public CompetitorParsedTransport GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
@@ -27,6 +29,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                 if (nameShort.IsNullOrWhiteSpace()) {
                     nameShort = nameFull.Trim();
                 }
+                nameFull = nameFull.Trim(_trimChars);
+                nameShort = nameShort.Trim(_trimChars);
 
                 var competitorFromRaw = RawCompetitorHelper.GetCompetitor(brokerType, languageType, sportType, genderType, nameShort, nameFull);
                 if (competitorFromRaw == null) {
