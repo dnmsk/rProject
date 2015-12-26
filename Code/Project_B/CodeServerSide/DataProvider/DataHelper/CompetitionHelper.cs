@@ -221,7 +221,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 if (orderedCompetitionCoeffs.First().Value > .5 && 
                         (orderedCompetitionCoeffs.Count == 1 || 
                          orderedCompetitionCoeffs.Count > 1 && (
-                            (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3) || orderedCompetitionCoeffs[0].Key == orderedCompetitionCoeffs[1].Key) {
+                            (orderedCompetitionCoeffs[0].Value - orderedCompetitionCoeffs[1].Value) > .3) || orderedCompetitionCoeffs[0].Key == orderedCompetitionCoeffs[1].Key)) {
                     var key = orderedCompetitionCoeffs.First().Key;
                     _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}). K={3}", nameOrigin.StrJoin(". "), key,
                         CompetitionSpecify.DataSource.WhereEquals(CompetitionSpecify.Fields.CompetitionuniqueID, key).Sort(CompetitionSpecify.Fields.ID).First().Name, orderedCompetitionCoeffs.First().Value);
