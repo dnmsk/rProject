@@ -232,14 +232,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 );
             var competitorToDetectIsFirst = new[] { matchParsed.CompetitorNameShortOne, matchParsed.CompetitorNameFullOne }.Any(names.Contains);
             var namesHash = names.Select(name => new HashSet<char>(Transliterator.GetTranslit(CleanString(name)))).ToArray();
-            var suitableCompetitors = Competitor.DataSource
-                .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst
+            var suitableCompetitors = RawCompetitor.DataSource
+                .WhereIn(RawCompetitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst
                         ? suitableCompetitionItems.Select(sc => sc.Competitoruniqueid1)
                         : suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
                     .Distinct())
-                .AsList(Competitor.Fields.NameFull, Competitor.Fields.NameShort, Competitor.Fields.CompetitoruniqueID)
+                .AsList(RawCompetitor.Fields.Name, RawCompetitor.Fields.CompetitoruniqueID)
                 .GroupBy(e => e.CompetitoruniqueID)
-                .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(names, namesHash, new[] { e.NameFull, e.NameShort })).Max())
+                .ToDictionary(g => g.Key, g => SuitByNameFactor(names, namesHash, g.Select(rc => rc.Name)))
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 &&
@@ -256,7 +256,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return null;
         }
 
-        private static float SuitByNameFactor(string[] names, HashSet<char>[] namesHash, string[] namesToSearch) {
+        private static float SuitByNameFactor(string[] names, HashSet<char>[] namesHash, IEnumerable<string> namesToSearch) {
             return namesToSearch
                 .Select(n => Transliterator.GetTranslit(CleanString(n)))
                 .Select(name => {

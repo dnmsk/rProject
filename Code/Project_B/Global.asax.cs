@@ -21,14 +21,14 @@ namespace Project_B {
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.CreateOriginal | GatherBehaviorMode.TryDetectAll | GatherBehaviorMode.CreateNewLanguageName, RunTaskMode.AllTasks) {
                         PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
-                    /*
                     new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.AllTasks) {
-                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12)
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12),
+                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.Russian, GatherBehaviorMode.TryDetectAll, RunTaskMode.HistoryTasks) {
-                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12)
+                        TodayHistoryTaskTimespan = TimeSpan.FromHours(12),
+                        PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
-                    */
                 };
                 _taskObjects.Each(t => t.Schedule());
             }
