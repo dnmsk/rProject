@@ -14,6 +14,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
@@ -238,6 +239,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         : suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
                     .Distinct())
                 .AsList(RawCompetitor.Fields.Name, RawCompetitor.Fields.CompetitoruniqueID)
+                .Select(rc => (ICompetitor) rc)
+                .Union(RawCompetitor.DataSource
+                                    .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst
+                                            ? suitableCompetitionItems.Select(sc => sc.Competitoruniqueid1)
+                                            : suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
+                                        .Distinct())
+                                    .AsList(Competitor.Fields.NameFull, Competitor.Fields.CompetitoruniqueID)
+                                    .Select(rc => (ICompetitor)rc))
                 .GroupBy(e => e.CompetitoruniqueID)
                 .ToDictionary(g => g.Key, g => SuitByNameFactor(names, namesHash, g.Select(rc => rc.Name)))
                 .OrderByDescending(kv => kv.Value)
