@@ -240,7 +240,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     .Distinct())
                 .AsList(RawCompetitor.Fields.Name, RawCompetitor.Fields.CompetitoruniqueID)
                 .Select(rc => (ICompetitor) rc)
-                .Union(RawCompetitor.DataSource
+                .Union(Competitor.DataSource
                                     .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst
                                             ? suitableCompetitionItems.Select(sc => sc.Competitoruniqueid1)
                                             : suitableCompetitionItems.Select(sc => sc.Competitoruniqueid2))
