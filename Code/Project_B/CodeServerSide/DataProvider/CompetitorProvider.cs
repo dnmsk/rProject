@@ -4,6 +4,7 @@ using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Enums;
 
@@ -18,37 +19,17 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public CompetitorProvider() : base(_logger) { }
 
-        public CompetitorParsedTransport GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public RawTemplateObj<CompetitorParsedTransport> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
-                if (nameFull.IsNullOrWhiteSpace() && nameShort.IsNullOrWhiteSpace()) {
+                var names = new[] {nameShort ?? string.Empty, nameFull ?? string.Empty}
+                    .Select(name => name.Trim(_trimChars))
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .ToArray();
+                if (!names.Any()) {
                     throw new Exception("nameFull.IsNullOrWhiteSpace() && nameShort.IsNullOrWhiteSpace()");
                 }
-                if (nameFull.IsNullOrWhiteSpace()) {
-                    nameFull = nameShort.Trim();
-                }
-                if (nameShort.IsNullOrWhiteSpace()) {
-                    nameShort = nameFull.Trim();
-                }
-                nameFull = nameFull.Trim(_trimChars);
-                nameShort = nameShort.Trim(_trimChars);
-
-                var competitorFromRaw = RawCompetitorHelper.GetCompetitor(brokerType, languageType, sportType, genderType, nameShort, nameFull);
-                if (competitorFromRaw == null) {
-                    return null;
-                }
-
-                if (!competitorFromRaw.Any() || competitorFromRaw.All(c => c.CompetitoruniqueID == default(int))) {
-                    competitorFromRaw = RawCompetitorHelper.CreateCompetitorAndDetect(brokerType, languageType, sportType, genderType, nameShort, nameFull, competitionUnique, matchParsed, algoMode, competitorFromRaw);
-                }
-                var firstRow = competitorFromRaw.First(c => c.CompetitoruniqueID != default(int));
-                return new CompetitorParsedTransport {
-                    RawID = firstRow.ID,
-                    UniqueID = firstRow.CompetitoruniqueID,
-                    Name = firstRow.Name,
-                    GenderType = genderType,
-                    SportType = sportType,
-                    LanguageType = languageType
-                };
+                var competitorFromRaw = RawCompetitorHelper.GetCompetitor(brokerType, languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode);
+                return competitorFromRaw.FirstOrDefault();
             }, null);
         }
     }

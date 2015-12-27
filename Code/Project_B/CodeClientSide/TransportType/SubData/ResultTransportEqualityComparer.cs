@@ -14,7 +14,7 @@ namespace Project_B.CodeClientSide.TransportType.SubData {
             if (x.SubScore.Length != y.SubScore.Length) {
                 return false;
             }
-            for (int i = 0; i < x.SubScore.Length; i++) {
+            for (var i = 0; i < x.SubScore.Length; i++) {
                 if (x.SubScore[i] != y.SubScore[i]) {
                     return false;
                 }

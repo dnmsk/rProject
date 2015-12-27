@@ -5,10 +5,13 @@ using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeClientSide.TransportType.SubData;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
+using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Enums;
@@ -19,61 +22,59 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
-        private static readonly object _lockObj = new object();
 
-        public static List<RawCompetitor> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameShort, string nameFull) {
-            var competitors = RawCompetitor.DataSource
-                    .Where(QueryHelper.GetFilterByGenger(genderType, RawCompetitor.Fields.Gendertype))
-                    .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
-                    .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
-                    .WhereEquals(RawCompetitor.Fields.Brokerid, (short)brokerType)
-                    .Where(new DaoFilterOr(
-                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameShort, RawCompetitor.Fields.Name),
-                        QueryHelper.GetIndexedFilterByWordIgnoreCase(nameFull, RawCompetitor.Fields.Name))
-                    )
-                    .Sort(RawCompetitor.Fields.ID, SortDirection.Asc)
-                    .AsList(
+        public static List<RawTemplateObj<CompetitorParsedTransport>> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+            var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource
+                                                .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
+                                                .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
+                                                .WhereEquals(RawCompetitor.Fields.Brokerid, (short)brokerType)
+                                                .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(names, RawCompetitor.Fields.Name))
+                                                .Sort(RawCompetitor.Fields.ID, SortDirection.Asc), 
+                        RawCompetitor.Fields.Gendertype, 
+                        genderType, 
                         RawCompetitor.Fields.CompetitoruniqueID,
                         RawCompetitor.Fields.Name,
                         RawCompetitor.Fields.Linkstatus
                     );
-            if (competitors.Count > 1) {
-                var count = competitors.GroupBy(c => c.CompetitoruniqueID).Count();
+            if (competitorsRaw.Count > 1) {
+                var count = competitorsRaw.GroupBy(c => c.CompetitoruniqueID).Count();
                 if (count != 1) {
-                    _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, nameShort, nameFull, count);
+                    _logger.Error("{0} {1} {2} {3} {4} {5}", brokerType, languageType, sportType, genderType, names.StrJoin(", "), count);
                     return null;
                 }
             }
-            if (!nameFull.Equals(nameShort, StringComparison.InvariantCultureIgnoreCase) && competitors.Any()) {
-                new[] {nameShort, nameFull }
-                    .Where(name => !competitors.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
-                    .Each(name => {
-                        var firstCompetitorRow = competitors.First();
-                        var competitorRaw = new RawCompetitor {
-                            BrokerID = brokerType,
-                            Datecreatedutc = DateTime.UtcNow,
-                            Languagetype = languageType,
-                            Name = name,
-                            Gendertype = genderType,
-                            SportType = sportType,
-                            Linkstatus = firstCompetitorRow.Linkstatus
-                        };
-                        if (firstCompetitorRow.CompetitoruniqueID != default(int)) {
-                            competitorRaw.CompetitoruniqueID = firstCompetitorRow.CompetitoruniqueID;
-                        }
-                        competitorRaw.Save();
-                    });
+            var result = AppendRawNewNames(names, competitorsRaw, brokerType, languageType, sportType, genderType)
+                .Select(cr => new RawTemplateObj<CompetitorParsedTransport> {
+                    RawObject = { ID = cr.ID},
+                    Object = {
+                        LanguageType = languageType,
+                        SportType = sportType,
+                        GenderType = genderType,
+                        ID = cr.CompetitoruniqueID
+                    }
+                })
+                .ToList();
+
+            if (!competitorsRaw.Any() || competitorsRaw.All(c => c.CompetitoruniqueID == default(int))) {
+                result = CreateCompetitorAndDetect(languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode, result);
             }
-            return competitors;
+
+            return result;
         }
 
-        public static List<RawCompetitor> CreateCompetitorAndDetect(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameShort, string nameFull, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawCompetitor> competitorFromRaw) {
-            lock (_lockObj) {
-                if (!competitorFromRaw.Any()) {
-                    var names = nameShort.Equals(nameFull, StringComparison.InvariantCultureIgnoreCase)
-                        ? new[] {nameFull}
-                        : new[] {nameShort, nameFull};
-                    competitorFromRaw = names.Select(name => {
+        private static List<RawCompetitor> AppendRawNewNames(string[] names, List<RawCompetitor> competitorsRaw, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType) {
+            var existNames = competitorsRaw.Select(cr => cr.Name).ToList();
+            names = names
+                .Where(name => !existNames.Contains(name))
+                .ToArray();
+            if (names.Any()) {
+                var lastCompetitorUniqueID = competitorsRaw.Any()
+                    ? competitorsRaw.First().CompetitoruniqueID
+                    : default(int);
+                var raw = competitorsRaw;
+                names
+                    .Where(name => !raw.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+                    .Each(name => {
                         var competitorRaw = new RawCompetitor {
                             BrokerID = brokerType,
                             Datecreatedutc = DateTime.UtcNow,
@@ -83,75 +84,110 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                             SportType = sportType,
                             Linkstatus = LinkEntityStatus.ToLink
                         };
+                        if (lastCompetitorUniqueID != default(int)) {
+                            competitorRaw.CompetitoruniqueID = lastCompetitorUniqueID;
+                            competitorRaw.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                        }
                         competitorRaw.Save();
-                        return competitorRaw;
-                    }).ToList();
-                }
-                CompetitorUnique uniqueID = null;
-                if (algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetitor)) {
-                    uniqueID = TryGetCompetitorUniqueByResult(nameFull, nameShort, competitionUnique, matchParsed);
-                }
-
-                if (uniqueID != null && algoMode.HasFlag(GatherBehaviorMode.CreateNewLanguageName) && !Competitor.DataSource
-                            .WhereEquals(Competitor.Fields.CompetitoruniqueID, uniqueID.ID)
-                            .WhereEquals(Competitor.Fields.Languagetype, (short) languageType)
-                            .IsExists()) {
-                    new Competitor {
-                        CompetitoruniqueID = uniqueID.ID,
-                        SportType = sportType,
-                        Datecreatedutc = DateTime.UtcNow,
-                        Languagetype = languageType,
-                        NameFull = nameFull,
-                        NameShort = nameShort,
-                        Gendertype = genderType
-                    }.Save();
-                }
-                var linkStatus = LinkEntityStatus.Undefined;
-                if (uniqueID == null && algoMode.HasFlag(GatherBehaviorMode.CreateOriginal)) {
-                    uniqueID = new CompetitorUnique {
-                        IsUsed = true
-                    };
-                    uniqueID.Save();
-                    var competitor = new Competitor {
-                        CompetitoruniqueID = uniqueID.ID,
-                        SportType = sportType,
-                        Datecreatedutc = DateTime.UtcNow,
-                        Languagetype = languageType,
-                        NameFull = nameFull,
-                        NameShort = nameShort,
-                        Gendertype = genderType
-                    };
-                    competitor.Save();
-                    linkStatus = LinkEntityStatus.Original;
-                }
-                if (uniqueID != null) {
-                    linkStatus = linkStatus == LinkEntityStatus.Undefined
-                        ? LinkEntityStatus.LinkByStatistics
-                        : linkStatus;
-                    competitorFromRaw.Each(raw => {
-                        raw.CompetitoruniqueID = uniqueID.ID;
-                        raw.Linkstatus = linkStatus;
-                        raw.Save();
+                        raw.Add(competitorRaw);
                     });
-                }
-                return competitorFromRaw;
             }
+
+            return competitorsRaw;
         }
 
-        private static CompetitorUnique TryGetCompetitorUniqueByResult(string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed) {
+        private static List<RawTemplateObj<CompetitorParsedTransport>> CreateCompetitorAndDetect(LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawTemplateObj<CompetitorParsedTransport>> competitorFromRaw) {
+            var uniqueID = algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetitor) 
+                ? TryGetCompetitorUniqueByResult(genderType, names, competitionUnique, matchParsed) 
+                : null;
+
+            if (algoMode.HasFlag(GatherBehaviorMode.CreateNewLanguageName) && uniqueID != null && !Competitor.DataSource
+                        .WhereEquals(Competitor.Fields.CompetitoruniqueID, uniqueID.ID)
+                        .WhereEquals(Competitor.Fields.Languagetype, (short) languageType)
+                        .IsExists()) {
+                new Competitor {
+                    CompetitoruniqueID = uniqueID.ID,
+                    SportType = sportType,
+                    Datecreatedutc = DateTime.UtcNow,
+                    Languagetype = languageType,
+                    NameFull = names[0],
+                    NameShort = names[0],
+                    Gendertype = genderType
+                }.Save();
+            }
+            var linkStatus = LinkEntityStatus.Undefined;
+            if (algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) && uniqueID == null) {
+                uniqueID = new CompetitorUnique {
+                    IsUsed = true
+                };
+                uniqueID.Save();
+                var competitor = new Competitor {
+                    CompetitoruniqueID = uniqueID.ID,
+                    SportType = sportType,
+                    Datecreatedutc = DateTime.UtcNow,
+                    Languagetype = languageType,
+                    NameFull = names[0],
+                    NameShort = names[0],
+                    Gendertype = genderType
+                };
+                competitor.Save();
+                linkStatus = LinkEntityStatus.Original;
+            }
+
+            if (uniqueID != null) {
+                linkStatus = linkStatus == LinkEntityStatus.Undefined
+                    ? LinkEntityStatus.LinkByStatistics
+                    : linkStatus;
+                competitorFromRaw.Each(raw => {
+                    raw.Object.ID = uniqueID.ID;
+                    RawCompetitor.DataSource
+                        .WhereEquals(RawCompetitor.Fields.ID, raw.RawObject.ID)
+                        .Update(new Dictionary<Enum, DbFunction> {
+                            {RawCompetitor.Fields.CompetitoruniqueID, new DbFnConst(uniqueID.ID) },
+                            {RawCompetitor.Fields.Linkstatus, new DbFnConst((short)linkStatus) },
+                        });
+                });
+            }
+            return competitorFromRaw;
+        }
+
+        private static CompetitorUnique TryGetByFullEquality(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
+            var competitorIDs = CompetitionItem.DataSource
+                .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
+                .AsList(CompetitionItem.Fields.Competitoruniqueid1,CompetitionItem.Fields.Competitoruniqueid2)
+                .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
+                .Distinct();
+            var res = QueryHelper.FilterByGender(Competitor.DataSource.WhereIn(Competitor.Fields.ID, competitorIDs)
+                                                            .Where(new DaoFilterOr(
+                                                                QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameFull),
+                                                                QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameShort)
+                                                            )),
+                                        Competitor.Fields.Gendertype, genderType, Competitor.Fields.CompetitoruniqueID);
+            if (res.Any()) {
+                var distinctIds = res.Select(r => r.CompetitoruniqueID).Distinct().ToArray();
+                if (distinctIds.Length == 1) {
+                    return CompetitorUnique.DataSource.GetByKey(distinctIds[0]);
+                }
+            }
+            return null;
+        }
+
+        private static CompetitorUnique TryGetCompetitorUniqueByResult(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
+            var byFullEqiality = TryGetByFullEquality(genderType, names, competitionUnique, matchParsed);
+            if (byFullEqiality != null) {
+                return byFullEqiality;
+            }
             if (matchParsed.Result == null || matchParsed.DateUtc == DateTime.MinValue) {
                 return null;
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
                 .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
-                .AsMapByIds(
-                    CompetitionItem.Fields.Competitoruniqueid1,
-                    CompetitionItem.Fields.Competitoruniqueid2
-                );
+                .AsIds();
             var suitableCompetitionResults = CompetitionResult.DataSource
                 .Join(JoinType.Left, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(CompetitionResult.Fields.CompetitionitemID, suitableCompetitionItems.Keys)
+                .WhereIn(CompetitionResult.Fields.CompetitionitemID, suitableCompetitionItems)
                 .Sort(CompetitionResult.Fields.ID)
                 .Sort(CompetitionResultAdvanced.Fields.ID)
                 .AsList(
@@ -179,10 +215,10 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             var matchedByResults = suitableCompetitionResults
                 .Where(kv => resultModelEqualityComparer.Equals(kv.Value, currentResultModel))
                 .ToArray();
-            return TryGetCompetitorUniqueByName(nameFull, nameShort, matchedByResults, matchParsed);
+            return TryGetCompetitorUniqueByName(names, matchedByResults, matchParsed);
         }
 
-        private static CompetitorUnique TryGetCompetitorUniqueByName(string nameFull, string nameShort, KeyValuePair<int, ResultTransport>[] mathedCompetitionItemsByResult, MatchParsed matchParsed) {
+        private static CompetitorUnique TryGetCompetitorUniqueByName(string[] names, KeyValuePair<int, ResultTransport>[] mathedCompetitionItemsByResult, MatchParsed matchParsed) {
             if (matchParsed.DateUtc == DateTime.MinValue) {
                 return null;
             }
@@ -194,11 +230,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     CompetitionItem.Fields.Competitoruniqueid1,
                     CompetitionItem.Fields.Competitoruniqueid2
                 );
-            var competitorToDetectIsFirst =
-                nameShort.Equals(matchParsed.CompetitorNameShortOne, StringComparison.InvariantCultureIgnoreCase) ||
-                nameFull.Equals(matchParsed.CompetitorNameFullOne, StringComparison.InvariantCultureIgnoreCase);
-            var nameShortHash = new HashSet<char>(Transliterator.GetTranslit(CleanString(nameShort)));
-            var nameFullHash = new HashSet<char>(Transliterator.GetTranslit(CleanString(nameFull)));
+            var competitorToDetectIsFirst = new[] { matchParsed.CompetitorNameShortOne, matchParsed.CompetitorNameFullOne }.Any(names.Contains);
+            var namesHash = names.Select(name => new HashSet<char>(Transliterator.GetTranslit(CleanString(name)))).ToArray();
             var suitableCompetitors = Competitor.DataSource
                 .WhereIn(Competitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst
                         ? suitableCompetitionItems.Select(sc => sc.Competitoruniqueid1)
@@ -206,14 +239,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     .Distinct())
                 .AsList(Competitor.Fields.NameFull, Competitor.Fields.NameShort, Competitor.Fields.CompetitoruniqueID)
                 .GroupBy(e => e.CompetitoruniqueID)
-                .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(nameFullHash, nameShortHash, e.NameFull, e.NameShort, nameFull, nameShort)).Max())
+                .ToDictionary(g => g.Key, g => g.Select(e => SuitByNameFactor(names, namesHash, new[] { e.NameFull, e.NameShort })).Max())
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
             if (suitableCompetitors.Length > 0 &&
                         (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .35) ||
                         (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .35 && 
                             ((suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8) || suitableCompetitors[1].Key == suitableCompetitors[0].Key))) {
-                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", nameFull, suitableCompetitors[0].Key,
+                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", names.First(), suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)
                                                     .First().NameFull,
@@ -223,15 +256,19 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return null;
         }
 
-        private static float SuitByNameFactor(HashSet<char> nameFullEn, HashSet<char> nameShortEn, string nameFullTranslit, string nameShortTranslit, string nameFullSrc, string nameShortSrc) {
-            nameShortTranslit = Transliterator.GetTranslit(CleanString(nameShortTranslit));
-            nameFullTranslit = Transliterator.GetTranslit(CleanString(nameFullTranslit));
-
-            var fullFactor = ((float)nameFullTranslit.Count(nameFullEn.Contains) / Math.Max(nameFullTranslit.Length, nameFullSrc.Length)) *
-                (Math.Min(nameFullTranslit.Length, nameFullEn.Count) / (float)Math.Max(nameFullTranslit.Length, nameFullEn.Count));
-            var shortFactor = ((float)nameShortTranslit.Count(nameShortEn.Contains) / Math.Max(nameShortTranslit.Length, nameShortSrc.Length)) *
-                (Math.Min(nameShortTranslit.Length, nameShortEn.Count) / (float)Math.Max(nameShortTranslit.Length, nameShortEn.Count));
-            return Math.Max(fullFactor, shortFactor);
+        private static float SuitByNameFactor(string[] names, HashSet<char>[] namesHash, string[] namesToSearch) {
+            return namesToSearch
+                .Select(n => Transliterator.GetTranslit(CleanString(n)))
+                .Select(name => {
+                    var coeffs = new List<float>();
+                    for (var i = 0; i < names.Length; i++) {
+                        var hashSet = namesHash[i];
+                        coeffs.Add(((float)name.Count(hashSet.Contains) / Math.Max(name.Length, names[i].Length)) *
+                            (Math.Min(name.Length, hashSet.Count) / (float)Math.Max(name.Length, hashSet.Count)));
+                    }
+                    return coeffs.Max();
+                })
+                .Max();
         }
 
         private static string CleanString(string str) {

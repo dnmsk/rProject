@@ -23,9 +23,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 successCompetitions++;
                 foreach (var matchParsed in competitionParsed.Matches) {
                     var competitor1 = competitorProvider
-                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.CompetitionUniqueID, matchParsed, algoMode);
+                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
                     var competitor2 = competitorProvider
-                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.CompetitionUniqueID, matchParsed, algoMode);
+                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
                     if (competitor1 == null || competitor2 == null) {
                         continue;
                     }

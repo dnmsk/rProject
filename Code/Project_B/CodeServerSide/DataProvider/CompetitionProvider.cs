@@ -6,6 +6,7 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
@@ -19,28 +20,17 @@ namespace Project_B.CodeServerSide.DataProvider {
         
         public CompetitionProvider() : base(_logger) {}
 
-        public CompetitionSpecifyTransport GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
+        public RawTemplateObj<CompetitionSpecifyTransport> GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
-                var competitionSpecify = RawCompetitionHelper.GetCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin);
-                if (competitionSpecify == null || competitionSpecify.CompetitionSpecifyUniqueID == default(int)) {
-                    return CompetitionHelper.CreateCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode);
-                }
-                return new CompetitionSpecifyTransport {
-                    Name = competitionSpecify.Name,
-                    GenderType = genderDetected,
-                    SportType = sportType,
-                    LanguageType = language,
-                    CompetitionUniqueID = competitionSpecify.CompetitionuniqueID,
-                    CompetitionSpecifyUniqueID = competitionSpecify.CompetitionSpecifyUniqueID,
-                    RawCompetitionID = competitionSpecify.RawCompetitionID,
-                    RawCompetitionSpecifyID = competitionSpecify.ID
-                };
+                var competitionSpecify = RawCompetitionHelper.GetCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin) ??
+                                         CompetitionHelper.CreateCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode);
+                return competitionSpecify;
             }, null);
         }
 
-        public CompetitionItemRawTransport GetCompetitionItem(BrokerType brokerType, CompetitorParsedTransport competitor1ParsedTransport, CompetitorParsedTransport competitor2ParsedTransport, CompetitionSpecifyTransport competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
+        public CompetitionItemRawTransport GetCompetitionItem(BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport> competitor1ParsedTransport, RawTemplateObj<CompetitorParsedTransport> competitor2ParsedTransport, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 var utcNow = DateTime.UtcNow;
                 if (eventDateUtc > utcNow.AddDays(14)) {
@@ -57,19 +47,19 @@ namespace Project_B.CodeServerSide.DataProvider {
                     competitionItem = CompetitionItem.DataSource
                         .Where(new DaoFilterOr(
                             new DaoFilterAnd(
-                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor1ParsedTransport.UniqueID),
-                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor2ParsedTransport.UniqueID)
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor1ParsedTransport.Object.ID),
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor2ParsedTransport.Object.ID)
                                 ),
                             new DaoFilterAnd(
-                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor1ParsedTransport.UniqueID),
-                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor2ParsedTransport.UniqueID)
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, competitor1ParsedTransport.Object.ID),
+                                new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitor2ParsedTransport.Object.ID)
                                 )
                             ))
-                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionSpecifyTransport.SportType)
-                        .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionSpecifyTransport.CompetitionUniqueID)
+                        .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionSpecifyTransport.Object.SportType)
+                        .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionSpecifyTransport.Object.CompetitionUniqueID)
                         .Where(new DaoFilterOr(
                             new DaoFilterNull(CompetitionItem.Fields.CompetitionSpecifyUniqueID, true),
-                            new DaoFilterEq(CompetitionItem.Fields.CompetitionSpecifyUniqueID, competitionSpecifyTransport.CompetitionSpecifyUniqueID)))
+                            new DaoFilterEq(CompetitionItem.Fields.CompetitionSpecifyUniqueID, competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID)))
                         .Where(eventDateUtc > DateTime.MinValue 
                             ? new DaoFilterAnd(
                                 new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1.5)),
@@ -86,8 +76,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     competitionItem = CompetitionItem.DataSource.GetByKey(competitionItemRaw.CompetitionitemID, fieldsToRetrive);
                 }
 
-                if (competitionSpecifyTransport.CompetitionSpecifyUniqueID != default(int) && competitionItem != null && competitionItem.CompetitionSpecifyUniqueID == default(int)) {
-                    competitionItem.CompetitionSpecifyUniqueID = competitionSpecifyTransport.CompetitionSpecifyUniqueID;
+                if (competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID != default(int) && competitionItem != null && competitionItem.CompetitionSpecifyUniqueID == default(int)) {
+                    competitionItem.CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID;
                     competitionItem.Save();
                 }
                 
@@ -114,21 +104,21 @@ namespace Project_B.CodeServerSide.DataProvider {
                         return result;
                     }
                     competitionItem = new CompetitionItem {
-                        SportType = competitionSpecifyTransport.SportType,
+                        SportType = competitionSpecifyTransport.Object.SportType,
                         Datecreatedutc = utcNow,
                         Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow,
-                        CompetitionuniqueID = competitionSpecifyTransport.CompetitionUniqueID,
-                        CompetitionSpecifyUniqueID = competitionSpecifyTransport.CompetitionSpecifyUniqueID,
-                        Competitoruniqueid1 = competitor1ParsedTransport.UniqueID,
-                        Competitoruniqueid2 = competitor2ParsedTransport.UniqueID
+                        CompetitionuniqueID = competitionSpecifyTransport.Object.CompetitionUniqueID,
+                        CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID,
+                        Competitoruniqueid1 = competitor1ParsedTransport.Object.ID,
+                        Competitoruniqueid2 = competitor2ParsedTransport.Object.ID
                     };
                     competitionItem.Save();
                     competitionItemRaw.Linkstatus = LinkEntityStatus.Original;
                     competitionItemRaw.CompetitionitemID = competitionItem.ID;
                     competitionItemRaw.Save();
                 }
-                result.CompetitionItemID = competitionItem.Competitoruniqueid1 == competitor1ParsedTransport.UniqueID &&
-                                           competitionItem.Competitoruniqueid2 == competitor2ParsedTransport.UniqueID
+                result.CompetitionItemID = competitionItem.Competitoruniqueid1 == competitor1ParsedTransport.Object.ID &&
+                                           competitionItem.Competitoruniqueid2 == competitor2ParsedTransport.Object.ID
                     ? competitionItem.ID
                     : -competitionItem.ID;
                 return result;

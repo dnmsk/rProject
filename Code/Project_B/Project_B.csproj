@@ -270,6 +270,8 @@
     <Compile Include="CodeServerSide\DataProvider\DataHelper\RawCompetitionItemHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\RawCompetitionResultHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\RawCompetitorHelper.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\RawData\RawObject.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\RawData\RawTemplateObj.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\ScoreHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\SportTypeHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\FrontCompetitionProvider.cs" />
