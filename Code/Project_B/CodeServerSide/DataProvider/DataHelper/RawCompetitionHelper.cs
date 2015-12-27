@@ -29,17 +29,17 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (rawCompetitionSpecify == null || rawCompetitionSpecify.CompetitionSpecifyUniqueID == default(int)) {
                 return null;
             }
-            return CreateCompetitionSpecifyRawObject(rawCompetitionSpecify.ID, rawCompetitionSpecify.RawCompetitionID, rawCompetitionSpecify);
+            return CreateCompetitionSpecifyRawObject(rawCompetitionSpecify.ID, rawCompetitionSpecify.RawCompetitionID, rawCompetitionSpecify, language, sportType, genderDetected);
         }
 
-        private static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecifyRawObject(int rawID, int parentRawID, ICompetitionSpecify competitionSpecify) {
+        private static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecifyRawObject(int rawID, int parentRawID, ICompetitionSpecify competitionSpecify, LanguageType language, SportType sportType, GenderType genderDetected) {
             var result = new RawTemplateObj<CompetitionSpecifyTransport>();
             result.RawObject.ID = rawID;
             result.RawObject.ParentID = parentRawID;
 
-            result.Object.LanguageType = competitionSpecify.Languagetype;
-            result.Object.SportType = competitionSpecify.SportType;
-            result.Object.GenderType = competitionSpecify.Gendertype;
+            result.Object.LanguageType = language;
+            result.Object.SportType = sportType;
+            result.Object.GenderType = genderDetected;
 
             result.Object.CompetitionUniqueID = competitionSpecify.CompetitionuniqueID;
             result.Object.CompetitionSpecifyUniqueID = competitionSpecify.CompetitionSpecifyUniqueID;
@@ -100,7 +100,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 competitionSpecify.Linkstatus = LinkEntityStatus.LinkByStatistics;
             }
             competitionSpecify.Save();
-            return CreateCompetitionSpecifyRawObject(competitionSpecify.ID, competition.ID, competitionSpecify);
+            return CreateCompetitionSpecifyRawObject(competitionSpecify.ID, competition.ID, competitionSpecify, language, sportType, genderDetected);
         }
 
         public static RawTemplateObj<CompetitionSpecifyTransport> UpdateCompetitionParsedForUniqueIDs(RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyFromRaw, LinkEntityStatus linkEntityStatus) {
