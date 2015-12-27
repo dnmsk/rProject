@@ -175,11 +175,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         }
 
         private static CompetitorUnique TryGetCompetitorUniqueByResult(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
+            if (matchParsed.DateUtc == DateTime.MinValue) {
+                return null;
+            }
             var byFullEqiality = TryGetByFullEquality(genderType, names, competitionUnique, matchParsed);
             if (byFullEqiality != null) {
                 return byFullEqiality;
             }
-            if (matchParsed.Result == null || matchParsed.DateUtc == DateTime.MinValue) {
+            if (matchParsed.Result == null) {
                 return null;
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
