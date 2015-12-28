@@ -21,7 +21,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         public override BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language) {
             var data = LoadPage(FormatUrl(SectionName.UrlResultTarget, new {
-                date = ((int)(DateTime.UtcNow - LinuxUtc).TotalSeconds) / 10,//date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
+                datestamp = ((int)(DateTime.UtcNow - LinuxUtc).TotalSeconds) / 10,
+                date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             }));
             var rows = data.Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
