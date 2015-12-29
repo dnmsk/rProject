@@ -21,7 +21,7 @@ namespace Project_B {
                     new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.AllTasks) {
                         PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
-                    new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.AllTasks) {
+                    new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.HistoryTasks | RunTaskMode.RunRegularOddsTask) {
                         TodayHistoryTaskTimespan = TimeSpan.FromHours(12),
                         PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
