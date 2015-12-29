@@ -199,7 +199,7 @@ namespace CommonUtils.Code {
         private static IDictionary<WebRequestParamType, WebRequestParamBase> MergeWithDefaultParams(IDictionary<WebRequestParamType, WebRequestParamBase> clientParams) {
             _defaultParamsBase.Each(defKeyValue => {
                 if (!clientParams.ContainsKey(defKeyValue.Key)) {
-                    clientParams.Add(defKeyValue);
+                    clientParams[defKeyValue.Key] = defKeyValue.Value;
                 }
             });
             return clientParams;

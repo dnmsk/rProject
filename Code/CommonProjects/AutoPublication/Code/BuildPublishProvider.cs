@@ -22,7 +22,7 @@ namespace AutoPublication.Code {
         
         public BuildPublishProvider() {
             _buildPublishItems = SiteConfiguration.GetConfigurationProperty<List<BuildPublishItem>>(_configurationProperty) ?? new List<BuildPublishItem>();
-            SlothMovePlodding.AddAction(() => {
+            SlothMovePlodding.Instance.AddAction(() => {
                 ReadFileDescriptions();
             });
         }

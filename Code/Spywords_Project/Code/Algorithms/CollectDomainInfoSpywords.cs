@@ -62,7 +62,7 @@ namespace Spywords_Project.Code.Algorithms {
 
                     var googleDomains = GetDomains(_googleDomainBlockRegex.Match(domains).Value);
                     try {
-                        SlothMovePlodding.AddAction(() => {
+                        SlothMovePlodding.Instance.AddAction(() => {
                             var domainEntities = new List<DomainEntity>(yandexDomains.Union(googleDomains).Distinct().Select(GetDomainEntity));
                             foreach(var domainEntity in domainEntities) {
                                 var seType = (

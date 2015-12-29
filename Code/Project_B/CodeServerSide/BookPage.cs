@@ -43,8 +43,12 @@ namespace Project_B.CodeServerSide {
             webRequestHelper.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(globalConfiguration.StringArray[SectionName.ArrayProxy].FirstOrDefault()));
 
             foreach (var brokerProviderType in currentBrokerProviderTypes) {
-                var instance = (BrokerBase)Activator.CreateInstance(brokerProviderType, webRequestHelper);
-                _brokerProviders.Add(instance.BrokerType, instance);
+                try {
+                    var instance = (BrokerBase) Activator.CreateInstance(brokerProviderType, webRequestHelper);
+                    _brokerProviders.Add(instance.BrokerType, instance);
+                } catch (Exception ex) {
+                    _logger.Error(ex);
+                }
             }
             var cookieContainer = webRequestHelper.GetParam<CookieContainer>(WebRequestParamType.CookieContainer);
             foreach (var brokerType in _brokerProviders.Keys) {
@@ -67,7 +71,7 @@ namespace Project_B.CodeServerSide {
         }
         
         public BrokerBase GetBrokerProvider(BrokerType brokerType) {
-            return brokerType == BrokerType.Default ? _brokerProviders.Values.First() : _brokerProviders[brokerType];
+            return brokerType == BrokerType.Default ? null : _brokerProviders[brokerType];
         }
     }
 }

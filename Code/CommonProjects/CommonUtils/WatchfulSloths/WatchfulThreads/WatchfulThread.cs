@@ -3,8 +3,7 @@ using System.Threading;
 using CommonUtils.Core.Logger;
 
 namespace CommonUtils.WatchfulSloths.WatchfulThreads {
-    //TODO SIGNALS!!!
-    public class WatchfulThread {
+    public class WatchfulThread : IDisposable {
         /// <summary>
         /// Логгер.
         /// </summary>
@@ -12,11 +11,16 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
 
         private readonly Action<WatchfulThread> _onWorkDoneAction;
         private readonly Thread _thread;
-        private Action _action = null;
-        private bool _canWork = true;
+        private Action _action;
+        private ManualResetEventSlim _eventSlim;
 
         public WatchfulThread(Action<WatchfulThread> onWorkDoneAction) {
-            _onWorkDoneAction = onWorkDoneAction;
+            _eventSlim = new ManualResetEventSlim(false);
+            _onWorkDoneAction = act => {
+                onWorkDoneAction(act);
+                _action = null;
+                _eventSlim.Reset();
+            };
             _thread = new Thread(Action);
             _thread.Start();
         }
@@ -30,6 +34,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                 lock (_thread) {
                     if (IsFree()) {
                         _action = action;
+                        _eventSlim.Set();
                         return true;
                     }
                 }
@@ -37,25 +42,23 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
             return false;
         }
 
-        public void Kill() {
-            _canWork = false;
+        public void Dispose() {
+            var eventSlim = _eventSlim;
+            _eventSlim = null;
+            eventSlim.Set();
         }
 
         private void Action() {
-            while (_canWork) {
+            while (_eventSlim != null) {
                 if (_action != null) {
                     try {
                         _action();
                     } catch (Exception ex) {
                         _logger.Error(ex);
                     }
-                    lock (_thread) {
-                        _action = null;
-                    }
                     _onWorkDoneAction(this);
-                    continue;
                 }
-                Thread.Sleep(10);
+                _eventSlim.Wait();
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Project_B.CodeClientSide.Helper {
                                 if (url.IsNullOrEmpty()) {
                                     continue;
                                 }
-                                SlothMovePlodding.AddAction(() => {
+                                SlothMovePlodding.Instance.AddAction(() => {
                                     var data = oddsProvider.RequestHelper.GetContentRaw(url);
                                     if (data.Item1 == HttpStatusCode.OK) {
                                         lock (cache) {

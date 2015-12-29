@@ -59,7 +59,7 @@ namespace Spywords_Project.Code.Algorithms {
                                 firstDomainPhrase.Save();
                             }
                         }
-                        SlothMovePlodding.AddAction(() => {
+                        SlothMovePlodding.Instance.AddAction(() => {
                             listLinksToInsert.Save<Domainphrase, int>();
                         });
                         if (!hasUnique) {

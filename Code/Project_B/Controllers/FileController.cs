@@ -38,7 +38,7 @@ namespace Project_B.Controllers {
             }
             MarkResponseAsCached(Response);
             if (!GetBaseModel().GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled) && ProductionPolicy.IsProduction()) {
-                SlothMovePlodding.AddAction(() => { ProjectProvider.Instance.WebFileProvider.AccessToFileCounter(id); });
+                SlothMovePlodding.Instance.AddAction(() => { ProjectProvider.Instance.WebFileProvider.AccessToFileCounter(id); });
             }
             return File(path, GetMimeTypeByFileName(path));
         }

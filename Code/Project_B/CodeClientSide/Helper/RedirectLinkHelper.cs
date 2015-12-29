@@ -48,7 +48,7 @@ namespace Project_B.CodeClientSide.Helper {
         public string GetExternalLink(short linkID) {
             string externalLink;
             if (_externalLinkCache.TryGetValue(linkID, out externalLink)) {
-                SlothMovePlodding.AddAction(() => {
+                SlothMovePlodding.Instance.AddAction(() => {
                     SiteExternalLink.DataSource
                         .WhereEquals(SiteExternalLink.Fields.ID, linkID)
                         .Update(SiteExternalLink.Fields.Followcount, new DbFnSimpleOp(SiteExternalLink.Fields.Followcount, FnMathOper.Add, 1));
@@ -60,7 +60,7 @@ namespace Project_B.CodeClientSide.Helper {
         public string GetInternalLink(short linkID) {
             string internalLink;
             if (_internalLinkCache.TryGetValue(linkID, out internalLink)) {
-                SlothMovePlodding.AddAction(() => {
+                SlothMovePlodding.Instance.AddAction(() => {
                     SiteInternalLink.DataSource
                         .WhereEquals(SiteInternalLink.Fields.ID, linkID)
                         .Update(SiteInternalLink.Fields.Followcount, new DbFnSimpleOp(SiteInternalLink.Fields.Followcount, FnMathOper.Add, 1));

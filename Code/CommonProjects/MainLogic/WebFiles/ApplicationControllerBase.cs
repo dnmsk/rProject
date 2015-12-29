@@ -98,7 +98,7 @@ namespace MainLogic.WebFiles {
         }
         
         private static void LogAdditionalUserInfo(int guestID, UtmParamWrapper utm, Uri urlReferrer, Uri url, HttpBrowserCapabilitiesBase httpBrowserCapabilitiesBase, string userAgent) {
-            SlothMovePlodding.AddAction(() => {
+            SlothMovePlodding.Instance.AddAction(() => {
                 BusinessLogic.UserProvider.SaveReferrer(guestID, urlReferrer?.ToString() ?? string.Empty, url?.ToString() ?? string.Empty);
                 BusinessLogic.UserProvider.SaveUtm(guestID, utm);
                 var browserInfo = new BrowserInfo(httpBrowserCapabilitiesBase, userAgent);
