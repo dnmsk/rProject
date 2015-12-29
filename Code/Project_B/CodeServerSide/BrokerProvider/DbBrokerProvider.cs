@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
@@ -10,6 +11,8 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
     public class DbBrokerProvider : BrokerBase {
+        public DbBrokerProvider(WebRequestHelper requestHelper) : base(null) {}
+
         public DbBrokerProvider(BrokerType brokerType) : base(null) {
             BrokerType = brokerType;
         }
