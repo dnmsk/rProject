@@ -95,7 +95,7 @@ namespace MainLogic.Providers {
                         GuestID = guestid
                     };
                     newGuestTechInfo.Save();
-                    _cacheBrowserInfosByGuest[guestid] = newGuestTechInfo.ID;
+                    _cacheBrowserInfosByGuest[guestid] = guestExistsBrowser.ID;
                 }
                 return (object)null;
             }, null);
