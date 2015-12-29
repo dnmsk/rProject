@@ -7,9 +7,5 @@ namespace Project_B.CodeServerSide.Data.Result {
         public FullResult() {
             SubResult = new List<SimpleResult>();
         }
-
-        public override string ToString() {
-            return ResultBuilder.BuildStringFromResult(this);
-        }
     }
 }

@@ -4,6 +4,8 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Data.Result;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         /// <summary>
@@ -53,9 +55,9 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         /// <summary>
         /// 
         /// </summary>
-        public string Rawresultstring {
-            get { return (string) this[Fields.Rawresultstring]; }
-            set { ForceSetData(Fields.Rawresultstring, value); }
+        public FullResult Rawresult {
+            get { return ResultBuilder.BuildResultFromString(SportType.Unknown, (string) this[Fields.Rawresultstring]); }
+            set { ForceSetData(Fields.Rawresultstring, ResultBuilder.BuildStringFromResult(value)); }
         }
 
         /// <summary>

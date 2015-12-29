@@ -9,16 +9,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             var competitionResultRaw = RawCompetitionResult.DataSource.GetByKey(rawCompetitionItemID);
             if (competitionResultRaw != null) {
-                var nextResult = fullResult.ToString();
-                if (nextResult.Length > competitionResultRaw.Rawresultstring?.Length) {
-                    competitionResultRaw.Rawresultstring = nextResult;
-                    competitionResultRaw.Save();
-                }
                 return;
             }
             competitionResultRaw = new RawCompetitionResult {
                 RawcompetitionitemID = rawCompetitionItemID,
-                Rawresultstring = fullResult.ToString()
+                Rawresult = fullResult
             };
             competitionResultRaw.Insert();
         }

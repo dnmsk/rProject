@@ -22,16 +22,6 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void SaveResult(BrokerData brokerData, GatherBehaviorMode algoMode) {
             InvokeSafe(() => {
-                /*
-                if (algoMode.HasFlag(GatherBehaviorMode.CreateIfEmptyToDate)) { 
-                    var minDate = brokerData.Competitions.Min(c => c.Matches.Where(m => m.DateUtc != DateTime.MinValue).Min(m => m.DateUtc));
-                    var maxDate = brokerData.Competitions.Max(c => c.Matches.Max(m => m.DateUtc));
-                    if ((maxDate - minDate).TotalDays <= 1 && CompetitionItem.DataSource.WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive).Count() == 0) {
-                        algoMode = algoMode.FlagSet(GatherBehaviorMode.CreateOriginal);
-                        _logger.Info("Date {0} enable GatherBehaviorMode.CreateOriginal", minDate);
-                    }
-                }
-                */
                 CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
                     (type, sportType, itemRawTransport, matchParsed) => ProjectProvider.Instance.ResultProvider.SaveResults(itemRawTransport, sportType, matchParsed.Result));
             });

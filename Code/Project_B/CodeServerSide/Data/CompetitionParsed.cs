@@ -13,5 +13,11 @@ namespace Project_B.CodeServerSide.Data {
             Type = SportTypeHelper.Instance[competitionName];
             Matches = new List<MatchParsed>();
         }
+
+        public CompetitionParsed(List<string> competitionName, SportType sportType) {
+            Name = competitionName;
+            Type = sportType;
+            Matches = new List<MatchParsed>();
+        }
     }
 }

@@ -14,13 +14,21 @@ using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
-    internal static class CompetitionHelper {
+    public static class CompetitionHelper {
         /// <summary>
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (CompetitionHelper).FullName);
 
-        private static readonly List<string> _stopListWithInclude = new List<string> {
+        private static readonly string[] _stopListWithGetNext = {
+            "games",
+            "tour",
+            "турнир",
+            "competition"
+        };
+
+        private static readonly string[] _stopListWithIncludeCurrent = {
+            "copa",
             "cup",
             " кап",
             "кубок",
@@ -32,8 +40,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             "singles",
             "doubles",
             "разряд",
+            "tournament",
+            "чемпионат",
+            "champion"
         }; 
-        private static readonly List<string> _stopList = new List<string> {
+        private static readonly string[] _stopListWithExcludeCurrent = {
             "pool ",
             "группа",
             "group",
@@ -61,10 +72,15 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             "плэй аут",
             "плей-аут",
             "плэй-аут",
+
+            "bowl",
+
+            "cезон",
+            "season",
         };
 
         public static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
-            var nameOriginShort = GetShortCompetitionName(nameOrigin);
+            var nameOriginShort = GetShortCompetitionName(nameOrigin, sportType);
             var competitionParsedFromRaw = RawCompetitionHelper.CreateCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin, nameOriginShort, competitionToSave, algoMode);
             if (competitionParsedFromRaw.Object.CompetitionSpecifyUniqueID != default(int)) {
                 if (algoMode.HasFlag(GatherBehaviorMode.CreateNewLanguageName)) {
@@ -170,18 +186,15 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static CompetitionUnique TryDetectCompetitionUniqueFromMatches(SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave) {
             var dates = competitionToSave.Matches.Select(c => c.DateUtc).Where(d => d != DateTime.MinValue).ToArray();
-            var minDate = dates.Any() ? dates.Min().AddDays(-1) : DateTime.MinValue;
-            var maxdate = dates.Any() ? dates.Max().AddDays(1) : DateTime.MinValue;
+            var minDate = dates.Any() ? dates.Min().AddHours(-6) : DateTime.MinValue;
+            var maxdate = dates.Any() ? dates.Max().AddHours(6) : DateTime.MinValue;
             if (minDate < DateTime.UtcNow.Date) {
                 var resultModelEqualityComparer = new ResultTransportEqualityComparer();
                 var mapResults = CompetitionResult.DataSource
                     .Join(JoinType.Inner, CompetitionItem.Fields.ID, CompetitionResult.Fields.CompetitionitemID, RetrieveMode.Retrieve)
                     .Join(JoinType.Inner, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType)
-                    .Where(new DaoFilterAnd(
-                        new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, minDate),
-                        new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.Less, maxdate)
-                    ))
+                    .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxdate, BetweenType.Inclusive)
                     .Sort(CompetitionItem.Fields.CompetitionuniqueID)
                     .Sort(CompetitionItem.Fields.ID)
                     .Sort(CompetitionResult.Fields.ID)
@@ -191,7 +204,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     .ToDictionary(g => g.Key, g => g.GroupBy(gr => gr.ID).Select(gr => new ResultTransport {
                         ScoreID = gr.First().ScoreID,
                         SubScore = gr.Select(gra => gra.GetJoinedEntity<CompetitionResultAdvanced>().ScoreID).ToArray()
-                    }).Distinct(resultModelEqualityComparer).ToList());
+                    }).ToList());
                 var mapCoefficients = new Dictionary<int, float>();
                 var hashResults = competitionToSave.Matches
                     .Where(m => m.Result != null)
@@ -209,8 +222,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         mapCoefficients[suitableСompetitionItem.Key] = 0;
                         continue;
                     }
-                    var successMatches = resultsForCompetition.Count(res => hashResults.Any(h => resultModelEqualityComparer.Equals(h, res)));
-                    mapCoefficients[suitableСompetitionItem.Key] = (float)successMatches / competitionToSave.Matches.Count;
+                    var successMatches = Math.Max(
+                        hashResults.Count(h => resultsForCompetition.Any(res => resultModelEqualityComparer.Equals(h, res))),
+                        hashResults.Count(h => resultsForCompetition.Any(res => resultModelEqualityComparer.Equals(res, h)))
+                    );
+                    mapCoefficients[suitableСompetitionItem.Key] = 
+                        Math.Min((float)competitionToSave.Matches.Count / resultsForCompetition.Count, (float) resultsForCompetition.Count / competitionToSave.Matches.Count) 
+                        * successMatches / competitionToSave.Matches.Count;
                 }
                 var orderedCompetitionCoeffs = mapCoefficients.OrderByDescending(kv => kv.Value).ToList();
                 if (orderedCompetitionCoeffs.Count == 0) {
@@ -231,15 +249,25 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         }
 
 
-        private static List<string> GetShortCompetitionName(List<string> names) {
+        public static List<string> GetShortCompetitionName(List<string> names, SportType sportType) {
             var result = new List<string>();
-            foreach (var name in names) {
-                if (_stopListWithInclude.Any(slw => name.IndexOf(slw, StringComparison.InvariantCultureIgnoreCase) >= 0)) {
+            for (var i = 0; i < names.Count; i++) {
+                var name = names[i];
+                if (sportType != SportType.Tennis && _stopListWithGetNext.Any(slw => name.IndexOf(slw, StringComparison.InvariantCultureIgnoreCase) >= 0)) {
+                    result.Add(name);
+                    var nextIdx = i + 1;
+                    if (nextIdx < names.Count) {
+                        result.Add(names[nextIdx]);
+                    }
+                    break;
+                }
+
+                if (_stopListWithIncludeCurrent.Any(slw => name.IndexOf(slw, StringComparison.InvariantCultureIgnoreCase) >= 0)) {
                     result.Add(name);
                     break;
                 }
 
-                if (_stopList.Any(sl => name.IndexOf(sl, StringComparison.InvariantCultureIgnoreCase) >= 0) && result.Count > 1) {
+                if (_stopListWithExcludeCurrent.Any(sl => name.IndexOf(sl, StringComparison.InvariantCultureIgnoreCase) >= 0) && result.Count > 0) {
                     break;
                 }
                 result.Add(name);

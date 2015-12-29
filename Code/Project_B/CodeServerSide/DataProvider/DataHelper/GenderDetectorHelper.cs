@@ -22,5 +22,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 return strToDetect.Any(s => _nameToGender.TryGetValue(s.ToLower(), out genderType)) && genderType != GenderType.Unknown ? genderType : GenderType.Default;
             }
         }
+
+        public List<string> ExcludGenderTypeFromList(List<string> strings) {
+            return strings
+                .Where(s => !_nameToGender.ContainsKey(s.ToLower()))
+                .ToList();
+        }
     }
 }

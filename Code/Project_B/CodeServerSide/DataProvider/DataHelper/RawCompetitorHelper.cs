@@ -155,7 +155,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         private static CompetitorUnique TryGetByFullEquality(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
             var competitorIDs = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-12), matchParsed.DateUtc.AddHours(12), BetweenType.Inclusive)
                 .AsList(CompetitionItem.Fields.Competitoruniqueid1,CompetitionItem.Fields.Competitoruniqueid2)
                 .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
                 .Distinct();
@@ -187,7 +187,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-12), matchParsed.DateUtc.AddHours(12), BetweenType.Inclusive)
                 .AsIds();
             var suitableCompetitionResults = CompetitionResult.DataSource
                 .Join(JoinType.Left, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
@@ -217,7 +217,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             };
             var resultModelEqualityComparer = new ResultTransportEqualityComparer();
             var matchedByResults = suitableCompetitionResults
-                .Where(kv => resultModelEqualityComparer.Equals(kv.Value, currentResultModel))
+                .Where(kv => resultModelEqualityComparer.Equals(kv.Value, currentResultModel) || resultModelEqualityComparer.Equals(currentResultModel, kv.Value))
                 .ToArray();
             return TryGetCompetitorUniqueByName(names, matchedByResults, matchParsed);
         }

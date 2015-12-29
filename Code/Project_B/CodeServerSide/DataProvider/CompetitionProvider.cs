@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -22,13 +23,30 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public RawTemplateObj<CompetitionSpecifyTransport> GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, List<string> nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
-                nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
+                nameOrigin = CleanCompetitionName(nameOrigin);
                 var competitionSpecify = RawCompetitionHelper.GetCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin) ??
                                          CompetitionHelper.CreateCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode);
                 return competitionSpecify;
             }, null);
         }
+
+        private static readonly char[] _badSymbols = {'(', ')'};
+        public static List<string> CleanCompetitionName(List<string> nameOrigin) {
+            nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
+            nameOrigin = GenderDetectorHelper.Instance.ExcludGenderTypeFromList(nameOrigin);
+            int digit;
+            nameOrigin = nameOrigin
+                .Where(s => !int.TryParse(s, out digit))
+                .Select(name => {
+                    _badSymbols.Each(ch => {
+                        name = name.Replace(ch.ToString(), string.Empty);
+                    });
+                    return name;
+                })
+                .ToList();
+            return nameOrigin;
+        } 
 
         public CompetitionItemRawTransport GetCompetitionItem(BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport> competitor1ParsedTransport, RawTemplateObj<CompetitorParsedTransport> competitor2ParsedTransport, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {

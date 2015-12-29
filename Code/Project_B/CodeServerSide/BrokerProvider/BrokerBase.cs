@@ -35,7 +35,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             RequestHelper = requestHelper;
         }
         
-        protected static List<string> FormatCompetitionName(string competitionName) {
+        public static List<string> FormatCompetitionName(string competitionName) {
             return competitionName.RemoveAllTags()
                                   .Replace("&nbsp;", " ")
                                   .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)

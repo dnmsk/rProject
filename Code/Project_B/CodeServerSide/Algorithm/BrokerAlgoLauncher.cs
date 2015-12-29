@@ -19,12 +19,15 @@ namespace Project_B.CodeServerSide.Algorithm {
         public TimeSpan LiveOddsTaskTimespan = TimeSpan.FromSeconds(60);
         public TimeSpan RegularOddsTaskTimespan = TimeSpan.FromMinutes(30);
 
+        public bool UseDbData { get; set; }
+
         public BrokerAlgoLauncher(BrokerType brokerType, LanguageType languageType, GatherBehaviorMode algoMode, RunTaskMode runTaskMode = RunTaskMode.Default, SportType sportType = SportType.All) {
             _brokerType = brokerType;
             _algoMode = algoMode;
             _languageType = languageType;
             _runTaskMode = runTaskMode;
             _sportType = sportType;
+            UseDbData = false;
         }
 
         public void Schedule() {
@@ -94,7 +97,7 @@ namespace Project_B.CodeServerSide.Algorithm {
             }
         }
 
-        private BrokerBase Broker => BookPage.Instance.GetBrokerProvider(_brokerType);
+        private BrokerBase Broker => UseDbData ? new DbBrokerProvider(_brokerType) : BookPage.Instance.GetBrokerProvider(_brokerType);
 
         private string GetProfilerString(string runTaskMode) {
             return string.Format("{0} {1} {2}", _brokerType, _languageType, runTaskMode);

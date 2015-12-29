@@ -14,7 +14,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionHelper {
         public static RawTemplateObj<CompetitionSpecifyTransport> GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin) {
             var rawCompetitionSpecify = QueryHelper.FilterByGender(RawCompetitionSpecify.DataSource
-                //.Where(QueryHelper.GetFilterByGenger(genderDetected, RawCompetitionSpecify.Fields.Gendertype))
                 .WhereEquals(RawCompetitionSpecify.Fields.Languagetype, (short)language)
                 .WhereEquals(RawCompetitionSpecify.Fields.Sporttype, (short)sportType)
                 .WhereEquals(RawCompetitionSpecify.Fields.Brokerid, (short)brokerType)
