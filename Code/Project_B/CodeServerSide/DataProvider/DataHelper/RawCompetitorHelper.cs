@@ -228,7 +228,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereIn(CompetitionItem.Fields.ID, mathedCompetitionItemsByResult.Select(ci => ci.Key))
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddDays(-1), matchParsed.DateUtc.AddDays(1), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-6), matchParsed.DateUtc.AddHours(6), BetweenType.Inclusive)
                 .AsList(
                     CompetitionItem.Fields.ID,
                     CompetitionItem.Fields.Competitoruniqueid1,
