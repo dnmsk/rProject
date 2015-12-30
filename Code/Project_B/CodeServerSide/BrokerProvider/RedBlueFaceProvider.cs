@@ -122,6 +122,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 var match = new MatchParsed {
                     CompetitorNameShortOne = participantsSplitted[0].Trim(),
                     CompetitorNameShortTwo = participantsSplitted[1].Trim(),
+                    CompetitorNameFullOne = participantsSplitted[0].Trim(),
+                    CompetitorNameFullTwo = participantsSplitted[1].Trim(),
                     DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
                     Result = ExtractResultFromMatchBlock(matchBlock, type, list => list.Select(h => h.InnerHtml).StrJoin(Environment.NewLine))
                 };
