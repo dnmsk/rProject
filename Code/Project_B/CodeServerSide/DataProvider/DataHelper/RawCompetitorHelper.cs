@@ -13,6 +13,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
+using Project_B.CodeServerSide.Entity.Helper;
 using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
@@ -75,19 +76,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 names
                     .Where(name => !raw.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                     .Each(name => {
-                        var competitorRaw = new RawCompetitor {
-                            BrokerID = brokerType,
-                            Datecreatedutc = DateTime.UtcNow,
-                            Languagetype = languageType,
-                            Name = name,
-                            Gendertype = genderType,
-                            SportType = sportType,
-                            Linkstatus = LinkEntityStatus.ToLink
-                        };
-                        if (lastCompetitorUniqueID != default(int)) {
-                            competitorRaw.CompetitoruniqueID = lastCompetitorUniqueID;
-                            competitorRaw.Linkstatus = LinkEntityStatus.LinkByStatistics;
-                        }
+                        var competitorRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitor>(brokerType, languageType, sportType, genderType, LinkEntityStatus.ToLink, new[] {name},
+                            competitor => {
+                                if (lastCompetitorUniqueID != default(int)) {
+                                    competitor.CompetitoruniqueID = lastCompetitorUniqueID;
+                                    competitor.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                                }
+                            });
                         competitorRaw.Save();
                         raw.Add(competitorRaw);
                     });
@@ -110,7 +105,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     SportType = sportType,
                     Datecreatedutc = DateTime.UtcNow,
                     Languagetype = languageType,
-                    NameFull = names[0],
+                    Name = names[0],
                     Gendertype = genderType
                 }.Save();
             }
@@ -125,7 +120,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     SportType = sportType,
                     Datecreatedutc = DateTime.UtcNow,
                     Languagetype = languageType,
-                    NameFull = names[0],
+                    Name = names[0],
                     Gendertype = genderType
                 };
                 competitor.Save();
@@ -255,7 +250,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", names.First(), suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)
-                                                    .First().NameFull,
+                                                    .First().Name,
                                         suitableCompetitors[0].Value);
                 return CompetitorUnique.DataSource.GetByKey(suitableCompetitors[0].Key);
             }

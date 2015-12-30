@@ -85,7 +85,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                     _logger.Info("Статистика хомяков: занято={0} отдыхают={1} задач_в_ожидании={2} задач_выполнено={3} запусков={4}", inProgressSloths, freeSloths, waitTasks, launchedTask, holderLoops);
                     launchedTask = 0;
                     holderLoops = 0;
-                    measurement.Reset();
+                    measurement.Restart();
                 }
                 _eventSlim.Wait();
                 _eventSlim.Reset();

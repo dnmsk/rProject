@@ -300,11 +300,14 @@
     <Compile Include="CodeServerSide\Entity\BrokerEntity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
     <Compile Include="CodeServerSide\Entity\BrokerEntity\CompetitionSpecifyUnique.cs" />
+    <Compile Include="CodeServerSide\Entity\Helper\BrokerEntityIfaceCreator.cs" />
+    <Compile Include="CodeServerSide\Entity\Interface\ILinkStatusTyped.cs" />
     <Compile Include="CodeServerSide\Entity\Data\CompetitionItemRoiRow.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ICompetitor.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ICompetitionSpecify.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ICompetition.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ICompetitionItem.cs" />
+    <Compile Include="CodeServerSide\Entity\Interface\INamedEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\NameConstraint\IDateCreatedTyped.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\NameConstraint\IBrokerTyped.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\NameConstraint\IGenderTyped.cs" />

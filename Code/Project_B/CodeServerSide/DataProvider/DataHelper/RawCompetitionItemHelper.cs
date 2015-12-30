@@ -4,6 +4,7 @@ using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
+using Project_B.CodeServerSide.Entity.Helper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
@@ -53,18 +54,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         public static RawCompetitionItem CreateCompetitionItem(BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport> competitor1ParsedTransport, RawTemplateObj<CompetitorParsedTransport> competitor2ParsedTransport, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, DateTime utcNow) {
             RawCompetitionItem competitionItemRaw = null;
             if (competitionSpecifyTransport.RawObject.ID != default(int) && competitor1ParsedTransport.RawObject.ID != default(int) && competitor2ParsedTransport.RawObject.ID != default(int)) {
-                competitionItemRaw = new RawCompetitionItem {
-                    BrokerID = brokerType,
-                    SportType = competitionSpecifyTransport.Object.SportType,
-                    Languagetype = competitionSpecifyTransport.Object.LanguageType,
-                    Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow,
-                    Datecreatedutc = utcNow,
-                    RawcompetitionID = competitionSpecifyTransport.RawObject.ParentID,
-                    RawcompetitionspecifyID = competitionSpecifyTransport.RawObject.ID,
-                    Rawcompetitorid1 = competitor1ParsedTransport.RawObject.ID,
-                    Rawcompetitorid2 = competitor2ParsedTransport.RawObject.ID,
-                    Linkstatus = LinkEntityStatus.ToLink
-                };
+                competitionItemRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitionItem>(brokerType, competitionSpecifyTransport.Object.LanguageType, competitionSpecifyTransport.Object.SportType,
+                    LinkEntityStatus.ToLink, item => {
+                        item.RawcompetitionID = competitionSpecifyTransport.RawObject.ParentID;
+                        item.RawcompetitionspecifyID = competitionSpecifyTransport.RawObject.ID;
+                        item.Rawcompetitorid1 = competitor1ParsedTransport.RawObject.ID;
+                        item.Rawcompetitorid2 = competitor2ParsedTransport.RawObject.ID;
+                        item.Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow;
+                    });
                 competitionItemRaw.Save();
             }
             return competitionItemRaw;

@@ -123,7 +123,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                                                 .WhereEquals(Competition.Fields.Gendertype, (short)genderDetected)
                                                 .WhereEquals(Competition.Fields.Languagetype, (short)language)
                                                 .WhereEquals(Competition.Fields.Sporttype, (short)sportType)
-                                                .Where(QueryHelper.GetFilterByWordsForField(nameOriginShort, Competition.Fields.Name)), 
+                                                .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(ListStringToName(nameOriginShort), Competition.Fields.Name)), 
                                             Competition.Fields.Gendertype, 
                                             genderDetected, 
                                             Competition.Fields.CompetitionuniqueID)
@@ -149,7 +149,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             var competitionSpecify = QueryHelper.FilterByGender(CompetitionSpecify.DataSource
                             .WhereEquals(CompetitionSpecify.Fields.Languagetype, (short)language)
                             .WhereEquals(CompetitionSpecify.Fields.Sporttype, (short)sportType)
-                            .Where(QueryHelper.GetFilterByWordsForField(nameOrigin, CompetitionSpecify.Fields.Name))
+                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(ListStringToName(nameOrigin), CompetitionSpecify.Fields.Name))
                             .Where(new DaoFilterOr(
                                 new DaoFilterNull(CompetitionSpecify.Fields.CompetitionuniqueID, true),
                                 new DaoFilterEq(CompetitionSpecify.Fields.CompetitionuniqueID, competitionParsedFromRaw.Object.CompetitionUniqueID)
@@ -247,8 +247,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             return null;
         }
-
-
+        
         public static List<string> GetShortCompetitionName(List<string> names, SportType sportType) {
             var result = new List<string>();
             for (var i = 0; i < names.Count; i++) {
@@ -275,7 +274,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return result;
         }
 
-        public static string ListStringToName(List<string> names) {
+        public static string ListStringToName(IEnumerable<string> names) {
             return names.StrJoin(". ");
         }
     }

@@ -9,13 +9,13 @@ using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
-        /// <summary>
+    /// <summary>
         /// 
         /// </summary>
     [Serializable]
     [DBTable("RawCompetition")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class RawCompetition : AbstractEntityTemplateKey<RawCompetition, int>, ICompetition, IBrokerTyped {
+    public sealed class RawCompetition : AbstractEntityTemplateKey<RawCompetition, int>, ICompetition, IBrokerTyped, ILinkStatusTyped {
 
         public enum Fields {
         /// <summary>

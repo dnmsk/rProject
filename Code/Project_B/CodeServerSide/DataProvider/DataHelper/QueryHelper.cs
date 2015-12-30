@@ -9,7 +9,7 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class QueryHelper {
-
+        /*
         public static DaoFilterBase GetFilterByWordsForField(IEnumerable<string> words, Enum field) {
             var filters = new List<DaoFilterBase>();
             words.Each(w => filters.Add(new DaoFilter(field, Oper.MatchInsensitive, w)));
@@ -20,7 +20,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
             return allFilters;
         }
-
+        */
         public static DaoFilterBase GetIndexedFilterByWordIgnoreCase(string[] words, Enum field, bool fullyEq = true) {
             var filters = new List<DaoFilterBase>();
             words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, fullyEq)));

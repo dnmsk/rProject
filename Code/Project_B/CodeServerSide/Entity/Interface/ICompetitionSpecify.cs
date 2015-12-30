@@ -1,7 +1,7 @@
 ﻿using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 
 namespace Project_B.CodeServerSide.Entity.Interface {
-    public interface ICompetitionSpecify : ISportTyped, ILanguageTyped, IGenderTyped, IDateCreatedTyped {
+    public interface ICompetitionSpecify : ISportTyped, ILanguageTyped, IGenderTyped, IDateCreatedTyped, INamedEntity {
         /// <summary>
         /// 
         /// </summary>
@@ -16,10 +16,5 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         /// 
         /// </summary>
         int CompetitionSpecifyUniqueID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        string Name { get; set; }
     }
 }

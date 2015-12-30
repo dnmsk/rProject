@@ -366,7 +366,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }
             return new CompetitorTransport {
                 ID = competitorID,
-                Name = competitor.NameFull
+                Name = competitor.Name
             };
         }
 

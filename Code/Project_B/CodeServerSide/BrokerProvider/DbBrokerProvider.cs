@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
@@ -6,6 +7,7 @@ using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Enums;
 
@@ -36,7 +38,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 .AsMapByIds(RawCompetitor.Fields.ID, RawCompetitor.Fields.Name);
             var rawCompetitionSpecifyMap = RawCompetitionSpecify.DataSource
                 .WhereIn(RawCompetitionSpecify.Fields.ID, rawCompetitionItems.Select(rci => rci.RawcompetitionspecifyID).Distinct())
-                .AsMapByIds(RawCompetitionSpecify.Fields.ID, RawCompetitionSpecify.Fields.Name);
+                .AsMapByIds(RawCompetitionSpecify.Fields.ID, RawCompetitionSpecify.Fields.Name, RawCompetitionSpecify.Fields.Gendertype);
             var rawResultMap = RawCompetitionResult.DataSource
                 .WhereIn(RawCompetitionResult.Fields.RawcompetitionitemID, rawCompetitionItems.Select(rci => rci.ID))
                 .AsMapByIds(RawCompetitionResult.Fields.RawcompetitionitemID, RawCompetitionResult.Fields.Rawresultstring);
@@ -44,7 +46,15 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var result = new BrokerData(BrokerType, language, rawCompetitionItems
                 .GroupBy(rci => rci.RawcompetitionspecifyID)
                 .Select(ge => {
-                    var competitionParsed = new CompetitionParsed(FormatCompetitionName(rawCompetitionSpecifyMap[ge.Key].Name), ge.First().SportType);
+                    var rawCompetitionSpecify = rawCompetitionSpecifyMap[ge.Key];
+                    var formatCompetitionName = FormatCompetitionName(rawCompetitionSpecify.Name);
+                    if (rawCompetitionSpecify.Gendertype != GenderType.Default) {
+                        var genderName = GenderDetectorHelper.Instance.GetGenderName(rawCompetitionSpecify.Gendertype);
+                        if (!string.IsNullOrWhiteSpace(genderName)) {
+                            formatCompetitionName.Insert(0, genderName);
+                        }
+                    }
+                    var competitionParsed = new CompetitionParsed(formatCompetitionName, ge.First().SportType);
                     competitionParsed.Matches
                         .AddRange(ge.Select(rci => new MatchParsed {
                             CompetitorName1 = new[] { rawCompetitorsMap[rci.Rawcompetitorid1].Name },

@@ -15,7 +15,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
     [Serializable]
     [DBTable("RawCompetitor")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class RawCompetitor : AbstractEntityTemplateKey<RawCompetitor, int>, ICompetitor, IBrokerTyped {
+    public sealed class RawCompetitor : AbstractEntityTemplateKey<RawCompetitor, int>, ICompetitor, IBrokerTyped, ILinkStatusTyped {
 
         public enum Fields {
         /// <summary>

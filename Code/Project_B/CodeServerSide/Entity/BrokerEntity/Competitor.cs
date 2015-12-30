@@ -93,7 +93,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
         /// 
         /// </summary>
-        public string NameFull {
+        private string NameFull {
             get { return (string) this[Fields.NameFull]; }
             set { ForceSetData(Fields.NameFull, value); }
         }
