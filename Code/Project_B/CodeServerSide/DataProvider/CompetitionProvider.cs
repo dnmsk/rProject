@@ -123,7 +123,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
                 if (competitionItem == null) {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) ||
-                         !algoMode.HasFlag(GatherBehaviorMode.CreateOriginalIfMatchedAll) && 
+                         algoMode.HasFlag(GatherBehaviorMode.CreateOriginalIfMatchedAll) && 
                             (competitionSpecifyTransport.Object.CompetitionUniqueID == default(int) ||
                              //NOTE competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID == default(int) ||
                              competitor1ParsedTransport.Object.ID == default(int) ||

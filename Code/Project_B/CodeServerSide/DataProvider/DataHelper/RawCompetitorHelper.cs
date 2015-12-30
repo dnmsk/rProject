@@ -40,7 +40,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (competitorsRaw.Count > 1) {
                 var count = competitorsRaw.GroupBy(c => c.CompetitoruniqueID).Count();
                 if (count != 1) {
-                    _logger.Error("{0} {1} {2} {3} {4} {5}", brokerType, languageType, sportType, genderType, names.StrJoin(", "), count);
+                    _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), count);
                     return null;
                 }
             }
