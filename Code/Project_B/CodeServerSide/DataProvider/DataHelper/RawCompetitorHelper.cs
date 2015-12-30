@@ -147,7 +147,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         private static CompetitorUnique TryGetByFullEquality(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
             var competitorIDs = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-6), matchParsed.DateUtc.AddHours(6), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-5), matchParsed.DateUtc.AddHours(5), BetweenType.Inclusive)
                 .AsList(CompetitionItem.Fields.Competitoruniqueid1,CompetitionItem.Fields.Competitoruniqueid2)
                 .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
                 .Distinct();
@@ -176,7 +176,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-6), matchParsed.DateUtc.AddHours(6), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-4), matchParsed.DateUtc.AddHours(4), BetweenType.Inclusive)
                 .AsIds();
             var suitableCompetitionResults = CompetitionResult.DataSource
                 .Join(JoinType.Left, CompetitionResultAdvanced.Fields.CompetitionresultID, CompetitionResult.Fields.ID, RetrieveMode.Retrieve)
@@ -217,7 +217,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
             var suitableCompetitionItems = CompetitionItem.DataSource
                 .WhereIn(CompetitionItem.Fields.ID, mathedCompetitionItemsByResult.Select(ci => ci.Key))
-                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-6), matchParsed.DateUtc.AddHours(6), BetweenType.Inclusive)
+                .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-4), matchParsed.DateUtc.AddHours(4), BetweenType.Inclusive)
                 .AsList(
                     CompetitionItem.Fields.ID,
                     CompetitionItem.Fields.Competitoruniqueid1,
@@ -243,10 +243,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .ToDictionary(g => g.Key, g => SuitByNameFactor(names, namesHash, g.Select(rc => rc.Name)))
                 .OrderByDescending(kv => kv.Value)
                 .ToArray();
-            if (suitableCompetitors.Length > 0 &&
-                        (suitableCompetitors.Length == 1 && suitableCompetitors[0].Value >= .35) ||
-                        (suitableCompetitors.Length > 1 && suitableCompetitors[0].Value >= .35 && 
-                            ((suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8) || suitableCompetitors[1].Key == suitableCompetitors[0].Key))) {
+            if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .35 &&
+                        (suitableCompetitors.Length == 1 ||
+                        (suitableCompetitors.Length > 1 && suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
                 _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", names.First(), suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)
