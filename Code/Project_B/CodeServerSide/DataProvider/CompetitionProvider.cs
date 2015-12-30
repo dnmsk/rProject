@@ -28,11 +28,12 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var competitionSpecify = RawCompetitionHelper.GetCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin) ??
                                          CompetitionHelper.CreateCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode);
                 return competitionSpecify;
-            }, null);
+            }, new RawTemplateObj<CompetitionSpecifyTransport>());
         }
 
         private static readonly char[] _badSymbols = {'(', ')'};
-        public static List<string> CleanCompetitionName(List<string> nameOrigin) {
+
+        private static List<string> CleanCompetitionName(List<string> nameOrigin) {
             nameOrigin = SportTypeHelper.Instance.ExcludeSportTypeFromList(nameOrigin);
             nameOrigin = GenderDetectorHelper.Instance.ExcludGenderTypeFromList(nameOrigin);
             int digit;
@@ -146,7 +147,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     ? competitionItem.ID
                     : -competitionItem.ID;
                 return result;
-            }, null);
+            }, new CompetitionItemRawTransport());
         }
     }
 }

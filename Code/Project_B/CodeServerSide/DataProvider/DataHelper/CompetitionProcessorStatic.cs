@@ -11,42 +11,38 @@ using Project_B.CodeServerSide.Enums;
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class CompetitionProcessorStatic {
         public static void ProcessCompetitionPack(LoggerWrapper logger, BrokerData brokerData, GatherBehaviorMode algoMode, Action<BrokerType, SportType, CompetitionItemRawTransport, MatchParsed> actionForMatch) {
-            var successCompetitions = 0;
-            var successRawCompetitionItems = 0;
             var successCompetitionItems = 0;
+            var successCompetitions = 0;
+            var successCompetitors = 0;
             var competitorProvider = ProjectProvider.Instance.CompetitorProvider;
             var competitionProvider = ProjectProvider.Instance.CompetitionProvider;
             foreach (var competitionParsed in brokerData.Competitions) {
                 var competition = competitionProvider.GetCompetitionSpecify(brokerData.Broker, brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
-                if (competition == null) {
-                    continue;
-                }
-                successCompetitions++;
+                successCompetitions += competition.Object.CompetitionSpecifyUniqueID != default(int) ? 1 : 0;
                 foreach (var matchParsed in competitionParsed.Matches) {
                     var competitor1 = competitorProvider
                         .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameShortOne, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
                     var competitor2 = competitorProvider
                         .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorNameFullTwo, matchParsed.CompetitorNameShortTwo, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
-                    if (competitor1 == null || competitor2 == null) {
-                        continue;
-                    }
-                    successRawCompetitionItems++;
+                    successCompetitors += (competitor1.Object.ID != default (int) ? 1 : 0) + (competitor2.Object.ID != default (int) ? 1 : 0);
                     var competitionItemRawTransport = competitionProvider.GetCompetitionItem(brokerData.Broker, competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
-                    if (competitionItemRawTransport != null) {
-                        successCompetitionItems++;
+                    if (competitionItemRawTransport.CompetitionItemID != default(int)) {
                         if (competitionItemRawTransport.CompetitionItemID < default(int)) {
                             competitionItemRawTransport.CompetitionItemID = -competitionItemRawTransport.CompetitionItemID;
                             logger.Info("Inverse data for ID = {0} {1} {2}", competitionItemRawTransport, brokerData.Broker, brokerData.Language);
                             ReverseAllDataInMatch(matchParsed);
                         }
                         actionForMatch(brokerData.Broker, competitionParsed.Type, competitionItemRawTransport, matchParsed);
+                        successCompetitionItems++;
                     }
                 }
             }
-            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: ({3}) {4}/{5} {6} {7}", brokerData.Competitions.FirstOrDefault(c => c.Matches.Any())?.Matches.FirstOrDefault()?.DateUtc.Date.ToString("yyyy MMMM dd"), 
+            var totalGames = brokerData.Competitions.Sum(c => c.Matches.Count);
+            logger.Info("SaveResults: {0} {1} {2}: Competitions: {3}/{4} CompetitionItems: {5}/{6} Competitors {7}/{8}", brokerData.Competitions.FirstOrDefault(c => c.Matches.Any())?.Matches.FirstOrDefault()?.DateUtc.Date.ToString("yyyy MMMM dd"),
+                brokerData.Broker, brokerData.Language,
                 successCompetitions, brokerData.Competitions.Count,
-                successCompetitionItems, successRawCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), 
-                brokerData.Broker, brokerData.Language);
+                successCompetitionItems, totalGames,
+                successCompetitors, totalGames*2);
         }
 
         private static readonly Dictionary<BetOddType, BetOddType> _inversionMap = new Dictionary<BetOddType, BetOddType> {

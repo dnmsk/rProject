@@ -30,7 +30,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 var competitorFromRaw = RawCompetitorHelper.GetCompetitor(brokerType, languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode);
                 return competitorFromRaw.FirstOrDefault();
-            }, null);
+            }, new RawTemplateObj<CompetitorParsedTransport>());
         }
     }
 }
