@@ -23,13 +23,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     try {
                         var competitor1 = competitorProvider
                             .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type,
-                                competition.Object.GenderType, matchParsed.CompetitorNameFullOne,
-                                matchParsed.CompetitorNameShortOne, competition.Object.CompetitionUniqueID, matchParsed,
+                                competition.Object.GenderType, matchParsed.CompetitorName1, competition.Object.CompetitionUniqueID, matchParsed,
                                 algoMode);
                         var competitor2 = competitorProvider
                             .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type,
-                                competition.Object.GenderType, matchParsed.CompetitorNameFullTwo,
-                                matchParsed.CompetitorNameShortTwo, competition.Object.CompetitionUniqueID, matchParsed,
+                                competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed,
                                 algoMode);
                         successCompetitors += (competitor1.Object.ID != default(int) ? 1 : 0) +
                                               (competitor2.Object.ID != default(int) ? 1 : 0);
@@ -48,7 +46,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                             successCompetitionItems++;
                         }
                     } catch (Exception ex) {
-                        logger.Error("{0} {1} {2} {3} {4} \r\n {5}", brokerData.Broker, brokerData.Language, competitionParsed.Name, matchParsed.CompetitorNameFullOne, matchParsed.CompetitorNameFullTwo, ex);
+                        logger.Error("{0} {1} {2} {3} {4} \r\n {5}", brokerData.Broker, brokerData.Language, competitionParsed.Name, matchParsed.CompetitorName1[0], matchParsed.CompetitorName2[0], ex);
                     }
                 }
             }

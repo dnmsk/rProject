@@ -312,7 +312,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                 .AsList(
                     Competitor.Fields.Languagetype,
                     Competitor.Fields.CompetitoruniqueID,
-                    Competitor.Fields.NameShort,
                     Competitor.Fields.NameFull
                 )
                 .GroupBy(e => e.CompetitoruniqueID)
@@ -367,7 +366,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }
             return new CompetitorTransport {
                 ID = competitorID,
-                Name = competitor.NameFull ?? competitor.NameShort
+                Name = competitor.NameFull
             };
         }
 

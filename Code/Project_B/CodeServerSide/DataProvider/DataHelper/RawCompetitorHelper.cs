@@ -112,7 +112,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     Datecreatedutc = DateTime.UtcNow,
                     Languagetype = languageType,
                     NameFull = names[0],
-                    NameShort = names[0],
                     Gendertype = genderType
                 }.Save();
             }
@@ -128,7 +127,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     Datecreatedutc = DateTime.UtcNow,
                     Languagetype = languageType,
                     NameFull = names[0],
-                    NameShort = names[0],
                     Gendertype = genderType
                 };
                 competitor.Save();
@@ -160,10 +158,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
                 .Distinct();
             var res = QueryHelper.FilterByGender(Competitor.DataSource.WhereIn(Competitor.Fields.ID, competitorIDs)
-                                                            .Where(new DaoFilterOr(
-                                                                QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameFull),
-                                                                QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameShort)
-                                                            )),
+                                                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameFull)),
                                         Competitor.Fields.Gendertype, genderType, Competitor.Fields.CompetitoruniqueID);
             if (res.Any()) {
                 var distinctIds = res.Select(r => r.CompetitoruniqueID).Distinct().ToArray();
@@ -234,7 +229,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     CompetitionItem.Fields.Competitoruniqueid1,
                     CompetitionItem.Fields.Competitoruniqueid2
                 );
-            var competitorToDetectIsFirst = new[] { matchParsed.CompetitorNameShortOne, matchParsed.CompetitorNameFullOne }.Any(names.Contains);
+            var competitorToDetectIsFirst = matchParsed.CompetitorName1.Any(names.Contains);
             var namesHash = names.Select(name => new HashSet<char>(Transliterator.GetTranslit(CleanString(name)))).ToArray();
             var suitableCompetitors = RawCompetitor.DataSource
                 .WhereIn(RawCompetitor.Fields.CompetitoruniqueID, (competitorToDetectIsFirst

@@ -120,10 +120,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     continue;
                 }
                 var match = new MatchParsed {
-                    CompetitorNameShortOne = participantsSplitted[0].Trim(),
-                    CompetitorNameShortTwo = participantsSplitted[1].Trim(),
-                    CompetitorNameFullOne = participantsSplitted[0].Trim(),
-                    CompetitorNameFullTwo = participantsSplitted[1].Trim(),
+                    CompetitorName1 = new[] { participantsSplitted[0].Trim() },
+                    CompetitorName2 = new[] { participantsSplitted[1].Trim() },
                     DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
                     Result = ExtractResultFromMatchBlock(matchBlock, type, list => list.Select(h => h.InnerHtml).StrJoin(Environment.NewLine))
                 };
@@ -154,10 +152,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         date = dateBlock.First().InnerText.Trim();
                     }
                     var match = new MatchParsed {
-                        CompetitorNameFullOne = participantsFullName[0].InnerText,
-                        CompetitorNameFullTwo = participantsFullName[1].InnerText,
-                        CompetitorNameShortOne = participantsShortName[0],
-                        CompetitorNameShortTwo = participantsShortName[1],
+                        CompetitorName1 = new[] { participantsFullName[0].InnerText, participantsShortName[0] },
+                        CompetitorName2 = new[] { participantsFullName[1].InnerText, participantsShortName[1] },
                         DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
                         Result = ExtractResultFromMatchBlock(matchBlock, type, nodeToResultStr),
                         BrokerMatchID = StringParser.ToInt(matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
@@ -175,8 +171,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultParticipants])[0].InnerText
                         .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
                     var match = new MatchParsed {
-                        CompetitorNameShortOne = participants[0],
-                        CompetitorNameShortTwo = participants[1],
+                        CompetitorName1 = new[] { participants[0] },
+                        CompetitorName2 = new[] { participants[1] },
                         Result = ExtractResultFromMatchBlock(additionalMatchBlock, type, nodeToResultStr),
                         BrokerMatchID = StringParser.ToInt(additionalMatchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
                     };

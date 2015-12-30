@@ -47,8 +47,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     var competitionParsed = new CompetitionParsed(FormatCompetitionName(rawCompetitionSpecifyMap[ge.Key].Name), ge.First().SportType);
                     competitionParsed.Matches
                         .AddRange(ge.Select(rci => new MatchParsed {
-                            CompetitorNameFullOne = rawCompetitorsMap[rci.Rawcompetitorid1].Name,
-                            CompetitorNameFullTwo = rawCompetitorsMap[rci.Rawcompetitorid2].Name,
+                            CompetitorName1 = new[] { rawCompetitorsMap[rci.Rawcompetitorid1].Name },
+                            CompetitorName2 = new[] { rawCompetitorsMap[rci.Rawcompetitorid2].Name },
                             DateUtc = rci.Dateeventutc,
                             Result = rawResultMap.TryGetValueOrDefault(rci.ID)?.Rawresult
                         })

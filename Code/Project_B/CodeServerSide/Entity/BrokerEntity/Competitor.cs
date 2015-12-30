@@ -31,12 +31,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// 
         /// </summary>
             [DBField(DbType.Int16)] Languagetype,
-
-        /// <summary>
-        /// 
-        /// </summary>
-            [DBField(DbType.String)] NameShort,
-
+            
         /// <summary>
         /// 
         /// </summary>
@@ -93,14 +88,6 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         public LanguageType Languagetype {
             get { return (LanguageType)(short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, value); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string NameShort {
-            get { return (string) this[Fields.NameShort]; }
-            set { ForceSetData(Fields.NameShort, value); }
         }
 
         /// <summary>

@@ -49,8 +49,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         internalCompetitionItemIDToCompetitionParsed[(int) dataRowJson[0]] = new MatchParsed {
                             DateUtc = LinuxUtc.ToUniversalTime().AddSeconds((int) dataRowJson[2]),
                             Result = ResultBuilder.BuildResultFromString(SportType.Unknown, (string) dataRowJson[4]),
-                            CompetitorNameShortOne = competitorsName.Item1,
-                            CompetitorNameShortTwo = competitorsName.Item2
+                            CompetitorName1 = new [] { competitorsName.Item1 },
+                            CompetitorName2 = new [] { competitorsName.Item2 }
                         };
                     } else if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringCompetitionRow], StringComparison.InvariantCultureIgnoreCase)) {
                         dataRowJson = BuildJsonObject(row, firstIndex, lastIndex);
@@ -122,8 +122,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     CompetitionParsed competitionParsed;
                     if ((int) map["level"] == 1 && competitionsDict.TryGetValue(competitionID, out competitionParsed)) {
                         var matchParsed = new MatchParsed {
-                            CompetitorNameFullOne = (string) map["team1"],
-                            CompetitorNameFullTwo = (string) map["team2"],
+                            CompetitorName1 = new[] { (string) map["team1"] },
+                            CompetitorName2 = new[] { (string) map["team2"] },
                             DateUtc = LinuxUtc.ToUniversalTime().AddSeconds((int) map["startTime"]),
                             BrokerMatchID = (int) map["id"]
                         };

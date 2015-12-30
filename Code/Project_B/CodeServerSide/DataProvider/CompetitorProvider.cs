@@ -19,9 +19,10 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public CompetitorProvider() : base(_logger) { }
 
-        public RawTemplateObj<CompetitorParsedTransport> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string nameFull, string nameShort, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public RawTemplateObj<CompetitorParsedTransport> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
-                var names = new[] {nameShort ?? string.Empty, nameFull ?? string.Empty}
+                names = names
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
                     .Select(name => name.Trim(_trimChars))
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .ToArray();
