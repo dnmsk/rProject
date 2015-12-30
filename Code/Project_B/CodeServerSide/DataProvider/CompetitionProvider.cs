@@ -57,6 +57,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 var competitionItemRaw = RawCompetitionItemHelper.GetCompetitionItem(brokerType, competitor1ParsedTransport, competitor2ParsedTransport, competitionSpecifyTransport, eventDateUtc, utcNow) 
                                          ?? RawCompetitionItemHelper.CreateCompetitionItem(brokerType, competitor1ParsedTransport, competitor2ParsedTransport, competitionSpecifyTransport, eventDateUtc, utcNow);
+                if (competitionItemRaw == null) {
+                    return null;
+                }
                 var result = new CompetitionItemRawTransport {
                     RawCompetitionItemID = competitionItemRaw.ID
                 };

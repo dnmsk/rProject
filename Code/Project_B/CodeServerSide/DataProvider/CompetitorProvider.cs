@@ -30,7 +30,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     throw new Exception("nameFull.IsNullOrWhiteSpace() && nameShort.IsNullOrWhiteSpace()");
                 }
                 var competitorFromRaw = RawCompetitorHelper.GetCompetitor(brokerType, languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode);
-                return competitorFromRaw.FirstOrDefault() ?? new RawTemplateObj<CompetitorParsedTransport>();
+                return competitorFromRaw?.FirstOrDefault() ?? new RawTemplateObj<CompetitorParsedTransport>();
             }, new RawTemplateObj<CompetitorParsedTransport>());
         }
     }

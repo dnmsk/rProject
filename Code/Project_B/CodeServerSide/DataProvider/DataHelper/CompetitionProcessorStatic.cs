@@ -20,33 +20,20 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 var competition = competitionProvider.GetCompetitionSpecify(brokerData.Broker, brokerData.Language, competitionParsed.Type, competitionParsed.Name, competitionParsed, algoMode);
                 successCompetitions += competition.Object.CompetitionSpecifyUniqueID != default(int) ? 1 : 0;
                 foreach (var matchParsed in competitionParsed.Matches) {
-                    try {
-                        var competitor1 = competitorProvider
-                            .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type,
-                                competition.Object.GenderType, matchParsed.CompetitorName1, competition.Object.CompetitionUniqueID, matchParsed,
-                                algoMode);
-                        var competitor2 = competitorProvider
-                            .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type,
-                                competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed,
-                                algoMode);
-                        successCompetitors += (competitor1.Object.ID != default(int) ? 1 : 0) +
-                                              (competitor2.Object.ID != default(int) ? 1 : 0);
-                        var competitionItemRawTransport = competitionProvider.GetCompetitionItem(brokerData.Broker,
-                            competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
-                        if (competitionItemRawTransport.CompetitionItemID != default(int)) {
-                            if (competitionItemRawTransport.CompetitionItemID < default(int)) {
-                                competitionItemRawTransport.CompetitionItemID =
-                                    -competitionItemRawTransport.CompetitionItemID;
-                                logger.Info("Inverse data for ID = {0} {1} {2}", competitionItemRawTransport,
-                                    brokerData.Broker, brokerData.Language);
-                                ReverseAllDataInMatch(matchParsed);
-                            }
-                            actionForMatch(brokerData.Broker, competitionParsed.Type, competitionItemRawTransport,
-                                matchParsed);
-                            successCompetitionItems++;
+                    var competitor1 = competitorProvider
+                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName1, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
+                    var competitor2 = competitorProvider
+                        .GetCompetitor(brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed, algoMode);
+                    successCompetitors += (competitor1.Object.ID != default(int) ? 1 : 0) + (competitor2.Object.ID != default(int) ? 1 : 0);
+                    var competitionItemRawTransport = competitionProvider.GetCompetitionItem(brokerData.Broker, competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
+                    if (competitionItemRawTransport != null && competitionItemRawTransport.CompetitionItemID != default(int)) {
+                        if (competitionItemRawTransport.CompetitionItemID < default(int)) {
+                            competitionItemRawTransport.CompetitionItemID = -competitionItemRawTransport.CompetitionItemID;
+                            logger.Info("Inverse data for ID = {0} {1} {2}", competitionItemRawTransport, brokerData.Broker, brokerData.Language);
+                            ReverseAllDataInMatch(matchParsed);
                         }
-                    } catch (Exception ex) {
-                        logger.Error("{0} {1} {2} {3} {4} \r\n {5}", brokerData.Broker, brokerData.Language, competitionParsed.Name, matchParsed.CompetitorName1[0], matchParsed.CompetitorName2[0], ex);
+                        actionForMatch(brokerData.Broker, competitionParsed.Type, competitionItemRawTransport, matchParsed);
+                        successCompetitionItems++;
                     }
                 }
             }
