@@ -51,9 +51,9 @@ namespace CommonUtils.Code {
         public TimeSpan? MinRequestDelay = null;
         private readonly Action<string, CookieContainer> _onDispose;
         public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
+            _webRequestParams[WebRequestParamType.CookieContainer] = new WebRequestParamCookieContainer(cookies ?? new CookieContainer());
+            _webRequestParams[WebRequestParamType.UserAgentString] = new WebRequestParamString(userAgent ?? RandomUserAgent());
             MergeWithDefaultParams(_webRequestParams);
-            _webRequestParams.Add(WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(cookies ?? new CookieContainer()));
-            _webRequestParams.Add(WebRequestParamType.UserAgentString, new WebRequestParamString(userAgent ?? RandomUserAgent()));
             _onDispose = onDispose;
         }
 

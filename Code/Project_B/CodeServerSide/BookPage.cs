@@ -45,6 +45,9 @@ namespace Project_B.CodeServerSide {
             foreach (var brokerProviderType in currentBrokerProviderTypes) {
                 try {
                     var instance = (BrokerBase) Activator.CreateInstance(brokerProviderType, webRequestHelper);
+                    if (instance.BrokerType == BrokerType.Default) {
+                        continue;
+                    }
                     _brokerProviders.Add(instance.BrokerType, instance);
                 } catch (Exception ex) {
                     _logger.Error(ex);
