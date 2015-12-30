@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
@@ -59,7 +60,7 @@ namespace Spywords_Project.Code.Algorithms {
                                 firstDomainPhrase.Save();
                             }
                         }
-                        SlothMovePlodding.Instance.AddAction(() => {
+                        TaskRunner.Instance.AddAction(() => {
                             listLinksToInsert.Save<Domainphrase, int>();
                         });
                         if (!hasUnique) {

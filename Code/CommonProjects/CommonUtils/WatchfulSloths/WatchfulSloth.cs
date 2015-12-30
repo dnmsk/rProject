@@ -23,8 +23,6 @@ namespace CommonUtils.WatchfulSloths {
     public class WatchfulSloth : Singleton<WatchfulSloth>, IWatchfulSloth {
         private readonly ManualResetEvent _stopEvent;
 
-        private readonly WatchfulHolder _holder;
-
         /// <summary>
         /// Словарь для хранения правил, для ленивца.
         /// </summary>
@@ -39,7 +37,6 @@ namespace CommonUtils.WatchfulSloths {
         public WatchfulSloth(string holderName) {
             _stopEvent = new ManualResetEvent(false);
             WakeUp();
-            _holder = new WatchfulHolder(12, holderName); //научить владыке хомяков самому создавать их. 
             new Thread(() => {
                 while (!_stopEvent.WaitOne(_wakeUpInterval)) {
                     WakeUp();
@@ -84,7 +81,7 @@ namespace CommonUtils.WatchfulSloths {
         private void WakeUp() {
             _rulesMap
                 .With(m => m)
-                .Each(v => v.If(e => e.IsNeedMove).Do(e => _holder.AddTask(e.Move)));
+                .Each(v => v.If(e => e.IsNeedMove).Do(e => TaskRunner.Instance.AddAction(e.Move)));
         }
     }
 }

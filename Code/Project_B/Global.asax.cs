@@ -3,7 +3,7 @@ using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using MainLogic.WebFiles;
 using Project_B.CodeServerSide.Algorithm;
 using Project_B.CodeServerSide.Enums;
@@ -18,7 +18,7 @@ namespace Project_B {
             BundleConfig.RegisterBundles();
             if (SiteConfiguration.NeedRunTask && _taskObjects == null) {
                 _taskObjects = new[] {
-                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.AllTasks) {
+                    new BrokerAlgoLauncher(BrokerType.RedBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll | GatherBehaviorMode.CreateOriginalIfMatchedAll, RunTaskMode.AllTasks) {
                         PastDateHistoryTaskTimespan = TimeSpan.FromMinutes(1)
                     },
                     new BrokerAlgoLauncher(BrokerType.GrayBlue, LanguageType.English, GatherBehaviorMode.TryDetectAll, RunTaskMode.HistoryTasks | RunTaskMode.RunRegularOddsTask) {
@@ -32,7 +32,7 @@ namespace Project_B {
                 };
                 _taskObjects.Each(t => t.Schedule());
             }
-            SlothMovePlodding.Instance.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
+            TaskRunner.Instance.AddAction(() => HostingEnvironment.RegisterVirtualPathProvider(new WebVirtualFileManager()));
             BaseModelConfig.ConfigureBaseModel();
         }
     }

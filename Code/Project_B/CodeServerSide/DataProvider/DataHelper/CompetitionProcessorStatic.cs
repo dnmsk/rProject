@@ -12,6 +12,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class CompetitionProcessorStatic {
         public static void ProcessCompetitionPack(LoggerWrapper logger, BrokerData brokerData, GatherBehaviorMode algoMode, Action<BrokerType, SportType, CompetitionItemRawTransport, MatchParsed> actionForMatch) {
             var successCompetitions = 0;
+            var successRawCompetitionItems = 0;
             var successCompetitionItems = 0;
             var competitorProvider = ProjectProvider.Instance.CompetitorProvider;
             var competitionProvider = ProjectProvider.Instance.CompetitionProvider;
@@ -29,9 +30,10 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     if (competitor1 == null || competitor2 == null) {
                         continue;
                     }
-                    successCompetitionItems++;
+                    successRawCompetitionItems++;
                     var competitionItemRawTransport = competitionProvider.GetCompetitionItem(brokerData.Broker, competitor1, competitor2, competition, matchParsed.DateUtc, algoMode);
                     if (competitionItemRawTransport != null) {
+                        successCompetitionItems++;
                         if (competitionItemRawTransport.CompetitionItemID < default(int)) {
                             competitionItemRawTransport.CompetitionItemID = -competitionItemRawTransport.CompetitionItemID;
                             logger.Info("Inverse data for ID = {0} {1} {2}", competitionItemRawTransport, brokerData.Broker, brokerData.Language);
@@ -41,9 +43,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     }
                 }
             }
-            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: {3}/{4} {5} {6}", brokerData.Competitions.First(c => c.Matches.Any()).Matches.First().DateUtc.Date.ToString("yyyy MMMM dd"), 
+            logger.Info("SaveResults: {0}: Competitions: {1}/{2} CompetitionItems: ({3}) {4}/{5} {6} {7}", brokerData.Competitions.FirstOrDefault(c => c.Matches.Any())?.Matches.FirstOrDefault()?.DateUtc.Date.ToString("yyyy MMMM dd"), 
                 successCompetitions, brokerData.Competitions.Count,
-                successCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), 
+                successCompetitionItems, successRawCompetitionItems, brokerData.Competitions.Sum(c => c.Matches.Count), 
                 brokerData.Broker, brokerData.Language);
         }
 

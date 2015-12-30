@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using MainLogic.WebFiles;
 using MainLogic.WebFiles.Policy;
 using MainLogic.WebFiles.UserPolicy.Enum;
@@ -38,7 +39,7 @@ namespace Project_B.Controllers {
             }
             MarkResponseAsCached(Response);
             if (!GetBaseModel().GetUserPolicyState<bool>(UserPolicyGlobal.IsStatisticsDisabled) && ProductionPolicy.IsProduction()) {
-                SlothMovePlodding.Instance.AddAction(() => { ProjectProvider.Instance.WebFileProvider.AccessToFileCounter(id); });
+                TaskRunner.Instance.AddAction(() => { ProjectProvider.Instance.WebFileProvider.AccessToFileCounter(id); });
             }
             return File(path, GetMimeTypeByFileName(path));
         }

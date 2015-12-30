@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using IDEV.Hydra.DAO;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
@@ -62,7 +63,7 @@ namespace Spywords_Project.Code.Algorithms {
 
                     var googleDomains = GetDomains(_googleDomainBlockRegex.Match(domains).Value);
                     try {
-                        SlothMovePlodding.Instance.AddAction(() => {
+                        TaskRunner.Instance.AddAction(() => {
                             var domainEntities = new List<DomainEntity>(yandexDomains.Union(googleDomains).Distinct().Select(GetDomainEntity));
                             foreach(var domainEntity in domainEntities) {
                                 var seType = (

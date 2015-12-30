@@ -6,6 +6,7 @@ using AutoPublication.Models;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using MainLogic.WebFiles;
 
 namespace AutoPublication.Code {
@@ -22,7 +23,7 @@ namespace AutoPublication.Code {
         
         public BuildPublishProvider() {
             _buildPublishItems = SiteConfiguration.GetConfigurationProperty<List<BuildPublishItem>>(_configurationProperty) ?? new List<BuildPublishItem>();
-            SlothMovePlodding.Instance.AddAction(() => {
+            TaskRunner.Instance.AddAction(() => {
                 ReadFileDescriptions();
             });
         }

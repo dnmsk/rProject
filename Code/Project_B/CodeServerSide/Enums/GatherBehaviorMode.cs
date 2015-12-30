@@ -5,10 +5,11 @@ namespace Project_B.CodeServerSide.Enums {
     public enum GatherBehaviorMode : short {
         Default = 0x00,
         CreateOriginal = 0x01,
+        CreateOriginalIfMatchedAll = 0x02,
         TryDetectAll = CanDetectCompetition | CanDetectCompetitor,
-        CreateIfEmptyToDate = 0x02,
-        CanDetectCompetition = 0x04,
-        CanDetectCompetitor = 0x08,
-        CreateNewLanguageName = 0x010
+        CreateIfEmptyToDate = 0x04,
+        CanDetectCompetition = 0x08,
+        CanDetectCompetitor = 0x010,
+        CreateNewLanguageName = 0x020,
     }
 }

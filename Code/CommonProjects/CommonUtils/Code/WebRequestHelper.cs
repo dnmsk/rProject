@@ -47,11 +47,11 @@ namespace CommonUtils.Code {
             ServicePointManager.Expect100Continue = false;
         }
         private readonly IDictionary<WebRequestParamType, WebRequestParamBase> _webRequestParams = new Dictionary<WebRequestParamType, WebRequestParamBase>();
-
-        //public readonly CookieContainer Cookies;
+        
         public TimeSpan? MinRequestDelay = null;
         private readonly Action<string, CookieContainer> _onDispose;
         public WebRequestHelper(string userAgent = null, CookieContainer cookies = null, Action<string, CookieContainer> onDispose = null) {
+            MergeWithDefaultParams(_webRequestParams);
             _webRequestParams.Add(WebRequestParamType.CookieContainer, new WebRequestParamCookieContainer(cookies ?? new CookieContainer()));
             _webRequestParams.Add(WebRequestParamType.UserAgentString, new WebRequestParamString(userAgent ?? RandomUserAgent()));
             _onDispose = onDispose;

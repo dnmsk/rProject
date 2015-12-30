@@ -139,12 +139,11 @@
     <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInDaySingle.cs" />
     <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInTime.cs" />
     <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveInWeekSingle.cs" />
-    <Compile Include="WatchfulSloths\SlothMoveRules\SlothMovePlodding.cs" />
     <Compile Include="WatchfulSloths\SlothMoveRules\SlothMoveRule.cs" />
     <Compile Include="WatchfulSloths\TimeComparer.cs" />
     <Compile Include="WatchfulSloths\Watch.cs" />
     <Compile Include="WatchfulSloths\WatchfulSloth.cs" />
-    <Compile Include="WatchfulSloths\WatchfulThreads\WatchfulHolder.cs" />
+    <Compile Include="WatchfulSloths\WatchfulThreads\TaskRunner.cs" />
     <Compile Include="WatchfulSloths\WatchfulThreads\WatchfulThread.cs" />
     <Compile Include="WatchfulSloths\WatchTuned.cs" />
   </ItemGroup>

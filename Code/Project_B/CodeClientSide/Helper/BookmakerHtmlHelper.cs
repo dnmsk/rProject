@@ -3,6 +3,7 @@ using System.Net;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.KangooCache;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
@@ -34,7 +35,7 @@ namespace Project_B.CodeClientSide.Helper {
                                 if (url.IsNullOrEmpty()) {
                                     continue;
                                 }
-                                SlothMovePlodding.Instance.AddAction(() => {
+                                TaskRunner.Instance.AddAction(() => {
                                     var data = oddsProvider.RequestHelper.GetContentRaw(url);
                                     if (data.Item1 == HttpStatusCode.OK) {
                                         lock (cache) {
