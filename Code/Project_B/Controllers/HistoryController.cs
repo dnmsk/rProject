@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
@@ -53,7 +54,7 @@ namespace Project_B.Controllers {
                     }
             };
             return new ActionResultCached(
-                true,
+                itemData.Any(),
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
                     itemData.Each(FixToUserTime);
@@ -77,7 +78,7 @@ namespace Project_B.Controllers {
                 }
             };
             return new ActionResultCached(
-                true,
+                itemData.Any(),
                 () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
                 () => {
                     itemData.Each(FixToUserTime);
