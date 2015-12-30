@@ -11,7 +11,7 @@ using MainLogic.Providers;
 
 namespace MainLogic {
     public class MainLogicProvider : Singleton<MainLogicProvider> {
-        public static readonly  IWatchfulSloth WatchfulSloth = new WatchfulSloth("MainLogicProvider");
+        public static readonly  IWatchfulSloth WatchfulSloth = new WatchfulSloth();
         public readonly UserProvider UserProvider = new UserProvider();
         public readonly AccountProvider AccountProvider = new AccountProvider();
 

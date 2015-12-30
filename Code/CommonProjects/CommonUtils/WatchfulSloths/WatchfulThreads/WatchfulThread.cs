@@ -3,7 +3,9 @@ using System.Threading;
 using CommonUtils.Core.Logger;
 
 namespace CommonUtils.WatchfulSloths.WatchfulThreads {
-    public class WatchfulThread : IDisposable {
+    internal class WatchfulThread : IDisposable {
+        private readonly Action<WatchfulThread> _onDisposeThreadAction;
+
         /// <summary>
         /// Логгер.
         /// </summary>
@@ -11,25 +13,26 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
 
         private readonly Action<WatchfulThread> _onWorkDoneAction;
         private readonly Thread _thread;
-        private Action _action;
+        private Action<WatchfulThread> _action;
         private ManualResetEventSlim _eventSlim;
 
-        public WatchfulThread(Action<WatchfulThread> onWorkDoneAction) {
+        public WatchfulThread(Action<WatchfulThread> onWorkDoneAction, Action<WatchfulThread> onDisposeThreadAction) {
+            _onDisposeThreadAction = onDisposeThreadAction;
             _eventSlim = new ManualResetEventSlim(false);
             _onWorkDoneAction = act => {
                 onWorkDoneAction(act);
                 _action = null;
-                _eventSlim.Reset();
+                _eventSlim?.Reset();
             };
             _thread = new Thread(Action);
             _thread.Start();
         }
 
-        public bool IsFree() {
+        internal bool IsFree() {
             return _action == null;
         }
 
-        public bool SetAction(Action action) {
+        internal bool SetAction(Action<WatchfulThread> action) {
             if (IsFree()) {
                 lock (_thread) {
                     if (IsFree()) {
@@ -42,7 +45,12 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
             return false;
         }
 
+        internal bool CanWork() {
+            return _eventSlim != null;
+        }
+
         public void Dispose() {
+            _onDisposeThreadAction(this);
             var eventSlim = _eventSlim;
             _eventSlim = null;
             eventSlim.Set();
@@ -50,15 +58,15 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
 
         private void Action() {
             while (_eventSlim != null) {
+                _eventSlim?.Wait();
                 if (_action != null) {
                     try {
-                        _action();
+                        _action(this);
                     } catch (Exception ex) {
                         _logger.Error(ex);
                     }
                     _onWorkDoneAction(this);
                 }
-                _eventSlim.Wait();
             }
         }
     }

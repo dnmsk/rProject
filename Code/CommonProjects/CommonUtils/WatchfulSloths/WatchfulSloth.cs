@@ -34,7 +34,7 @@ namespace CommonUtils.WatchfulSloths {
 
         private const int _wakeUpInterval = 50;
 
-        public WatchfulSloth(string holderName) {
+        public WatchfulSloth() {
             _stopEvent = new ManualResetEvent(false);
             WakeUp();
             new Thread(() => {
@@ -43,9 +43,7 @@ namespace CommonUtils.WatchfulSloths {
                 }
             }).Start();
         }
-
-        public WatchfulSloth() : this("DefaultName") {}
-
+        
         /// <summary>
         /// Установка правила, по которому будет производится контроль данных и их актуальности.
         /// </summary>

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
@@ -14,7 +14,7 @@ namespace Project_B.CodeClientSide {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (ActionLogAttribute).FullName);
 
-        private static readonly Dictionary<string, ProjectBActions> _cachePreviousPageActionIds = new Dictionary<string, ProjectBActions>();
+        private static readonly ConcurrentDictionary<string, ProjectBActions> _cachePreviousPageActionIds = new ConcurrentDictionary<string, ProjectBActions>();
         public ProjectBActions ActionToLog { get; }
 
         public ActionLogAttribute(ProjectBActions actionToLog) {
