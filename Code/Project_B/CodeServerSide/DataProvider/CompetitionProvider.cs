@@ -125,7 +125,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     if (!algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) ||
                          !algoMode.HasFlag(GatherBehaviorMode.CreateOriginalIfMatchedAll) && 
                             (competitionSpecifyTransport.Object.CompetitionUniqueID == default(int) ||
-                             competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID == default(int) ||
+                             //NOTE competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID == default(int) ||
                              competitor1ParsedTransport.Object.ID == default(int) ||
                              competitor2ParsedTransport.Object.ID == default(int))
                          ) {
