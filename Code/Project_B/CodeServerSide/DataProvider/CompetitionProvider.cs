@@ -135,10 +135,13 @@ namespace Project_B.CodeServerSide.DataProvider {
                         Datecreatedutc = utcNow,
                         Dateeventutc = eventDateUtc != DateTime.MinValue ? eventDateUtc : utcNow,
                         CompetitionuniqueID = competitionSpecifyTransport.Object.CompetitionUniqueID,
-                        CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID,
+                        //CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID,
                         Competitoruniqueid1 = competitor1ParsedTransport.Object.ID,
                         Competitoruniqueid2 = competitor2ParsedTransport.Object.ID
                     };
+                    if (competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID != default(int)) {
+                        competitionItem.CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.CompetitionSpecifyUniqueID;
+                    }
                     competitionItem.Save();
                     competitionItemRaw.Linkstatus = LinkEntityStatus.Original;
                     competitionItemRaw.CompetitionitemID = competitionItem.ID;
