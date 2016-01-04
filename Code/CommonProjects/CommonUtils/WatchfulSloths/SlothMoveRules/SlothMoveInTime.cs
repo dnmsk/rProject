@@ -19,10 +19,10 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// <summary>
         /// Движение.
         /// </summary>
-        public override void Move() {
+        public override void Move(int wakeUpInterval) {
             try {
+                LastMoveDate = _watch.Now().AddMilliseconds(-wakeUpInterval/2);
                 Result = _move();
-                LastMoveDate = _watch.Now();
             } catch (Exception e) {
                 _logger.Error(e);
             }

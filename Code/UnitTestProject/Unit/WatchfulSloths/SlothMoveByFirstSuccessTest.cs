@@ -29,7 +29,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
         public void NotNeedMoveAfterSuccessTest() {
             // NOTE : Arrange.
             var m = new SlothMoveByFirstSuccess<object>(() => null, default(int));
-            m.Move();
+            m.Move(0);
 
             // NOTE : Act.
             var isneed = m.IsNeedMove;

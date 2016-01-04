@@ -37,7 +37,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
             var mock = new Mock<IWatch>();
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22, 10, 00, 00));
             var m = new SlothMoveByTimeEco<object>(() => null, new TimeSpan(0, 20, 0), default(int), mock.Object);
-            m.Move();
+            m.Move(0);
 
             // NOTE : Act.
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22, 10, 10, 00));
@@ -60,7 +60,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22, 10, 00, 00));
             const int INTERVAL = 5;
             var m = new SlothMoveByTimeEco<object>(() => null, new TimeSpan(0, INTERVAL, 0), default(int), mock.Object);
-            m.Move();
+            m.Move(0);
 
             // NOTE : Act.
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22, 10, INTERVAL * 2, 00));
@@ -81,7 +81,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
             var mock = new Mock<IWatch>();
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22, 10, 00, 00));
             var m = new SlothMoveByTimeEco<object>(() => null, new TimeSpan(0, INTERVAL, 0), default(int), mock.Object);
-            m.Move();
+            m.Move(0);
 
             // NOTE : Act.
             var r = m.Result;

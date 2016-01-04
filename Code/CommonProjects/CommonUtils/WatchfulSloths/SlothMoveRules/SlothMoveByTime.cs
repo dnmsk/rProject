@@ -38,8 +38,8 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// <summary>
         /// Движение.
         /// </summary>
-        public override void Move() {
-            _prevMove = _watch.Now();
+        public override void Move(int wakeUpInterval) {
+            _prevMove = _watch.Now().AddMilliseconds(-wakeUpInterval/2);
             try {
                 Result = _move();
             } catch (Exception e) {

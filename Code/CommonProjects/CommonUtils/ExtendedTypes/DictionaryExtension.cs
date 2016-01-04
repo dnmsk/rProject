@@ -7,7 +7,7 @@ namespace CommonUtils.ExtendedTypes {
             return val;
         }
 
-        public static V TryGetValueOrDefaultStruct<K, V>(this IDictionary<K, V> dict, K key) {
+        public static V TryGetValueOrDefaultStruct<K, V>(this IDictionary<K, V> dict, K key) where V : struct {
             V val = dict != null && dict.TryGetValue(key, out val) ? val : default (V);
             return val;
         }

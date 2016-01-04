@@ -42,7 +42,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
             }, new TimeSpan(100, 0, 0), default(int), mock.Object);
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 02, 22));
             
-            var thread = new Thread(m.Move);
+            var thread = new Thread(() => m.Move(0));
             thread.Start();
             Thread.Sleep(1);
             
@@ -63,7 +63,7 @@ namespace UnitTestProject.Unit.WatchfulSloths {
             var mock = new Mock<IWatch>();
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 01, 22));
             var m = new SlothMoveByTimeSingle<object>(() => null, new TimeSpan(100, 0, 0), default(int), mock.Object);
-            m.Move();
+            m.Move(0);
             mock.Setup(w => w.Now()).Returns(new DateTime(2013, 02, 22));
             
             // NOTE : Act.

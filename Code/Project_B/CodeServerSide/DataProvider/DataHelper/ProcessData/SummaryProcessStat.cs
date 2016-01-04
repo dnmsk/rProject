@@ -2,12 +2,13 @@
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData {
     public enum ProcessStatType {
-        CompetitionFromRaw,
-        CompetitionSpecifyFromRaw,
-        CompetitorFromRaw,
-        CompetitionItemFromRaw,
-        Bet,
-        Result
+        Default = 0,
+        CompetitionFromRaw = 1,
+        CompetitionSpecifyFromRaw = 2,
+        CompetitorFromRaw = 3,
+        CompetitionItemFromRaw = 4,
+        Bet = 5,
+        Result = 6
     }
 
     public class SummaryProcessStat {

@@ -29,7 +29,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
             }
         }
 
-        public override void Move() {
+        public override void Move(int wakeUpInterval) {
             lock (_lockObj) {
                 if (_isRunning) {
                     _logger.Info("Отменил таск, предыдущий не завершен.");
@@ -37,7 +37,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
                 }
                 _isRunning = true;
             }
-            base.Move();
+            base.Move(wakeUpInterval);
             lock (_lockObj) {
                 _isRunning = false;
             }

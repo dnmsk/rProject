@@ -32,7 +32,7 @@ namespace CommonUtils.WatchfulSloths {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(WatchfulSloth).FullName);
 
-        private const int _wakeUpInterval = 50;
+        private const int _wakeUpInterval = 100;
 
         public WatchfulSloth() {
             _stopEvent = new ManualResetEvent(false);
@@ -79,7 +79,7 @@ namespace CommonUtils.WatchfulSloths {
         private void WakeUp() {
             _rulesMap
                 .With(m => m)
-                .Each(v => v.If(e => e.IsNeedMove).Do(e => TaskRunner.Instance.AddAction(e.Move)));
+                .Each(v => v.If(e => e.IsNeedMove).Do(e => TaskRunner.Instance.AddAction(() => { e.Move(_wakeUpInterval); })));
         }
     }
 }

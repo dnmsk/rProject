@@ -21,7 +21,7 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// <summary>
         /// Движение.
         /// </summary>
-        public override void Move() {
+        public override void Move(int wakeUpInterval) {
             try {
                 Result = _move();
                 _needSuccess = false;

@@ -192,7 +192,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (suitableCompetitors.Length > 0 && suitableCompetitors[0].Value >= .35 &&
                         (suitableCompetitors.Length == 1 ||
                         (suitableCompetitors.Length > 1 && suitableCompetitors[1].Value / suitableCompetitors[0].Value < .8))) {
-                _logger.Info("Для '{0}' поставляю CompetitionUniqueID {1} ({2}) K={3}", names.First(), suitableCompetitors[0].Key,
+                _logger.Info("Для '{0}' поставляю CompetitorUniqueID {1} ({2}) K={3}", names.First(), suitableCompetitors[0].Key,
                                         Competitor.DataSource.WhereEquals(Competitor.Fields.CompetitoruniqueID, suitableCompetitors[0].Key)
                                                     .Sort(Competitor.Fields.ID)
                                                     .First().Name,

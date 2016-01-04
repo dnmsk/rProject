@@ -11,7 +11,6 @@ namespace Project_B.CodeServerSide.DataProvider {
         public readonly BetProvider BetProvider = new BetProvider();
         public readonly CompetitionProvider CompetitionProvider = new CompetitionProvider();
         public readonly CompetitorProvider CompetitorProvider =  new CompetitorProvider();
-        public readonly HistoryProvider HistoryProvider = new HistoryProvider();
         public readonly ResultProvider ResultProvider = new ResultProvider();
         public readonly StaticPageProvider StaticPageProvider = new StaticPageProvider();
         public readonly WebFileProvider WebFileProvider = new WebFileProvider();
@@ -38,20 +37,14 @@ namespace Project_B.CodeServerSide.DataProvider {
                     Location = "/bookmaker/index/" + brokerPages.Key,
                     Priority = 0.8f
                 }));
-            SystemStateResult.DataSource
-                .GroupBy(SystemStateResult.Fields.Dateutc)
-                .Sort(SystemStateResult.Fields.Dateutc, SortDirection.Desc)
-                .AsGroups()
-                .Each(ge => {
-                    var dateTime = ((DateTime) ge[SystemStateResult.Fields.Dateutc]).Date;
-                    result.Add(new SiteMapItem {
-                        ChangeFreq = SiteMapChangeFreq.Monthly,
-                        LastMod = dateTime,
-                        Location = "/history?date=" + dateTime.ToString("dd.MM.yyyy"),
-                        Priority = 0.4f
-                    });
+            for (var dateTime = new DateTime(2014, 01, 01); dateTime < DateTime.Today; dateTime = dateTime.AddDays(1)) {
+                result.Add(new SiteMapItem {
+                    ChangeFreq = SiteMapChangeFreq.Monthly,
+                    LastMod = dateTime,
+                    Location = "/history?date=" + dateTime.ToString("dd.MM.yyyy"),
+                    Priority = 0.4f
                 });
-
+            }
             return result;
         } 
     }

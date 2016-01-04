@@ -279,10 +279,10 @@
     <Compile Include="CodeServerSide\DataProvider\DataHelper\ScoreHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\SportTypeHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\FrontCompetitionProvider.cs" />
-    <Compile Include="CodeServerSide\DataProvider\HistoryProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ProjectProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ResultProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\StaticPageProvider.cs" />
+    <Compile Include="CodeServerSide\DataProvider\Transport\BrokerRequestScheduleTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionItemRawTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionSpecifyTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitorParsedTransport.cs" />
@@ -350,8 +350,8 @@
     <Compile Include="CodeServerSide\Entity\Sport.cs" />
     <Compile Include="CodeServerSide\Entity\SportName.cs" />
     <Compile Include="CodeServerSide\Entity\SiteStaticPage.cs" />
-    <Compile Include="CodeServerSide\Entity\SystemStateBet.cs" />
-    <Compile Include="CodeServerSide\Entity\SystemStateResult.cs" />
+    <Compile Include="CodeServerSide\Entity\SystemBrokerRequest.cs" />
+    <Compile Include="CodeServerSide\Entity\SystemBrokerRequestSchedule.cs" />
     <Compile Include="CodeServerSide\Enums\BetOddType.cs" />
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
@@ -359,13 +359,10 @@
     <Compile Include="CodeServerSide\Enums\FileFormat.cs" />
     <Compile Include="CodeServerSide\Enums\LinkEntityStatus.cs" />
     <Compile Include="CodeServerSide\Enums\ResultModeType.cs" />
-    <Compile Include="CodeServerSide\Enums\ResultType.cs" />
     <Compile Include="CodeServerSide\Enums\GatherBehaviorMode.cs" />
     <Compile Include="CodeServerSide\Enums\RoiType.cs" />
     <Compile Include="CodeServerSide\Enums\RunTaskMode.cs" />
     <Compile Include="CodeServerSide\Enums\SportType.cs" />
-    <Compile Include="CodeServerSide\Enums\SystemStateBetType.cs" />
-    <Compile Include="CodeServerSide\Enums\SystemStateResultType.cs" />
     <Compile Include="CodeClientSide\ProjectControllerBase.cs" />
     <Compile Include="CodeClientSide\SquishItMinifier.cs" />
     <Compile Include="CodeClientSide\TransportType\SiteMapChangeFreq.cs" />

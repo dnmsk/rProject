@@ -41,6 +41,6 @@ namespace CommonUtils.WatchfulSloths.SlothMoveRules {
         /// <summary>
         /// Движение.
         /// </summary>
-        public abstract void Move();
+        public abstract void Move(int wakeUpInterval);
     }
 }
