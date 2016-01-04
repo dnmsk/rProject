@@ -40,9 +40,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Length);
                     return null;
                 }
-                foreach (var rawCompetitor in competitorsRaw.Where(cr => cr.CompetitoruniqueID == default(int))) {
-                    rawCompetitor.CompetitoruniqueID = groupBy[0].Key;
-                    rawCompetitor.Save();
+                if (groupBy.Length == 1) {
+                    foreach (var rawCompetitor in competitorsRaw.Where(cr => cr.CompetitoruniqueID == default(int))) {
+                        rawCompetitor.CompetitoruniqueID = groupBy[0].Key;
+                        rawCompetitor.Save();
+                    }
                 }
             }
             return CreateRawCompetitor(names, competitorsRaw, brokerType, languageType, sportType, genderType);
