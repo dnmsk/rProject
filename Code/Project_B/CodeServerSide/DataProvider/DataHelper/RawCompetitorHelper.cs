@@ -5,12 +5,9 @@ using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
-using IDEV.Hydra.DAO.DbFunctions;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeClientSide.TransportType.SubData;
 using Project_B.CodeServerSide.Data;
-using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
-using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Helper;
@@ -24,7 +21,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
 
-        public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
             var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource
                                                 .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
                                                 .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
@@ -39,7 +36,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     );
             if (competitorsRaw.Count > 1) {
                 var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
-                if (groupBy.Length != 1) {
+                if (groupBy.Length > 1) {
                     _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Length);
                     return null;
                 }
@@ -79,8 +76,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return competitorsRaw;
         }
 
-        public static List<RawCompetitor> CreateCompetitorAndDetect(LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawCompetitor> competitorFromRaw) {
-            var uniqueID = TryGetCompetitorUniqueByResult(genderType, names, competitionUnique, matchParsed);
+        public static List<RawCompetitor> DetectCompetitor(string[] names, int competitionUnique, MatchParsed matchParsed, List<RawCompetitor> competitorFromRaw) {
+            var uniqueID = TryGetCompetitorUniqueByResult(names, competitionUnique, matchParsed);
 
             if (uniqueID != null) {
                 competitorFromRaw.Each(raw => {
@@ -91,16 +88,16 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return competitorFromRaw;
         }
 
-        private static CompetitorUnique TryGetByFullEquality(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
+        private static CompetitorUnique TryGetByFullEquality(string[] names, int competitionUnique, MatchParsed matchParsed) {
             var competitorIDs = CompetitionItem.DataSource
                 .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionUnique)
                 .WhereBetween(CompetitionItem.Fields.Dateeventutc, matchParsed.DateUtc.AddHours(-5), matchParsed.DateUtc.AddHours(5), BetweenType.Inclusive)
                 .AsList(CompetitionItem.Fields.Competitoruniqueid1,CompetitionItem.Fields.Competitoruniqueid2)
                 .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
                 .Distinct();
-            var res = QueryHelper.FilterByGender(Competitor.DataSource.WhereIn(Competitor.Fields.ID, competitorIDs)
-                                                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameFull)),
-                                        Competitor.Fields.Gendertype, genderType, Competitor.Fields.CompetitoruniqueID);
+            var res = Competitor.DataSource.WhereIn(Competitor.Fields.ID, competitorIDs)
+                        .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(names, Competitor.Fields.NameFull))
+                        .AsList(Competitor.Fields.CompetitoruniqueID);
             if (res.Any()) {
                 var distinctIds = res.Select(r => r.CompetitoruniqueID).Distinct().ToArray();
                 if (distinctIds.Length == 1) {
@@ -110,11 +107,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return null;
         }
 
-        private static CompetitorUnique TryGetCompetitorUniqueByResult(GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed) {
+        private static CompetitorUnique TryGetCompetitorUniqueByResult(string[] names, int competitionUnique, MatchParsed matchParsed) {
             if (matchParsed.DateUtc == DateTime.MinValue) {
                 return null;
             }
-            var byFullEqiality = TryGetByFullEquality(genderType, names, competitionUnique, matchParsed);
+            var byFullEqiality = TryGetByFullEquality(names, competitionUnique, matchParsed);
             if (byFullEqiality != null) {
                 return byFullEqiality;
             }

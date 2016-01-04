@@ -35,8 +35,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 var competitors = new BrokerEntityBuilder<List<RawCompetitor>>(competitorStat)
                     .SetupValidateObject(competitorsRaw => competitorsRaw.SafeAny() && competitorsRaw.All(c => c.CompetitoruniqueID != default(int)))
-                    .SetupGetRaw(() => RawCompetitorHelper.GetRawCompetitor(brokerType, languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode))
-                    .SetupTryMatchRaw(algoMode, crs => RawCompetitorHelper.CreateCompetitorAndDetect(languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode, crs))
+                    .SetupGetRaw(() => RawCompetitorHelper.GetRawCompetitor(brokerType, languageType, sportType, genderType, names))
+                    .SetupTryMatchRaw(algoMode, crs => RawCompetitorHelper.DetectCompetitor(names, competitionUnique, matchParsed, crs))
                     .SetupCreateOriginal(algoMode, list => {
                         var uniqueID = new CompetitorUnique {
                             IsUsed = true

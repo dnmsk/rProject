@@ -24,7 +24,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData {
 
         private Func<T, T> _funcMatchRaw;
         public BrokerEntityBuilder<T> SetupTryMatchRaw(GatherBehaviorMode gatherBehaviorMode, Func<T, T> funcMatchRaw) {
-            if (gatherBehaviorMode.HasFlag(GatherBehaviorMode.CanDetectCompetition)) {
+            if (gatherBehaviorMode.HasFlag(GatherBehaviorMode.TryDetectAll)) {
                 _funcMatchRaw = funcMatchRaw;
             }
             return this;
