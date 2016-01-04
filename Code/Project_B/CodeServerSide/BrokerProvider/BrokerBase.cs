@@ -35,12 +35,12 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             RequestHelper = requestHelper;
         }
         
-        public static List<string> FormatCompetitionName(string competitionName) {
+        public static string[] FormatCompetitionName(string competitionName) {
             return competitionName.RemoveAllTags()
                                   .Replace("&nbsp;", " ")
                                   .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                   .Select(s => s.Trim())
-                                  .ToList();
+                                  .ToArray();
         }
 
         private static int _tries = 2;

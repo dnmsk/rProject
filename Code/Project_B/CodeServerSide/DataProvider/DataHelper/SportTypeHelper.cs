@@ -40,10 +40,10 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return mapByLang.TryGetValue(sportType, out name) ? name : sportType.ToString();
         }
 
-        public List<string> ExcludeSportTypeFromList(List<string> strings) {
+        public string[] ExcludeSportTypeFromList(IEnumerable<string> strings) {
             return strings
                 .Where(s => !_nameToSportType.ContainsKey(s.ToLower()))
-                .ToList();
+                .ToArray();
         } 
 
         public SportType this[IEnumerable<string> strToDetect] {

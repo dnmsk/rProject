@@ -24,7 +24,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
 
-        public static List<RawTemplateObj<CompetitorParsedTransport>> GetCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
             var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource
                                                 .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
                                                 .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
@@ -38,32 +38,20 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         RawCompetitor.Fields.Linkstatus
                     );
             if (competitorsRaw.Count > 1) {
-                var count = competitorsRaw.GroupBy(c => c.CompetitoruniqueID).Count();
-                if (count != 1) {
-                    _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), count);
+                var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
+                if (groupBy.Length != 1) {
+                    _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Length);
                     return null;
                 }
+                foreach (var rawCompetitor in competitorsRaw.Where(cr => cr.CompetitoruniqueID == default(int))) {
+                    rawCompetitor.CompetitoruniqueID = groupBy[0].Key;
+                    rawCompetitor.Save();
+                }
             }
-            var result = AppendRawNewNames(names, competitorsRaw, brokerType, languageType, sportType, genderType)
-                .Select(cr => new RawTemplateObj<CompetitorParsedTransport> {
-                    RawObject = { ID = cr.ID},
-                    Object = {
-                        LanguageType = languageType,
-                        SportType = sportType,
-                        GenderType = genderType,
-                        ID = cr.CompetitoruniqueID
-                    }
-                })
-                .ToList();
-
-            if (!competitorsRaw.Any() || competitorsRaw.All(c => c.CompetitoruniqueID == default(int))) {
-                result = CreateCompetitorAndDetect(languageType, sportType, genderType, names, competitionUnique, matchParsed, algoMode, result);
-            }
-
-            return result;
+            return CreateRawCompetitor(names, competitorsRaw, brokerType, languageType, sportType, genderType);
         }
 
-        private static List<RawCompetitor> AppendRawNewNames(string[] names, List<RawCompetitor> competitorsRaw, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType) {
+        public static List<RawCompetitor> CreateRawCompetitor(string[] names, List<RawCompetitor> competitorsRaw, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType) {
             var existNames = competitorsRaw.Select(cr => cr.Name).ToList();
             names = names
                 .Where(name => !existNames.Contains(name))
@@ -91,54 +79,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return competitorsRaw;
         }
 
-        private static List<RawTemplateObj<CompetitorParsedTransport>> CreateCompetitorAndDetect(LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawTemplateObj<CompetitorParsedTransport>> competitorFromRaw) {
-            var uniqueID = algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetitor) 
-                ? TryGetCompetitorUniqueByResult(genderType, names, competitionUnique, matchParsed) 
-                : null;
-
-            if (algoMode.HasFlag(GatherBehaviorMode.CreateNewLanguageName) && uniqueID != null && !Competitor.DataSource
-                        .WhereEquals(Competitor.Fields.CompetitoruniqueID, uniqueID.ID)
-                        .WhereEquals(Competitor.Fields.Languagetype, (short) languageType)
-                        .IsExists()) {
-                new Competitor {
-                    CompetitoruniqueID = uniqueID.ID,
-                    SportType = sportType,
-                    Datecreatedutc = DateTime.UtcNow,
-                    Languagetype = languageType,
-                    Name = names[0],
-                    Gendertype = genderType
-                }.Save();
-            }
-            var linkStatus = LinkEntityStatus.Undefined;
-            if (algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) && uniqueID == null) {
-                uniqueID = new CompetitorUnique {
-                    IsUsed = true
-                };
-                uniqueID.Save();
-                var competitor = new Competitor {
-                    CompetitoruniqueID = uniqueID.ID,
-                    SportType = sportType,
-                    Datecreatedutc = DateTime.UtcNow,
-                    Languagetype = languageType,
-                    Name = names[0],
-                    Gendertype = genderType
-                };
-                competitor.Save();
-                linkStatus = LinkEntityStatus.Original;
-            }
+        public static List<RawCompetitor> CreateCompetitorAndDetect(LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode, List<RawCompetitor> competitorFromRaw) {
+            var uniqueID = TryGetCompetitorUniqueByResult(genderType, names, competitionUnique, matchParsed);
 
             if (uniqueID != null) {
-                linkStatus = linkStatus == LinkEntityStatus.Undefined
-                    ? LinkEntityStatus.LinkByStatistics
-                    : linkStatus;
                 competitorFromRaw.Each(raw => {
-                    raw.Object.ID = uniqueID.ID;
-                    RawCompetitor.DataSource
-                        .WhereEquals(RawCompetitor.Fields.ID, raw.RawObject.ID)
-                        .Update(new Dictionary<Enum, DbFunction> {
-                            {RawCompetitor.Fields.CompetitoruniqueID, new DbFnConst(uniqueID.ID) },
-                            {RawCompetitor.Fields.Linkstatus, new DbFnConst((short)linkStatus) },
-                        });
+                    raw.CompetitoruniqueID = uniqueID.ID;
+                    raw.Linkstatus = LinkEntityStatus.LinkByStatistics;
                 });
             }
             return competitorFromRaw;

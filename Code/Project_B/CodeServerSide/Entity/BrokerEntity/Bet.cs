@@ -194,6 +194,23 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             set { ForceSetData(Fields.Datecreatedutc, value); }
         }
 
+        public IBet<int> GetLastBetForCompetitionItem(int competitionItemID, BrokerType broker) {
+            return DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .WhereEquals(Fields.CompetitionitemID, competitionItemID)
+                .WhereEquals(Fields.BrokerID, (short) broker)
+                .Sort(Fields.ID, SortDirection.Desc)
+                .First();
+        }
+
+        public IBetAdvanced<int> GetAdvancedBet() {
+            return GetJoinedEntity<IBetAdvanced<int>>();
+        }
+
+        public IBetAdvanced<int> CreateAdvancedBet() {
+            return new BetAdvanced();
+        }
+
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
         }

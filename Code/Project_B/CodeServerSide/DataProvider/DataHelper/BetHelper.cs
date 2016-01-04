@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IDEV.Hydra.DAO;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
@@ -97,12 +98,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return hasAnyFactor ? newBet : null;
         }
 
-        public static void SaveBetIfChanged<T>(int competitionItemID, BrokerType brokerType, SportType sportType,
+        public static void SaveBetIfChanged<T>(ProcessStat processStat, int competitionItemID, BrokerType brokerType, SportType sportType,
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
             if (newBet != null) {
                 var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null;
                 var createNewBet = !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
                 if (createNewBet) {
+                    processStat.CreateOriginalCount++;
                     newBet.CompetitionitemID = competitionItemID;
                     newBet.BrokerID = brokerType;
                 } else {

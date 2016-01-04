@@ -266,6 +266,9 @@
     <Compile Include="CodeServerSide\DataProvider\DataHelper\LiveResultToDbProc\Proc\ILiveResultProc.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\LiveResultToDbProc\Proc\TennisLiveResultProcessor.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\LiveResultToDbProc\Proc\VolleyballLiveResultProcessor.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\ProcessData\BrokerEntityBuilder.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\ProcessData\ProcessStat.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\ProcessData\SummaryProcessStat.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\QueryHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\RawCompetitionHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\RawCompetitionItemHelper.cs" />
@@ -277,7 +280,6 @@
     <Compile Include="CodeServerSide\DataProvider\DataHelper\SportTypeHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\FrontCompetitionProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\HistoryProvider.cs" />
-    <Compile Include="CodeServerSide\DataProvider\LiveProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ProjectProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ResultProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\StaticPageProvider.cs" />
@@ -301,6 +303,7 @@
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
     <Compile Include="CodeServerSide\Entity\BrokerEntity\CompetitionSpecifyUnique.cs" />
     <Compile Include="CodeServerSide\Entity\Helper\BrokerEntityIfaceCreator.cs" />
+    <Compile Include="CodeServerSide\Entity\Interface\IKeyBrokerEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ILinkStatusTyped.cs" />
     <Compile Include="CodeServerSide\Entity\Data\CompetitionItemRoiRow.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ICompetitor.cs" />

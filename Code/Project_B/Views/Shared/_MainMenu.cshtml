@@ -61,6 +61,7 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                             var routeDict = castedModel != null && castedModel.ControllerModel.Filter != null
                                 ? castedModel.ControllerModel.Filter.ToRoute()
                                 : new RouteValueDictionary();
+                            routeDict["id"] = SportType.Unknown;
                             <li><a href="@Url.Action("Index", currentController, routeDict)" @MarkActive("Index", currentController, currentAction, currentController, currentID.IsNullOrWhiteSpace())>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.SubHeaderAllCompetitions)</a></li>
                             foreach (var sportType in _sportTypesToNavigation) {
                                 routeDict["id"] = sportType;

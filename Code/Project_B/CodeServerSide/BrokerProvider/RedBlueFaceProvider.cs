@@ -82,7 +82,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 if (nameBlock.Count > 0) {
                     competitionNameFull.AddRange(FormatCompetitionName(nameBlock[0].InnerText));
                 }
-                var competiton = new CompetitionParsed(competitionNameFull);
+                var competiton = new CompetitionParsed(competitionNameFull.ToArray());
                 if (competiton.Type != SportType.Unknown) {
                     var matches = matchesBuilderFunc(listMatchBlockForCompetition, competiton.Type, dateTimeFixer);
                     if (matches.Any()) {

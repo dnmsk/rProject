@@ -8,6 +8,7 @@ using IDEV.Hydra.DAO.MassTools;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
@@ -21,12 +22,13 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public ResultProvider() : base(_logger) {}
 
-        public void SaveResults(CompetitionItemRawTransport competitionRawTransport, SportType sportType, FullResult fullResult) {
+        public void SaveResults(ProcessStat processStat, CompetitionItemRawTransport competitionRawTransport, SportType sportType, FullResult fullResult) {
             InvokeSafeSingleCall(() => {
+                processStat.TotalCount++;
                 if (competitionRawTransport == null || fullResult == null) {
                     return null;
                 }
-                RawCompetitionResultHelper.TrySaveOrUpdateResult(competitionRawTransport.RawCompetitionItemID, fullResult);
+                RawCompetitionResultHelper.TrySaveOrUpdateResult(processStat, competitionRawTransport.RawCompetitionItemID, fullResult);
                 if (competitionRawTransport.CompetitionItemID == default(int)) {
                     return null;
                 }
@@ -55,7 +57,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                         }
                         listSubResult.Save<CompetitionResultAdvanced, int>();
                     }
+                    processStat.CreateOriginalCount++;
                 }
+                processStat.FinallySuccessCount++;
                 return (object) null;
             }, null);
         }

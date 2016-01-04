@@ -20,7 +20,7 @@ namespace Project_B.CodeServerSide.Data.Result {
         public static string BuildStringFromResult(FullResult res) {
             return string.Format(_resultSerializeTpl, res.CompetitorResultOne, res.CompetitorResultTwo) + 
                 (res.SubResult != null && res.SubResult.Any()
-                    ? res.SubResult.Select(sr => string.Format(_resultSerializeTpl, sr.CompetitorResultOne, sr.CompetitorResultTwo)).StrJoin(string.Empty)
+                    ? res.SubResult.Where(sr => sr != null).Select(sr => string.Format(_resultSerializeTpl, sr.CompetitorResultOne, sr.CompetitorResultTwo)).StrJoin(string.Empty)
                     : string.Empty);
         }
 

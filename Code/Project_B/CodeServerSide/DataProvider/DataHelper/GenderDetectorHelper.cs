@@ -31,10 +31,10 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
         }
 
-        public List<string> ExcludGenderTypeFromList(List<string> strings) {
+        public string[] ExcludGenderTypeFromList(IEnumerable<string> strings) {
             return strings
                 .Where(s => !_nameToGender.ContainsKey(s.ToLower()))
-                .ToList();
+                .ToArray();
         }
 
         public string GetGenderName(GenderType genderType) {

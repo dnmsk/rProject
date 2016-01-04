@@ -2,12 +2,7 @@ using System;
 using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 
 namespace Project_B.CodeServerSide.Entity.Interface {
-    public interface ICompetitionItem : ISportTyped, IDateCreatedTyped {
-        /// <summary>
-        /// 
-        /// </summary>
-        int ID { get; set; }
-
+    public interface ICompetitionItem : ISportTyped, IDateCreatedTyped, IKeyBrokerEntity {
         /// <summary>
         /// 
         /// </summary>

@@ -1,9 +1,10 @@
 ﻿using Project_B.CodeServerSide.Data.Result;
+using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionResultHelper {
-        public static void TrySaveOrUpdateResult(int rawCompetitionItemID, FullResult fullResult) {
+        public static void TrySaveOrUpdateResult(ProcessStat processStat, int rawCompetitionItemID, FullResult fullResult) {
             if (rawCompetitionItemID == default(int)) {
                 return;
             }
@@ -16,6 +17,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 Rawresult = fullResult
             };
             competitionResultRaw.Insert();
+            processStat.CreateRawCount++;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IDEV.Hydra.DAO;
-using IDEV.Hydra.DAO.DbFunctions;
+using CommonUtils.Core.Logger;
 using Project_B.CodeServerSide.Data;
+using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Helper;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -13,16 +14,13 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionHelper {
-        public static RawTemplateObj<CompetitionSpecifyTransport> GetCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin) {
-            var rawCompetitionSpecify = GetRawCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin);
-            if (rawCompetitionSpecify == null || rawCompetitionSpecify.CompetitionSpecifyUniqueID == default(int)) {
-                return null;
-            }
-            return CreateCompetitionSpecifyRawObject(rawCompetitionSpecify.ID, rawCompetitionSpecify.RawCompetitionID, rawCompetitionSpecify, language, sportType, genderDetected);
-        }
-
-        private static RawCompetitionSpecify GetRawCompetitionSpecify(BrokerType brokerType, LanguageType language,
-            SportType sportType, GenderType genderDetected, List<string> nameOrigin) {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitionHelper).FullName);
+        
+        public static RawCompetitionSpecify GetRawCompetitionSpecify(BrokerType brokerType, LanguageType language,
+            SportType sportType, GenderType genderDetected, IEnumerable<string> nameOrigin) {
             var dbDataSource = RawCompetitionSpecify.DataSource
                                                     .WhereEquals(RawCompetitionSpecify.Fields.Languagetype, (short) language)
                                                     .WhereEquals(RawCompetitionSpecify.Fields.Sporttype, (short) sportType)
@@ -39,7 +37,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return rawCompetitionSpecify;
         }
 
-        private static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecifyRawObject(int rawID, int parentRawID, ICompetitionSpecify competitionSpecify, LanguageType language, SportType sportType, GenderType genderDetected) {
+        public static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecifyRawObject(int rawID, int parentRawID, ICompetitionSpecify competitionSpecify, LanguageType language, SportType sportType, GenderType genderDetected) {
             var result = new RawTemplateObj<CompetitionSpecifyTransport>();
             result.RawObject.ID = rawID;
             result.RawObject.ParentID = parentRawID;
@@ -49,60 +47,88 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             result.Object.GenderType = genderDetected;
 
             result.Object.CompetitionUniqueID = competitionSpecify.CompetitionuniqueID;
-            result.Object.CompetitionSpecifyUniqueID = competitionSpecify.CompetitionSpecifyUniqueID;
+            result.Object.ID = competitionSpecify.CompetitionSpecifyUniqueID;
             return result;
         }
-
-        public static RawTemplateObj<CompetitionSpecifyTransport> CreateCompetitionSpecify(BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, List<string> nameOrigin, List<string> nameOriginShort, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
-            var dbDataSource = RawCompetition.DataSource
-                                                      .WhereEquals(RawCompetition.Fields.Languagetype, (short)language)
-                                                      .WhereEquals(RawCompetition.Fields.Sporttype, (short)sportType)
-                                                      .WhereEquals(RawCompetition.Fields.Brokerid, (short)brokerType);
-            var filedToRetreive = new Enum[] {RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Linkstatus};
-            var competition = QueryHelper.FilterByGender(dbDataSource.Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(CompetitionHelper.ListStringToName(nameOriginShort), RawCompetition.Fields.Name)), 
-                                                RawCompetition.Fields.Gendertype, genderDetected, filedToRetreive).FirstOrDefault()
-                ?? BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOriginShort);
-
-            var competitionSpecifyId = default(int);
-            if (algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetition)) {
-                var competitionUnique = CompetitionHelper.TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
-                if (competitionUnique != null) {
-                    competition.CompetitionuniqueID = competitionUnique.ID;
-                    competition.Linkstatus = LinkEntityStatus.LinkByStatistics;
+        
+        public static RawCompetitionSpecify CreateCompetitionSpecify(ProcessStat competitionStat, BrokerType brokerType, LanguageType language, SportType sportType, GenderType genderDetected, string[] nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
+            var nameOriginShort = CompetitionHelper.GetShortCompetitionName(nameOrigin, sportType);
+            var competitionRaw = new BrokerEntityBuilder<RawCompetition>(competitionStat)
+                .SetupValidateObject(rawCompetition => rawCompetition.CompetitionuniqueID != default(int))
+                .SetupGetRaw(() => {
+                    var dbDataSource = RawCompetition.DataSource
+                        .WhereEquals(RawCompetition.Fields.Languagetype, (short)language)
+                        .WhereEquals(RawCompetition.Fields.Sporttype, (short)sportType)
+                        .WhereEquals(RawCompetition.Fields.Brokerid, (short)brokerType);
+                    var filedToRetreive = new Enum[] { RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Linkstatus };
+                    return QueryHelper.FilterByGender(dbDataSource.Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(CompetitionHelper.ListStringToName(nameOriginShort), RawCompetition.Fields.Name)),
+                                                        RawCompetition.Fields.Gendertype, genderDetected, filedToRetreive).FirstOrDefault();
+                })
+                .SetupCreateRaw(() => BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOriginShort))
+                .SetupTryMatchRaw(algoMode, entity => {
+                    var competitionUnique = CompetitionHelper.TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
+                    if (competitionUnique != null) {
+                        entity.CompetitionuniqueID = competitionUnique.ID;
+                        entity.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                    }
+                    return entity;
+                })
+                .SetupCreateOriginal(algoMode, rawCompetition => {
+                    var competition = QueryHelper.FilterByGender(Competition.DataSource
+                                                    .WhereEquals(Competition.Fields.Gendertype, (short)genderDetected)
+                                                    .WhereEquals(Competition.Fields.Languagetype, (short)language)
+                                                    .WhereEquals(Competition.Fields.Sporttype, (short)sportType)
+                                                    .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(CompetitionHelper.ListStringToName(nameOriginShort), Competition.Fields.Name)),
+                                                Competition.Fields.Gendertype,
+                                                genderDetected,
+                                                Competition.Fields.CompetitionuniqueID)
+                                            .FirstOrDefault();
+                    if (competition == null) {
+                        var competitionUnique = new CompetitionUnique {
+                            IsUsed = true
+                        };
+                        competitionUnique.Save();
+                        competition = new Competition {
+                            Datecreatedutc = DateTime.UtcNow,
+                            Languagetype = language,
+                            SportType = sportType,
+                            Name = CompetitionHelper.ListStringToName(nameOriginShort),
+                            Gendertype = genderDetected,
+                            CompetitionuniqueID = competitionUnique.ID
+                        };
+                        competition.Save();
+                    }
+                    rawCompetition.CompetitionuniqueID = competition.CompetitionuniqueID;
+                    rawCompetition.Linkstatus = LinkEntityStatus.Original;
+                    return rawCompetition;
+                })
+                .SetupFinally(rawCompetition => {
+                    if (algoMode.HasFlag(GatherBehaviorMode.CreateNewLanguageName)) {
+                        if (rawCompetition.CompetitionuniqueID != default(int) && !Competition.DataSource
+                            .WhereEquals(Competition.Fields.CompetitionuniqueID, rawCompetition.CompetitionuniqueID)
+                            .WhereEquals(Competition.Fields.Languagetype, (short)language)
+                            .IsExists()) {
+                            new Competition {
+                                CompetitionuniqueID = rawCompetition.CompetitionuniqueID,
+                                Datecreatedutc = DateTime.UtcNow,
+                                Gendertype = genderDetected,
+                                SportType = sportType,
+                                Name = CompetitionHelper.ListStringToName(nameOriginShort),
+                                Languagetype = language
+                            }.Save();
+                        }
+                    }
+                    rawCompetition.Save();
+                    return rawCompetition;
+                })
+                .MakeObject();
+            
+            return BrokerEntityIfaceCreator.CreateEntity<RawCompetitionSpecify>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOrigin, specify => {
+                specify.RawCompetitionID = competitionRaw.ID;
+                if (specify.CompetitionuniqueID == default(int) && competitionRaw.CompetitionuniqueID != default(int)) {
+                    specify.CompetitionuniqueID = competitionRaw.CompetitionuniqueID;
                 }
-            }
-            competition.Save();
-
-            var competitionSpecify = GetRawCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin)
-                ?? BrokerEntityIfaceCreator.CreateEntity<RawCompetitionSpecify>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOrigin, specify => {
-                    specify.RawCompetitionID = competition.ID;
-                });
-            if (competitionSpecify.CompetitionuniqueID == default(int) && competition.CompetitionuniqueID != default(int)) {
-                competitionSpecify.CompetitionuniqueID = competition.CompetitionuniqueID;
-            }
-            if (competitionSpecifyId != default(int) && algoMode.HasFlag(GatherBehaviorMode.CanDetectCompetition)) {
-                competitionSpecify.CompetitionSpecifyUniqueID = competitionSpecifyId;
-                competitionSpecify.Linkstatus = LinkEntityStatus.LinkByStatistics;
-            }
-            competitionSpecify.Save();
-            return CreateCompetitionSpecifyRawObject(competitionSpecify.ID, competition.ID, competitionSpecify, language, sportType, genderDetected);
-        }
-
-        public static RawTemplateObj<CompetitionSpecifyTransport> UpdateCompetitionParsedForUniqueIDs(RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyFromRaw, LinkEntityStatus linkEntityStatus) {
-            RawCompetition.DataSource
-                .WhereEquals(RawCompetition.Fields.ID, competitionSpecifyFromRaw.RawObject.ParentID)
-                .Update(new Dictionary<Enum, DbFunction> {
-                    { RawCompetition.Fields.CompetitionuniqueID, new DbFnConst(competitionSpecifyFromRaw.Object.CompetitionUniqueID) },
-                    { RawCompetition.Fields.Linkstatus, new DbFnConst((short)linkEntityStatus) },
-                });
-            RawCompetitionSpecify.DataSource
-                .WhereEquals(RawCompetitionSpecify.Fields.ID, competitionSpecifyFromRaw.RawObject.ID)
-                .Update(new Dictionary<Enum, DbFunction> {
-                    { RawCompetitionSpecify.Fields.CompetitionuniqueID, new DbFnConst(competitionSpecifyFromRaw.Object.CompetitionUniqueID) },
-                    { RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID, new DbFnConst(competitionSpecifyFromRaw.Object.CompetitionSpecifyUniqueID) },
-                    { RawCompetitionSpecify.Fields.Linkstatus, new DbFnConst((short)linkEntityStatus) },
-                });
-            return competitionSpecifyFromRaw;
+            });
         }
     }
 }

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
-using Project_B.CodeServerSide.Data;
-using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity;
-using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -19,14 +15,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (HistoryProvider).FullName);
 
         public HistoryProvider() : base(_logger) {}
-
-        public void SaveResult(BrokerData brokerData, GatherBehaviorMode algoMode) {
-            InvokeSafe(() => {
-                CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
-                    (type, sportType, itemRawTransport, matchParsed) => ProjectProvider.Instance.ResultProvider.SaveResults(itemRawTransport, sportType, matchParsed.Result));
-            });
-        }
-
+        
         public DateTime? GetPastDateToCollect(BrokerType brokerType, LanguageType languageType, SystemStateResultType pastDateType) {
             return InvokeSafe(() => {
                 var systemState = SystemStateResult.DataSource

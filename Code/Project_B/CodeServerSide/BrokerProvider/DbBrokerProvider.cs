@@ -47,13 +47,14 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 .GroupBy(rci => rci.RawcompetitionspecifyID)
                 .Select(ge => {
                     var rawCompetitionSpecify = rawCompetitionSpecifyMap[ge.Key];
-                    var formatCompetitionName = FormatCompetitionName(rawCompetitionSpecify.Name);
+                    var competitionName = rawCompetitionSpecify.Name;
                     if (rawCompetitionSpecify.Gendertype != GenderType.Default) {
                         var genderName = GenderDetectorHelper.Instance.GetGenderName(rawCompetitionSpecify.Gendertype);
                         if (!string.IsNullOrWhiteSpace(genderName)) {
-                            formatCompetitionName.Insert(0, genderName);
+                            competitionName = genderName + ". " + competitionName;
                         }
                     }
+                    var formatCompetitionName = FormatCompetitionName(competitionName);
                     var competitionParsed = new CompetitionParsed(formatCompetitionName, ge.First().SportType);
                     competitionParsed.Matches
                         .AddRange(ge.Select(rci => new MatchParsed {

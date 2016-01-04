@@ -32,66 +32,66 @@ namespace Project_B.CodeServerSide.Algorithm {
 
         public void Schedule() {
             if (_runTaskMode.HasFlag(RunTaskMode.RunTodayHistoryTask)) {
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForToday, TodayHistoryTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForToday(RunTaskMode.RunTodayHistoryTask), TodayHistoryTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunPastDateHistoryTask)) {
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForPastDate(), PastDateHistoryTaskTimespan, null));
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectHistoryForYesterday, TodayHistoryTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForPastDate(RunTaskMode.RunPastDateHistoryTask), PastDateHistoryTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectHistoryForYesterday(RunTaskMode.RunPastDateHistoryTask), TodayHistoryTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunLiveOddsTask)) {
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectLiveOddsWithResult, LiveOddsTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectLiveOddsWithResult(RunTaskMode.RunLiveOddsTask), LiveOddsTaskTimespan, null));
             }
             if (_runTaskMode.HasFlag(RunTaskMode.RunRegularOddsTask)) {
-                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(CollectRegularOdds, RegularOddsTaskTimespan, null));
+                MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(() => CollectRegularOdds(RunTaskMode.RunRegularOddsTask), RegularOddsTaskTimespan, null));
             }
         }
 
-        public object CollectRegularOdds() {
-            using (new MiniProfiler(GetProfilerString("CollectRegularOdds"))) {
+        public object CollectRegularOdds(RunTaskMode taskMode) {
+            using (new MiniProfiler(GetProfilerString(taskMode.ToString()))) {
                 var regularOdds = Broker.LoadRegular(_sportType, _languageType);
-                ProjectProvider.Instance.BetProvider.SaveRegular(regularOdds, _algoMode);
+                ProjectProvider.Instance.BetProvider.SaveBrokerState(regularOdds, _algoMode, taskMode);
                 ProjectProvider.Instance.BetProvider.SetStateRegular(_brokerType, DateTime.UtcNow);
                 return null;
             }
         }
 
-        public object CollectLiveOddsWithResult() {
-            using (new MiniProfiler(GetProfilerString("CollectLiveOddsWithResult"))) {
+        public object CollectLiveOddsWithResult(RunTaskMode taskMode) {
+            using (new MiniProfiler(GetProfilerString(taskMode.ToString()))) {
                 var liveData = Broker.LoadLive(_sportType, _languageType);
-                ProjectProvider.Instance.LiveProvider.ProcessdLiveParsed(liveData, _algoMode);
+                ProjectProvider.Instance.BetProvider.SaveBrokerState(liveData, _algoMode, taskMode);
                 return null;
             }
         }
 
-        public object CollectHistoryForPastDate(DateTime? pastDate = null) {
-            using (new MiniProfiler(GetProfilerString("CollectHistoryForPastDate"))) {
+        public object CollectHistoryForPastDate(RunTaskMode taskMode, DateTime? pastDate = null) {
+            using (new MiniProfiler(GetProfilerString(taskMode.ToString()))) {
                 var minDateToCollect = pastDate ?? ProjectProvider.Instance.HistoryProvider.GetPastDateToCollect(_brokerType, _languageType, SystemStateResultType.CollectForTwoDayAgo);
                 if (minDateToCollect != null) {
                     var historyData = Broker.LoadResult(minDateToCollect.Value, _sportType, _languageType);
-                    ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                    ProjectProvider.Instance.BetProvider.SaveBrokerState(historyData, _algoMode, taskMode);
                     ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Value, SystemStateResultType.CollectForTwoDayAgo);
                 }
                 return null;
             }
         }
 
-        public object CollectHistoryForYesterday() {
+        public object CollectHistoryForYesterday(RunTaskMode taskMode) {
             using (new MiniProfiler(GetProfilerString("CollectHistoryForYesterday"))) {
                 var minDateToCollect = DateTime.UtcNow.AddDays(-1);
                 if (minDateToCollect.Hour%3 == 0) {
                     var historyData = Broker.LoadResult(minDateToCollect, _sportType, _languageType);
-                    ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                    ProjectProvider.Instance.BetProvider.SaveBrokerState(historyData, _algoMode, taskMode);
                     ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, minDateToCollect.Date, SystemStateResultType.CollectForYesterday);
                 }
                 return null;
             }
         }
 
-        public object CollectHistoryForToday() {
-            using (new MiniProfiler(GetProfilerString("CollectHistoryForToday"))) {
+        public object CollectHistoryForToday(RunTaskMode taskMode) {
+            using (new MiniProfiler(GetProfilerString(taskMode.ToString()))) {
                 var todayUtc = DateTime.UtcNow.Date;
                 var historyData = Broker.LoadResult(todayUtc, _sportType, _languageType);
-                ProjectProvider.Instance.HistoryProvider.SaveResult(historyData, _algoMode);
+                ProjectProvider.Instance.BetProvider.SaveBrokerState(historyData, _algoMode, taskMode);
                 ProjectProvider.Instance.HistoryProvider.SetDateCollectedWithState(_brokerType, _languageType, todayUtc, SystemStateResultType.CollectForToday);
                 return null;
             }

@@ -56,7 +56,10 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         /// 
         /// </summary>
         public FullResult Rawresult {
-            get { return ResultBuilder.BuildResultFromString(SportType.Unknown, (string) this[Fields.Rawresultstring]); }
+            get {
+                var resString = (string) this[Fields.Rawresultstring];
+                return string.IsNullOrWhiteSpace(resString) ? null : ResultBuilder.BuildResultFromString(SportType.Unknown, resString);
+            }
             set { ForceSetData(Fields.Rawresultstring, ResultBuilder.BuildStringFromResult(value)); }
         }
 

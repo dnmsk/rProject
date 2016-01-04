@@ -65,5 +65,9 @@ namespace Project_B.CodeServerSide.Entity.Interface {
 
         bool Save();
         TE GetJoinedEntity<TE>();
+
+        IBet<T> GetLastBetForCompetitionItem(int competitionItem, BrokerType broker);
+        IBetAdvanced<T> GetAdvancedBet();
+        IBetAdvanced<T> CreateAdvancedBet();
     }
 }
