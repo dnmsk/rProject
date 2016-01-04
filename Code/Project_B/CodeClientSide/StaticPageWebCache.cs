@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using MainLogic;
@@ -10,17 +11,17 @@ namespace Project_B.CodeClientSide {
     public class StaticPageWebCache<K, V> where V : StaticPageTransport {
         private readonly Func<Dictionary<K, List<V>>> _dataGetter;
         private readonly Func<K, K> _normalizeKey;
-        private Dictionary<K, Dictionary<LanguageType, V>> _dictionaryCache;
+        private ConcurrentDictionary<K, Dictionary<LanguageType, V>> _dictionaryCache;
         public StaticPageWebCache(Func<Dictionary<K, List<V>>> dataGetter, Func<K, K> normalizeKey) {
             _dataGetter = dataGetter;
             _normalizeKey = normalizeKey;
-            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(RebuildCache, new TimeSpan(0, 1, 0), null));
+            MainLogicProvider.WatchfulSloth.SetMove(new SlothMoveByTimeSingle<object>(RebuildCache, TimeSpan.FromMinutes(10), null));
             RebuildCache();
         }
 
         private object RebuildCache() {
             var itemsList = _dataGetter();
-            var newCache = new Dictionary<K, Dictionary<LanguageType, V>>();
+            var newCache = new ConcurrentDictionary<K, Dictionary<LanguageType, V>>();
             foreach (var itemList in itemsList) {
                 Dictionary<LanguageType, V> languageItemCache;
                 var key = _normalizeKey(itemList.Key);

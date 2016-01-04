@@ -107,10 +107,17 @@ namespace CommonUtils.ExtendedTypes {
         }
 
         private void LogError(string actionMethod, object parsObj, Exception e) {
-            var parsStr = parsObj != null
-                ? new JavaScriptSerializer().Serialize(parsObj)
-                : "empty";
-            _logger.Error(string.Format("Ошибка при вызове метода {0}. Параметры: {1} {2}{3}", actionMethod, parsStr, Environment.NewLine, e));
+            string formatString = null;
+            try {
+                var parsStr = parsObj != null
+                    ? new JavaScriptSerializer() {RecursionLimit = 200}.Serialize(parsObj)
+                    : "empty";
+                formatString = string.Format("Ошибка при вызове метода {0}. Параметры: {1} {2}{3}", actionMethod, parsStr, Environment.NewLine, e);
+            } catch (Exception ex) {
+                formatString = string.Format("Ошибка при вызове метода {0}. Исключение сериализации: {1} {2}{3}", actionMethod, ex, Environment.NewLine, e);
+            } finally {
+                _logger.Error(formatString);
+            }
         }
 
         /// <summary>
