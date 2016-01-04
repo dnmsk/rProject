@@ -20,6 +20,10 @@ namespace Project_B.CodeServerSide.Entity {
         /// <summary>
         /// 
         /// </summary>
+            [DBField(DbType.Int16)] ID,
+        /// <summary>
+        /// 
+        /// </summary>
             [DBField(DbType.Int16)] BrokerID,
 
         /// <summary>
@@ -74,6 +78,15 @@ namespace Project_B.CodeServerSide.Entity {
         /// 
         /// </summary>
         public SystemBrokerRequestSchedule(Hashtable ht) : base(ht) {}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BrokerType ID {
+            get { return (BrokerType) (short) this[Fields.ID]; }
+            set { ForceSetData(Fields.ID, value); }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -147,7 +160,7 @@ namespace Project_B.CodeServerSide.Entity {
 
 
         public override Enum[] KeyFields {
-            get { return new[] { (Enum) Fields.BrokerID }; }
+            get { return new[] { (Enum) Fields.ID }; }
         }
     }
 }
