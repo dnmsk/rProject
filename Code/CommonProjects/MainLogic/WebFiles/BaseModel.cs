@@ -19,7 +19,7 @@ namespace MainLogic.WebFiles {
             ConfigurePolicyStore(UserPolicyGlobal.IsBot, (sessionModule, mainLogicProvider) => sessionModule.GuestID == UserAgentValidationPolicy.BOT_GUID);
             ConfigurePolicyStore(UserPolicyGlobal.IsStatisticsDisabled, (sessionModule, mainLogicProvider) => {
                 var configurationProperty = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
-                return configurationProperty == null || configurationProperty.Contains(sessionModule.AccountID);
+                return configurationProperty != null && configurationProperty.Contains(sessionModule.AccountID);
             });
             ConfigurePolicyStore(UserPolicyGlobal.AccountEmail, (sessionModule, mainLogicProvider) => {
                 if (sessionModule.IsAuthenticated()) {
