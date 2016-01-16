@@ -6,6 +6,7 @@ using System.Web;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
@@ -35,22 +36,22 @@ namespace Spywords_Project.Code.Algorithms {
                 var processGoogle = false;
                 var processYandex = false;
 
-                new Thread(() => {
+                TaskRunner.Instance.AddAction(() => {
                     try {
                         SaveDomains(phrase, GetGoogleDomains(phrase), SearchEngine.Google);
                     } catch (Exception ex) {
                         _logger.Error(ex);
                     }
                     processGoogle = true;
-                }).Start();
-                new Thread(() => {
+                });
+                TaskRunner.Instance.AddAction(() => {
                     try {
                         SaveDomains(phrase, GetYandexDomains(phrase), SearchEngine.Yandex);
                     } catch (Exception ex) {
                         _logger.Error(ex);
                     }
                     processYandex = true;
-                }).Start();
+                });
 
                 while (!processYandex || !processGoogle) {
                     Thread.Sleep(100);

@@ -156,13 +156,16 @@
     <Compile Include="Code\Providers\PhraseProvider.cs" />
     <Compile Include="Code\QueryBaseForm.cs" />
     <Compile Include="Code\QueryProcessor.cs" />
+    <Compile Include="Code\SpywordsActions.cs" />
     <Compile Include="Code\SpywordsQueryWrapper.cs" />
     <Compile Include="Code\Statuses\DomainStatus.cs" />
     <Compile Include="Code\Statuses\PhraseStatus.cs" />
     <Compile Include="Code\Statuses\SearchEngine.cs" />
     <Compile Include="Code\Statuses\SourceType.cs" />
+    <Compile Include="Code\TransportData\DomainTransport.cs" />
     <Compile Include="Code\XPathQuery.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DomainController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ContextPhraseController.cs" />
     <Compile Include="Controllers\SearchPhraseController.cs" />
@@ -215,6 +218,7 @@
     <Content Include="Views\ContextPhrase\PhraseDomains.cshtml" />
     <Content Include="Views\SearchPhrase\Index.cshtml" />
     <Content Include="Views\SearchPhrase\PhraseDomains.cshtml" />
+    <Content Include="Views\Domain\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

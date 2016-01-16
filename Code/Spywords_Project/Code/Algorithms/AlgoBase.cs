@@ -74,7 +74,7 @@ namespace Spywords_Project.Code.Algorithms {
         }
 
         private static readonly object _domainLocker = new object();
-        protected static DomainEntity GetDomainEntity(string domain) {
+        public static DomainEntity GetDomainEntity(string domain) {
             var d = DomainExtension.DePunycodeDomain(domain.ToLower());
             lock (_domainLocker) {
                 var domainEntity = DomainEntity.DataSource

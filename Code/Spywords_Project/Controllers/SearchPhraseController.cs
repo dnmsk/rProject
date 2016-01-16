@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
+using Spywords_Project.Code;
 using Spywords_Project.Code.Providers;
 using Spywords_Project.Code.Statuses;
 using Spywords_Project.Models;
@@ -15,17 +16,20 @@ namespace Spywords_Project.Controllers {
     public class SearchPhraseController : ApplicationControllerBase {
         // GET: Phrase
         public ActionResult Index() {
+            LogAction(SpywordsActions.SearchPhraseIndex, null);
             var phrases = new PhraseProvider().GetPhrasesForAccount(CurrentUser.AccountID, SourceType.Search);
             return View(new PhraseModel(GetBaseModel(), phrases));
         }
 
         [HttpPost]
         public ActionResult AddPhrase(string phrase) {
+            LogAction(SpywordsActions.SearchPhraseAddPhrase, null);
             new PhraseProvider().AddPhrase(CurrentUser.AccountID, phrase, SourceType.Search);
             return RedirectToAction("Index");
         }
 
         public ActionResult PhraseDomains(int id) {
+            LogAction(SpywordsActions.SearchPhrasePhraseDomains, id);
             var phraseProvider = new PhraseProvider();
             var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Search);
             var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Search);
@@ -33,6 +37,7 @@ namespace Spywords_Project.Controllers {
         }
 
         public ActionResult ExportPrase(int id) {
+            LogAction(SpywordsActions.SearchPhraseExportPrase, id);
             var phraseProvider = new PhraseProvider();
             var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Search);
             var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Search);

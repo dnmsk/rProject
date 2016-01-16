@@ -11,5 +11,6 @@
         ProxyString,
         RefererString,
         ContentTypeString,
+        MaximumAutomaticRedirectionsInt
     }
 }

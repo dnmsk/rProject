@@ -7,11 +7,10 @@ using System.Web.Security;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
 using CommonUtils.WatchfulSloths.WatchfulThreads;
 using MainLogic.Code;
 using MainLogic.Transport;
-using MainLogic.WebFiles.UserPolicy.Enum;
+using MainLogic.WebFiles.UserPolicy;
 using MainLogic.Wrapper;
 
 namespace MainLogic.WebFiles {

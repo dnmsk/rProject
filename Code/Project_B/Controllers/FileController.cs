@@ -6,21 +6,18 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
 using CommonUtils.WatchfulSloths.WatchfulThreads;
 using MainLogic.WebFiles;
 using MainLogic.WebFiles.Policy;
-using MainLogic.WebFiles.UserPolicy.Enum;
+using MainLogic.WebFiles.UserPolicy;
 using Project_B.CodeClientSide;
 using Project_B.CodeServerSide.DataProvider;
-using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.Controllers {
-    public class FileController : ApplicationControllerBase {
+    public class FileController : FileControllerBase {
         private const string _fileStorePathConfig = "FileStorePath";
         private const int _fileHashLength = 4;
         private const int _subFolderCnt = 100;
-        private const int _maxFileLength = 1 * 1024 * 1024;
         private static readonly string _imageStorePath;
         private readonly static TimeSpan _cacheDays = TimeSpan.FromDays(365);
         protected override bool EnableStoreRequestData => false;
@@ -63,36 +60,7 @@ namespace Project_B.Controllers {
             var file = GetFilesFromRequest(baseRequest).Values.First();
             return UploadImage(fileID, file.Item1, file.Item2);
         }
-
-        private static Dictionary<string, Tuple<FileFormat, byte[]>> GetFilesFromRequest(HttpRequestBase baseRequest) {
-            var files = new Dictionary<string, Tuple<FileFormat, byte[]>>();
-            for (var i = 0; i < baseRequest.Files.Count; i++) {
-                var file = baseRequest.Files[i];
-                if (file != null && file.ContentLength != 0) {
-                    var mimeTypeSplitted = file.ContentType.ToLower().Split('/');
-                    if (file.ContentLength > _maxFileLength) {
-                        continue;
-                    }
-                    var fileContent = new byte[file.ContentLength];
-                    file.InputStream.Read(fileContent, 0, file.ContentLength);
-                    FileFormat imageFormat;
-                    switch (mimeTypeSplitted[1]) {
-                        case "png":
-                            imageFormat = FileFormat.Png;
-                            break;
-                        case "jpeg":
-                        case "jpg":
-                            imageFormat = FileFormat.Jpeg;
-                            break;
-                        default:
-                            continue;
-                    }
-                    files[file.FileName] = new Tuple<FileFormat, byte[]>(imageFormat, fileContent);
-                }
-            }
-            return files;
-        }
-
+        
         private static List<short> UploadBinaryFiles(IEnumerable<Tuple<FileFormat, byte[]>> files, int fileCountLimit) {
             var uploadImages = new List<short>();
             foreach (var file in files.TakeWhile(file => uploadImages.Count < fileCountLimit)) {

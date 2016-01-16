@@ -19,7 +19,7 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
         private readonly HashSet<WatchfulThread> _watchfulThreadsInRunner;
         private readonly ConcurrentQueue<Action<WatchfulThread>> _actionsToExecute;
         private const int _minThreads = 4;
-        private const int _maxThreads = 18;
+        private const int _maxThreads = 36;
         private static readonly long _updaMinThreadsTimeout = (long)TimeSpan.FromMinutes(5).TotalMilliseconds;
         private static readonly long _logTraceTimeout = (long)TimeSpan.FromMinutes(30).TotalMilliseconds;
 

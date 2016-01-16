@@ -85,6 +85,8 @@
     <Compile Include="WebFiles\BaseModel.cs" />
     <Compile Include="WebFiles\ExpectedValuesConstraint.cs" />
     <Compile Include="WebFiles\ExtendedModelBinder.cs" />
+    <Compile Include="WebFiles\FileControllerBase.cs" />
+    <Compile Include="WebFiles\FileFormat.cs" />
     <Compile Include="WebFiles\GlobalAsaxBase.cs" />
     <Compile Include="WebFiles\IVirtualFile.cs" />
     <Compile Include="WebFiles\LogActionId.cs" />

@@ -5,7 +5,6 @@ using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.KangooCache;
 using MainLogic.Code;
 using MainLogic.WebFiles.UserPolicy;
-using MainLogic.WebFiles.UserPolicy.Enum;
 
 namespace MainLogic.WebFiles {
     public class BaseModel {

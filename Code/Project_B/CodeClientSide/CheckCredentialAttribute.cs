@@ -2,7 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using MainLogic.WebFiles;
-using MainLogic.WebFiles.UserPolicy.Enum;
+using MainLogic.WebFiles.UserPolicy;
 using Project_B.CodeClientSide.Enums;
 
 namespace Project_B.CodeClientSide {

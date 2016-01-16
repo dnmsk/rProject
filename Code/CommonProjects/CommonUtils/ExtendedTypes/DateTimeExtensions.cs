@@ -2,6 +2,12 @@
 using System.Globalization;
 
 namespace CommonUtils.ExtendedTypes {
+    public enum DateRoundType : short {
+        Second = 0,
+        Minute = 1,
+        Hour = 2,
+        Day = 3
+    }
     public static class DateTimeExtensions {
         public static DateTime StartOfWeek(this DateTime date) {
             CultureInfo ci = new CultureInfo("ru-RU");
@@ -21,13 +27,6 @@ namespace CommonUtils.ExtendedTypes {
                     return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, (dateTime.Second / divider) * 10);
             }
             return dateTime;
-        }
-
-        public enum DateRoundType : short {
-            Second = 0,
-            Minute = 1,
-            Hour = 2,
-            Day = 3
         }
     }
 }

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using IDEV.Hydra.DAO.MassTools;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
+using Spywords_Project.Code.TransportData;
 
 namespace Spywords_Project.Code.Algorithms {
     public class CollectEmailPhoneFromDomain : AlgoBase {
@@ -17,39 +19,60 @@ namespace Spywords_Project.Code.Algorithms {
         protected override void DoAction() {
             var entityToProcess = GetEntitiesToProcess();
             foreach (var domainEntity in entityToProcess) {
-                domainEntity.Status |= DomainStatus.Loaded;
-                domainEntity.Datecollected = DateTime.UtcNow;
-                try {
-                    var siteContent = WebRequestHelper.GetContentWithStatus("http://" + DomainExtension.PunycodeDomain(domainEntity.Domain));
-                    domainEntity.Content = siteContent.Item2;
+                TaskRunner.Instance.AddAction(() => {
+                    GeDomainData(domainEntity);
+                });
+            }
+        }
 
-                    var emails = GetEmailFromContent(siteContent.Item2);
-                    if (emails != null) {
-                        emails.Select(e => new Domainemail {
-                                                DomainID = domainEntity.ID,
-                                                Datecreated = DateTime.UtcNow,
-                                                Email = e
-                                            })
-                              .ToList()
-                              .Save<Domainemail, int>();
-                        domainEntity.Status |= DomainStatus.EmailPhoneCollected;
-                    }
-                    var phones = GetPhoneFromContent(siteContent.Item2);
-                    if (phones != null) {
-                        phones.Select(ph => new Domainphone {
-                                                DomainID = domainEntity.ID,
-                                                Datecreated = DateTime.UtcNow,
-                                                Phone = ph
-                                            })
-                              .ToList()
-                              .Save<Domainphone, int>();
-                        domainEntity.Status |= DomainStatus.EmailPhoneCollected;
-                    }
-                } catch (Exception ex) {
-                    Logger.Error(ex);
-                    domainEntity.Status |= DomainStatus.LoadedError;
+        private static void GeDomainData(DomainEntity domainEntity) {
+            domainEntity.Status |= DomainStatus.Loaded;
+            domainEntity.Datecollected = DateTime.UtcNow;
+
+            var domainInfo = GetDomainInfo(domainEntity.Domain);
+            if (domainInfo != null) {
+                domainEntity.Content = domainInfo.Content;
+
+                if (domainInfo.Emails != null) {
+                    domainInfo.Emails.Select(e => new Domainemail {
+                        DomainID = domainEntity.ID,
+                        Datecreated = DateTime.UtcNow,
+                        Email = e
+                    })
+                                .ToList()
+                                .Save<Domainemail, int>();
+                    domainEntity.Status |= DomainStatus.EmailPhoneCollected;
                 }
-                domainEntity.Save();
+                if (domainInfo.Phones != null) {
+                    domainInfo.Phones.Select(ph => new Domainphone {
+                        DomainID = domainEntity.ID,
+                        Datecreated = DateTime.UtcNow,
+                        Phone = ph
+                    })
+                                .ToList()
+                                .Save<Domainphone, int>();
+                    domainEntity.Status |= DomainStatus.EmailPhoneCollected;
+                }
+            } else {
+                domainEntity.Status |= DomainStatus.LoadedError;
+            }
+
+            domainEntity.Save();
+        }
+
+        public static DomainTransport GetDomainInfo(string domain) {
+            try {
+                var siteContent =
+                    WebRequestHelper.GetContentWithStatus("http://" + DomainExtension.PunycodeDomain(domain));
+                return new DomainTransport {
+                    Domain = domain,
+                    Content = siteContent.Item2,
+                    Emails = GetEmailFromContent(siteContent.Item2),
+                    Phones = GetPhoneFromContent(siteContent.Item2)
+                };
+            } catch (Exception ex) {
+                Logger.Error(ex);
+                return null;
             }
         }
 
@@ -65,7 +88,8 @@ namespace Spywords_Project.Code.Algorithms {
             "calltouch.ru",
             "rating@mail.ru"
         };
-        private static string[] GetEmailFromContent(string content) {
+
+        public static string[] GetEmailFromContent(string content) {
             var emails = _emailRegex.Matches(content);
             var result = new List<string>();
             foreach (Match emailMatch in emails) {
@@ -86,7 +110,8 @@ namespace Spywords_Project.Code.Algorithms {
         }
 
         private static readonly Regex _phoneRegex = new Regex(@"[: \.>](\+7|8)?[ (-]{0,2}\d{3}[ )-]{0,4}((\d{3}[ -]{0,3}\d{2}[ -]{0,3}\d{2})|(\d{3}[ -]{0,3}\d{1}[ -]\d{3})|(\d{3}[ -]{0,3}\d{4})|(\d{2}[ -]{0,3}\d{2}[ -]{0,3}\d{2}[ -]{0,3}\d{1}))[ <\.]", REGEX_OPTIONS);
-        private static string[] GetPhoneFromContent(string content) {
+
+        public static string[] GetPhoneFromContent(string content) {
             var phones = _phoneRegex.Matches(content);
             var result = new List<string>();
             foreach (Match phone in phones) {

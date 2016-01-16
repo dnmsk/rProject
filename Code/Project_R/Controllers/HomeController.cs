@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using CommonUtils.Code;
 using MainLogic.WebFiles;
-using MainLogic.WebFiles.UserPolicy.Enum;
+using MainLogic.WebFiles.UserPolicy;
 
 namespace Project_R.Controllers {
     public class HomeController : ApplicationControllerBase {

@@ -6,8 +6,8 @@ using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using MainLogic.WebFiles;
 using Project_B.CodeServerSide.Entity;
-using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
     public class WebFileProvider : SafeInvokerBase {

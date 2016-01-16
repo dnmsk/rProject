@@ -4,6 +4,8 @@ using CommonUtils.Core.Logger;
 
 namespace CommonUtils.WatchfulSloths.WatchfulThreads {
     internal class WatchfulThread : IDisposable {
+        public int ThreadID => _thread.ManagedThreadId;
+
         private readonly Action<WatchfulThread> _onDisposeThreadAction;
 
         /// <summary>
@@ -20,9 +22,9 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
             _onDisposeThreadAction = onDisposeThreadAction;
             _eventSlim = new ManualResetEventSlim(false);
             _onWorkDoneAction = act => {
-                onWorkDoneAction(act);
                 _action = null;
                 _eventSlim?.Reset();
+                onWorkDoneAction(act);
             };
             _thread = new Thread(Action);
             _thread.Start();
@@ -68,6 +70,10 @@ namespace CommonUtils.WatchfulSloths.WatchfulThreads {
                     _onWorkDoneAction(this);
                 }
             }
+        }
+
+        public override int GetHashCode() {
+            return ThreadID;
         }
     }
 }

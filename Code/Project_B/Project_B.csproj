@@ -356,7 +356,6 @@
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
     <Compile Include="CodeServerSide\Enums\LanguageType.cs" />
-    <Compile Include="CodeServerSide\Enums\FileFormat.cs" />
     <Compile Include="CodeServerSide\Enums\LinkEntityStatus.cs" />
     <Compile Include="CodeServerSide\Enums\ResultModeType.cs" />
     <Compile Include="CodeServerSide\Enums\GatherBehaviorMode.cs" />

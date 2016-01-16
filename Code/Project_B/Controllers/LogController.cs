@@ -3,7 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
-using MainLogic.WebFiles.UserPolicy.Enum;
+using MainLogic.WebFiles.UserPolicy;
 using Project_B.CodeClientSide;
 
 namespace Project_B.Controllers {

@@ -50,6 +50,9 @@ namespace CommonUtils.Code.WebRequestData {
                     case WebRequestParamType.ContentTypeString:
                         httpWebRequest.ContentType = ConvertToTypeT<string, WebRequestParamString>(httpWebRequest.ContentType, webRequestParam.Value);
                         break;
+                    case WebRequestParamType.MaximumAutomaticRedirectionsInt:
+                        httpWebRequest.MaximumAutomaticRedirections = ConvertToTypeT<int, WebRequestParamInt>(httpWebRequest.MaximumAutomaticRedirections, webRequestParam.Value);
+                        break;
                     /*
                     case WebRequestParamType.AcceptString:
                         break;

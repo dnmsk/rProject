@@ -55,7 +55,7 @@ namespace Spywords_Project.Code.Providers {
                 var phraseModels = Phrase.DataSource
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
-                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, (short) sourceType), Oper.NotEq, default(short))
                     .AsList()
                     .Select(ph => new PhraseEntityModel {
                         PhraseID = ph.ID,
@@ -80,7 +80,7 @@ namespace Spywords_Project.Code.Providers {
                     .Join(JoinType.Inner, Domainphrase.Fields.DomainID, DomainEntity.Fields.ID, RetrieveMode.NotRetrieve)
                     .Join(JoinType.Inner, Phrase.Fields.ID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
                     .WhereIn(Phrase.Fields.ID, phraseModels.Select(pm => pm.PhraseID))
-                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, (short)sourceType), Oper.NotEq, default(short))
                     .GroupBy(Phrase.Fields.ID)
                     .AsGroups(
                         totalDomains,
@@ -103,7 +103,7 @@ namespace Spywords_Project.Code.Providers {
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
-                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, (short)sourceType), Oper.NotEq, default(short))
                     .First();
                 if (phrase == null) {
                     return null;
@@ -129,8 +129,8 @@ namespace Spywords_Project.Code.Providers {
                     .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.ID, accountPhraseID)
-                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
-                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, sourceType), Oper.NotEq, default(short))
+                    .Where(new DbFnSimpleOp(Phraseaccount.Fields.SourceType, FnMathOper.BitwiseAnd, (short)sourceType), Oper.NotEq, default(short))
+                    .Where(new DbFnSimpleOp(Domainphrase.Fields.SourceType, FnMathOper.BitwiseAnd, (short)sourceType), Oper.NotEq, default(short))
                     .Sort(DomainEntity.Fields.Domain, SortDirection.Asc)
                     .AsList(
                         DomainEntity.Fields.ID,

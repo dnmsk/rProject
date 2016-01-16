@@ -1,0 +1,36 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Поиск контактов на сайте";
+}
+<br />
+<h2>Поиск контактных данных на сайте</h2>
+<br />
+<ul>
+    <li><h5>Вставьте адреса в поле или выберите файл. <small>Правило одно: 1 сайт - 1 строка</small></h5></li>
+    <li><h5>Нажмите кнопку.</h5></li>
+    <li><h5>Подождите некоторое время. <small>Например, для 1500 адресов потребуется около 20-50 секунд</small></h5></li>
+    <li><h5><b>Сохраните</b> полученный от сервиса .CSV файл результатов. <small>В Excel укажите формат всех ячеек: текстовый</small></h5></li>
+    <li><h4>Порядок введеных адресов сохраняется! <small>Пустые строки останутся для форматирования, облегчаем вставку в Excel</small></h4></li>
+</ul>
+<br/>
+<div class="container">
+    <div class="col-sm-6" style="border-right: solid 2px black; margin-right: -2px;">
+        <h3>Загрузка из поля ввода.<br /><small>Например, можно вставить целую колонку из Excel</small></h3>
+        <br />
+        @using (Html.BeginForm("FromRaw", "Domain", FormMethod.Post)) {
+            <textarea name="domains" rows="10" cols="70" style="max-width: 100%;" placeholder="Введите адреса..."></textarea>
+            <br/>
+            <button class="btn btn-success" type="submit">Получить контакты</button>
+        }
+    </div>
+    <div class="col-sm-6">
+        <h3>Загрузка из файла.<br/><small>Поддерживается формат txt и csv без разделителей</small></h3>
+        <br />
+        @using (Html.BeginForm("FromFile", "Domain", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+            <input type="file" name="file"/>
+            <br />
+            <button class="btn btn-success" type="submit">Получить из файла</button>
+        }
+    </div>
+</div>

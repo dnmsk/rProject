@@ -1,4 +1,4 @@
-﻿namespace MainLogic.WebFiles.UserPolicy.Enum {
+﻿namespace MainLogic.WebFiles.UserPolicy {
     public enum UserPolicyGlobal : short {
         Undefined = 0,
         IsAuthenticated = 1,
