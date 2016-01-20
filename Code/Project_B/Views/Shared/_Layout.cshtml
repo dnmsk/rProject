@@ -3,6 +3,9 @@
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @model Project_B.Models.StaticPageBaseModel
+@{
+    var routeValues = new {area = ""};
+}
 
 <!DOCTYPE html>
 <html>
@@ -27,8 +30,8 @@
         window.ninjaBag.links = new window.ninjaBag.baseObjects.Store(@Html.Raw(
             Json.Encode(new {
                 Log = new {
-                    JsError = Url.Action("JsError", "Log"),
-                    Feature = Url.Action("Feature", "Log")
+                    JsError = Url.Action("JsError", "Log", routeValues),
+                    Feature = Url.Action("Feature", "Log", routeValues)
                 }
             })));
         window.ninjaBag.documentObjects.append(@Html.Raw(Json.Encode(new {

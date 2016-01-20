@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
-using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.Models {
     public class ExternalLoginConfirmationViewModel {

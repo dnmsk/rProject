@@ -42,31 +42,6 @@ namespace Sandbox {
         static void Main(string[] args) {
             try {
                 RegisterDB();
-                var fileContent = File.ReadAllLines("e:\\domains.csv");
-                for (var index = 0; index < fileContent.Length; index++) {
-                    var s = fileContent[index];
-                    if (s.IsNullOrWhiteSpace()) {
-                        continue;
-                    }
-
-                    var index1 = index;
-                    _actionsToExecute.Enqueue(() => CollectAndWriteToArray(s, fileContent, index1)); 
-                }
-                50.Steps(i => {
-                    new Thread(() => {
-                        Action act;
-                        while (_actionsToExecute.TryDequeue(out act)) {
-                            act();
-                        }
-                    }).Start();
-                });
-
-
-                while (_actionsToExecute.Any()) {
-                    Thread.Sleep(1000);
-                }
-
-                File.WriteAllLines("e:\\domains_collected.csv", fileContent, Encoding.GetEncoding(1251));
 
                 Console.WriteLine("End: " + DateTime.Now);
                 while (true) {

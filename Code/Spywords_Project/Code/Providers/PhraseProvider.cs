@@ -68,7 +68,7 @@ namespace Spywords_Project.Code.Providers {
                         DomainsCount = 0
                     })
                     .ToList();
-                var totalDomains = DomainEntity.DataSource.AggrCount(DomainEntity.Fields.ID);
+                var totalDomains = DomainEntity.DataSource.AggrCount(DomainEntity.Fields.ID, false);
                 var collectedDomains = DomainEntity.DataSource.AggrString(
                     string.Format("count(distinct case when {0}.{1} & {2} = {2} then {0}.{3} else null end)",
                         DomainEntity.Descriptor.TableName, 

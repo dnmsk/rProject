@@ -20,6 +20,7 @@
     var currentAction = ViewContext.RouteData.Values["action"] as string;
     var currentID = ViewContext.RouteData.Values["id"] as string ?? string.Empty;
     var currentLanguage = Model.CurrentLanguage != LanguageType.Default ? Model.CurrentLanguage : LanguageType.English;
+    var routeValues = new { area = "" };
 }
 
 @helper MarkActive(string action, string controller, string curAction, string curController, bool active = true) {
@@ -36,15 +37,15 @@ if (active && controller.Equals(curController, StringComparison.InvariantCulture
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")" @MarkActive("Index", "Home", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderSiteName)</a>
+            <a class="navbar-brand" href="@Url.Action("Index", "Home", routeValues)" @MarkActive("Index", "Home", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderSiteName)</a>
         </div>
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="@Url.Action("Profitable", "Competition")" @MarkActive("Profitable", "Competition", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderCompetition)</a></li>
-                <li><a href="@Url.Action("Index", "CompetitionLive")" @MarkActive("Index", "CompetitionLive", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderCompetitionLive)</a></li>
-                <li><a href="@Url.Action("Index", "History")" @MarkActive("Index", "History", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderHistory)</a></li>
-                <li><a href="@Url.Action("Index", "Bookmaker")" @MarkActive("Index", "Bookmaker", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderBookmaker)</a></li>
+                <li><a href="@Url.Action("Profitable", "Competition", routeValues)" @MarkActive("Profitable", "Competition", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderCompetition)</a></li>
+                <li><a href="@Url.Action("Index", "CompetitionLive", routeValues)" @MarkActive("Index", "CompetitionLive", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderCompetitionLive)</a></li>
+                <li><a href="@Url.Action("Index", "History", routeValues)" @MarkActive("Index", "History", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderHistory)</a></li>
+                <li><a href="@Url.Action("Index", "Bookmaker", routeValues)" @MarkActive("Index", "Bookmaker", currentAction, currentController)>@LanguageSiteHelper.Instance.GetText(currentLanguage, SiteTextType.HeaderBookmaker)</a></li>
             </ul>
             @Html.Partial("_LoginPartial", Model)
         </div>

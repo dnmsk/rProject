@@ -2,22 +2,22 @@
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @model Project_B.Models.StaticPageBaseModel
-@if (Model.IsAuthenticated())
-{
+@{
+    var routeValues = new { area = "" };
+}
+@if (Model.IsAuthenticated()) {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
     @Html.AntiForgeryToken()
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.GetUserPolicyState<string>(UserPolicyGlobal.AccountEmail) + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
+            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.GetUserPolicyState<string>(UserPolicyGlobal.AccountEmail) + "!", "Index", "Manage", routeValues, new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogOff)</a></li>
     </ul>
     }
-}
-else
-{
+} else {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderRegister), "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogin), "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderRegister), "Register", "Account", routeValues, new { id = "registerLink" })</li>
+        <li>@Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogin), "Login", "Account", routeValues, new { id = "loginLink" })</li>
     </ul>
 }

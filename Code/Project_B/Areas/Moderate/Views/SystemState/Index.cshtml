@@ -1,0 +1,45 @@
+﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Helper
+@using Project_B.CodeServerSide.DataProvider.DataHelper
+@model Project_B.Models.StaticPageBaseModel<Project_B.Models.WithFilterModel<List<Project_B.CodeClientSide.TransportType.ModerateTransport.SystemStateSummaryStatus>>>
+
+@{
+    var filter = Model.ControllerModel.Filter;
+}
+
+@helper CellRenderer(int linked, int raw, string action, object routeValues){
+    <td>
+        @if (raw > 0) {
+            <b>@(linked*100/raw)% </b>
+        }<a href="@Url.Action(action, routeValues)">@(linked)/@(raw)</a>
+    </td>
+}
+
+@Html.Partial("Element/_SearchFilter", Model.ControllerModel.Filter)
+<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td>Broker</td>
+            <td>Language</td>
+            <td>CompetitionItem</td>
+            <td>Competitor</td>
+            <td>Competition</td>
+            <td>CompetitionSpecify</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var row in Model.ControllerModel.Data) {
+        var routeValues = new {id = (short) row.BrokerID, languagetype = (short) row.Languagetype, date = filter.date.ToString("dd.MM.yyyy"), all = filter.all };
+        <tr>
+            <td>@BookmakerHtmlHelper.Instance.GetBroker(row.BrokerID).TargetUrl.CutWww()</td>
+            <td>@LanguageTypeHelper.Instance.GetLanguageName(row.Languagetype).Item1</td>
+            @CellRenderer(row.CompetitionItemLinkedCount, row.RawCompetitionItemCount, "CompetitionItem", routeValues)
+            @CellRenderer(row.CompetitorLinkedCount, row.RawCompetitorCount, "Competitor", routeValues)
+            @CellRenderer(row.CompetitionLinkedCount, row.RawCompetitionCount, "Competition", routeValues)
+            @CellRenderer(row.CompetitionSpecifyLinkedCount, row.RawCompetitionSpecifyCount, "CompetitionSpecify", routeValues)
+        </tr>
+    }
+    </tbody>
+</table>

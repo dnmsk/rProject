@@ -1,0 +1,81 @@
+﻿@using CommonUtils.ExtendedTypes
+@using Microsoft.Ajax.Utilities
+@using Project_B.CodeClientSide.Enums
+@using Project_B.CodeClientSide.Helper
+@using Project_B.CodeClientSide.TransportType.ModerateTransport
+@model Project_B.Models.StaticPageBaseModel<Project_B.Models.WithFilterModel<Project_B.CodeServerSide.Enums.BrokerType, List<RawCompetitionTransport>>>
+
+@{
+    var filter = Model.ControllerModel.Filter;
+    var lang = Request.Params["languagetype"];
+    var routeValDict = new RouteValueDictionary {
+        { "languagetype", lang },
+        { "id", (short) filter.id },
+        { "date", filter.date.ToString("dd.MM.yyyy") }
+    };
+}
+
+@functions {
+    private static RouteValueDictionary SetParam(RouteValueDictionary routeValueDictionary, string key, object val) {
+        routeValueDictionary[key] = val;
+        return routeValueDictionary;
+    }
+}
+
+@helper ArrayLinkedNames(RawEntityWithLink entityWithLink) {
+<br />
+<small data-id="@entityWithLink.EntityID">@entityWithLink.EntityName.IfNotNull(arr => arr.StrJoin(" | "), "unlinked")</small>
+}
+
+<a href="@Url.Action("Index")">< Назад</a>
+
+<h2>@BookmakerHtmlHelper.Instance.GetBroker(Model.ControllerModel.Filter.id).TargetUrl.CutWww()</h2>
+<br />
+@Html.Partial("Element/_SearchFilter", Model.ControllerModel.Filter)
+<hr/>
+<div class="btn-group">
+    <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.All))">Все</a>
+    <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.Linked))">Привязанные</a>
+    <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.Unlinked))">Без привязки</a>
+</div>
+
+@foreach (var rawCompetition in Model.ControllerModel.Data) {
+    <hr />
+    <h3 data-id="@rawCompetition.Competition.RawID">
+        @rawCompetition.Competition.RawName
+        @ArrayLinkedNames(rawCompetition.Competition)
+    </h3>
+    foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
+        <hr/>
+        <h4 data-id="@rawCompetitionSpecify.CompetitionSpecify.RawID">
+            @rawCompetitionSpecify.CompetitionSpecify.RawName
+            @ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify)
+        </h4>
+        <table class="table">
+            <thead><tr>
+                <td class="col-sm-2"></td>
+                <td class="col-sm-5"></td>
+                <td class="col-sm-5"></td>
+            </tr></thead>
+            <tbody>
+            @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
+                <tr data-id="@competitionItem.RawID">
+                    <td>
+                        @competitionItem.RawEventDate
+                        <br/>
+                        <small data-id="@competitionItem.EntityID">@competitionItem.EventDate</small>
+                    </td>
+                    <td data-id="@competitionItem.Competitior1.RawID">
+                        @competitionItem.Competitior1.RawName
+                        @ArrayLinkedNames(competitionItem.Competitior1)
+                    </td>
+                    <td data-id="@competitionItem.Competitior2.RawID">
+                        @competitionItem.Competitior2.RawName
+                        @ArrayLinkedNames(competitionItem.Competitior2)
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}

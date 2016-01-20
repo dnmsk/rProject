@@ -3,6 +3,7 @@
         None = 0,
         SportTypes = 1,
         Home = 2,
-        Bookmakers = 3
+        Bookmakers = 3,
+        Empty = 4
     }
 }

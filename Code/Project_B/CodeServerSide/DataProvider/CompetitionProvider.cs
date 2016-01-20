@@ -177,7 +177,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     competitionItem.Save();
                 }
                 
-                if (eventDateUtc > DateTime.MinValue && algoMode.HasFlag(GatherBehaviorMode.CreateOriginal)) {
+                if (eventDateUtc > DateTime.MinValue && (algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) || algoMode.HasFlag(GatherBehaviorMode.CreateOriginalIfMatchedAll))) {
                     if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalMinutes) > 5) {
                         competitionItem.Dateeventutc = eventDateUtc;
                         competitionItem.Save();

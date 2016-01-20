@@ -15,7 +15,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
     [Serializable]
     [DBTable("RawCompetitionSpecify")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class RawCompetitionSpecify : AbstractEntityTemplateKey<RawCompetitionSpecify, int>, ICompetitionSpecify, IBrokerTyped, ILinkStatusTyped {
+    public sealed class RawCompetitionSpecify : AbstractEntityTemplateKey<RawCompetitionSpecify, int>, ICompetitionSpecify, IBrokerTyped, ILinkStatusTyped, IRawLinkEntity {
 
         public enum Fields {
         /// <summary>
@@ -94,6 +94,8 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
             get { return (int) this[Fields.ID]; }
             set { ForceSetData(Fields.ID, value); }
         }
+
+        public int LinkToEntityID => CompetitionSpecifyUniqueID;
 
         /// <summary>
         /// 

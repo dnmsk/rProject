@@ -15,7 +15,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
     [Serializable]
     [DBTable("RawCompetition")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class RawCompetition : AbstractEntityTemplateKey<RawCompetition, int>, ICompetition, IBrokerTyped, ILinkStatusTyped {
+    public sealed class RawCompetition : AbstractEntityTemplateKey<RawCompetition, int>, ICompetition, IBrokerTyped, ILinkStatusTyped, IRawLinkEntity {
 
         public enum Fields {
         /// <summary>
@@ -151,5 +151,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
         }
+
+        public int LinkToEntityID => CompetitionuniqueID;
     }
 }

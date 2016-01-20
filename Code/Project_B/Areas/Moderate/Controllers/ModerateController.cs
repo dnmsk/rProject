@@ -5,24 +5,26 @@ using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.DataProvider;
+using Project_B.Controllers;
 using Project_B.Models;
 
-namespace Project_B.Controllers {
+namespace Project_B.Areas.Moderate.Controllers {
     [CheckCredential(UserPolicyLocal.IsPageEditor, true)]
     public class ModerateController : ProjectControllerBase {
-        
+        public override SubNavigationType SubNavigationType => SubNavigationType.Empty;
+
         public ActionResult Index() {
-            return View(new StaticPageBaseModel(GetBaseModel()));
+            return View(new StaticPageBaseModel(this));
         }
 
         public ActionResult SiteText(SiteTextType siteText = SiteTextType.Unknown, string text = null) {
 
-            return View(new StaticPageBaseModel(GetBaseModel()));
+            return View(new StaticPageBaseModel(this));
         }
 
         public ActionResult ExternalLinks(int linkId = default(int), string text = null) {
 
-            return View(new StaticPageBaseModel(GetBaseModel()));
+            return View(new StaticPageBaseModel(this));
         }
         
         public ActionResult Files(short startID = 0, int limit = 12) {
@@ -31,7 +33,7 @@ namespace Project_B.Controllers {
             var fileInfos = ProjectProvider.Instance.WebFileProvider.GetFileInfos(startID, limit);
             var pages = (totalFilesCount / limit) + (totalFilesCount % limit > 0 ? 1 : 0);
             var m = (dynamic)new ExpandoObject();
-            var model = new StaticPageBaseModel<dynamic>(GetBaseModel()) {
+            var model = new StaticPageBaseModel<dynamic>(this) {
                 ControllerModel = m
             };
             m.currentPage = pages - (startID / limit);
@@ -54,7 +56,7 @@ namespace Project_B.Controllers {
             }
             var fileInfo = ProjectProvider.Instance.WebFileProvider.GetFileInfos(id, 1).First();
             var m = (dynamic)new ExpandoObject();
-            var model = new StaticPageBaseModel<dynamic>(GetBaseModel()) {
+            var model = new StaticPageBaseModel<dynamic>(this) {
                 ControllerModel = m
             };
             m.file = fileInfo;
@@ -62,7 +64,7 @@ namespace Project_B.Controllers {
         }
         
         public ActionResult PagesForType(ProjectBActions id) {
-            var staticPageBaseModel = new StaticPageBaseModel(GetBaseModel()) { PageKey = id };
+            var staticPageBaseModel = new StaticPageBaseModel(this) { PageKey = id };
             return PartialView("PageEditor/PagesForType", staticPageBaseModel);
         }
 

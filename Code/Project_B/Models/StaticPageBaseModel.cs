@@ -36,6 +36,5 @@ namespace Project_B.Models {
     public class StaticPageBaseModel<T> : StaticPageBaseModel {
         public T ControllerModel { get; set; }
         public StaticPageBaseModel(ProjectControllerBase projectController) : base(projectController) {}
-        public StaticPageBaseModel(BaseModel baseModel) : base(baseModel) {}
     }
 }

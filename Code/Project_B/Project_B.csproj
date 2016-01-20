@@ -219,6 +219,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\ReactConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="CodeClientSide\Enums\StateFilter.cs" />
+    <Compile Include="Areas\Moderate\Controllers\SystemStateController.cs" />
+    <Compile Include="Areas\Moderate\ModerateAreaRegistration.cs" />
     <Compile Include="CodeClientSide\ActionLogAttribute.cs" />
     <Compile Include="CodeClientSide\ActionProfileAttribute.cs" />
     <Compile Include="CodeClientSide\CheckCredentialAttribute.cs" />
@@ -238,6 +241,11 @@
     <Compile Include="CodeClientSide\StaticPageWebCache.cs" />
     <Compile Include="CodeClientSide\TransportType\BrokerPageIcon.cs" />
     <Compile Include="CodeClientSide\TransportType\CompetitionAdvancedTransport.cs" />
+    <Compile Include="CodeClientSide\TransportType\ModerateTransport\RawCompetitionItemTransport.cs" />
+    <Compile Include="CodeClientSide\TransportType\ModerateTransport\RawCompetitionSpecifyTransport.cs" />
+    <Compile Include="CodeClientSide\TransportType\ModerateTransport\RawCompetitionTransport.cs" />
+    <Compile Include="CodeClientSide\TransportType\ModerateTransport\RawEntityWithLink.cs" />
+    <Compile Include="CodeClientSide\TransportType\ModerateTransport\SystemStateSummaryStatusTransport.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
@@ -282,6 +290,7 @@
     <Compile Include="CodeServerSide\DataProvider\ProjectProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\ResultProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\StaticPageProvider.cs" />
+    <Compile Include="CodeServerSide\DataProvider\SystemStateProvder.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\BrokerRequestScheduleTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionItemRawTransport.cs" />
     <Compile Include="CodeServerSide\DataProvider\Transport\CompetitionSpecifyTransport.cs" />
@@ -302,6 +311,7 @@
     <Compile Include="CodeServerSide\Entity\BrokerEntity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
     <Compile Include="CodeServerSide\Entity\BrokerEntity\CompetitionSpecifyUnique.cs" />
+    <Compile Include="CodeServerSide\Entity\Interface\IRawLinkEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Helper\BrokerEntityIfaceCreator.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IKeyBrokerEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\ILinkStatusTyped.cs" />
@@ -379,7 +389,7 @@
     <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\ModerateController.cs" />
+    <Compile Include="Areas\Moderate\Controllers\ModerateController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -402,6 +412,7 @@
     <Compile Include="CodeClientSide\TransportType\StaticPageTransport.cs" />
     <Compile Include="CodeClientSide\TransportType\SubData\ResultTransportEqualityComparer.cs" />
     <Compile Include="Models\StaticPageBaseModel.cs" />
+    <Compile Include="Models\WithFilterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -427,6 +438,10 @@
     <Content Include="App_Code\BetOddRenderHelper.cshtml" />
     <Content Include="App_Code\LogHelper.cshtml" />
     <Content Include="App_Code\ComponentHelper.cshtml" />
+    <Content Include="Areas\Moderate\Views\web.config" />
+    <Content Include="Areas\Moderate\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Moderate\Views\SystemState\Index.cshtml" />
+    <Content Include="Areas\Moderate\Views\SystemState\CompetitionItem.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
@@ -505,16 +520,19 @@
     <Content Include="Views\Bookmaker\BookmakerPage.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\Element\_ListCompetitionUniqueWriter.cshtml" />
-    <Content Include="Views\Moderate\Index.cshtml" />
-    <Content Include="Views\Moderate\Files.cshtml" />
-    <Content Include="Views\Moderate\File.cshtml" />
+    <Content Include="Areas\Moderate\Views\Moderate\Index.cshtml" />
+    <Content Include="Areas\Moderate\Views\Moderate\Files.cshtml" />
+    <Content Include="Areas\Moderate\Views\Moderate\File.cshtml" />
     <Content Include="Views\Competition\Profitable.cshtml" />
-    <Content Include="Views\Moderate\ExternalLinks.cshtml" />
-    <Content Include="Views\Moderate\SiteText.cshtml" />
+    <Content Include="Areas\Moderate\Views\Moderate\ExternalLinks.cshtml" />
+    <Content Include="Areas\Moderate\Views\Moderate\SiteText.cshtml" />
     <Content Include="Views\Shared\Element\_SearchFilter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Moderate\Code\" />
+    <Folder Include="Areas\Moderate\Models\" />
+    <Folder Include="Areas\Moderate\Views\Shared\" />
     <Folder Include="Content\Less\" />
     <Folder Include="Content\Plugins\Custom\" />
     <Folder Include="Views\Assets\" />
