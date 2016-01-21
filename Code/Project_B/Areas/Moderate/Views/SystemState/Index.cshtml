@@ -4,10 +4,11 @@
 @model Project_B.Models.StaticPageBaseModel<Project_B.Models.WithFilterModel<List<Project_B.CodeClientSide.TransportType.ModerateTransport.SystemStateSummaryStatus>>>
 
 @{
-    var filter = Model.ControllerModel.Filter;
+    var route = Model.ControllerModel.Filter.ToRoute();
+    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 
-@helper CellRenderer(int linked, int raw, string action, object routeValues){
+@helper CellRenderer(int linked, int raw, string action, RouteValueDictionary routeValues){
     <td>
         @if (raw > 0) {
             <b>@(linked*100/raw)% </b>
@@ -31,14 +32,16 @@
     </thead>
     <tbody>
     @foreach(var row in Model.ControllerModel.Data) {
-        var routeValues = new {id = (short) row.BrokerID, languagetype = (short) row.Languagetype, date = filter.date.ToString("dd.MM.yyyy"), all = filter.all };
+        var broker = BookmakerHtmlHelper.Instance.GetBroker(row.BrokerID);
+        route["id"] = row.BrokerID;
+        route["languagetype"] = row.Languagetype;
         <tr>
-            <td>@BookmakerHtmlHelper.Instance.GetBroker(row.BrokerID).TargetUrl.CutWww()</td>
+            <td><span class="@broker.IconClass"></span> @broker.TargetUrl.CutWww()</td>
             <td>@LanguageTypeHelper.Instance.GetLanguageName(row.Languagetype).Item1</td>
-            @CellRenderer(row.CompetitionItemLinkedCount, row.RawCompetitionItemCount, "CompetitionItem", routeValues)
-            @CellRenderer(row.CompetitorLinkedCount, row.RawCompetitorCount, "Competitor", routeValues)
-            @CellRenderer(row.CompetitionLinkedCount, row.RawCompetitionCount, "Competition", routeValues)
-            @CellRenderer(row.CompetitionSpecifyLinkedCount, row.RawCompetitionSpecifyCount, "CompetitionSpecify", routeValues)
+            @CellRenderer(row.CompetitionItemLinkedCount, row.RawCompetitionItemCount, "CompetitionItem", route)
+            @CellRenderer(row.CompetitorLinkedCount, row.RawCompetitorCount, "Competitor", route)
+            @CellRenderer(row.CompetitionLinkedCount, row.RawCompetitionCount, "Competition", route)
+            @CellRenderer(row.CompetitionSpecifyLinkedCount, row.RawCompetitionSpecifyCount, "CompetitionSpecify", route)
         </tr>
     }
     </tbody>

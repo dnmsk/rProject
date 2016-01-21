@@ -96,6 +96,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         }
 
         public int LinkToEntityID => CompetitionSpecifyUniqueID;
+        public BrokerEntityType EntityType => BrokerEntityType.CompetitionSpecify;
 
         /// <summary>
         /// 

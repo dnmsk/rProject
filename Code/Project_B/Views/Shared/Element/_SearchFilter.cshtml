@@ -22,6 +22,9 @@
 }
 
 @using (Html.BeginForm(Model.ActionName, Model.ControllerName, FormMethod.Get, new { @class = "row", id = "filter" })) {
+    foreach (var hiddenParam in Model.GetHiddenFilter()) {
+        @Html.Hidden(hiddenParam.Key, hiddenParam.Value)
+    }
     <div class="col-xs-12">
         <div class="btn-group" @if (buttonAll) {@Html.Raw("data-toggle=\"buttons\"")}>
         @if (fromDate || toDate) {

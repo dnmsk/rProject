@@ -1,0 +1,18 @@
+﻿@using CommonUtils.ExtendedTypes
+@using Microsoft.Ajax.Utilities
+@using Project_B.CodeServerSide.Enums
+@model Tuple<Project_B.CodeClientSide.TransportType.ModerateTransport.RawEntityWithLink, string>
+
+<span data-id="@Model.Item1.RawID" data-cid="@Model.Item1.CompetitionItemID" data-type="@Model.Item1.BrokerEntityType" data-date="@Model.Item2">
+    @Model.Item1.RawName
+    <br />
+    <small data-id="@Model.Item1.EntityID">
+        @Model.Item1.EntityName.IfNotNull(arr => arr.StrJoin(" | "), "unlinked") @switch (Model.Item1.BrokerEntityType) {
+                    case BrokerEntityType.Competition:
+                    case BrokerEntityType.CompetitionSpecify:
+                    case BrokerEntityType.Competitor:
+        <span data-editor="true" class="glyphicon glyphicon-pencil" style="cursor: pointer;"></span>
+        break;
+}
+    </small>
+</span>

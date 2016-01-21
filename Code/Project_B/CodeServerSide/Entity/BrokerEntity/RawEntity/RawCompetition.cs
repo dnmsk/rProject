@@ -153,5 +153,6 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity {
         }
 
         public int LinkToEntityID => CompetitionuniqueID;
+        public BrokerEntityType EntityType => BrokerEntityType.Competition;
     }
 }

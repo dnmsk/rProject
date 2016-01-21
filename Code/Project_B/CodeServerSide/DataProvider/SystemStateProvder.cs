@@ -4,8 +4,10 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType.ModerateTransport;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -99,7 +101,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .AsMapByIds(CompetitionItem.Fields.Dateeventutc);
 
                 var rCompetitions = RawCompetition.DataSource.WhereIn(RawCompetition.Fields.ID, rCompetitionItems.Select(rci => rci.RawcompetitionID).Distinct())
-                    .AsMapByIds(RawCompetition.Fields.Name, RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Sporttype);
+                    .AsMapByIds(RawCompetition.Fields.Name, RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Sporttype, RawCompetition.Fields.Gendertype);
                 var competitions = Competition.DataSource.WhereIn(Competition.Fields.CompetitionuniqueID, rCompetitions.Values.Select(rc => rc.CompetitionuniqueID).Distinct())
                     .AsMapByField<int>(Competition.Fields.CompetitionuniqueID, Competition.Fields.Name);
 
@@ -117,21 +119,28 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var result = new List<RawCompetitionTransport>(groupedRci.Length);
                 foreach (var rawCompetitionFromRci in groupedRci) {
                     var rawCompetition = rCompetitions.TryGetValueOrDefault(rawCompetitionFromRci.First().RawcompetitionID);
+                    var gender = rawCompetition.Gendertype;
+                    var buildEntityWithLink = BuildEntityWithLink(default(int), rawCompetition, competitions);
+                    buildEntityWithLink.RawName += ". " + GenderDetectorHelper.Instance.GetGenderName(gender);
                     var rowResult = new RawCompetitionTransport {
                         SportType = rawCompetition.SportType,
-                        Competition = BuildEntityWithLink(rawCompetition, competitions),
+                        Competition = buildEntityWithLink,
                         CompetitionSpecifies = rawCompetitionFromRci
                             .GroupBy(rci => rci.RawcompetitionspecifyID)
                             .Select(rcs => {
                                 return new RawCompetitionSpecifyTransport {
-                                    CompetitionSpecify = BuildEntityWithLink(rCompetitionSpecify.TryGetValueOrDefault(rcs.First().RawcompetitionspecifyID), competitionSpecify),
-                                    CompetitionItems = rcs.Select(rci => new RawCompetitionItemTransport {
-                                        RawID = rci.ID,
-                                        EntityID = rci.CompetitionitemID,
-                                        RawEventDate = rci.Dateeventutc,
-                                        EventDate = competitionItems.TryGetValueOrDefault(rci.CompetitionitemID, false)?.Dateeventutc ?? DateTime.MinValue,
-                                        Competitior1 = BuildEntityWithLink(rCompetitors.TryGetValueOrDefault(rci.Rawcompetitorid1), competitors),
-                                        Competitior2 = BuildEntityWithLink(rCompetitors.TryGetValueOrDefault(rci.Rawcompetitorid2), competitors)
+                                    CompetitionSpecify = BuildEntityWithLink(default(int), rCompetitionSpecify.TryGetValueOrDefault(rcs.First().RawcompetitionspecifyID), competitionSpecify),
+                                    CompetitionItems = rcs.Select(rci => {
+                                        var competitionitemID = rci.CompetitionitemID;
+                                        return new RawCompetitionItemTransport {
+                                            RawID = rci.ID,
+                                            EntityID = competitionitemID,
+                                            RawName = rci.Dateeventutc.ToString("dd.MM HH:mm"),
+                                            EntityName = new [] { (competitionItems.TryGetValueOrDefault(competitionitemID, false)?.Dateeventutc ?? DateTime.MinValue).ToString("dd.MM HH:mm") },
+                                            Competitior1 = BuildEntityWithLink(competitionitemID, rCompetitors.TryGetValueOrDefault(rci.Rawcompetitorid1), competitors),
+                                            Competitior2 = BuildEntityWithLink(competitionitemID, rCompetitors.TryGetValueOrDefault(rci.Rawcompetitorid2), competitors),
+                                            BrokerEntityType = rci.EntityType
+                                        };
                                     })
                                     .ToList()
                                 };
@@ -144,7 +153,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, null);
         }
 
-        private static RawEntityWithLink BuildEntityWithLink<K, T>(K raw, Dictionary<int, List<T>> entityMap) where K : IRawLinkEntity, INamedEntity where T : INamedEntity {
+        private static RawEntityWithLink BuildEntityWithLink<TK, T>(int rawCompetitionItemID, TK raw, Dictionary<int, List<T>> entityMap) where TK : IRawLinkEntity, INamedEntity where T : INamedEntity {
             List<T> entity;
             entityMap.TryGetValue(raw.LinkToEntityID, out entity);
             var entityIsNotEmpty = entity != null;
@@ -152,7 +161,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                 RawID = raw.ID,
                 RawName = raw.Name,
                 EntityID = entityIsNotEmpty ? entity[0].ID : default(int),
-                EntityName = entityIsNotEmpty ? entity.Select(e => e.Name).ToArray() : null
+                EntityName = entityIsNotEmpty ? entity.Select(e => e.Name).ToArray() : null,
+                BrokerEntityType = raw.EntityType,
+                CompetitionItemID = rawCompetitionItemID
             };
         }
 
@@ -230,6 +241,109 @@ namespace Project_B.CodeServerSide.DataProvider {
                 stateMap[key] = state;
             }
             dataSetter(state);
+        }
+
+        public List<RawEntityWithLink> EntityLinkerGet(int rawCompetitionItemID, int entityID, BrokerEntityType entityType, DateTime date) {
+            return InvokeSafe(() => {
+                var result = new List<RawEntityWithLink>();
+                var minDate = date != DateTime.MinValue ? date.AddDays(-1) : date;
+                var maxDate = date.AddDays(1);
+                switch (entityType) {
+                    case BrokerEntityType.Competition:
+                        var entityCompetition = RawCompetition.DataSource.GetByKey(entityID);
+                        Competition.DataSource
+                            .WhereEquals(Competition.Fields.Sporttype, (short)entityCompetition.SportType)
+                            .Join(JoinType.Inner, CompetitionItem.Fields.CompetitionuniqueID, Competition.Fields.CompetitionuniqueID, RetrieveMode.NotRetrieve)
+                            .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
+                            .GroupBy(
+                                Competition.Fields.CompetitionuniqueID,
+                                Competition.Fields.Name,
+                                Competition.Fields.Gendertype
+                            )
+                            .AsGroups()
+                            .Each(ge => {
+                                result.Add(new RawEntityWithLink {
+                                    EntityID = (int) ge[Competition.Fields.CompetitionuniqueID],
+                                    EntityName = new [] { (string) ge[Competition.Fields.Name] + ". " + GenderDetectorHelper.Instance.GetGenderName((GenderType) (short) ge[Competition.Fields.Gendertype]) }
+                                });
+                            });
+                        break;
+                    case BrokerEntityType.CompetitionSpecify:
+                        var entityCompetitionSpecify = RawCompetitionSpecify.DataSource.GetByKey(entityID);
+                        CompetitionSpecify.DataSource
+                            .WhereEquals(CompetitionSpecify.Fields.Sporttype, (short)entityCompetitionSpecify.SportType)
+                            .Join(JoinType.Inner, CompetitionItem.Fields.CompetitionSpecifyUniqueID, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, RetrieveMode.NotRetrieve)
+                            .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
+                            .GroupBy(
+                                CompetitionSpecify.Fields.CompetitionSpecifyUniqueID,
+                                CompetitionSpecify.Fields.Name,
+                                CompetitionSpecify.Fields.Gendertype
+                            )
+                            .AsGroups()
+                            .Each(ge => {
+                                result.Add(new RawEntityWithLink {
+                                    EntityID = (int) ge[CompetitionSpecify.Fields.CompetitionSpecifyUniqueID],
+                                    EntityName = new [] { (string) ge[CompetitionSpecify.Fields.Name] + ". " 
+                                        + GenderDetectorHelper.Instance.GetGenderName((GenderType) (short) ge[CompetitionSpecify.Fields.Gendertype]) }
+                                });
+                            });
+                        break;
+                    case BrokerEntityType.Competitor:
+                        var rawCompetiitonIds = RawCompetitionItem.DataSource
+                            .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
+                            .Where(new DaoFilterOr(new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid1, entityID), new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid2, entityID)))
+                            .GroupBy(RawCompetitionItem.Fields.RawcompetitionID)
+                            .AsGroups().Select(ge => (int) ge[RawCompetitionItem.Fields.RawcompetitionID]);
+
+                        var competitionUniqueIDs = RawCompetition.DataSource.WhereIn(RawCompetition.Fields.ID, rawCompetiitonIds.Distinct())
+                            .AsList(RawCompetition.Fields.CompetitionuniqueID).Select(rc => rc.CompetitionuniqueID).ToArray();
+                        var competitionNameMap = Competition.DataSource
+                            .WhereIn(Competition.Fields.CompetitionuniqueID, competitionUniqueIDs)
+                            .AsMapByField<int>(Competition.Fields.CompetitionuniqueID, Competition.Fields.Name)
+                            .ToDictionary(kv => kv.Key, kv => kv.Value.Select(v => v.Name).StrJoin(" | "));
+                        var nearCompetitionItems = CompetitionItem.DataSource
+                            .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
+                            .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, competitionUniqueIDs)
+                            .AsList(CompetitionItem.Fields.Competitoruniqueid1, CompetitionItem.Fields.Competitoruniqueid2, CompetitionItem.Fields.CompetitionuniqueID);
+                        var competitorsMap = Competitor.DataSource
+                            .WhereIn(Competitor.Fields.CompetitoruniqueID, nearCompetitionItems.Select(ci => ci.Competitoruniqueid1).Union(nearCompetitionItems.Select(ci => ci.Competitoruniqueid2)).Distinct())
+                            .AsMapByField<int>(Competitor.Fields.CompetitoruniqueID, Competitor.Fields.NameFull)
+                            .ToDictionary(kv => kv.Key, kv => new RawEntityWithLink {
+                                EntityID = kv.Value[0].ID,
+                                EntityName = new[] { kv.Value.Select(v => v.Name).OrderBy(n => n).StrJoin(" | ") }
+                            });
+                        var mapResults = new Dictionary<int, RawEntityWithLink>();
+                        foreach (var nearCompetitionItem in nearCompetitionItems) {
+                            string competitionName;
+                            competitionNameMap.TryGetValue(nearCompetitionItem.CompetitionuniqueID, out competitionName);
+                            AppendCompetitiorIfEmpty(mapResults, competitorsMap.TryGetValueOrDefault(nearCompetitionItem.Competitoruniqueid1), competitionName);
+                            AppendCompetitiorIfEmpty(mapResults, competitorsMap.TryGetValueOrDefault(nearCompetitionItem.Competitoruniqueid2), competitionName);
+                        }
+                        result.AddRange(mapResults.Values);
+                        break;
+                }
+
+                return result
+                    .GroupBy(r => r.EntityID)
+                    .Select(ge => {
+                        return new RawEntityWithLink {
+                            BrokerEntityType = entityType,
+                            RawID = entityID,
+                            EntityID = ge.Key,
+                            EntityName = ge.Select(e => e.EntityName[0]).OrderBy(n => n).ToArray(),
+                            CompetitionItemID = rawCompetitionItemID
+                        };
+                    })
+                    .OrderBy(r => r.EntityName[0])
+                    .ToList();
+            }, null);
+        }
+
+        private static void AppendCompetitiorIfEmpty(Dictionary<int, RawEntityWithLink> map, RawEntityWithLink competitor, string competitionName) {
+            if (!map.ContainsKey(competitor.EntityID)) {
+                competitor.EntityName[0] = competitor.EntityName[0] + " => " + (competitionName ?? string.Empty);
+                map[competitor.EntityID] = competitor;
+            }
         }
     }
 }

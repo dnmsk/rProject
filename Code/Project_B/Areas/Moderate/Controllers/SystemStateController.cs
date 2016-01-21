@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType.ModerateTransport;
@@ -38,10 +39,27 @@ namespace Project_B.Areas.Moderate.Controllers {
             }
             filter.FixDates(new DateTime(2014, 01, 01), dateTime.AddDays(14));
             return View(new StaticPageBaseModel<WithFilterModel<BrokerType, List<RawCompetitionTransport>>>(this) {
-                ControllerModel = new WithFilterModel<BrokerType, List<RawCompetitionTransport>>(new FilterModel<BrokerType>("CompetitionItem", "SystemState", CurrentLanguage, FilterSettings.ToDate, filter)) {
+                ControllerModel = new WithFilterModel<BrokerType, List<RawCompetitionTransport>>(new FilterModel<BrokerType>("CompetitionItem", "SystemState", CurrentLanguage, FilterSettings.ToDate, filter, new RouteValueDictionary(new { languagetype }))) {
                     Data = _provider.GetCompetitionItems(filter.id, languagetype, filter.date, state)
                 }
             });
+        }
+
+        public ActionResult EntityLinker(BrokerEntityType type, FilterModel<int> filter, int cid, int targetID = default(int)) {
+            switch (Request.RequestType.ToUpper()) {
+                case "GET":
+                    var nearEntities = _provider.EntityLinkerGet(cid, filter.id, type, filter.date);
+                    return PartialView(nearEntities);
+                case "PUT":
+                    break;
+                case "POST":
+                    break;
+                case "DELETE":
+                    break;
+                default:
+                    break;
+            }
+            return new EmptyResult();
         }
     }
 }

@@ -1,0 +1,18 @@
+﻿@using Project_B.CodeClientSide.TransportType.ModerateTransport
+@using Project_B.CodeServerSide.Enums
+@model List<RawEntityWithLink>
+
+<h3 data-target="true"></h3>
+<hr/>
+<hr/>
+<ul>
+    @foreach (var item in Model) {
+        var entityType = item.BrokerEntityType;
+        item.BrokerEntityType = BrokerEntityType.Unknown;
+        <li>
+            <span data-id="@item.RawID" data-type="@entityType" data-request="POST" class="glyphicon glyphicon-edit" style="cursor: pointer;"></span> @(item.EntityID):
+            @Html.Partial("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(item, string.Empty))
+            <br/><br/>
+        </li>
+    }
+</ul>

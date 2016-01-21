@@ -1,18 +1,16 @@
 ﻿@using CommonUtils.ExtendedTypes
-@using Microsoft.Ajax.Utilities
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType.ModerateTransport
-@model Project_B.Models.StaticPageBaseModel<Project_B.Models.WithFilterModel<Project_B.CodeServerSide.Enums.BrokerType, List<RawCompetitionTransport>>>
+@using Project_B.CodeServerSide.Enums
+@using Project_B.Models
+@model StaticPageBaseModel<WithFilterModel<BrokerType, List<RawCompetitionTransport>>>
 
 @{
     var filter = Model.ControllerModel.Filter;
-    var lang = Request.Params["languagetype"];
-    var routeValDict = new RouteValueDictionary {
-        { "languagetype", lang },
-        { "id", (short) filter.id },
-        { "date", filter.date.ToString("dd.MM.yyyy") }
-    };
+    var routeValDict = filter.ToRoute();
+    var broker = BookmakerHtmlHelper.Instance.GetBroker(filter.id);
+    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 
 @functions {
@@ -22,16 +20,15 @@
     }
 }
 
-@helper ArrayLinkedNames(RawEntityWithLink entityWithLink) {
-<br />
-<small data-id="@entityWithLink.EntityID">@entityWithLink.EntityName.IfNotNull(arr => arr.StrJoin(" | "), "unlinked")</small>
+@helper ArrayLinkedNames(RawEntityWithLink entityWithLink, string date) {
+@Html.Partial("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(entityWithLink, date))
 }
 
 <a href="@Url.Action("Index")">< Назад</a>
 
-<h2>@BookmakerHtmlHelper.Instance.GetBroker(Model.ControllerModel.Filter.id).TargetUrl.CutWww()</h2>
+<h2><span class="@broker.IconClass"></span> @broker.TargetUrl.CutWww()</h2>
 <br />
-@Html.Partial("Element/_SearchFilter", Model.ControllerModel.Filter)
+@Html.Partial("Element/_SearchFilter", filter)
 <hr/>
 <div class="btn-group">
     <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.All))">Все</a>
@@ -39,40 +36,87 @@
     <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.Unlinked))">Без привязки</a>
 </div>
 
+<div id="popupLinker" class="c-popup">
+    <div class="c-popup__content"></div>
+
+    <script type="text/javascript">
+        $(function() {
+            var obj = new (function() {
+                var urlParamsReader = function(eventTarget) {
+                    var urlParams = {};
+                    $.each(eventTarget[0].attributes, function(i, el) {
+                        if (el.name.indexOf('data-') >= 0) {
+                            urlParams[el.name.substring(5)] = el.value;
+                        }
+                    });
+                    return urlParams;
+                };
+                var urlFormatterFunc = function(parsMap) {
+                    var pars = [];
+                    $.each(parsMap, function (i, el) { pars.push(i + '=' + el) });
+                    return '@Url.Action("EntityLinker")' + '?' + pars.join('&');
+                };
+                var that = this;
+
+                this.state = {
+                    urlParams: {},
+                    eventTarget: undefined,
+                    popup: new window.ninjaBag.baseObjects.Popup({
+                        container: $('#popupLinker'),
+                        zIndex: 1010,
+                        contentClose: true,
+                        realoadAllTimes: true,
+                        requestUrlFunc: function () { return urlFormatterFunc(that.state.urlParams); },
+                        onLoadFunc: function() {
+                            var container = that.state.popup.settings.container;
+                            container.find('[data-target]').append(that.state.eventTarget.clone());
+                            container.find('[data-request]').on('click', function (eventTarget) {
+                                var pars = urlParamsReader($(eventTarget.currentTarget));
+                                $.ajax(urlFormatterFunc(pars), {
+                                    type: pars['request'],
+                                    traditional: true,
+                                    success: function (data) {
+                                        var jqData = $(data);
+                                        jqData.find('[data-editor]').on('click', function () { that.show(this); });
+                                        that.state.eventTarget.replaceWith(jqData);
+                                        that.state.popup.hide();
+                                    }
+                                });
+                            });
+                        }
+                    })
+                };
+                this.show = function(eventTarget) {
+                    that.state.eventTarget = $(eventTarget).closest('[data-type]');
+                    that.state.urlParams = urlParamsReader(that.state.eventTarget);
+                    this.state.popup.show();
+                }
+                $('[data-editor').on('click', function(){that.show(this);});
+            })();
+        });
+    </script>
+</div>
+
 @foreach (var rawCompetition in Model.ControllerModel.Data) {
+    var date = filter.date.ToString();
     <hr />
-    <h3 data-id="@rawCompetition.Competition.RawID">
-        @rawCompetition.Competition.RawName
-        @ArrayLinkedNames(rawCompetition.Competition)
-    </h3>
+    <h3>
+    @ArrayLinkedNames(rawCompetition.Competition, date)</h3>
     foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
         <hr/>
-        <h4 data-id="@rawCompetitionSpecify.CompetitionSpecify.RawID">
-            @rawCompetitionSpecify.CompetitionSpecify.RawName
-            @ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify)
-        </h4>
+        <h4>@ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify, date)</h4>
         <table class="table">
             <thead><tr>
-                <td class="col-sm-2"></td>
+                <td class="col-sm-1"></td>
                 <td class="col-sm-5"></td>
                 <td class="col-sm-5"></td>
             </tr></thead>
             <tbody>
             @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
-                <tr data-id="@competitionItem.RawID">
-                    <td>
-                        @competitionItem.RawEventDate
-                        <br/>
-                        <small data-id="@competitionItem.EntityID">@competitionItem.EventDate</small>
-                    </td>
-                    <td data-id="@competitionItem.Competitior1.RawID">
-                        @competitionItem.Competitior1.RawName
-                        @ArrayLinkedNames(competitionItem.Competitior1)
-                    </td>
-                    <td data-id="@competitionItem.Competitior2.RawID">
-                        @competitionItem.Competitior2.RawName
-                        @ArrayLinkedNames(competitionItem.Competitior2)
-                    </td>
+                <tr>
+                    <td>@ArrayLinkedNames(competitionItem, competitionItem.RawName)</td>
+                    <td>@ArrayLinkedNames(competitionItem.Competitior1, competitionItem.RawName)</td>
+                    <td>@ArrayLinkedNames(competitionItem.Competitior2, competitionItem.RawName)</td>
                 </tr>
             }
             </tbody>

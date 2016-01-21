@@ -363,6 +363,7 @@
     <Compile Include="CodeServerSide\Entity\SystemBrokerRequest.cs" />
     <Compile Include="CodeServerSide\Entity\SystemBrokerRequestSchedule.cs" />
     <Compile Include="CodeServerSide\Enums\BetOddType.cs" />
+    <Compile Include="CodeServerSide\Enums\BrokerEntityType.cs" />
     <Compile Include="CodeServerSide\Enums\BrokerType.cs" />
     <Compile Include="CodeServerSide\Enums\GenderType.cs" />
     <Compile Include="CodeServerSide\Enums\LanguageType.cs" />
@@ -422,6 +423,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.override.css" />
     <Content Include="Content\Plugins\bootstrap-datepicker.min.css" />
+    <Content Include="Content\Plugins\Custom\Popup.css" />
     <Content Include="Content\Tinymce\tinymce.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -442,11 +444,14 @@
     <Content Include="Areas\Moderate\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Moderate\Views\SystemState\Index.cshtml" />
     <Content Include="Areas\Moderate\Views\SystemState\CompetitionItem.cshtml" />
+    <Content Include="Areas\Moderate\Views\SystemState\EntityLinker.cshtml" />
+    <Content Include="Areas\Moderate\Views\SystemState\_RawEntityWriter.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\Common.js" />
+    <Content Include="Scripts\Custom\Popup.js" />
     <Content Include="Scripts\Log.js" />
     <Content Include="Scripts\NinjaBag.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -534,7 +539,6 @@
     <Folder Include="Areas\Moderate\Models\" />
     <Folder Include="Areas\Moderate\Views\Shared\" />
     <Folder Include="Content\Less\" />
-    <Folder Include="Content\Plugins\Custom\" />
     <Folder Include="Views\Assets\" />
     <Folder Include="Views\File\" />
     <Folder Include="Views\Log\" />
