@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
-using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeServerSide.Enums;
 

@@ -1,0 +1,13 @@
+﻿@using Project_B.CodeClientSide.TransportType.ModerateTransport
+@using Project_B.CodeServerSide.Enums
+@model List<RawEntityWithLink>
+
+@foreach (var item in Model) {
+    var entityType = item.BrokerEntityType;
+    item.BrokerEntityType = BrokerEntityType.Unknown;
+    <li>
+        <button data-id="@item.RawID" data-type="@entityType" data-request="POST" data-targetid="@item.EntityID" class="btn btn-xs btn-success">Привязать id=@(item.EntityID)</button>
+        @Html.Partial("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(item, string.Empty))
+        <br /><br />
+    </li>
+}

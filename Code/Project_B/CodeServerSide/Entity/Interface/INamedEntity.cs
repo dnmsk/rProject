@@ -1,5 +1,5 @@
 ﻿namespace Project_B.CodeServerSide.Entity.Interface {
-    public interface INamedEntity : IKeyBrokerEntity {
+    public interface INamedEntity : IUniqueID {
         /// <summary>
         /// 
         /// </summary>

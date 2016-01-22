@@ -7,9 +7,9 @@
     @Model.Item1.RawName
     <br />
     <small data-id="@Model.Item1.EntityID">
-        @Model.Item1.EntityName.IfNotNull(arr => arr.StrJoin(" | "), "unlinked") @switch (Model.Item1.BrokerEntityType) {
+        @Model.Item1.EntityName.IfNotNull(arr => arr.StrJoin(" | "), "unlinked") <b>(@Model.Item1.EntityID)</b> @switch (Model.Item1.BrokerEntityType) {
                     case BrokerEntityType.Competition:
-                    case BrokerEntityType.CompetitionSpecify:
+                    //case BrokerEntityType.CompetitionSpecify:
                     case BrokerEntityType.Competitor:
         <span data-editor="true" class="glyphicon glyphicon-pencil" style="cursor: pointer;"></span>
         break;

@@ -7,7 +7,6 @@ namespace Project_B.CodeClientSide.TransportType.ModerateTransport {
         public string RawName { get; set; }
         public int EntityID { get; set; }
         public string[] EntityName { get; set; }
-
         public BrokerEntityType BrokerEntityType { get; set; }
     }
 }

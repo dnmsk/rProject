@@ -4,6 +4,7 @@ using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using Project_B.CodeServerSide.Entity.Interface;
 
 namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// <summary>
@@ -12,7 +13,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
     [Serializable]
     [DBTable("CompetitorUnique")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class CompetitorUnique : AbstractEntityTemplateKey<CompetitorUnique, int> {
+    public sealed class CompetitorUnique : AbstractEntityTemplateKey<CompetitorUnique, int>, IUniqueID {
 
         public enum Fields {
         /// <summary>
@@ -27,6 +28,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// 
         /// </summary>
         public CompetitorUnique() {
+            IsUsed = true;
         }
 
         /// <summary>
@@ -52,5 +54,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
         }
+
+        public int UniqueID => ID;
     }
 }

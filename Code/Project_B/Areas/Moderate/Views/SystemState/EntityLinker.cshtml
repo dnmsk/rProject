@@ -1,18 +1,41 @@
 ﻿@using Project_B.CodeClientSide.TransportType.ModerateTransport
-@using Project_B.CodeServerSide.Enums
-@model List<RawEntityWithLink>
+@model Tuple<RawEntityWithLink, List<RawEntityWithLink>>
 
 <h3 data-target="true"></h3>
-<hr/>
-<hr/>
-<ul>
-    @foreach (var item in Model) {
-        var entityType = item.BrokerEntityType;
-        item.BrokerEntityType = BrokerEntityType.Unknown;
-        <li>
-            <span data-id="@item.RawID" data-type="@entityType" data-request="POST" class="glyphicon glyphicon-edit" style="cursor: pointer;"></span> @(item.EntityID):
-            @Html.Partial("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(item, string.Empty))
-            <br/><br/>
-        </li>
-    }
+@if (Model.Item1.EntityID != default(int)) {
+    <button class="btn btn-xs btn-danger" data-request="DELETE" data-id="@Model.Item1.RawID" data-type="@Model.Item1.BrokerEntityType">Удалить привязку</button>
+} else {
+    <button class="btn btn-xs btn-danger" data-request="PUT" data-id="@Model.Item1.RawID" data-type="@Model.Item1.BrokerEntityType">Создать привязку</button>
+}
+<hr />
+<div class="btn-group">
+    <button class="btn btn-default" onclick="toggleSearchType('#byNear');">Ближайшие</button>
+    <button class="btn btn-default" onclick="toggleSearchType('#byName');">По имени</button>
+</div>
+<script type="text/javascript">
+        function toggleSearchType(target) {
+            $('#byNear,#byName').hide();
+            $(target).show();
+        }
+</script>
+<hr />
+<ul id="byNear">
+    @Html.Partial("_ListRawEntityWriter", Model.Item2)
 </ul>
+<div id="byName" style="display: none;">
+    <input type="text" id="live-search-example" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 150px;">
+    <span class="glyphicon glyphicon-search" style="vertical-align: text-top;" onclick=""></span>
+    <script>
+        $(function() {
+            $('#live-search-example').liveSearch({
+                url: '@Url.Action("LiveSearch", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
+                appendTo: $('#liveSearchTarget'),
+                onSuccessFunc(data) {
+                    window.ninjaBag.documentObjects.linker.bindLinkEvent($('#liveSearchTarget'));
+                }
+            });
+        });
+    </script>
+    <br/><br/>
+    <ul id="liveSearchTarget"></ul>
+</div>

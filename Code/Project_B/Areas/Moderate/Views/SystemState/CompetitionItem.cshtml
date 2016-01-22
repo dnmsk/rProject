@@ -41,7 +41,7 @@
 
     <script type="text/javascript">
         $(function() {
-            var obj = new (function() {
+            window.ninjaBag.documentObjects.linker = new (function () {
                 var urlParamsReader = function(eventTarget) {
                     var urlParams = {};
                     $.each(eventTarget[0].attributes, function(i, el) {
@@ -54,9 +54,25 @@
                 var urlFormatterFunc = function(parsMap) {
                     var pars = [];
                     $.each(parsMap, function (i, el) { pars.push(i + '=' + el) });
-                    return '@Url.Action("EntityLinker")' + '?' + pars.join('&');
+                    return '@Url.Action("EntityLinker")'.toLowerCase() + '?' + pars.join('&');
                 };
                 var that = this;
+                this.bindLinkEvent = function (container) {
+                    container.find('[data-target]').append(that.state.eventTarget.clone());
+                    container.find('[data-request]').on('click', function (eventTarget) {
+                        var pars = urlParamsReader($(eventTarget.currentTarget));
+                        $.ajax(urlFormatterFunc(pars), {
+                            type: pars['request'],
+                            traditional: true,
+                            success: function (data) {
+                                var jqData = $(data);
+                                jqData.find('[data-editor]').on('click', function () { that.show(this); });
+                                that.state.eventTarget.replaceWith(jqData);
+                                that.state.popup.hide();
+                            }
+                        });
+                    });
+                };
 
                 this.state = {
                     urlParams: {},
@@ -67,22 +83,8 @@
                         contentClose: true,
                         realoadAllTimes: true,
                         requestUrlFunc: function () { return urlFormatterFunc(that.state.urlParams); },
-                        onLoadFunc: function() {
-                            var container = that.state.popup.settings.container;
-                            container.find('[data-target]').append(that.state.eventTarget.clone());
-                            container.find('[data-request]').on('click', function (eventTarget) {
-                                var pars = urlParamsReader($(eventTarget.currentTarget));
-                                $.ajax(urlFormatterFunc(pars), {
-                                    type: pars['request'],
-                                    traditional: true,
-                                    success: function (data) {
-                                        var jqData = $(data);
-                                        jqData.find('[data-editor]').on('click', function () { that.show(this); });
-                                        that.state.eventTarget.replaceWith(jqData);
-                                        that.state.popup.hide();
-                                    }
-                                });
-                            });
+                        onLoadFunc: function () {
+                            that.bindLinkEvent(that.state.popup.settings.container);
                         }
                     })
                 };

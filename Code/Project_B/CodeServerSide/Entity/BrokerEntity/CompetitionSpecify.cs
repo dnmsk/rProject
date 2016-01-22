@@ -138,5 +138,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
         }
+
+        public int UniqueID => CompetitionSpecifyUniqueID;
     }
 }
