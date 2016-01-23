@@ -187,19 +187,17 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetition(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
-                const int RESOLUTION = 10;
-                return BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, RESOLUTION);
+                return BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Minute);
             }, null);
         }
 
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetitionLive(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
-                const int RESOLUTION = 1;
-                return BuildOddsByDateByBroker(ints => BetHelper.GetLiveBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, RESOLUTION);
+                return BuildOddsByDateByBroker(ints => BetHelper.GetLiveBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Second);
             }, null);
         }
 
-        private static Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> BuildOddsByDateByBroker<T>(Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, SportType sportType, int competitionItemID, int resolution) {
+        private static Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> BuildOddsByDateByBroker<T>(Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, SportType sportType, int competitionItemID, DateRoundType resolution) {
             var betMap = getBetMap(new[] { competitionItemID });
             if (betMap == null || !betMap.Any()) {
                 return null;
@@ -208,7 +206,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             var mapBetsByDates = new Dictionary<DateTime, List<IBet<T>>>();
             var mapByBrokers = new Dictionary<BrokerType, List<KeyValuePair<DateTime, IBet<T>>>>();
             foreach (var ibet in betMap.Values.First()) {
-                var ibetDate = ibet.Datecreatedutc.Round(DateRoundType.Minute, resolution);
+                var ibetDate = ibet.Datecreatedutc.Round(resolution, 10);
                 List<KeyValuePair<DateTime, IBet<T>>> ibetsForBroker;
                 if (!mapByBrokers.TryGetValue(ibet.BrokerID, out ibetsForBroker)) {
                     ibetsForBroker = new List<KeyValuePair<DateTime, IBet<T>>>();
@@ -230,7 +228,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     var firstBet = keyValuePairs.First();
                     var lastBet = keyValuePairs.Last();
                     var localDeltaMinutes = (firstBet.Key == lastBet.Key ? totalDeltaMinutes : (firstBet.Key - lastBet.Key).TotalMinutes) / 16;
-                    var newLastiBetDate = firstBet.Key.AddMinutes(localDeltaMinutes).Round(DateRoundType.Minute, resolution);
+                    var newLastiBetDate = firstBet.Key.AddMinutes(localDeltaMinutes).Round(resolution, 10);
                     List<IBet<T>> listBets;
                     if (!mapBetsByDates.TryGetValue(newLastiBetDate, out listBets)) {
                         listBets = new List<IBet<T>>();

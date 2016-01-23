@@ -350,10 +350,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .AsList(CompetitionItem.Fields.Competitoruniqueid1, CompetitionItem.Fields.Competitoruniqueid2, CompetitionItem.Fields.CompetitionuniqueID);
                         var competitorsMap = Competitor.DataSource
                             .WhereIn(Competitor.Fields.CompetitoruniqueID, nearCompetitionItems.Select(ci => ci.Competitoruniqueid1).Union(nearCompetitionItems.Select(ci => ci.Competitoruniqueid2)).Distinct())
-                            .AsMapByField<int>(Competitor.Fields.CompetitoruniqueID, Competitor.Fields.NameFull)
+                            .AsMapByField<int>(Competitor.Fields.CompetitoruniqueID, Competitor.Fields.NameFull, Competitor.Fields.Gendertype)
                             .ToDictionary(kv => kv.Key, kv => new RawEntityWithLink {
                                 EntityID = kv.Value[0].ID,
-                                EntityName = new[] { kv.Value.Select(v => v.Name).OrderBy(n => n).StrJoin(" | ") }
+                                EntityName = new[] { kv.Value.Select(v => v.Name + ". " + GenderDetectorHelper.Instance.GetGenderName(v.Gendertype)).OrderBy(n => n).StrJoin(" | ") }
                             });
                         var mapResults = new Dictionary<int, RawEntityWithLink>();
                         foreach (var nearCompetitionItem in nearCompetitionItems) {
@@ -425,7 +425,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 return namedEntities
                     .Select(e => new RawEntityWithLink {
                         EntityID = e.UniqueID,
-                        EntityName = new[] {e.Name},
+                        EntityName = new[] {e.Name + ". " + GenderDetectorHelper.Instance.GetGenderName(((IGenderTyped)e).Gendertype)}
                     })
                     .GroupBy(re => re.EntityID)
                     .Select(ge => new RawEntityWithLink {

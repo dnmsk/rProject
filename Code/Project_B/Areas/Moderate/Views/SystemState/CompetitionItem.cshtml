@@ -11,6 +11,7 @@
     var routeValDict = filter.ToRoute();
     var broker = BookmakerHtmlHelper.Instance.GetBroker(filter.id);
     Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
+    var date = filter.date.ToString();
 }
 
 @functions {
@@ -99,29 +100,32 @@
     </script>
 </div>
 
-@foreach (var rawCompetition in Model.ControllerModel.Data) {
-    var date = filter.date.ToString();
-    <hr />
-    <h3>
-    @ArrayLinkedNames(rawCompetition.Competition, date)</h3>
-    foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
-        <hr/>
-        <h4>@ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify, date)</h4>
-        <table class="table">
-            <thead><tr>
-                <td class="col-sm-1"></td>
-                <td class="col-sm-5"></td>
-                <td class="col-sm-5"></td>
-            </tr></thead>
-            <tbody>
-            @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
-                <tr>
-                    <td>@ArrayLinkedNames(competitionItem, competitionItem.RawName)</td>
-                    <td>@ArrayLinkedNames(competitionItem.Competitior1, competitionItem.RawName)</td>
-                    <td>@ArrayLinkedNames(competitionItem.Competitior2, competitionItem.RawName)</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+@foreach (var rawGrouped in Model.ControllerModel.Data.GroupBy(rci => rci.SportType)) {
+    <h2>@rawGrouped.Key</h2>
+    foreach (var rawCompetition in rawGrouped.OrderBy(rci => rci.Competition.RawName)) {
+        <hr />
+        <h3>@ArrayLinkedNames(rawCompetition.Competition, date)</h3>
+        foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
+            <hr />
+            <h4>@ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify, date)</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td class="col-sm-1"></td>
+                        <td class="col-sm-5"></td>
+                        <td class="col-sm-5"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
+                        <tr>
+                            <td>@ArrayLinkedNames(competitionItem, competitionItem.RawName)</td>
+                            <td>@ArrayLinkedNames(competitionItem.Competitior1, competitionItem.RawName)</td>
+                            <td>@ArrayLinkedNames(competitionItem.Competitior2, competitionItem.RawName)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     }
 }
