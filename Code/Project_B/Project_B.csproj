@@ -426,6 +426,9 @@
     <Content Include="Content\bootstrap.override.css" />
     <Content Include="Content\Plugins\bootstrap-datepicker.min.css" />
     <Content Include="Content\Plugins\Custom\Popup.css" />
+    <Content Include="Content\Plugins\jquery-ui.min.css" />
+    <Content Include="Content\Plugins\jquery-ui.structure.min.css" />
+    <Content Include="Content\Plugins\jquery-ui.theme.min.css" />
     <Content Include="Content\Tinymce\tinymce.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -455,7 +458,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\Common.js" />
-    <Content Include="Scripts\Custom\jquery.liveSearch.js" />
+    <Content Include="Scripts\Plugins\jquery.liveSearch.js" />
     <Content Include="Scripts\Custom\Popup.js" />
     <Content Include="Scripts\Log.js" />
     <Content Include="Scripts\NinjaBag.js" />
@@ -469,6 +472,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\Plugins\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\Plugins\Custom\bootstrap-datepicker.lang.js" />
+    <Content Include="Scripts\Plugins\jquery-ui.min.js" />
     <Content Include="Scripts\Plugins\jquery.form.min.js" />
     <Content Include="Scripts\react\JSXTransformer-0.13.1.js" />
     <Content Include="Scripts\react\react-0.13.1.js" />

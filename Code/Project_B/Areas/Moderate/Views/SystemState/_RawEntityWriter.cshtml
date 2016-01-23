@@ -3,7 +3,7 @@
 @using Project_B.CodeServerSide.Enums
 @model Tuple<Project_B.CodeClientSide.TransportType.ModerateTransport.RawEntityWithLink, string>
 
-<span data-id="@Model.Item1.RawID" data-cid="@Model.Item1.CompetitionItemID" data-type="@Model.Item1.BrokerEntityType" data-date="@Model.Item2">
+<span data-id="@Model.Item1.RawID" data-cid="@Model.Item1.CompetitionItemID" data-type="@Model.Item1.BrokerEntityType" data-date="@Model.Item2" data-uniqueid="@Model.Item1.EntityID" data-tooltip="true">
     @Model.Item1.RawName
     <br />
     <small data-id="@Model.Item1.EntityID">

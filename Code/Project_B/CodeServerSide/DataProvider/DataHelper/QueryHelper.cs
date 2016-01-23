@@ -20,12 +20,22 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return allFilters;
         }
         */
-        public static DaoFilterBase GetIndexedFilterByWordIgnoreCase(string[] words, Enum field, bool fullyEq = true) {
+        public static DaoFilterBase GetFilterByWordIgnoreCaseOr(string[] words, Enum field) {
             var filters = new List<DaoFilterBase>();
-            words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, fullyEq)));
+            words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, false)));
 
             var allFilters = filters.Count > 1
                 ? new DaoFilterOr(filters)
+                : filters[0];
+            return allFilters;
+        }
+
+        public static DaoFilterBase GetFilterByWordIgnoreCaseAnd(string[] words, Enum field) {
+            var filters = new List<DaoFilterBase>();
+            words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, false)));
+
+            var allFilters = filters.Count > 1
+                ? new DaoFilterAnd(filters)
                 : filters[0];
             return allFilters;
         }

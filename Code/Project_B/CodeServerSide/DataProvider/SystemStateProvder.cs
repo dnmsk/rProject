@@ -22,8 +22,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (SystemStateProvder).FullName);
 
-        public SystemStateProvder() : base(_logger) {
-        }
+        public SystemStateProvder() : base(_logger) {}
 
         public List<SystemStateSummaryStatus> SummarySystemState(DateTime fromDate, DateTime toDate) {
             return InvokeSafe(() => {
@@ -84,15 +83,17 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<RawCompetitionTransport> GetCompetitionItems(BrokerType brokerid, LanguageType languagetype, DateTime date, StateFilter state) {
             return InvokeSafe(() => {
-                var rawCompetitionDs = RawCompetitionItem.DataSource.FilterByBroker(brokerid)
-                    .WhereEquals(RawCompetitionItem.Fields.Languagetype, (short) languagetype)
-                    .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
+                var rawCompetitionDs = RawCompetitionItem.DataSource.FilterByBroker(brokerid).FilterByLanguage(languagetype);
                 switch (state) {
                     case StateFilter.Linked:
-                        rawCompetitionDs = rawCompetitionDs.WhereNotNull(RawCompetitionItem.Fields.CompetitionitemID);
+                        rawCompetitionDs = rawCompetitionDs.WhereNotNull(RawCompetitionItem.Fields.CompetitionitemID)
+                            .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
                         break;
                     case StateFilter.Unlinked:
                         rawCompetitionDs = rawCompetitionDs.WhereNull(RawCompetitionItem.Fields.CompetitionitemID);
+                        if (date >= DateTime.UtcNow.Date) {
+                            rawCompetitionDs = rawCompetitionDs.Where(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow);
+                        }
                         break;
                 }
 
@@ -384,7 +385,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             }
         }
 
-        public List<RawEntityWithLink> LiveSearch(BrokerEntityType type, int id, string search) {
+        public List<RawEntityWithLink> LiveSearch(BrokerEntityType type, int id, string search, bool all) {
             return InvokeSafe(() => {
                 ISportTyped sportTyped = null;
                 switch (type) {
@@ -404,15 +405,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var namedEntities = new List<INamedEntity>();
                 switch (type) {
                     case BrokerEntityType.Competition:
-                        namedEntities.AddRange(Competition.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
+                        namedEntities.AddRange(Competition.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
                             .AsList(Competition.Fields.Name, Competition.Fields.CompetitionuniqueID));
                         break;
                     case BrokerEntityType.CompetitionSpecify:
-                        namedEntities.AddRange(CompetitionSpecify.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
+                        namedEntities.AddRange(CompetitionSpecify.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
                             .AsList(CompetitionSpecify.Fields.Name, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID));
                         break;
                     case BrokerEntityType.Competitor:
-                        namedEntities.AddRange(Competitor.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
+                        namedEntities.AddRange(Competitor.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
                             .AsList(Competitor.Fields.NameFull, Competitor.Fields.CompetitoruniqueID));
                         break;
                 }
@@ -595,6 +596,47 @@ namespace Project_B.CodeServerSide.DataProvider {
                         break;
                 }
                 _logger.Info(log.ToString());
+            });
+        }
+
+        public List<string> GetTooltip(BrokerEntityType type, int id) {
+            return InvokeSafe(() => {
+                var named = new List<INamedEntity>();
+                switch (type) {
+                    case BrokerEntityType.Competition:
+                        named.AddRange(
+                            Competition.DataSource
+                                .WhereEquals(Competition.Fields.CompetitionuniqueID, id)
+                                .AsList(Competition.Fields.Name)
+                        );
+                        break;
+                    case BrokerEntityType.CompetitionSpecify:
+                        named.AddRange(
+                            Competition.DataSource
+                                .WhereIn(Competition.Fields.CompetitionuniqueID, CompetitionSpecify.DataSource
+                                                                                    .WhereEquals(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, id)
+                                                                                    .AsList(CompetitionSpecify.Fields.CompetitionuniqueID)
+                                                                                    .Select(cs => cs.CompetitionuniqueID).Distinct())
+                                .AsList(Competition.Fields.Name)
+                        );
+                        break;
+                    case BrokerEntityType.Competitor:
+                        named.AddRange(
+                            Competition.DataSource
+                                .WhereIn(Competition.Fields.CompetitionuniqueID, CompetitionItem.DataSource
+                                                                                    .Where(new DaoFilterOr(
+                                                                                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, id),
+                                                                                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, id)
+                                                                                    ))
+                                                                                    .AsColumn<int>(CompetitionItem.Fields.CompetitionuniqueID)
+                                                                                    .Distinct())
+                                .AsList(Competition.Fields.Name)
+                        );
+                        break;
+                }
+                return named
+                    .Select(n => n.Name)
+                    .ToList();
             });
         }
     }

@@ -42,7 +42,7 @@
     <script type="text/javascript">
         $(function() {
             window.ninjaBag.documentObjects.linker = new (function () {
-                var urlParamsReader = function(eventTarget) {
+                this.urlParamsReader = function(eventTarget) {
                     var urlParams = {};
                     $.each(eventTarget[0].attributes, function(i, el) {
                         if (el.name.indexOf('data-') >= 0) {
@@ -51,7 +51,7 @@
                     });
                     return urlParams;
                 };
-                var urlFormatterFunc = function(parsMap) {
+                this.urlFormatterFunc = function(parsMap) {
                     var pars = [];
                     $.each(parsMap, function (i, el) { pars.push(i + '=' + el) });
                     return '@Url.Action("EntityLinker")'.toLowerCase() + '?' + pars.join('&');
@@ -60,8 +60,8 @@
                 this.bindLinkEvent = function (container) {
                     container.find('[data-target]').append(that.state.eventTarget.clone());
                     container.find('[data-request]').on('click', function (eventTarget) {
-                        var pars = urlParamsReader($(eventTarget.currentTarget));
-                        $.ajax(urlFormatterFunc(pars), {
+                        var pars = that.urlParamsReader($(eventTarget.currentTarget));
+                        $.ajax(that.urlFormatterFunc(pars), {
                             type: pars['request'],
                             traditional: true,
                             success: function (data) {
@@ -78,7 +78,7 @@
                     zIndex: 1010,
                     contentClose: true,
                     realoadAllTimes: true,
-                    requestUrlFunc: function () { return urlFormatterFunc(that.state.urlParams); },
+                    requestUrlFunc: function () { return that.urlFormatterFunc(that.state.urlParams); },
                     onLoadFunc: function () {
                         that.bindLinkEvent(that.popup.settings.container);
                     }
@@ -90,7 +90,7 @@
                 };
                 this.show = function(eventTarget) {
                     that.state.eventTarget = $(eventTarget).closest('[data-type]');
-                    that.state.urlParams = urlParamsReader(that.state.eventTarget);
+                    that.state.urlParams = that.urlParamsReader(that.state.eventTarget);
                     that.popup.show();
                 }
                 $('[data-editor').on('click', function(){that.show(this);});

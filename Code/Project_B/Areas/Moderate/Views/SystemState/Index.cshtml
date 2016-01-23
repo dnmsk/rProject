@@ -1,10 +1,12 @@
 ﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @model Project_B.Models.StaticPageBaseModel<Project_B.Models.WithFilterModel<List<Project_B.CodeClientSide.TransportType.ModerateTransport.SystemStateSummaryStatus>>>
 
 @{
     var route = Model.ControllerModel.Filter.ToRoute();
+    route["state"] = StateFilter.Unlinked;
     Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
 }
 

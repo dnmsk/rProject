@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using CommonUtils.ExtendedTypes;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType.ModerateTransport;
@@ -64,19 +64,26 @@ namespace Project_B.Areas.Moderate.Controllers {
             return PartialView("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(_provider.GetEntity(filter.id, type), string.Empty));
         }
 
-        public ActionResult LiveSearch(BrokerEntityType type, int id, string search) {
-            var data = _provider.LiveSearch(type, id, search);
+        public ActionResult LiveSearch(BrokerEntityType type, int id, string search, bool all = true) {
+            var data = _provider.LiveSearch(type, id, search, all);
             return PartialView("_ListRawEntityWriter", data);
         }
 
-        public ActionResult LiveSearchJoin(BrokerEntityType type, int id, string search) {
-            var data = _provider.LiveSearch(type, id, search);
+        public ActionResult LiveSearchJoin(BrokerEntityType type, int id, string search, bool all = true) {
+            var data = _provider.LiveSearch(type, id, search, all);
             return PartialView("_ListRawEntityWriterJoin", data);
         }
 
         public ActionResult JoinEntity(BrokerEntityType type, int[] ids) {
             _provider.EntityJoin(type, ids);
             return new EmptyResult();
+        }
+
+        public ActionResult GetTooltip(BrokerEntityType type, int uniqueid) {
+            List<string> res = _provider.GetTooltip(type, uniqueid);
+            return new ContentResult {
+                Content = res.StrJoin("<br/>")
+            };
         }
     }
 }

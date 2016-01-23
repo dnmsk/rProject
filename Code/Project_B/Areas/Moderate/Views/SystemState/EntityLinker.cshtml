@@ -18,6 +18,20 @@
         $('#byNear,#byName,#joinEntity').hide();
         $(target).show();
     }
+    function initTooltip(target) {
+        target.tooltip({
+            items: target,
+            content: function () {
+                var pars = [];
+                $.each(window.ninjaBag.documentObjects.linker.urlParamsReader($(this)), function (i, el) { pars.push(i + '=' + el) });
+                return '<div style="width: 400px;">' + $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetTooltip")'.toLowerCase() + '?' + pars.join('&'),
+                    async: false
+                }).responseText + '</div>';
+            }
+        });
+    }
 </script>
 <hr />
 <ul id="byNear" style="display: none;">
@@ -33,6 +47,7 @@
                 appendTo: $('#liveSearchTarget'),
                 onSuccessFunc(data) {
                     window.ninjaBag.documentObjects.linker.bindLinkEvent($('#liveSearchTarget'));
+                    initTooltip($('#liveSearchTarget [data-tooltip]'));
                 }
             });
         });
@@ -47,7 +62,10 @@
         $(function () {
             $('#liveSearchJoin').liveSearch({
                 url: '@Url.Action("LiveSearchJoin", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
-                appendTo: $('#liveSearchJoinTarget')
+                appendTo: $('#liveSearchJoinTarget'),
+                onSuccessFunc(data) {
+                    initTooltip($('#liveSearchJoinTarget [data-tooltip]'));
+                }
             });
             $('#formJoinEntity').ajaxForm(function () { window.ninjaBag.documentObjects.linker.popup.hide(); });
         });

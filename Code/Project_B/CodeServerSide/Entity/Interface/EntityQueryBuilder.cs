@@ -25,13 +25,15 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         public static DbDataSource<T, K> FilterByBroker<T, K>(this DbDataSource<T, K> ds, BrokerType brokerType) where T : class, IBrokerTyped, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             return ds.WhereEquals(GetEntityInstance<T>().BrokerField, (short)brokerType);
         }
-        public static DbDataSource<T, K> FilterByName<T, K>(this DbDataSource<T, K> ds, string name) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+        public static DbDataSource<T, K> FilterByName<T, K>(this DbDataSource<T, K> ds, string name, bool all) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             var searchPhrase = name
-                .Split(new[] { ' ', '.', '.', '/', '-', '&' }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { ' ', '.', ',', ')', '(', '/', '-', '&' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => s.Length > 1)
                 .ToArray();
             return searchPhrase.Any() 
-                ? ds.Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(searchPhrase, GetEntityInstance<T>().NameField, false))
+                ? (all ? 
+                    ds.Where(QueryHelper.GetFilterByWordIgnoreCaseAnd(searchPhrase, GetEntityInstance<T>().NameField)) : 
+                    ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(searchPhrase, GetEntityInstance<T>().NameField)))
                 : ds.WhereNull(GetEntityInstance<T>().NameField);
         }
         /*
