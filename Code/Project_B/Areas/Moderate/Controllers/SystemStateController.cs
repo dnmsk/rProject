@@ -40,7 +40,7 @@ namespace Project_B.Areas.Moderate.Controllers {
             }
             filter.FixDates(new DateTime(2014, 01, 01), dateTime.AddDays(14));
             return View(new StaticPageBaseModel<WithFilterModel<BrokerType, List<RawCompetitionTransport>>>(this) {
-                ControllerModel = new WithFilterModel<BrokerType, List<RawCompetitionTransport>>(new FilterModel<BrokerType>("CompetitionItem", "SystemState", CurrentLanguage, FilterSettings.ToDate, filter, new RouteValueDictionary(new { languagetype }))) {
+                ControllerModel = new WithFilterModel<BrokerType, List<RawCompetitionTransport>>(new FilterModel<BrokerType>("CompetitionItem", "SystemState", CurrentLanguage, FilterSettings.ToDate, filter, new RouteValueDictionary(new { languagetype, state }))) {
                     Data = _provider.GetCompetitionItems(filter.id, languagetype, filter.date, state)
                 }
             });

@@ -2,9 +2,9 @@
 @model List<Project_B.CodeClientSide.TransportType.ModerateTransport.RawEntityWithLink>
 
 @foreach (var entity in Model) {
-    <label data-uniqueid="@entity.EntityID" data-type="@entity.BrokerEntityType" data-tooltip="true">
+    <label>
         <input type="checkbox" value="@entity.EntityID" name="ids"/>
-        @entity.EntityName.StrJoin(" | ") <b>ID=@entity.EntityID</b>
+        <span data-uniqueid="@entity.EntityID" data-type="@entity.BrokerEntityType" data-tooltip="true">@entity.EntityName.StrJoin(" | ") <b>ID=@entity.EntityID</b></span>
     </label>
     <br/>
 }

@@ -95,6 +95,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                             rawCompetitionDs = rawCompetitionDs.Where(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow);
                         }
                         break;
+                    default:
+                        rawCompetitionDs = rawCompetitionDs
+                            .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
+                        break;
                 }
 
                 var rCompetitionItems = rawCompetitionDs

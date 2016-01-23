@@ -24,11 +24,11 @@
             content: function () {
                 var pars = [];
                 $.each(window.ninjaBag.documentObjects.linker.urlParamsReader($(this)), function (i, el) { pars.push(i + '=' + el) });
-                return '<div style="width: 400px;">' + $.ajax({
+                return $.ajax({
                     type: "GET",
                     url: '@Url.Action("GetTooltip")'.toLowerCase() + '?' + pars.join('&'),
                     async: false
-                }).responseText + '</div>';
+                }).responseText;
             }
         });
     }
@@ -47,7 +47,7 @@
                 appendTo: $('#liveSearchTarget'),
                 onSuccessFunc(data) {
                     window.ninjaBag.documentObjects.linker.bindLinkEvent($('#liveSearchTarget'));
-                    initTooltip($('#liveSearchTarget [data-tooltip]'));
+                    initTooltip($('#liveSearchTarget li[data-tooltip]'));
                 }
             });
         });
