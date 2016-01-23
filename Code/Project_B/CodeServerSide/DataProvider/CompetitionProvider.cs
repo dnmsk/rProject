@@ -111,7 +111,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public CompetitionItemRawTransport GetCompetitionItem(ProcessStat competitorStat, BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport>[] competitors, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 var utcNow = DateTime.UtcNow;
-                if (eventDateUtc > utcNow.AddDays(14)) {
+                if (eventDateUtc > utcNow.AddDays(14) || competitors.Any(c => c.Object.ID == default(int))) {
                     return null;
                 }
                 var competitionItemRaw = new BrokerEntityBuilder<RawCompetitionItem>(competitorStat)
@@ -178,7 +178,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     competitionItem.Save();
                 }
                 
-                if (eventDateUtc > DateTime.MinValue && (algoMode.HasFlag(GatherBehaviorMode.CreateOriginal) || algoMode.HasFlag(GatherBehaviorMode.CreateOriginalIfMatchedAll))) {
+                if (eventDateUtc > DateTime.MinValue && ((algoMode & (GatherBehaviorMode.CreateOriginal | GatherBehaviorMode.CreateOriginalIfMatchedAll)) != 0)) {
                     if (Math.Abs((competitionItem.Dateeventutc - eventDateUtc).TotalMinutes) > 5) {
                         competitionItem.Dateeventutc = eventDateUtc;
                         competitionItem.Save();

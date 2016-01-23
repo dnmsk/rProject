@@ -33,7 +33,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
             return searchPhrase.Any() 
                 ? (all ? 
                     ds.Where(QueryHelper.GetFilterByWordIgnoreCaseAnd(searchPhrase, GetEntityInstance<T>().NameField)) : 
-                    ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(searchPhrase, GetEntityInstance<T>().NameField)))
+                    ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(searchPhrase, GetEntityInstance<T>().NameField, false)))
                 : ds.WhereNull(GetEntityInstance<T>().NameField);
         }
         /*

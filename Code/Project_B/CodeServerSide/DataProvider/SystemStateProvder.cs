@@ -410,15 +410,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                 switch (type) {
                     case BrokerEntityType.Competition:
                         namedEntities.AddRange(Competition.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
-                            .AsList(Competition.Fields.Name, Competition.Fields.CompetitionuniqueID));
+                            .AsList(Competition.Fields.Name, Competition.Fields.CompetitionuniqueID, Competition.Fields.Gendertype));
                         break;
                     case BrokerEntityType.CompetitionSpecify:
                         namedEntities.AddRange(CompetitionSpecify.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
-                            .AsList(CompetitionSpecify.Fields.Name, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID));
+                            .AsList(CompetitionSpecify.Fields.Name, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, CompetitionSpecify.Fields.Gendertype));
                         break;
                     case BrokerEntityType.Competitor:
                         namedEntities.AddRange(Competitor.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search, all)
-                            .AsList(Competitor.Fields.NameFull, Competitor.Fields.CompetitoruniqueID));
+                            .AsList(Competitor.Fields.NameFull, Competitor.Fields.CompetitoruniqueID, Competitor.Fields.Gendertype));
                         break;
                 }
 

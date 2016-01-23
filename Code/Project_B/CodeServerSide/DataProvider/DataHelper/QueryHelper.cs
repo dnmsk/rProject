@@ -20,9 +20,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return allFilters;
         }
         */
-        public static DaoFilterBase GetFilterByWordIgnoreCaseOr(string[] words, Enum field) {
+        public static DaoFilterBase GetFilterByWordIgnoreCaseOr(string[] words, Enum field, bool fullyEq) {
             var filters = new List<DaoFilterBase>();
-            words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, false)));
+            words.Each(word => filters.Add(GetIndexedFilterByWordIgnoreCase(word, field, fullyEq)));
 
             var allFilters = filters.Count > 1
                 ? new DaoFilterOr(filters)
