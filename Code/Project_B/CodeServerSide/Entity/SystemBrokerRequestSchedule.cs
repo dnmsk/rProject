@@ -94,6 +94,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (BrokerType) (short) this[Fields.BrokerID]; }
             set { ForceSetData(Fields.BrokerID, value); }
         }
+        public Enum BrokerField => Fields.BrokerID;
 
         /// <summary>
         /// 
@@ -102,6 +103,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (LanguageType) (short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, value); }
         }
+        public Enum LanguageTypeField => Fields.Languagetype;
 
         /// <summary>
         /// 
@@ -157,6 +159,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (SportType)(short)this[Fields.Sporttype]; }
             set { ForceSetData(Fields.Sporttype, value); }
         }
+        public Enum SportTypeField => Fields.Sporttype;
 
 
         public override Enum[] KeyFields {

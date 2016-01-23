@@ -73,6 +73,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (GenderType) (short) this[Fields.Gendertype]; }
             set { ForceSetData(Fields.Gendertype, value); }
         }
+        public Enum GenderTypeField => Fields.Gendertype;
 
         /// <summary>
         /// 

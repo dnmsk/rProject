@@ -68,30 +68,30 @@
                                 var jqData = $(data);
                                 jqData.find('[data-editor]').on('click', function () { that.show(this); });
                                 that.state.eventTarget.replaceWith(jqData);
-                                that.state.popup.hide();
+                                that.popup.hide();
                             }
                         });
                     });
                 };
+                this.popup = new window.ninjaBag.baseObjects.Popup({
+                    container: $('#popupLinker'),
+                    zIndex: 1010,
+                    contentClose: true,
+                    realoadAllTimes: true,
+                    requestUrlFunc: function () { return urlFormatterFunc(that.state.urlParams); },
+                    onLoadFunc: function () {
+                        that.bindLinkEvent(that.popup.settings.container);
+                    }
+                });
 
                 this.state = {
                     urlParams: {},
-                    eventTarget: undefined,
-                    popup: new window.ninjaBag.baseObjects.Popup({
-                        container: $('#popupLinker'),
-                        zIndex: 1010,
-                        contentClose: true,
-                        realoadAllTimes: true,
-                        requestUrlFunc: function () { return urlFormatterFunc(that.state.urlParams); },
-                        onLoadFunc: function () {
-                            that.bindLinkEvent(that.state.popup.settings.container);
-                        }
-                    })
+                    eventTarget: undefined
                 };
                 this.show = function(eventTarget) {
                     that.state.eventTarget = $(eventTarget).closest('[data-type]');
                     that.state.urlParams = urlParamsReader(that.state.eventTarget);
-                    this.state.popup.show();
+                    that.popup.show();
                 }
                 $('[data-editor').on('click', function(){that.show(this);});
             })();

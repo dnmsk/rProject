@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Project_B.CodeClientSide;
@@ -66,6 +67,16 @@ namespace Project_B.Areas.Moderate.Controllers {
         public ActionResult LiveSearch(BrokerEntityType type, int id, string search) {
             var data = _provider.LiveSearch(type, id, search);
             return PartialView("_ListRawEntityWriter", data);
+        }
+
+        public ActionResult LiveSearchJoin(BrokerEntityType type, int id, string search) {
+            var data = _provider.LiveSearch(type, id, search);
+            return PartialView("_ListRawEntityWriterJoin", data);
+        }
+
+        public ActionResult JoinEntity(BrokerEntityType type, int[] ids) {
+            _provider.EntityJoin(type, ids);
+            return new EmptyResult();
         }
     }
 }

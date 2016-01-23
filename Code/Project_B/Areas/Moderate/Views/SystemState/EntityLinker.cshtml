@@ -11,23 +11,24 @@
 <div class="btn-group">
     <button class="btn btn-default" onclick="toggleSearchType('#byNear');">Ближайшие</button>
     <button class="btn btn-default" onclick="toggleSearchType('#byName');">По имени</button>
+    <button class="btn btn-warning" onclick="toggleSearchType('#joinEntity');">Соединить</button>
 </div>
 <script type="text/javascript">
-        function toggleSearchType(target) {
-            $('#byNear,#byName').hide();
-            $(target).show();
-        }
+    function toggleSearchType(target) {
+        $('#byNear,#byName,#joinEntity').hide();
+        $(target).show();
+    }
 </script>
 <hr />
-<ul id="byNear">
+<ul id="byNear" style="display: none;">
     @Html.Partial("_ListRawEntityWriter", Model.Item2)
 </ul>
-<div id="byName" style="display: none;">
-    <input type="text" id="live-search-example" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 150px;">
+<div id="byName">
+    <input type="text" id="liveSearchName" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 250px;">
     <span class="glyphicon glyphicon-search" style="vertical-align: text-top;" onclick=""></span>
     <script>
         $(function() {
-            $('#live-search-example').liveSearch({
+            $('#liveSearchName').liveSearch({
                 url: '@Url.Action("LiveSearch", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
                 appendTo: $('#liveSearchTarget'),
                 onSuccessFunc(data) {
@@ -38,4 +39,24 @@
     </script>
     <br/><br/>
     <ul id="liveSearchTarget"></ul>
+</div>
+<div id="joinEntity" style="display: none;">
+    <input type="text" id="liveSearchJoin" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 250px;">
+    <span class="glyphicon glyphicon-search" style="vertical-align: text-top;" onclick=""></span>
+    <script>
+        $(function () {
+            $('#liveSearchJoin').liveSearch({
+                url: '@Url.Action("LiveSearchJoin", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
+                appendTo: $('#liveSearchJoinTarget')
+            });
+            $('#formJoinEntity').ajaxForm(function () { window.ninjaBag.documentObjects.linker.popup.hide(); });
+        });
+    </script>
+    <br/><br/>
+    <form action="@Url.Action("joinentity")" id="formJoinEntity">
+        <input type="hidden" name="type" value="@Model.Item1.BrokerEntityType"/>
+        <div id="liveSearchJoinTarget">
+        </div>
+        <button type="submit" class="btn btn-primary">Соединить</button>
+    </form>
 </div>

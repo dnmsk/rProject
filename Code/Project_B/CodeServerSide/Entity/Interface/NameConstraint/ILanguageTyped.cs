@@ -1,4 +1,5 @@
-﻿using Project_B.CodeServerSide.Enums;
+﻿using System;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity.Interface.NameConstraint {
     public interface ILanguageTyped {
@@ -6,5 +7,6 @@ namespace Project_B.CodeServerSide.Entity.Interface.NameConstraint {
         /// 
         /// </summary>
         LanguageType Languagetype { get; set; }
+        Enum LanguageTypeField { get; }
     }
 }

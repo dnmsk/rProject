@@ -121,6 +121,8 @@ namespace Project_B.CodeServerSide.Entity {
             set { ForceSetData(Fields.Languagetype, value); }
         }
 
+        public Enum LanguageTypeField => Fields.Languagetype;
+
         /// <summary>
         /// 
         /// </summary>

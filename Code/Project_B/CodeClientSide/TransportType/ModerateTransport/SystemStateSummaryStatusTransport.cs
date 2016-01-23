@@ -1,4 +1,6 @@
-﻿using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
+﻿using System;
+using Project_B.CodeServerSide.Entity;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeClientSide.TransportType.ModerateTransport {
@@ -13,5 +15,7 @@ namespace Project_B.CodeClientSide.TransportType.ModerateTransport {
         public int CompetitionLinkedCount { get; set; }
         public int RawCompetitionSpecifyCount { get; set; }
         public int CompetitionSpecifyLinkedCount { get; set; }
+        public Enum BrokerField => SystemBrokerRequest.Fields.BrokerID;
+        public Enum LanguageTypeField => SiteBrokerPage.Fields.Languagetype;
     }
 }

@@ -70,6 +70,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (LanguageType) (short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, (short) value); }
         }
+        public Enum LanguageTypeField => Fields.Languagetype;
 
         /// <summary>
         /// 

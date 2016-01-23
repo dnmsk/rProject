@@ -31,7 +31,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         }
 
         public static DaoFilterBase GetIndexedFilterByWordIgnoreCase(string word, Enum field, bool fullyEq = true) {
-            return new DaoFilter(field, Oper.Like, string.Format(fullyEq ? "{0}" : "%{0}%", word));
+            return new DaoFilter(field, Oper.Ilike, string.Format(fullyEq ? "{0}" : "%{0}%", word));
         }
         
         private static GenderType GetNearGenderType(GenderType genderType) {

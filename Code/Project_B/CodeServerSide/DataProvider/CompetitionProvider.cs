@@ -11,6 +11,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider {
@@ -67,7 +68,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                                 if (specify.CompetitionSpecifyUniqueID != default(int) &&
                                     specify.CompetitionuniqueID != default(int) && !CompetitionSpecify.DataSource
                                         .WhereEquals(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, specify.CompetitionSpecifyUniqueID)
-                                        .WhereEquals(CompetitionSpecify.Fields.Languagetype, (short)language)
+                                        .FilterByLanguage(language)
                                         .IsExists()) {
                                     new CompetitionSpecify {
                                         Languagetype = language,

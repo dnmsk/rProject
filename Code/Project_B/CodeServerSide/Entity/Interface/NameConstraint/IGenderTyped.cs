@@ -1,4 +1,5 @@
-﻿using Project_B.CodeServerSide.Enums;
+﻿using System;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.Entity.Interface.NameConstraint {
     public interface IGenderTyped {
@@ -6,5 +7,6 @@ namespace Project_B.CodeServerSide.Entity.Interface.NameConstraint {
         /// 
         /// </summary>
         GenderType Gendertype { get; set; }
+        Enum GenderTypeField { get; }
     }
 }

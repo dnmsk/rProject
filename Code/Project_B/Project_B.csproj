@@ -311,6 +311,7 @@
     <Compile Include="CodeServerSide\Entity\BrokerEntity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
     <Compile Include="CodeServerSide\Entity\BrokerEntity\CompetitionSpecifyUnique.cs" />
+    <Compile Include="CodeServerSide\Entity\Interface\EntityQueryBuilder.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IRawLinkEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Helper\BrokerEntityIfaceCreator.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IKeyBrokerEntity.cs" />
@@ -448,6 +449,7 @@
     <Content Include="Areas\Moderate\Views\SystemState\EntityLinker.cshtml" />
     <Content Include="Areas\Moderate\Views\SystemState\_RawEntityWriter.cshtml" />
     <Content Include="Areas\Moderate\Views\SystemState\_ListRawEntityWriter.cshtml" />
+    <Content Include="Areas\Moderate\Views\SystemState\_ListRawEntityWriterJoin.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
@@ -467,6 +469,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\Plugins\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\Plugins\Custom\bootstrap-datepicker.lang.js" />
+    <Content Include="Scripts\Plugins\jquery.form.min.js" />
     <Content Include="Scripts\react\JSXTransformer-0.13.1.js" />
     <Content Include="Scripts\react\react-0.13.1.js" />
     <Content Include="Scripts\react\react-0.13.1.min.js" />

@@ -102,6 +102,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             get { return (LanguageType)(short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, value); }
         }
+        public Enum LanguageTypeField => Fields.Languagetype;
 
         /// <summary>
         /// 
@@ -110,6 +111,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             get { return (string) this[Fields.Name]; }
             set { ForceSetData(Fields.Name, value); }
         }
+        public Enum NameField => Fields.Name;
 
         /// <summary>
         /// 
@@ -118,6 +120,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             get { return (SportType)(short) this[Fields.Sporttype]; }
             set { ForceSetData(Fields.Sporttype, value); }
         }
+        public Enum SportTypeField => Fields.Sporttype;
 
         /// <summary>
         /// 
@@ -126,6 +129,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             get { return (GenderType)(short)this[Fields.Gendertype]; }
             set { ForceSetData(Fields.Gendertype, value); }
         }
+        public Enum GenderTypeField => Fields.Gendertype;
 
         /// <summary>
         /// 

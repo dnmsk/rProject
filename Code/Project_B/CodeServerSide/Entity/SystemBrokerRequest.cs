@@ -116,6 +116,8 @@ namespace Project_B.CodeServerSide.Entity {
             set { ForceSetData(Fields.BrokerID, value); }
         }
 
+        public Enum BrokerField => Fields.BrokerID;
+
         /// <summary>
         /// 
         /// </summary>
@@ -123,7 +125,8 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (LanguageType) (short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, value); }
         }
-        
+        public Enum LanguageTypeField => Fields.Languagetype;
+
         /// <summary>
         /// 
         /// </summary>

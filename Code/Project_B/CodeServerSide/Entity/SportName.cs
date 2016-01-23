@@ -55,6 +55,7 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (LanguageType) (short) this[Fields.Languagetype]; }
             set { ForceSetData(Fields.Languagetype, value); }
         }
+        public Enum LanguageTypeField => Fields.Languagetype;
 
         /// <summary>
         /// </summary>
@@ -62,6 +63,8 @@ namespace Project_B.CodeServerSide.Entity {
             get { return (SportType) (short) this[Fields.Sporttype]; }
             set { ForceSetData(Fields.Sporttype, value); }
         }
+
+        public Enum SportTypeField => Fields.Sporttype;
 
         /// <summary>
         /// </summary>

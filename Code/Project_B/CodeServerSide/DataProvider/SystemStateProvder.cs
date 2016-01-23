@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -83,8 +84,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<RawCompetitionTransport> GetCompetitionItems(BrokerType brokerid, LanguageType languagetype, DateTime date, StateFilter state) {
             return InvokeSafe(() => {
-                var rawCompetitionDs = RawCompetitionItem.DataSource
-                    .WhereEquals(RawCompetitionItem.Fields.Brokerid, (short)brokerid)
+                var rawCompetitionDs = RawCompetitionItem.DataSource.FilterByBroker(brokerid)
                     .WhereEquals(RawCompetitionItem.Fields.Languagetype, (short) languagetype)
                     .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
                 switch (state) {
@@ -291,8 +291,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 switch (entityType) {
                     case BrokerEntityType.Competition:
                         var entityCompetition = RawCompetition.DataSource.GetByKey(entityID);
-                        Competition.DataSource
-                            .WhereEquals(Competition.Fields.Sporttype, (short)entityCompetition.SportType)
+                        Competition.DataSource.FilterBySportType(entityCompetition.SportType)
                             .Join(JoinType.Inner, CompetitionItem.Fields.CompetitionuniqueID, Competition.Fields.CompetitionuniqueID, RetrieveMode.NotRetrieve)
                             .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
                             .GroupBy(
@@ -310,8 +309,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         break;
                     case BrokerEntityType.CompetitionSpecify:
                         var entityCompetitionSpecify = RawCompetitionSpecify.DataSource.GetByKey(entityID);
-                        CompetitionSpecify.DataSource
-                            .WhereEquals(CompetitionSpecify.Fields.Sporttype, (short)entityCompetitionSpecify.SportType)
+                        CompetitionSpecify.DataSource.FilterBySportType(entityCompetitionSpecify.SportType)
                             .Join(JoinType.Inner, CompetitionItem.Fields.CompetitionSpecifyUniqueID, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, RetrieveMode.NotRetrieve)
                             .WhereBetween(CompetitionItem.Fields.Dateeventutc, minDate, maxDate, BetweenType.Inclusive)
                             .GroupBy(
@@ -406,21 +404,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var namedEntities = new List<INamedEntity>();
                 switch (type) {
                     case BrokerEntityType.Competition:
-                        namedEntities.AddRange(Competition.DataSource
-                            .WhereEquals(Competition.Fields.Sporttype, (short)sportTyped.SportType)
-                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(search, Competition.Fields.Name, false))
+                        namedEntities.AddRange(Competition.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
                             .AsList(Competition.Fields.Name, Competition.Fields.CompetitionuniqueID));
                         break;
                     case BrokerEntityType.CompetitionSpecify:
-                        namedEntities.AddRange(CompetitionSpecify.DataSource
-                            .WhereEquals(Competition.Fields.Sporttype, (short)sportTyped.SportType)
-                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(search, CompetitionSpecify.Fields.Name, false))
+                        namedEntities.AddRange(CompetitionSpecify.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
                             .AsList(CompetitionSpecify.Fields.Name, CompetitionSpecify.Fields.CompetitionSpecifyUniqueID));
                         break;
                     case BrokerEntityType.Competitor:
-                        namedEntities.AddRange(Competitor.DataSource
-                            .WhereEquals(Competitor.Fields.Sporttype, (short)sportTyped.SportType)
-                            .Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(search, Competitor.Fields.NameFull, false))
+                        namedEntities.AddRange(Competitor.DataSource.FilterBySportType(sportTyped.SportType).FilterByName(search)
                             .AsList(Competitor.Fields.NameFull, Competitor.Fields.CompetitoruniqueID));
                         break;
                 }
@@ -444,17 +436,44 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public void EntityLinkerPut(int id, BrokerEntityType type) {
             InvokeSafe(() => {
-                //TODO Save entity names!
                 IUniqueID newTargetID = null;
                 switch (type) {
                     case BrokerEntityType.Competition:
-                        //newTargetID = CreateUniqueID<CompetitionUnique>();
+                        var rawCompetition = RawCompetition.DataSource.GetByKey(id);
+                        newTargetID = CreateUniqueID<CompetitionUnique>();
+                        new Competition {
+                            CompetitionuniqueID = newTargetID.UniqueID,
+                            Datecreatedutc = DateTime.UtcNow,
+                            Name = rawCompetition.Name,
+                            Gendertype = rawCompetition.Gendertype,
+                            Languagetype = rawCompetition.Languagetype,
+                            SportType = rawCompetition.SportType
+                        }.Save();
                         break;
                     case BrokerEntityType.CompetitionSpecify:
-                        //newTargetID = CreateUniqueID<CompetitionSpecifyUnique>();
+                        var rawCompetitionSpecify = RawCompetitionSpecify.DataSource.GetByKey(id);
+                        newTargetID = CreateUniqueID<CompetitionSpecifyUnique>();
+                        new CompetitionSpecify {
+                            Gendertype = rawCompetitionSpecify.Gendertype,
+                            Languagetype = rawCompetitionSpecify.Languagetype,
+                            SportType = rawCompetitionSpecify.SportType,
+                            Name = rawCompetitionSpecify.Name,
+                            CompetitionuniqueID = rawCompetitionSpecify.CompetitionuniqueID,
+                            CompetitionSpecifyUniqueID = newTargetID.UniqueID,
+                            Datecreatedutc = DateTime.UtcNow
+                        }.Save();
                         break;
                     case BrokerEntityType.Competitor:
-                        //newTargetID = CreateUniqueID<CompetitorUnique>();
+                        var rawCompetitor = RawCompetitor.DataSource.GetByKey(id);
+                        newTargetID = CreateUniqueID<CompetitorUnique>();
+                        new Competitor {
+                            Name = rawCompetitor.Name,
+                            Datecreatedutc = DateTime.UtcNow,
+                            CompetitoruniqueID = newTargetID.UniqueID,
+                            Gendertype = rawCompetitor.Gendertype,
+                            Languagetype = rawCompetitor.Languagetype,
+                            SportType = rawCompetitor.SportType
+                        }.Save();
                         break;
                 }
                 EntityLinkerPost(id, type, newTargetID?.UniqueID ?? default(int));
@@ -477,6 +496,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                         RawCompetition.DataSource
                             .WhereEquals(RawCompetition.Fields.ID, id)
                             .Update(RawCompetition.Fields.CompetitionuniqueID, targetID);
+                        RawCompetitionSpecify.DataSource
+                            .WhereEquals(RawCompetitionSpecify.Fields.RawCompetitionID, id)
+                            .Update(RawCompetitionSpecify.Fields.CompetitionuniqueID, targetID);
                         break;
                     case BrokerEntityType.CompetitionSpecify:
                         RawCompetitionSpecify.DataSource
@@ -511,6 +533,68 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .Update(RawCompetitor.Fields.CompetitoruniqueID, DBNull.Value);
                         break;
                 }
+            });
+        }
+
+        public void EntityJoin(BrokerEntityType type, int[] ids) {
+            InvokeSafe(() => {
+                var targetID = ids.Min();
+                var log = new StringBuilder();
+                log.AppendLine(string.Format("{0}. {1} <= {2}", type, targetID, ids.StrJoin(", ")));
+                int stat;
+                switch (type) {
+                    case BrokerEntityType.Competition:
+                        stat = RawCompetition.DataSource
+                            .WhereIn(RawCompetition.Fields.CompetitionuniqueID, ids)
+                            .Update(RawCompetition.Fields.CompetitionuniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "RawCompetition", stat);
+                        stat = CompetitionSpecify.DataSource
+                            .WhereIn(CompetitionSpecify.Fields.CompetitionuniqueID, ids)
+                            .Update(CompetitionSpecify.Fields.CompetitionuniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "CompetitionSpecify", stat);
+                        stat = CompetitionItem.DataSource
+                            .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, ids)
+                            .Update(CompetitionItem.Fields.CompetitionuniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "CompetitionItem", stat);
+                        Competition.DataSource
+                            .WhereIn(Competition.Fields.CompetitionuniqueID, ids)
+                            .WhereNotEquals(Competition.Fields.CompetitionuniqueID, targetID)
+                            .Delete();
+                        break;
+                    case BrokerEntityType.CompetitionSpecify:
+                        stat = RawCompetitionSpecify.DataSource
+                            .WhereIn(RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID, ids)
+                            .Update(RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "RawCompetitionSpecify", stat);
+                        stat = CompetitionItem.DataSource
+                            .WhereIn(CompetitionItem.Fields.CompetitionSpecifyUniqueID, ids)
+                            .Update(CompetitionItem.Fields.CompetitionSpecifyUniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "CompetitionItem", stat);
+                        CompetitionSpecify.DataSource
+                            .WhereIn(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, ids)
+                            .WhereNotEquals(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, targetID)
+                            .Delete();
+                        break;
+                    case BrokerEntityType.Competitor:
+                        stat = RawCompetitor.DataSource
+                            .WhereIn(RawCompetitor.Fields.CompetitoruniqueID, ids)
+                            .Update(RawCompetitor.Fields.CompetitoruniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "RawCompetitor", stat);
+                        stat = CompetitionItem.DataSource
+                            .WhereIn(CompetitionItem.Fields.Competitoruniqueid1, ids)
+                            .Update(CompetitionItem.Fields.Competitoruniqueid1, targetID);
+                        log.AppendFormat("{0}: {1}; ", "Competitoruniqueid1", stat);
+                        stat = CompetitionItem.DataSource
+                            .WhereIn(CompetitionItem.Fields.Competitoruniqueid2, ids)
+                            .Update(CompetitionItem.Fields.Competitoruniqueid2, targetID);
+                        log.AppendFormat("{0}: {1}; ", "Competitoruniqueid2", stat);
+                        Competitor.DataSource
+                            .WhereIn(Competitor.Fields.CompetitoruniqueID, ids)
+                            .WhereNotEquals(Competitor.Fields.CompetitoruniqueID, targetID)
+                            .Delete();
+                        break;
+                }
+                _logger.Info(log.ToString());
             });
         }
     }

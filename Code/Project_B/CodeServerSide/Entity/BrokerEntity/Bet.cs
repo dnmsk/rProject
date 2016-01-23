@@ -121,6 +121,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             get { return (BrokerType) (int) this[Fields.BrokerID]; }
             set { ForceSetData(Fields.BrokerID, (short) value); }
         }
+        public Enum BrokerField => Fields.BrokerID;
 
         /// <summary>
         /// 
