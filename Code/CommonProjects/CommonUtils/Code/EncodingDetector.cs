@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using CommonUtils.Core.Logger;
 
 namespace CommonUtils.Code {
-    public class EncodingDetector {
+    public static class EncodingDetector {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (EncodingDetector).FullName);
+
         /// <summary>
         /// Дефолтная кодировка
         /// </summary>
@@ -340,7 +345,7 @@ namespace CommonUtils.Code {
         /// <summary>
         /// Кодировки для которых будем определять похожесть
         /// </summary>
-        private static readonly List<Encoding> _encodings = new List<Encoding> {
+        private static readonly Encoding[] _encodings = {
             Encoding.GetEncoding(1251),
             Encoding.GetEncoding("koi8-r"),
             Encoding.UTF8
@@ -416,18 +421,22 @@ namespace CommonUtils.Code {
             int? goodByteCountMax = null;
             int? koeffMin = null;
             int koefMinIndex = 0;
-            for (int i = 0; i < _encodings.Count; i++) {
-                byte[] converteBytes = Encoding.Convert(_encodings[i], _trunkEncoding, snapshot);
-                BytesToLowercase(converteBytes);
+            for (int i = 0; i < _encodings.Length; i++) {
+                try {
+                    byte[] converteBytes = Encoding.Convert(_encodings[i], _trunkEncoding, snapshot);
+                    BytesToLowercase(converteBytes);
 
-                var w = GetEncodingStatistic(converteBytes);
-                if (!goodByteCountMax.HasValue || goodByteCountMax.Value < w.GoodByteCount) {
-                    goodByteCountMax = w.GoodByteCount;
-                }
-                int koeffEqual = w.KoeffEqual;
-                if (!koeffMin.HasValue || koeffMin.Value > koeffEqual) {
-                    koeffMin = koeffEqual;
-                    koefMinIndex = i;
+                    var w = GetEncodingStatistic(converteBytes);
+                    if (!goodByteCountMax.HasValue || goodByteCountMax.Value < w.GoodByteCount) {
+                        goodByteCountMax = w.GoodByteCount;
+                    }
+                    int koeffEqual = w.KoeffEqual;
+                    if (!koeffMin.HasValue || koeffMin.Value > koeffEqual) {
+                        koeffMin = koeffEqual;
+                        koefMinIndex = i;
+                    }
+                } catch (Exception ex) {
+                    _logger.Error(ex);
                 }
             }
             return (goodByteCountMax < GOOD_BYTE_COUNT_MIN) ? StatisticsDefaultEncofing : _encodings[koefMinIndex];

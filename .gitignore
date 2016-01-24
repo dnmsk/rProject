@@ -50,3 +50,6 @@ nh_*.cfg
 **/.sonar/*
 **/sonar-*.properties
 **/packages/*
+
+**/[Ll]og/*
+**/[Cc]onfig/*

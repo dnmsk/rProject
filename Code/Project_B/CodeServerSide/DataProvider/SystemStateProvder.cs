@@ -26,6 +26,11 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<SystemStateSummaryStatus> SummarySystemState(DateTime fromDate, DateTime toDate) {
             return InvokeSafe(() => {
+                if (fromDate >= DateTime.UtcNow.Date) {
+                    fromDate = DateTime.UtcNow.AddHours(-2);
+                    toDate = fromDate.AddDays(14);
+                }
+
                 var rci = RawCompetitionItem.DataSource
                     .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, fromDate, toDate, BetweenType.Inclusive)
                     .AsList(
@@ -92,7 +97,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     case StateFilter.Unlinked:
                         rawCompetitionDs = rawCompetitionDs.WhereNull(RawCompetitionItem.Fields.CompetitionitemID);
                         if (date >= DateTime.UtcNow.Date) {
-                            rawCompetitionDs = rawCompetitionDs.Where(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow);
+                            rawCompetitionDs = rawCompetitionDs.Where(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow.AddHours(-2));
                         } else {
                             rawCompetitionDs = rawCompetitionDs
                                 .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
