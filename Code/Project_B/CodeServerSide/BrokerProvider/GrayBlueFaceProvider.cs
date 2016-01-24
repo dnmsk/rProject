@@ -79,7 +79,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             }))));
             var competitionsDict = BuildCompetitionParsed(deserializedLine, matches => {
                 ToA(deserializedLine["eventMiscs"])
-                    .Each(obj => {
+                    .EachSafe(obj => {
                         var map = ToD(obj);
                         var id = (int) map["id"];
                         MatchParsed matchParsed;
@@ -104,7 +104,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var competitionsDict = new Dictionary<int, CompetitionParsed>();
             var matchesDict = new Dictionary<int, MatchParsed>();
             ToA(deserializedLine["sports"])
-                .Each(obj => {
+                .EachSafe(obj => {
                     var map = ToD(obj);
                     var competitionName = FormatCompetitionName(map["name"].ToString());
                     if ((string) map["kind"] != "segment") {
@@ -116,7 +116,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     }
                 });
             ToA(deserializedLine["events"])
-                .Each(obj => {
+                .EachSafe(obj => {
                     var map = ToD(obj);
                     var competitionID = (int) map["sportId"];
                     CompetitionParsed competitionParsed;
@@ -132,7 +132,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     }
                 });
             ToA(deserializedLine["customFactors"])
-                .Each(obj => {
+                .EachSafe(obj => {
                     var map = ToD(obj);
                     Func<OddParsed> oddCreator;
                     if (oddMapper.TryGetValue((int) map["f"], out oddCreator)) {
@@ -152,7 +152,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 postProcessFunc(matchesDict);
             }
             competitionsDict.Values
-                .Each(c => {
+                .EachSafe(c => {
                     var matchParseds = c.Matches.Where(match => match.Odds.Any() || match.Result != null).ToList();
                     c.Matches.Clear();
                     c.Matches.AddRange(matchParseds);

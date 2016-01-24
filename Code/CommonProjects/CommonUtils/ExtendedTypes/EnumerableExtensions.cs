@@ -2,14 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
+using CommonUtils.Core.Logger;
 
 namespace CommonUtils.ExtendedTypes {
     /// <summary>
     /// Extension-методы для IEnumerable 
     /// </summary>
     public static class EnumerableExtensions {
+        /// <summary>
+        /// Логгер.
+        /// </summary>
+        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (EnumerableExtensions).FullName);
         /// <summary>
         /// Записывает коллекцию в виде строки: 1,2,3
         /// </summary>
@@ -62,6 +66,25 @@ namespace CommonUtils.ExtendedTypes {
             }
             foreach (var elem in list) {
                 action(elem);
+            }
+        }
+
+        /// <summary>
+        /// Для каждого элемента коллекции выполняет <see cref="action"/>.
+        /// </summary>
+        /// <typeparam name="T">Тип объектов в коллекции.</typeparam>
+        /// <param name="list">Коллекция для обхода.</param>
+        /// <param name="action">Функция над елементами коллекции.</param>
+        public static void EachSafe<T>(this IEnumerable<T> list, Action<T> action) {
+            if (action == null) {
+                throw new ArgumentNullException("action");
+            }
+            foreach (var elem in list) {
+                try {
+                    action(elem);
+                } catch (Exception ex) {
+                    _logger.Error(ex);
+                }
             }
         }
 
