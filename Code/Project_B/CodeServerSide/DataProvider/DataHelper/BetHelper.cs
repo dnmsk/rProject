@@ -189,7 +189,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 bets = bets.WhereIn(BetLive.Fields.BrokerID, brokerTypesToRetreive);
             }
             if (onlyActive) {
-                bets = bets.WhereTrue(Bet.Fields.IsActive);
+                bets = bets.WhereTrue(BetLive.Fields.IsActive);
             }
             return bets
                 .AsList()
