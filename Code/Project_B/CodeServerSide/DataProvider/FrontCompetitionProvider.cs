@@ -35,7 +35,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
                 BuildCompetitiontItemFullModel(competitionTransports, ci => {
-                    return BetHelper.GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct());
+                    return BetHelper.GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct(), true);
                 }, ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
@@ -63,7 +63,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                         .WhereEquals(CompetitionItem.Fields.Sporttype, (short)sportType);
                 }
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
-                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                //NOTE!!!! ACTIVE!!!!
+                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive, false), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
             }, new List<CompetitionTransport>());
@@ -90,7 +91,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc);
                 var competitionTransports = GetCompetitionItemShortModel(languageType, competitionItemForDateQuery);
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
-                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct()), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetBetMapNew(competitionInfo.SelectMany(cinfo => cinfo.BetIDs).Distinct(), false), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
             }, new List<CompetitionTransport>());
@@ -123,7 +124,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
                 var competitionTransports = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, competitionItemIDs));
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
-                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetLiveBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
+                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetLiveBetMap(ci, brokerTypesToRetreive, true), ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return competitionTransports;
             }, new List<CompetitionTransport>());
@@ -146,7 +147,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public CompetitionAdvancedTransport GetCompetitionItemRegularBet(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, int competitionItemID) {
             return InvokeSafe(() => {
                 var competition = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.ID, competitionItemID));
-                BuildCompetitiontItemFullModel(competition, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                BuildCompetitiontItemFullModel(competition, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive, false), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competition);
                 return new CompetitionAdvancedTransport {
                     CompetitionTransport = competition.FirstOrDefault(),
@@ -159,7 +160,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public CompetitionAdvancedTransport GetCompetitionItemLiveBetForCompetition(LanguageType languageType, BrokerType[] brokerTypesToRetreive, BrokerType[] brokerTypesToDisplay, int competitionID) {
             return InvokeSafe(() => {
                 var competitionTransports = GetCompetitionItemShortModel(languageType, CompetitionItem.DataSource.WhereEquals(CompetitionItem.Fields.ID, competitionID));
-                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetLiveBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
+                BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetLiveBetMap(ci, brokerTypesToRetreive, false), ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);
                 return new CompetitionAdvancedTransport {
                     CompetitionTransport = competitionTransports.FirstOrDefault(),
@@ -179,7 +180,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Where(CompetitionItem.Fields.Dateeventutc, Oper.Less, toDate != DateTime.MaxValue ? toDate.AddDays(1) : toDate)
 
                     .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc));
-                BuildCompetitiontItemFullModel(competition, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
+                BuildCompetitiontItemFullModel(competition, ci => BetHelper.GetBetMap(ci, brokerTypesToRetreive, false), ProjectProvider.Instance.ResultProvider.GetResultForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competition);
                 return competition;
             }, new List<CompetitionTransport>());
@@ -187,13 +188,13 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetition(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
-                return BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Minute);
+                return BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive, false), sportType, competitionItemID, DateRoundType.Minute);
             }, null);
         }
 
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetitionLive(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
-                return BuildOddsByDateByBroker(ints => BetHelper.GetLiveBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Second);
+                return BuildOddsByDateByBroker(ints => BetHelper.GetLiveBetMap(ints, brokerTypesToRetreive, false), sportType, competitionItemID, DateRoundType.Second);
             }, null);
         }
 

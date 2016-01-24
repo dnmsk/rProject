@@ -69,5 +69,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         IBet<T> GetLastBetForCompetitionItem(int competitionItem, BrokerType broker);
         IBetAdvanced<T> GetAdvancedBet();
         IBetAdvanced<T> CreateAdvancedBet();
+
+        bool IsActive { get; }
     }
 }

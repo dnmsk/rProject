@@ -22,15 +22,12 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
 
         public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
-            var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
+            var competitorsRaw = RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
                                                 .Where(QueryHelper.GetFilterByWordIgnoreCaseOr(names, RawCompetitor.Fields.Name, true))
-                                                .Sort(RawCompetitor.Fields.ID, SortDirection.Asc), 
-                        RawCompetitor.Fields.Gendertype, 
-                        genderType, 
+                                                .FilterByGender(genderType, 
                         RawCompetitor.Fields.CompetitoruniqueID,
                         RawCompetitor.Fields.Name,
-                        RawCompetitor.Fields.Linkstatus
-                    );
+                        RawCompetitor.Fields.Linkstatus);
             if (competitorsRaw.Count > 1) {
                 var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
                 if (groupBy.Length > 1) {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using IDEV.Hydra.DAO;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
@@ -14,8 +15,12 @@ namespace Project_B.CodeServerSide.Entity.Interface {
             return ds.WhereEquals(GetEntityInstance<T>().SportTypeField, (short)sportType);
         }
         
-        public static DbDataSource<T, K> FilterByGender<T, K>(this DbDataSource<T, K> ds, GenderType gender) where T : class, IGenderTyped, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
-            return ds.WhereEquals(GetEntityInstance<T>().GenderTypeField, (short)gender);
+        public static List<T> FilterByGender<T, K>(this DbDataSource<T, K> ds, GenderType gender, params Enum[] fields) where T : class, IGenderTyped, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+            return QueryHelper.FilterByGender(ds.Sort(GetEntityInstance<T>().KeyFields[0], SortDirection.Asc),
+                GetEntityInstance<T>().GenderTypeField,
+                gender,
+                fields
+            );
         }
         
         public static DbDataSource<T, K> FilterByLanguage<T, K>(this DbDataSource<T, K> ds, LanguageType languageType) where T : class, ILanguageTyped, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
@@ -25,16 +30,19 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         public static DbDataSource<T, K> FilterByBroker<T, K>(this DbDataSource<T, K> ds, BrokerType brokerType) where T : class, IBrokerTyped, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             return ds.WhereEquals(GetEntityInstance<T>().BrokerField, (short)brokerType);
         }
-        public static DbDataSource<T, K> FilterByName<T, K>(this DbDataSource<T, K> ds, string name, bool all) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+        public static DbDataSource<T, K> FilterByName<T, K>(this DbDataSource<T, K> ds, string name, bool containsAll) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             var searchPhrase = name
                 .Split(new[] { ' ', '.', ',', ')', '(', '/', '-', '&' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => s.Length > 1)
                 .ToArray();
             return searchPhrase.Any() 
-                ? (all ? 
+                ? (containsAll ? 
                     ds.Where(QueryHelper.GetFilterByWordIgnoreCaseAnd(searchPhrase, GetEntityInstance<T>().NameField)) : 
                     ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(searchPhrase, GetEntityInstance<T>().NameField, false)))
                 : ds.WhereNull(GetEntityInstance<T>().NameField);
+        }
+        public static DbDataSource<T, K> FilterByNameFullContains<T, K>(this DbDataSource<T, K> ds, IEnumerable<string> name) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+            return ds.Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(CompetitionHelper.ListStringToName(name), GetEntityInstance<T>().NameField));
         }
         /*
         public static DbDataSource<T, int> GetDsForRawType<T>(BrokerEntityType brokerEntity) where T : AbstractEntityTemplateKey<T, int> {

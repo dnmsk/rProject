@@ -86,12 +86,15 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// </summary>
             [DBField(DbType.DateTime)] Datecreatedutc,
 
+            [DBField(DbType.Boolean)] IsActive,
+
         }
 
         /// <summary>
         /// 
         /// </summary>
         public Bet() {
+            IsActive = true;
         }
 
         /// <summary>
@@ -195,9 +198,18 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
             set { ForceSetData(Fields.Datecreatedutc, value); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsActive {
+            get { return (bool)this[Fields.IsActive]; }
+            private set { ForceSetData(Fields.IsActive, value); }
+        }
+
+
         public IBet<int> GetLastBetForCompetitionItem(int competitionItemID, BrokerType broker) {
             return DataSource
-                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Fields.ID, RetrieveMode.Retrieve)
                 .WhereEquals(Fields.CompetitionitemID, competitionItemID)
                 .WhereEquals(Fields.BrokerID, (short) broker)
                 .Sort(Fields.ID, SortDirection.Desc)

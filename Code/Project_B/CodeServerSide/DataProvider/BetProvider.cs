@@ -23,7 +23,8 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public SummaryProcessStat SaveBrokerState(BrokerData brokerData, GatherBehaviorMode algoMode, RunTaskMode taskMode) {
             return InvokeSafe(() => {
-                return CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
+                var activeCompetitionItemIDs = new List<int>();
+                var result = CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
                     (stat, type, sportType, itemRawTransport, matchParsed) => {
                         var competitionItemID = itemRawTransport.CompetitionItemID;
                         if (competitionItemID == default(int)) {
@@ -33,9 +34,11 @@ namespace Project_B.CodeServerSide.DataProvider {
                             case RunTaskMode.RunLiveOddsTask:
                                 ProcessOdds<BetLive, long>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds);
                                 ProcessLiveResult(competitionItemID, sportType, matchParsed.Result);
+                                activeCompetitionItemIDs.Add(competitionItemID);
                                 break;
                             case RunTaskMode.RunRegularOddsTask:
                                 ProcessOdds<Bet, int>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds);
+                                activeCompetitionItemIDs.Add(competitionItemID);
                                 break;
                             case RunTaskMode.RunPastDateHistoryTask:
                             case RunTaskMode.RunTodayHistoryTask:
@@ -46,6 +49,23 @@ namespace Project_B.CodeServerSide.DataProvider {
                                 break;
                         }
                     });
+                if (activeCompetitionItemIDs.SafeAny()) {
+                    switch (taskMode) {
+                        case RunTaskMode.RunRegularOddsTask:
+                            Bet.DataSource.FilterByBroker(brokerData.Broker)
+                                .WhereTrue(Bet.Fields.IsActive)
+                                .WhereNotIn(Bet.Fields.CompetitionitemID, activeCompetitionItemIDs)
+                                .Update(Bet.Fields.IsActive, false);
+                            break;
+                        case RunTaskMode.RunLiveOddsTask:
+                            BetLive.DataSource.FilterByBroker(brokerData.Broker)
+                                .WhereTrue(BetLive.Fields.IsActive)
+                                .WhereNotIn(BetLive.Fields.CompetitionitemID, activeCompetitionItemIDs)
+                                .Update(BetLive.Fields.IsActive, false);
+                            break;
+                    }
+                }
+                return result;
             }, null);
         }
         
@@ -54,42 +74,44 @@ namespace Project_B.CodeServerSide.DataProvider {
             if (odds == null || odds.Count == 0) {
                 return;
             }
-            var betLiveTemplate = new T();
+            var betTemplate = new T();
 
-            var betWithAdvancedDb = betLiveTemplate.GetLastBetForCompetitionItem(competitionItemID, brokerType);
+            var betWithAdvancedDb = betTemplate.GetLastBetForCompetitionItem(competitionItemID, brokerType);
             var betAdvancedDb = betWithAdvancedDb?.GetAdvancedBet();
 
-            var bet = BetHelper.GetBetFromOdds(betLiveTemplate, odds);
-            var betAdvanced = BetHelper.GetBetFromOdds(betLiveTemplate.CreateAdvancedBet(), odds);
+            var bet = BetHelper.GetBetFromOdds(betTemplate, odds);
+            var betAdvanced = BetHelper.GetBetFromOdds(betTemplate.CreateAdvancedBet(), odds);
 
             BetHelper.SaveBetIfChanged(processStat, competitionItemID, brokerType, sportType, bet, betAdvanced, betWithAdvancedDb, betAdvancedDb);
             processStat.FinallySuccessCount++;
         }
 
-        private static void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {
-            var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
-            var lastResult = CompetitionResultLive.DataSource
-                .Join(JoinType.Left, CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, CompetitionResultLive.Fields.ID, RetrieveMode.Retrieve)
-                .WhereEquals(CompetitionResultLive.Fields.CompetitionitemID, competitionItemID)
-                .WhereEquals(CompetitionResultLive.Fields.ScoreID, generateScoreID)
-                .Sort(CompetitionResultLive.Fields.ID, SortDirection.Desc)
-                .Sort(CompetitionResultLiveAdvanced.Fields.ID, SortDirection.Desc)
-                .AsList(
-                    CompetitionResultLive.Fields.ScoreID,
-                    CompetitionResultLiveAdvanced.Fields.ScoreID,
-                    CompetitionResultLiveAdvanced.Fields.Advancedparam
-                );
-            if (lastResult.Count == 0) {
-                var competitionResultLive = new CompetitionResultLive {
-                    CompetitionitemID = competitionItemID,
-                    ScoreID = generateScoreID,
-                    Datecreatedutc = DateTime.UtcNow
-                };
-                lastResult.Add(competitionResultLive);
-                competitionResultLive.Save();
-            }
-            LiveResultProcFactory.GetLiveResultProc(sportType)
-                                 .Process(lastResult, result);
+        private void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {
+            InvokeSafe(() => {
+                var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
+                var lastResult = CompetitionResultLive.DataSource
+                    .Join(JoinType.Left, CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, CompetitionResultLive.Fields.ID, RetrieveMode.Retrieve)
+                    .WhereEquals(CompetitionResultLive.Fields.CompetitionitemID, competitionItemID)
+                    .WhereEquals(CompetitionResultLive.Fields.ScoreID, generateScoreID)
+                    .Sort(CompetitionResultLive.Fields.ID, SortDirection.Desc)
+                    .Sort(CompetitionResultLiveAdvanced.Fields.ID, SortDirection.Desc)
+                    .AsList(
+                        CompetitionResultLive.Fields.ScoreID,
+                        CompetitionResultLiveAdvanced.Fields.ScoreID,
+                        CompetitionResultLiveAdvanced.Fields.Advancedparam
+                    );
+                if (lastResult.Count == 0) {
+                    var competitionResultLive = new CompetitionResultLive {
+                        CompetitionitemID = competitionItemID,
+                        ScoreID = generateScoreID,
+                        Datecreatedutc = DateTime.UtcNow
+                    };
+                    lastResult.Add(competitionResultLive);
+                    competitionResultLive.Save();
+                }
+                LiveResultProcFactory.GetLiveResultProc(sportType)
+                                     .Process(lastResult, result);
+            });
         }
     }
 }

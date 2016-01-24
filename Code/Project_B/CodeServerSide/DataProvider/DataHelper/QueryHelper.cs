@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
@@ -55,8 +56,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             }
         }
 
-        public static List<T> FilterByGender<T, K>(DbDataSource<T, K> ds, Enum field, GenderType genderType, params Enum[] filedsToRetrive) where T : class, IKeyedAbstractEntity<K> where K : struct, IComparable<K> {
-            var result = ds.WhereEquals(field, (short) genderType).AsList(filedsToRetrive);
+        public static List<T> FilterByGender<T, K>(DbDataSource<T, K> ds, Enum field, GenderType genderType, params Enum[] filedsToRetrive) where T : class, IGenderTyped, IKeyedAbstractEntity<K> where K : struct, IComparable<K> {
+            var result = ds.Clone().WhereEquals(field, (short) genderType).AsList(filedsToRetrive);
             return result.Any() 
                 ? result 
                 : ds.WhereEquals(field, (short)GetNearGenderType(genderType)).AsList(filedsToRetrive);
