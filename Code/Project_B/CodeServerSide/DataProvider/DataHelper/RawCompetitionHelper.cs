@@ -20,9 +20,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitionHelper).FullName);
         
         public static RawCompetitionSpecify GetRawCompetitionSpecify(BrokerType brokerType, LanguageType language,
-            SportType sportType, GenderType genderDetected, IEnumerable<string> nameOrigin) {
+            SportType sportType, GenderType genderDetected, string[] nameOrigin) {
             return RawCompetitionSpecify.DataSource.FilterByBroker(brokerType).FilterByLanguage(language).FilterBySportType(sportType)
-                .FilterByNameFullContains(nameOrigin)
+                .FilterByNameCompetition(nameOrigin)
                 .FilterByGender(genderDetected,
                     RawCompetitionSpecify.Fields.CompetitionuniqueID,
                     RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID,
@@ -52,7 +52,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .SetupValidateObject(rawCompetition => rawCompetition.CompetitionuniqueID != default(int))
                 .SetupGetRaw(() => {
                     return RawCompetition.DataSource.FilterByBroker(brokerType).FilterByLanguage(language).FilterBySportType(sportType)
-                        .FilterByNameFullContains(nameOriginShort)
+                        .FilterByNameCompetition(nameOriginShort)
                         .FilterByGender(genderDetected, RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Linkstatus).FirstOrDefault();
                 })
                 .SetupCreateRaw(() => BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOriginShort))
@@ -66,7 +66,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 })
                 .SetupCreateOriginal(algoMode, rawCompetition => {
                     var competition = Competition.DataSource.FilterByLanguage(language).FilterBySportType(sportType)
-                        .FilterByNameFullContains(nameOriginShort)
+                        .FilterByNameCompetition(nameOriginShort)
                         .FilterByGender(genderDetected, Competition.Fields.CompetitionuniqueID)
                         .FirstOrDefault();
                     if (competition == null) {

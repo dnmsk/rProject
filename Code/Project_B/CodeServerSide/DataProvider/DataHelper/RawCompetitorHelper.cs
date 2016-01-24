@@ -23,7 +23,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
             var competitorsRaw = RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
-                                                .Where(QueryHelper.GetFilterByWordIgnoreCaseOr(names, RawCompetitor.Fields.Name, true))
+                                                .FilterByNameCompetitor(names)
                                                 .FilterByGender(genderType, 
                         RawCompetitor.Fields.CompetitoruniqueID,
                         RawCompetitor.Fields.Name,
@@ -92,7 +92,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .SelectMany(ci => new[] {ci.Competitoruniqueid1, ci.Competitoruniqueid2})
                 .Distinct();
             var res = Competitor.DataSource.WhereIn(Competitor.Fields.ID, competitorIDs)
-                        .Where(QueryHelper.GetFilterByWordIgnoreCaseOr(names, Competitor.Fields.NameFull, true))
+                        .FilterByNameCompetitor(names)
                         .AsList(Competitor.Fields.CompetitoruniqueID);
             if (res.Any()) {
                 var distinctIds = res.Select(r => r.CompetitoruniqueID).Distinct().ToArray();

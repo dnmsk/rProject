@@ -41,8 +41,11 @@ namespace Project_B.CodeServerSide.Entity.Interface {
                     ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(searchPhrase, GetEntityInstance<T>().NameField, false)))
                 : ds.WhereNull(GetEntityInstance<T>().NameField);
         }
-        public static DbDataSource<T, K> FilterByNameFullContains<T, K>(this DbDataSource<T, K> ds, IEnumerable<string> name) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+        public static DbDataSource<T, K> FilterByNameCompetition<T, K>(this DbDataSource<T, K> ds, string[] name) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             return ds.Where(QueryHelper.GetIndexedFilterByWordIgnoreCase(CompetitionHelper.ListStringToName(name), GetEntityInstance<T>().NameField));
+        }
+        public static DbDataSource<T, K> FilterByNameCompetitor<T, K>(this DbDataSource<T, K> ds, string[] name) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
+            return ds.Where(QueryHelper.GetFilterByWordIgnoreCaseOr(name, GetEntityInstance<T>().NameField, true));
         }
         /*
         public static DbDataSource<T, int> GetDsForRawType<T>(BrokerEntityType brokerEntity) where T : AbstractEntityTemplateKey<T, int> {
