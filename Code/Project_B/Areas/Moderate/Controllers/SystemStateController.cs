@@ -46,11 +46,10 @@ namespace Project_B.Areas.Moderate.Controllers {
             });
         }
 
-        public ActionResult EntityLinker(BrokerEntityType type, FilterModel<int> filter, int cid = default(int), int targetID = default(int)) {
+        public ActionResult EntityLinker(BrokerEntityType type, FilterModel<int> filter, int targetID = default(int)) {
             switch (Request.RequestType.ToUpper()) {
                 case "GET":
-                    return PartialView(new Tuple<RawEntityWithLink, List<RawEntityWithLink>>(_provider.GetEntity(filter.id, type), 
-                        _provider.EntityLinkerGet(cid, filter.id, type, filter.date)));
+                    return PartialView(new Tuple<RawEntityWithLink>(_provider.GetEntity(filter.id, type)));
                 case "PUT":
                     _provider.EntityLinkerPut(filter.id, type);
                     break;

@@ -22,10 +22,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
 
         public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
-            var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource
-                                                .WhereEquals(RawCompetitor.Fields.Languagetype, (short)languageType)
-                                                .WhereEquals(RawCompetitor.Fields.Sporttype, (short)sportType)
-                                                .WhereEquals(RawCompetitor.Fields.Brokerid, (short)brokerType)
+            var competitorsRaw = QueryHelper.FilterByGender(RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
                                                 .Where(QueryHelper.GetFilterByWordIgnoreCaseOr(names, RawCompetitor.Fields.Name, true))
                                                 .Sort(RawCompetitor.Fields.ID, SortDirection.Asc), 
                         RawCompetitor.Fields.Gendertype, 
@@ -37,8 +34,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (competitorsRaw.Count > 1) {
                 var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
                 if (groupBy.Length > 1) {
-                    _logger.Error("{0} {1} {2} {3} {4} {5} {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Length);
-                    return null;
+                    _logger.Error("{0} {1} {2} {3} {4} {5} <=> {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Select(g => g.SelectMany(ge => ge.Name)).StrJoin(", "));
+                    return groupBy.First().ToList();
                 }
                 if (groupBy.Length == 1) {
                     foreach (var rawCompetitor in competitorsRaw.Where(cr => cr.CompetitoruniqueID == default(int))) {
