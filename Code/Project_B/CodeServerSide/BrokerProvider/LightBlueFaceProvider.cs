@@ -53,7 +53,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         .Select(n => n.NodeToCompetitionParsed(competitiorExtractor, resultExtractor, dateTimeExtractor))
                         .ToList());
             }
-            return new BrokerData(BrokerType, language,result);
+            return new BrokerData(BrokerType, language, result);
         }
 
         public override BrokerData LoadLive(SportType sportType, LanguageType language) {
