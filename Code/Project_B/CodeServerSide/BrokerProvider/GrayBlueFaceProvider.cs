@@ -163,7 +163,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         }
 
         private Tuple<string, string> ExtractCompetitorsFromString(string str) {
-            if (CurrentConfiguration.StringArray[SectionName.ArrayBadStartParticipants].Any(s => str.IndexOf(s, StringComparison.InvariantCultureIgnoreCase) != -1)) {
+            if (CurrentConfiguration.StringArray[SectionName.ArrayBadStartCompetitor].Any(s => str.IndexOf(s, StringComparison.InvariantCultureIgnoreCase) != -1)) {
                 return null;
             }
             var splitted = str.Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);

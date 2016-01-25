@@ -30,7 +30,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                     fromDate = DateTime.UtcNow.AddHours(-2);
                     toDate = fromDate.AddDays(14);
                 }
-
                 var rci = RawCompetitionItem.DataSource
                     .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, fromDate, toDate, BetweenType.Inclusive)
                     .AsList(

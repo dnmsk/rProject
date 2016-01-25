@@ -7,6 +7,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper;
 namespace Project_B {
     public static class RouteConfig {
         public static void RegisterRoutes(RouteCollection routes) {
+            routes.LowercaseUrls = true;
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.Add(new LowercaseRoute(

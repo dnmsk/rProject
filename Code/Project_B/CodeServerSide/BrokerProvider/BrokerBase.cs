@@ -87,7 +87,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         protected DateTime ParseDateTime(string date) {
             date = date.ToLower().Replace("мая", "май");
             var defaultDateTime = DateTime.MinValue;
-            foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]) {
+            foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]
+                                           ?? ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default].StringArray[SectionName.ArrayDateTimeFormat]) {
                 var dateTime = StringParser.ToDateTime(date, defaultDateTime, dateTimeFormat);
                 if (!dateTime.Equals(defaultDateTime)) {
                     return dateTime;

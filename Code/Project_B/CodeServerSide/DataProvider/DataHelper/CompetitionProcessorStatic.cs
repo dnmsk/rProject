@@ -37,13 +37,12 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     }
                 }
             }
-            var grouped = brokerData.Competitions.GroupBy(c => c.Type).Select(g => string.Format("{0}={1}", g.Key, g.Count())).StrJoin(", ");
-            logger.Info("SaveResults: {0} {1} {2}: Competitions: {3}/{4} CompetitionItems: {5}/{6} Competitors {7}/{8}\r\n{9}", brokerData.Competitions.FirstOrDefault(c => c.Matches.Any())?.Matches.FirstOrDefault()?.DateUtc.Date.ToString("yyyy MMMM dd"),
-                brokerData.Broker, brokerData.Language,
+            logger.Info("SaveResults: {0} {1} {2} {3}: Competitions: {4}/{5} CompetitionItems: {6}/{7} Competitors {8}/{9} {10}", brokerData.Competitions.FirstOrDefault(c => c.Matches.Any())?.Matches.FirstOrDefault()?.DateUtc.Date.ToString("yyyy MMMM dd"),
+                brokerData.Broker, brokerData.Language, algoMode,
                 stat[ProcessStatType.CompetitionSpecifyFromRaw].FinallySuccessCount, stat[ProcessStatType.CompetitionSpecifyFromRaw].TotalCount,
                 stat[ProcessStatType.CompetitionItemFromRaw].FinallySuccessCount, stat[ProcessStatType.CompetitionItemFromRaw].TotalCount,
                 stat[ProcessStatType.CompetitorFromRaw].FinallySuccessCount, stat[ProcessStatType.CompetitorFromRaw].TotalCount,
-                string.Format("{0} {1} {2} {3} {4}", brokerData.Broker, brokerData.Language, algoMode, algoMode, grouped));
+                brokerData.Competitions.GroupBy(c => c.Type).Select(g => string.Format("{0}={1}", g.Key, g.Count())).StrJoin(", "));
             return stat;
         }
 

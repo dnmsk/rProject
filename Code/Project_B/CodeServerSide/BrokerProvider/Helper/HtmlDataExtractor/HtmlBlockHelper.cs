@@ -10,6 +10,10 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
             htmlDocument.LoadHtml(html);
             _htmlDoc = htmlDocument;
         }
+
+        public HtmlNode GetCurrentNode() {
+            return _htmlDoc.DocumentNode;
+        }
         
         public List<HtmlNode> ExtractBlock(XPathQuery xPathQuery) {
             return ExtractBlock(_htmlDoc.DocumentNode, xPathQuery);

@@ -249,6 +249,7 @@
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\LightBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\RedBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\BrokerBase.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\Configuration\BrokerConfiguration.cs" />

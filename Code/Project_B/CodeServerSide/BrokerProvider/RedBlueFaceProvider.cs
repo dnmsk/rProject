@@ -105,7 +105,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var result = new List<MatchParsed>();
             var listMatchBlocks = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventResult]);
             foreach (var matchBlock in listMatchBlocks) {
-                var participants = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultParticipants]);
+                var participants = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultCompetitors]);
                 if (participants.Count != 1) {
                     Logger.Error("participants count = " + participants.Count);
                 }
@@ -145,7 +145,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 try {
                     var participantsShortName = matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddCompetitorsShortName]].Value
                         .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-                    var participantsFullName = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsParticipants]);
+                    var participantsFullName = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsCompetitors]);
                     string date = null;
                     var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsDate]);
                     if (dateBlock.Any()) {
@@ -168,7 +168,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             }
             foreach (var additionalMatchBlock in HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventResult])) {
                 try {
-                    var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultParticipants])[0].InnerText
+                    var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultCompetitors])[0].InnerText
                         .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
                     var match = new MatchParsed {
                         CompetitorName1 = new[] { participants[0] },
