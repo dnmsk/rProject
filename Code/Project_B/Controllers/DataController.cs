@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
+using HtmlAgilityPack;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Helper;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.BrokerProvider;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
@@ -39,7 +41,7 @@ namespace Project_B.Controllers {
                         .Each(betItems => {
                             var list = betItems.Value;
                             var dict = new Dictionary<string, float> {
-                                {"d", (float) (betItems.Key - BrokerBase.LinuxUtc).TotalMilliseconds},
+                                {"d", (float) (betItems.Key - DefaultDateUtcExtractor<HtmlNode>.DefaultLinuxUtc).TotalMilliseconds},
                                 {"w1", BetOddInterfaceHelper.GetAverageOddValue(sportType, BetOddType.Win1, list)},
                                 {"w2", BetOddInterfaceHelper.GetAverageOddValue(sportType, BetOddType.Win2, list)},
                                 {"r1x2", BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, list)},

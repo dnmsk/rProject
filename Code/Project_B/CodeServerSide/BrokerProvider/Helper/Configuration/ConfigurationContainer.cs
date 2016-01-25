@@ -20,7 +20,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
                     if (!Enum.TryParse(brokerName, out brokerType)) {
                         continue;
                     }
-                    newConfiguration[brokerType] = new BrokerConfiguration(brokerNode);
+                    newConfiguration[brokerType] = new BrokerConfiguration(brokerType, brokerNode);
                 }
                 BrokerConfiguration = newConfiguration;
             });

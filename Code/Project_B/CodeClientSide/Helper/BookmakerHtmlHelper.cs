@@ -2,7 +2,6 @@
 using System.Net;
 using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.KangooCache;
-using CommonUtils.WatchfulSloths.SlothMoveRules;
 using CommonUtils.WatchfulSloths.WatchfulThreads;
 using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide;

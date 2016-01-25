@@ -249,6 +249,14 @@
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultBrokerIDExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultCompetitorNameExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultDateUtcExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultOddsExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultResultExtractor.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\HtmlBlockData.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\HtmlBlockDataMonada.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\LightBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\RedBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\BrokerBase.cs" />

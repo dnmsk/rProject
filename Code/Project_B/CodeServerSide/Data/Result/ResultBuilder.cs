@@ -93,6 +93,7 @@ namespace Project_B.CodeServerSide.Data.Result {
         };
 
         private static IEnumerable<SimpleResult> ParseStringToSimpleResults(string resStr) {
+            resStr = resStr ?? string.Empty;
             var simpleResult = new SimpleResult();
             var isFirstDigitCollect = false;
             var canDetectServe = false;

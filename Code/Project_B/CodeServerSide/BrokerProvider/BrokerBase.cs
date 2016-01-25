@@ -21,9 +21,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             MaxJsonLength = 99999999,
             RecursionLimit = 9999
         };
-
-        public static DateTime LinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-
+        
         public WebRequestHelper RequestHelper { get; }
         public abstract BrokerType BrokerType { get; }
         public abstract BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language);
@@ -33,14 +31,6 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         protected BrokerBase(WebRequestHelper requestHelper) {
             RequestHelper = requestHelper;
-        }
-        
-        public static string[] FormatCompetitionName(string competitionName) {
-            return competitionName.RemoveAllTags()
-                                  .Replace("&nbsp;", " ")
-                                  .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
-                                  .Select(s => s.Trim())
-                                  .ToArray();
         }
 
         private static int _tries = 2;

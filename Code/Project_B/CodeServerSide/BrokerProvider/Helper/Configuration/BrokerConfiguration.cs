@@ -3,9 +3,12 @@ using System.Linq;
 using System.Xml;
 using CommonUtils.Core.Logger;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
+using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
     public class BrokerConfiguration {
+        public BrokerType BrokerType { get; }
+
         /// <summary>
         /// Логгер.
         /// </summary>
@@ -16,7 +19,8 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.Configuration {
         public SimpleConfiguration<SectionName, string[]> StringArray;
         public SimpleConfiguration<SectionName, SimpleConfiguration<string, string>> CompetitionConfiguration;
 
-        public BrokerConfiguration(XmlNode configNode) {
+        public BrokerConfiguration(BrokerType brokerType, XmlNode configNode) {
+            BrokerType = brokerType;
             BuildXPathMap(configNode.SelectNodes(".//XPathNode"));
             BuildStringSimpleMap(configNode.SelectNodes(".//StringSimple"));
             BuildStringArrayMap(configNode.SelectNodes(".//ArrayString"));

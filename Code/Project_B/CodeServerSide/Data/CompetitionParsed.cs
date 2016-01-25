@@ -8,15 +8,9 @@ namespace Project_B.CodeServerSide.Data {
         public string[] Name { get; }
         public List<MatchParsed> Matches { get; }
 
-        public CompetitionParsed(string[] competitionName) {
+        public CompetitionParsed(string[] competitionName, SportType sportType = SportType.Unknown) {
             Name = competitionName;
-            Type = SportTypeHelper.Instance[competitionName];
-            Matches = new List<MatchParsed>();
-        }
-
-        public CompetitionParsed(string[] competitionName, SportType sportType) {
-            Name = competitionName;
-            Type = sportType;
+            Type = sportType != SportType.Unknown ? sportType : SportTypeHelper.Instance[competitionName];
             Matches = new List<MatchParsed>();
         }
     }

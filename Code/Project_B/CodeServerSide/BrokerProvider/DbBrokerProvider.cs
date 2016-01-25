@@ -6,6 +6,7 @@ using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
@@ -54,10 +55,10 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                             competitionName = genderName + ". " + competitionName;
                         }
                     }
-                    var formatCompetitionName = FormatCompetitionName(competitionName);
+                    var formatCompetitionName = HtmlBlockDataMonada.FormatCompetitionName(competitionName);
                     var competitionParsed = new CompetitionParsed(formatCompetitionName, ge.First().SportType);
                     competitionParsed.Matches
-                        .AddRange(ge.Select(rci => new MatchParsed {
+                        .AddRange(ge.Select(rci => new MatchParsed(competitionParsed.Type) {
                             CompetitorName1 = new[] { rawCompetitorsMap[rci.Rawcompetitorid1].Name },
                             CompetitorName2 = new[] { rawCompetitorsMap[rci.Rawcompetitorid2].Name },
                             DateUtc = rci.Dateeventutc,

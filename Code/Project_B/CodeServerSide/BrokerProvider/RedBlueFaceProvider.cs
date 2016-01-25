@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
-using CommonUtils.ExtendedTypes;
 using HtmlAgilityPack;
 using Project_B.CodeServerSide.BrokerProvider.Helper;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
 using Project_B.CodeServerSide.Data;
-using Project_B.CodeServerSide.Data.Result;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
@@ -35,14 +35,42 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             });
-            return new BrokerData(BrokerType, language, BuildCompetitions(LoadPage(url), ExtractMatchesResultFromMatchesBlock));
+            var loadPage = LoadPage(url);
+            var extractors = GetDefaultExtractors();
+            var data = new HtmlBlockHelper(loadPage).GetCurrentNode()
+                .NodeToNodeCompetitionGroupedBySport(CurrentConfiguration)
+                .SelectMany(node => node.Node.NodeToNodeCompetitionWithMatches(CurrentConfiguration, SportTypeExtractor, SectionName.XPathToEventResult)
+                    .Select(tuple => tuple.NodeToCompetitionParsed(extractors.Union(new DefaultExtractor<HtmlNode>[] {
+                        GetShortCompetitorNameExtractor(),
+                        new DefaultDateUtcExtractor<HtmlNode>(CurrentConfiguration, GetGmtFixer(loadPage))
+                    }).ToArray()))
+                )
+                .ToList();
+            return new BrokerData(BrokerType, language, data);
         }
 
         public override BrokerData LoadLive(SportType sportType, LanguageType language) {
             var url = FormatUrl(SectionName.UrlLiveTarget, new {
                 lang = GetLanguageParam(language)
             });
-            return new BrokerData(BrokerType, language, BuildCompetitions(LoadPage(url), ExtractMatchesOddsFromMatchesBlock));
+            var loadPage = LoadPage(url);
+            var extractors = GetDefaultExtractors();
+            var baseNode = new HtmlBlockHelper(loadPage).GetCurrentNode();
+            var data = baseNode
+                .NodeToNodeCompetitionGroupedBySport(CurrentConfiguration)
+                .SelectMany(node => node.Node.NodeToNodeCompetitionWithMatches(CurrentConfiguration, SportTypeExtractor, SectionName.XPathToEventInList)
+                    .Select(tuple => {
+                        var nodeToCompetitionParsed = tuple.NodeToCompetitionParsed(extractors.Union(new[] { GetFullNameExtractor() }).ToArray());
+                        return nodeToCompetitionParsed;
+                    })
+                ).Union(baseNode.NodeToNodeCompetitionGroupedBySport(CurrentConfiguration)
+                    .SelectMany(node => node.Node.NodeToNodeCompetitionWithMatches(CurrentConfiguration, SportTypeExtractor, SectionName.XPathToEventResult)
+                        .Select(tuple => tuple.NodeToCompetitionParsed(extractors.Union(new DefaultExtractor<HtmlNode>[] {
+                            GetShortCompetitorNameExtractor()
+                        }).ToArray()))
+                    ))
+                .ToList();
+            return new BrokerData(BrokerType, language, data);
         }
 
         public override BrokerData LoadRegular(SportType sportType, LanguageType language) {
@@ -51,142 +79,57 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                                                     CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]),
                 lang = GetLanguageParam(language)
             });
-            return new BrokerData(BrokerType, language, BuildCompetitions(LoadPage(url), ExtractMatchesOddsFromMatchesBlock));
+            var loadPage = LoadPage(url);
+            var extractors = GetDefaultExtractors();
+            var data = new HtmlBlockHelper(loadPage).GetCurrentNode()
+                .NodeToNodeCompetitionGroupedBySport(CurrentConfiguration)
+                .SelectMany(node => node.Node.NodeToNodeCompetitionWithMatches(CurrentConfiguration, SportTypeExtractor, SectionName.XPathToEventInList)
+                    .Select(tuple => tuple.NodeToCompetitionParsed(extractors.Union(new DefaultExtractor<HtmlNode>[] {
+                        GetFullNameExtractor(),
+                        new DefaultDateUtcExtractor<HtmlNode>(CurrentConfiguration, GetGmtFixer(loadPage))
+                    }).ToArray()))
+                )
+                .ToList();
+            return new BrokerData(BrokerType, language, data);
         }
 
-        private List<CompetitionParsed> BuildCompetitions(string htmlContent, Func<HtmlNode, SportType, DateTimeToGmtFixer, List<MatchParsed>> matchesBuilderFunc) {
-            var result = new List<CompetitionParsed>();
-            var htmlBlockHelper = new HtmlBlockHelper(htmlContent);
-            var dateTimeFixer = GetGmtFixer(htmlContent);
-            var groupedCompetitions = htmlBlockHelper.ExtractBlock(CurrentConfiguration.XPath[SectionName.XPathToCategoryContainer]);
-            foreach (var groupedCompetition in groupedCompetitions) {
-                result.AddRange(ExtractMatchesBlockFromCompetitonGroup(groupedCompetition, dateTimeFixer, matchesBuilderFunc));
-            }
-            return result;
-        }
-
-        private List<CompetitionParsed> ExtractMatchesBlockFromCompetitonGroup(HtmlNode node, DateTimeToGmtFixer dateTimeFixer, Func<HtmlNode, SportType, DateTimeToGmtFixer, List<MatchParsed>> matchesBuilderFunc) {
-            var result = new List<CompetitionParsed>();
-            var competitionNameString = string.Empty;
-            var nameBlock = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToCategoryName]);
+        private SportType SportTypeExtractor(HtmlNode htmlNode) {
+            var nameBlock = HtmlBlockHelper.ExtractBlock(htmlNode, CurrentConfiguration.XPath[SectionName.XPathToCategoryName]);
             if (nameBlock.Count > 0) {
-                competitionNameString = nameBlock[0].InnerText.Trim();
+                return SportTypeHelper.Instance[nameBlock[0].InnerText.Split('.')];
             }
-            var listMatchBlockForCompetitions = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToListCompetitionInCategory]);
-            foreach (var listMatchBlockForCompetition in listMatchBlockForCompetitions) {
-                var competitionNameFull = new List<string>();
-                if (!competitionNameString.IsNullOrWhiteSpace()) {
-                    competitionNameFull.Add(competitionNameString);
-                }
-                nameBlock = HtmlBlockHelper.ExtractBlock(listMatchBlockForCompetition, CurrentConfiguration.XPath[SectionName.XPathToCompetitionName]);
-                if (nameBlock.Count > 0) {
-                    competitionNameFull.AddRange(FormatCompetitionName(nameBlock[0].InnerText));
-                }
-                var competiton = new CompetitionParsed(competitionNameFull.ToArray());
-                if (competiton.Type != SportType.Unknown) {
-                    var matches = matchesBuilderFunc(listMatchBlockForCompetition, competiton.Type, dateTimeFixer);
-                    if (matches.Any()) {
-                        competiton.Matches.AddRange(matches);
-                        result.Add(competiton);
-                    }
-                }
-            }
-            return result;
+            return SportType.Unknown;
         }
 
+        private DefaultExtractor<HtmlNode>[] GetDefaultExtractors() {
+            return new DefaultExtractor<HtmlNode>[] {
+                new DefaultBrokerIDExtractor<HtmlNode>(CurrentConfiguration),
+                new DefaultResultExtractor<HtmlNode>(CurrentConfiguration), 
+                new DefaultOddsExtractor<HtmlNode>(CurrentConfiguration, ExtractOddsFromMatchBlock), 
+            };
+        }
+
+        private DefaultCompetitorNameExtractor<HtmlNode> GetFullNameExtractor() {
+            return new DefaultCompetitorNameExtractor<HtmlNode>(CurrentConfiguration, node => {
+                var competitorsShortName = node.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddCompetitorsShortName]].Value
+                    .Split(CurrentConfiguration.StringArray[SectionName.ArrayCompetitorSplitter], StringSplitOptions.RemoveEmptyEntries);
+                var competitorsFullName = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToOddsCompetitors]);
+                return Tuple.Create(new[] { competitorsFullName[0].InnerText.Trim(), competitorsShortName[0].Trim() }, new[] { competitorsFullName[1].InnerText.Trim(), competitorsShortName[1].Trim() });
+            });
+        }
+
+        private DefaultCompetitorNameExtractor<HtmlNode> GetShortCompetitorNameExtractor() {
+            return new DefaultCompetitorNameExtractor<HtmlNode>(CurrentConfiguration);
+        }
+        
         private static DateTimeToGmtFixer GetGmtFixer(string htmlContent) {
             var idx = htmlContent.IndexOf("\"gmt", StringComparison.InvariantCultureIgnoreCase);
             var num = htmlContent.Substring(idx + 4);
             num = num.Substring(0, num.IndexOf("\"", StringComparison.InvariantCultureIgnoreCase));
             return new DateTimeToGmtFixer(StringParser.ToShort(num, 0));
         }
-
-        private List<MatchParsed> ExtractMatchesResultFromMatchesBlock(HtmlNode node, SportType type, DateTimeToGmtFixer dateTimeFixer) {
-            var result = new List<MatchParsed>();
-            var listMatchBlocks = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventResult]);
-            foreach (var matchBlock in listMatchBlocks) {
-                var participants = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultCompetitors]);
-                if (participants.Count != 1) {
-                    Logger.Error("participants count = " + participants.Count);
-                }
-                string date = null;
-                var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultDate]);
-                if (dateBlock.Any()) {
-                    date = dateBlock.First().InnerText.Trim();
-                }
-                var participantsSplitted = participants[0].InnerText.Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-                if (participantsSplitted.Length != 2) {
-                    Logger.Error("participantsSplitted.Length != 2: " + participants[0].InnerText);
-                    continue;
-                }
-                var match = new MatchParsed {
-                    CompetitorName1 = new[] { participantsSplitted[0].Trim() },
-                    CompetitorName2 = new[] { participantsSplitted[1].Trim() },
-                    DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
-                    Result = ExtractResultFromMatchBlock(matchBlock, type, list => list.Select(h => h.InnerHtml).StrJoin(Environment.NewLine))
-                };
-                result.Add(match);
-            }
-            return result;
-        }
-
-        private FullResult ExtractResultFromMatchBlock(HtmlNode node, SportType type, Func<List<HtmlNode>, string> nodeToResultStr) {
-            var resultString = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToResultValue]);
-            return resultString.Any()
-                ? ResultBuilder.BuildResultFromString(type, nodeToResultStr(resultString))
-                : null;
-        }
         
-        private List<MatchParsed> ExtractMatchesOddsFromMatchesBlock(HtmlNode node, SportType type, DateTimeToGmtFixer dateTimeFixer) {
-            var result = new List<MatchParsed>();
-            var listMatchBlocks = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventInList]);
-            Func<List<HtmlNode>, string> nodeToResultStr = list => list[0].InnerHtml;
-            foreach (var matchBlock in listMatchBlocks) {
-                try {
-                    var participantsShortName = matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddCompetitorsShortName]].Value
-                        .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-                    var participantsFullName = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsCompetitors]);
-                    string date = null;
-                    var dateBlock = HtmlBlockHelper.ExtractBlock(matchBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsDate]);
-                    if (dateBlock.Any()) {
-                        date = dateBlock.First().InnerText.Trim();
-                    }
-                    var match = new MatchParsed {
-                        CompetitorName1 = new[] { participantsFullName[0].InnerText, participantsShortName[0] },
-                        CompetitorName2 = new[] { participantsFullName[1].InnerText, participantsShortName[1] },
-                        DateUtc = dateTimeFixer.FixToGmt(ParseDateTime(date)),
-                        Result = ExtractResultFromMatchBlock(matchBlock, type, nodeToResultStr),
-                        BrokerMatchID = StringParser.ToInt(matchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
-                    };
-                    match.Odds.AddRange(ExtractOddsFromMatchBlock(type, matchBlock));
-                    if (match.Odds.Any() || match.Result != null) {
-                        result.Add(match);
-                    }
-                } catch (Exception ex) {
-                    Logger.Error(ex);
-                }
-            }
-            foreach (var additionalMatchBlock in HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToEventResult])) {
-                try {
-                    var participants = HtmlBlockHelper.ExtractBlock(additionalMatchBlock, CurrentConfiguration.XPath[SectionName.XPathToResultCompetitors])[0].InnerText
-                        .Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-                    var match = new MatchParsed {
-                        CompetitorName1 = new[] { participants[0] },
-                        CompetitorName2 = new[] { participants[1] },
-                        Result = ExtractResultFromMatchBlock(additionalMatchBlock, type, nodeToResultStr),
-                        BrokerMatchID = StringParser.ToInt(additionalMatchBlock.Attributes[CurrentConfiguration.StringSimple[SectionName.StringOddBrokerID]].Value, default(int))
-                    };
-                    if (match.Odds.Any() || match.Result != null) {
-                        result.Add(match);
-                    }
-                } catch (Exception ex) {
-                    Logger.Error(ex);
-                }
-            }
-            return result;
-        }
-
-        private List<OddParsed> ExtractOddsFromMatchBlock(SportType type, HtmlNode node) {
+        private List<OddParsed> ExtractOddsFromMatchBlock(HtmlNode node, SportType sportType) {
             var odds = new List<OddParsed>();
             var betBlocks = HtmlBlockHelper.ExtractBlock(node, CurrentConfiguration.XPath[SectionName.XPathToOddsFactor]);
             foreach (var betBlock in betBlocks) {
@@ -216,7 +159,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 };
                 odds.Add(odd);
             }
-            TryMapOddTypes(type, odds);
+            TryMapOddTypes(sportType, odds);
             return odds;
         }
 

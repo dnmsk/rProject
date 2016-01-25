@@ -20,12 +20,11 @@
         XPathToCompetitionName = 1003,
         XPathToEventInList = 1004,
         XPathToOddsCompetitors = 1005,
-        XPathToOddsDate = 1006,
         //XPathToOddsLiveResult = 1007,
         XPathToOddsFactor = 1008,
         XPathToEventResult = 1009,
-        XPathToResultCompetitors = 1010,
-        XPathToResultDate = 1011,
+        XPathToCompetitors = 1010,
+        XPathToDate = 1011,
         XPathToResultValue = 1012,
         XPathToOddsConfirmation = 1013,
 
@@ -41,11 +40,11 @@
         StringCompetitionRow = 10008,
 
         //Array Reserve from 15000 to 19999
-        ArrayParticipantsSplitter = 15000,
+        ArrayCompetitorSplitter = 15000,
         ArrayCookie = 15001,
         ArrayProxy = 15002,
         ArrayDateTimeFormat = 15003,
-        ArrayBadStartCompetitor = 15004,
+        //ArrayBadStartCompetitor = 15004,
         ArrayBadNameCompetitor = 15005,
 
         //Map Reserve from 30000 to Max

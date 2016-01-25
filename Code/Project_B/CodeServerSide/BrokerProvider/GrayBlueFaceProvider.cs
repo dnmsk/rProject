@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
+using Project_B.CodeServerSide.BrokerProvider.Helper;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
+using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
 using Project_B.CodeServerSide.BrokerProvider.SubData;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Data.Result;
@@ -21,13 +24,19 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         public override BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language) {
             var data = LoadPage(FormatUrl(SectionName.UrlResultTarget, new {
-                datestamp = ((int)(DateTime.UtcNow - LinuxUtc).TotalSeconds) / 10,
+                datestamp = ((int)(DateTime.UtcNow - DefaultDateUtcExtractor<int>.DefaultLinuxUtc).TotalSeconds) / 10,
                 date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             }));
             var rows = data.Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
             var brokerData = new BrokerData(BrokerType, language);
             var internalCompetitionItemIDToCompetitionParsed = new Dictionary<int, MatchParsed>();
+            var competitorSplitter = new DefaultCompetitorNameExtractor<string>(CurrentConfiguration);
+            var extractors = new DefaultExtractor<object[]>[] {
+                new DefaultDateUtcExtractor<object[]>(CurrentConfiguration, new DateTimeToGmtFixer(default(short)), true, objects => objects[2]),
+                new DefaultResultExtractor<object[]>(CurrentConfiguration, (objects, spType) => objects[4]),
+                new DefaultCompetitorNameExtractor<object[]>(CurrentConfiguration, objects => objects[3])
+            };
             foreach (var row in rows) {
                 try {
                     var firstIndex = row.IndexOf("(", StringComparison.InvariantCulture);
@@ -42,19 +51,15 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         if ((int) dataRowJson[5] != 3) {
                             continue;
                         }
-                        var competitorsName = ExtractCompetitorsFromString((string) dataRowJson[3]);
+                        var competitorsName = competitorSplitter.ExtractData((string)dataRowJson[3], SportType.Unknown);
                         if (competitorsName == null) {
                             continue;
                         }
-                        internalCompetitionItemIDToCompetitionParsed[(int) dataRowJson[0]] = new MatchParsed {
-                            DateUtc = LinuxUtc.ToUniversalTime().AddSeconds((int) dataRowJson[2]),
-                            Result = ResultBuilder.BuildResultFromString(SportType.Unknown, (string) dataRowJson[4]),
-                            CompetitorName1 = new [] { competitorsName.Item1 },
-                            CompetitorName2 = new [] { competitorsName.Item2 }
-                        };
+                        internalCompetitionItemIDToCompetitionParsed[(int) dataRowJson[0]] = DefaultExtractor<object[]>
+                            .CreateMatchParsed(SportType.Unknown, dataRowJson, extractors);
                     } else if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringCompetitionRow], StringComparison.InvariantCultureIgnoreCase)) {
                         dataRowJson = BuildJsonObject(row, firstIndex, lastIndex);
-                        var formatCompetitionName = FormatCompetitionName((string) dataRowJson[2]);
+                        var formatCompetitionName = HtmlBlockDataMonada.FormatCompetitionName((string) dataRowJson[2]);
                         var competitionParsed = new CompetitionParsed(formatCompetitionName);
                         if (competitionParsed.Type != SportType.Unknown) {
                             brokerData.Competitions.Add(competitionParsed);
@@ -103,10 +108,15 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var oddMapper = _blueOddTypeProvider.GetOddMapCreator((int) deserializedLine["factorsVersion"]);
             var competitionsDict = new Dictionary<int, CompetitionParsed>();
             var matchesDict = new Dictionary<int, MatchParsed>();
+            var extractors = new DefaultExtractor<Dictionary<string, object>>[] {
+                new DefaultDateUtcExtractor<Dictionary<string, object>>(CurrentConfiguration, new DateTimeToGmtFixer(default(short)), true, objects => objects["startTime"]),
+                new DefaultCompetitorNameExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => new[] { objects["team1"] as string, objects["team2"] as string }),
+                new DefaultBrokerIDExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => objects["id"])
+            };
             ToA(deserializedLine["sports"])
                 .EachSafe(obj => {
                     var map = ToD(obj);
-                    var competitionName = FormatCompetitionName(map["name"].ToString());
+                    var competitionName = HtmlBlockDataMonada.FormatCompetitionName(map["name"].ToString());
                     if ((string) map["kind"] != "segment") {
                         return;
                     }
@@ -121,12 +131,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     var competitionID = (int) map["sportId"];
                     CompetitionParsed competitionParsed;
                     if ((int) map["level"] == 1 && competitionsDict.TryGetValue(competitionID, out competitionParsed)) {
-                        var matchParsed = new MatchParsed {
-                            CompetitorName1 = new[] { (string) map["team1"] },
-                            CompetitorName2 = new[] { (string) map["team2"] },
-                            DateUtc = LinuxUtc.ToUniversalTime().AddSeconds((int) map["startTime"]),
-                            BrokerMatchID = (int) map["id"]
-                        };
+                        var matchParsed = DefaultExtractor<Dictionary<string, object>>.CreateMatchParsed(competitionParsed.Type, map, extractors);
                         matchesDict[matchParsed.BrokerMatchID] = matchParsed;
                         competitionParsed.Matches.Add(matchParsed);
                     }
@@ -161,23 +166,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 .Where(c => c.Matches.Count > 0)
                 .ToList();
         }
-
-        private Tuple<string, string> ExtractCompetitorsFromString(string str) {
-            if (CurrentConfiguration.StringArray[SectionName.ArrayBadStartCompetitor].Any(s => str.IndexOf(s, StringComparison.InvariantCultureIgnoreCase) != -1)) {
-                return null;
-            }
-            var splitted = str.Split(CurrentConfiguration.StringArray[SectionName.ArrayParticipantsSplitter], StringSplitOptions.RemoveEmptyEntries);
-            if (splitted.Length <= 1) {
-                return null;
-            }
-            if (splitted.Length == 2) {
-                return new Tuple<string, string>(splitted[0].Trim(' '), splitted[1].Trim(' '));
-            }
-            var idx1 = 0;
-            var idx2 = splitted[splitted.Length - 1].Length > 3 ? splitted.Length - 1 : splitted.Length - 2;
-            return new Tuple<string, string>(splitted[idx1].Trim(), splitted[idx2].Trim());
-        }
-
+        
         private static object[] BuildJsonObject(string row, int startIndex, int endIndex) {
             return ToA(JavaScriptSerializer.DeserializeObject("[" + row.Substring(startIndex + 1, (endIndex - startIndex) - 1) + "]"));
         }
