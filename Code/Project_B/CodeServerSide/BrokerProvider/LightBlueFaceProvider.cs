@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
@@ -80,7 +79,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var extractors = new DefaultExtractor<Dictionary<string, object>>[] {
                 new DefaultDateUtcExtractor<Dictionary<string, object>>(CurrentConfiguration, new DateTimeToGmtFixer(default(short)), true, objects => objects["Start"]), 
                 new DefaultBrokerIDExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => objects["MainGameId"]), 
-                new DefaultCompetitorNameExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => new[] {objects["Opp1Eng"] as string, objects["Opp2Eng"]}), 
+                new DefaultCompetitorNameExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => new string[] {objects["Opp1Eng"] as string, objects["Opp2Eng"] as string}), 
                 new DefaultOddsExtractor<Dictionary<string, object>>(CurrentConfiguration, (objects, sportType) => ToA(objects["Events"]).Select(o => {
                             var odd = ToD(o);
                             return new OddParsed {
