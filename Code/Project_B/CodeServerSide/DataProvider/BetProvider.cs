@@ -88,6 +88,9 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         private void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {
             InvokeSafe(() => {
+                if (result == null) {
+                    return;
+                }
                 var generateScoreID = ScoreHelper.Instance.GenerateScoreID(result.CompetitorResultOne, result.CompetitorResultTwo);
                 var lastResult = CompetitionResultLive.DataSource
                     .Join(JoinType.Left, CompetitionResultLiveAdvanced.Fields.CompetitionresultliveID, CompetitionResultLive.Fields.ID, RetrieveMode.Retrieve)
