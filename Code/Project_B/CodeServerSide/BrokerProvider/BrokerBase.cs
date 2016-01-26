@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -50,16 +49,6 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             return null;
         }
         
-        protected static string GetParamValueForCompetition(SportType sportType, Dictionary<string, string> srcDict, string strJoinDelim) {
-            var listParams = new List<string>();
-            foreach (var competition in srcDict) {
-                if ((sportType & ((SportType)Enum.Parse(typeof(SportType), competition.Key))) > 0) {
-                    listParams.Add(competition.Value);
-                }
-            }
-            return listParams.Count > 0 ? listParams.StrJoin(strJoinDelim) : string.Empty;
-        }
-
         protected string FormatUrl(SectionName urlTargetSection, object obj) {
             return CurrentConfiguration.StringSimple[urlTargetSection].HaackFormat(obj);
         }
@@ -73,20 +62,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             }
             return languageParam;
         }
-
-        protected DateTime ParseDateTime(string date) {
-            date = date.ToLower().Replace("мая", "май");
-            var defaultDateTime = DateTime.MinValue;
-            foreach (var dateTimeFormat in CurrentConfiguration.StringArray[SectionName.ArrayDateTimeFormat]
-                                           ?? ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default].StringArray[SectionName.ArrayDateTimeFormat]) {
-                var dateTime = StringParser.ToDateTime(date, defaultDateTime, dateTimeFormat);
-                if (!dateTime.Equals(defaultDateTime)) {
-                    return dateTime;
-                }
-            }
-            return defaultDateTime;
-        }
-
+        
         protected static Dictionary<string, object> ToD(object obj) {
             return (Dictionary<string, object>)obj;
         }

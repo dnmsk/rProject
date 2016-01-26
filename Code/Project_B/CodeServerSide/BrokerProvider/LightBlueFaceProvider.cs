@@ -26,8 +26,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             {6, BetOddType.DrawWin2},
             {7, BetOddType.Handicap1},
             {8, BetOddType.Handicap2},
-            {9, BetOddType.TotalUnder},
-            {10, BetOddType.TotalOver},
+            {9, BetOddType.TotalOver},
+            {10, BetOddType.TotalUnder},
         };
 
         private static readonly Dictionary<int, SportType> _sportTypeMap = new Dictionary<int, SportType> {

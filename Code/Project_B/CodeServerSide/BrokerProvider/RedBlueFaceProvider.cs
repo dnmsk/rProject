@@ -29,9 +29,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         public override BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language) {
             var url = FormatUrl(SectionName.UrlResultTarget, new {
-                query = GetParamValueForCompetition(sportType,
-                                                    CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsResultsParam],
-                                                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsResultsParamJoin]),
+                query = CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsResultsParam]
+                        .GetParamValueForCompetition(sportType, CurrentConfiguration.StringSimple[SectionName.StringMapStringsResultsParamJoin]),
                 date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             });
@@ -75,8 +74,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         public override BrokerData LoadRegular(SportType sportType, LanguageType language) {
             var url = FormatUrl(SectionName.UrlOddsTarget, new {
-                param = GetParamValueForCompetition(sportType, CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam],
-                                                    CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]),
+                param = CurrentConfiguration.CompetitionConfiguration[SectionName.MapStringsOddsParam]
+                            .GetParamValueForCompetition(sportType, CurrentConfiguration.StringSimple[SectionName.StringMapStringsOddsParamJoin]),
                 lang = GetLanguageParam(language)
             });
             var loadPage = LoadPage(url);
