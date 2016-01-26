@@ -1,13 +1,13 @@
-﻿@using Project_B.CodeClientSide.TransportType.ModerateTransport
-@using Project_B.CodeServerSide.Enums
+﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.TransportType.ModerateTransport
 @model List<RawEntityWithLink>
 
 @foreach (var item in Model) {
-    var entityType = item.BrokerEntityType;
-    item.BrokerEntityType = BrokerEntityType.Unknown;
-    <li data-id="@item.RawID" data-uniqueid="@item.EntityID" data-type="@entityType" data-tooltip="true">
-        <button data-id="@item.RawID" data-type="@entityType" data-request="POST" data-targetid="@item.EntityID" class="btn btn-xs btn-success">Привязать id=@(item.EntityID)</button>
-        @Html.Partial("_RawEntityWriter", new Tuple<RawEntityWithLink, string>(item, string.Empty))
+    <li data-id="@item.RawID" data-uniqueid="@item.EntityID" data-type="@item.BrokerEntityType">
+        <label>
+            <input type="checkbox" value="@item.EntityID" name="ids" />
+            <span data-uniqueid="@item.EntityID" data-type="@item.BrokerEntityType" data-tooltip="true">@item.EntityName.StrJoin(" | ") <b>ID=@item.EntityID</b></span>
+        </label>
         <br /><br />
     </li>
 }

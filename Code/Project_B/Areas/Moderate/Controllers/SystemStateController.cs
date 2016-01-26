@@ -46,7 +46,7 @@ namespace Project_B.Areas.Moderate.Controllers {
             });
         }
 
-        public ActionResult EntityLinker(BrokerEntityType type, FilterModel<int> filter, int targetID = default(int)) {
+        public ActionResult EntityLinker(BrokerEntityType type, FilterModel<int> filter, int[] ids = null) {
             switch (Request.RequestType.ToUpper()) {
                 case "GET":
                     return PartialView(new Tuple<RawEntityWithLink>(_provider.GetEntity(filter.id, type)));
@@ -54,7 +54,7 @@ namespace Project_B.Areas.Moderate.Controllers {
                     _provider.EntityLinkerPut(filter.id, type);
                     break;
                 case "POST":
-                    _provider.EntityLinkerPost(filter.id, type, targetID);
+                    _provider.EntityLinkerPost(filter.id, type, ids);
                     break;
                 case "DELETE":
                     _provider.EntityLinkerDelete(filter.id, type);
@@ -67,17 +67,7 @@ namespace Project_B.Areas.Moderate.Controllers {
             var data = _provider.LiveSearch(type, id, search, all);
             return PartialView("_ListRawEntityWriter", data);
         }
-
-        public ActionResult LiveSearchJoin(BrokerEntityType type, int id, string search, bool all = true) {
-            var data = _provider.LiveSearch(type, id, search, all);
-            return PartialView("_ListRawEntityWriterJoin", data);
-        }
-
-        public ActionResult JoinEntity(BrokerEntityType type, int[] ids) {
-            _provider.EntityJoin(type, ids);
-            return new EmptyResult();
-        }
-
+        
         public ActionResult GetTooltip(BrokerEntityType type, int uniqueid) {
             List<string> res = _provider.GetTooltip(type, uniqueid);
             return new ContentResult {

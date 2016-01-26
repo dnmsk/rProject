@@ -10,7 +10,6 @@
 <hr />
 <div class="btn-group">
     <button class="btn btn-default" onclick="toggleSearchType('#byName');">По имени</button>
-    <button class="btn btn-warning" onclick="toggleSearchType('#joinEntity');">Соединить</button>
 </div>
 <script type="text/javascript">
     function toggleSearchType(target) {
@@ -42,35 +41,26 @@
                 url: '@Url.Action("LiveSearch", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
                 appendTo: $('#liveSearchTarget'),
                 onSuccessFunc(data) {
-                    window.ninjaBag.documentObjects.linker.bindLinkEvent($('#liveSearchTarget'));
-                    initTooltip($('#liveSearchTarget li[data-tooltip]'));
+                    initTooltip($('#liveSearchTarget span[data-tooltip]'));
                 }
             });
         });
     </script>
     <br/><br/>
-    <ul id="liveSearchTarget"></ul>
-</div>
-<div id="joinEntity" style="display: none;">
-    <input type="text" id="liveSearchJoin" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 250px;">
-    <span class="glyphicon glyphicon-search" style="vertical-align: text-top;" onclick=""></span>
-    <script>
+    <form action="@Url.Action("EntityLinker")" id="formJoinEntity" method="POST">
+        <input type="hidden" name="type" value="@Model.Item1.BrokerEntityType" />
+        <input type="hidden" name="id" value="@Model.Item1.RawID" />
+        <ul id="liveSearchTarget"></ul>
+        <button type="submit" class="btn btn-primary">Соединить и привязать</button>
+        <script>
         $(function () {
-            $('#liveSearchJoin').liveSearch({
-                url: '@Url.Action("LiveSearchJoin", new {type = Model.Item1.BrokerEntityType, id = Model.Item1.RawID})&search='.toLowerCase(),
-                appendTo: $('#liveSearchJoinTarget'),
-                onSuccessFunc(data) {
-                    initTooltip($('#liveSearchJoinTarget [data-tooltip]'));
-                }
+            $('#formJoinEntity').ajaxForm(function (data) {
+                var jqData = $(data);
+                window.ninjaBag.documentObjects.linker.state.eventTarget.replaceWith(jqData);
+                jqData.find('[data-editor]').on('click', function () { window.ninjaBag.documentObjects.linker.show(jqData); });
+                window.ninjaBag.documentObjects.linker.popup.hide();
             });
-            $('#formJoinEntity').ajaxForm(function () { window.ninjaBag.documentObjects.linker.popup.hide(); });
         });
-    </script>
-    <br/><br/>
-    <form action="@Url.Action("joinentity")" id="formJoinEntity">
-        <input type="hidden" name="type" value="@Model.Item1.BrokerEntityType"/>
-        <div id="liveSearchJoinTarget">
-        </div>
-        <button type="submit" class="btn btn-primary">Соединить</button>
+        </script>
     </form>
 </div>

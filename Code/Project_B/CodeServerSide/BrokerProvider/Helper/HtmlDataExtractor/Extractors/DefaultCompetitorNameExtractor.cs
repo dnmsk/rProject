@@ -43,6 +43,13 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             matchParsed.CompetitorName2 = data.Item2;
         }
 
+        private string[] GetValidNames(params string[] names) {
+            var conf = BrokerConfiguration.StringArray[SectionName.ArrayBadNameCompetitor] ?? ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default].StringArray[SectionName.ArrayBadNameCompetitor];
+            return names
+                .Where(n => !conf.Any(c => n.Contains(c, StringComparison.InvariantCultureIgnoreCase)))
+                .ToArray();
+        }
+
         protected override Tuple<string[], string[]> ExtractData(T container, SportType sportType, Func<string, Tuple<string[], string[]>> customCreator = null) {
             var data = _customExtractor?.Invoke(container) ?? container;
             data = TryGetDataFromHtmlNode(data);
@@ -54,14 +61,14 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
                 if (obj[0].IsNullOrWhiteSpace() || obj[1].IsNullOrWhiteSpace()) {
                     return Tuple.Create(new string[0], new string[0]);
                 }
-                return Tuple.Create(new[] { obj[0] }, new[] { obj[1] });
+                return Tuple.Create(GetValidNames(obj[0]), GetValidNames(obj[1]));
             }
             if (data is Tuple<string[], string[]>) {
                 return data as Tuple<string[], string[]>;
             }
             if (data is string[][]) {
                 var obj = data as string[][];
-                return Tuple.Create(obj[0], obj[1]);
+                return Tuple.Create(GetValidNames(obj[0]), GetValidNames(obj[1]));
             }
             return null;
         }

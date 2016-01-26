@@ -58,22 +58,6 @@
                     return '@Url.Action("EntityLinker")'.toLowerCase() + '?' + pars.join('&');
                 };
                 var that = this;
-                this.bindLinkEvent = function (container) {
-                    container.find('[data-target]').append(that.state.eventTarget.clone());
-                    container.find('[data-request]').on('click', function (eventTarget) {
-                        var pars = that.urlParamsReader($(eventTarget.currentTarget));
-                        $.ajax(that.urlFormatterFunc(pars), {
-                            type: pars['request'],
-                            traditional: true,
-                            success: function (data) {
-                                var jqData = $(data);
-                                jqData.find('[data-editor]').on('click', function () { that.show(this); });
-                                that.state.eventTarget.replaceWith(jqData);
-                                that.popup.hide();
-                            }
-                        });
-                    });
-                };
                 this.popup = new window.ninjaBag.baseObjects.Popup({
                     container: $('#popupLinker'),
                     zIndex: 1010,
@@ -81,7 +65,7 @@
                     realoadAllTimes: true,
                     requestUrlFunc: function () { return that.urlFormatterFunc(that.state.urlParams); },
                     onLoadFunc: function () {
-                        that.bindLinkEvent(that.popup.settings.container);
+                        that.popup.settings.container.find('[data-target]').append(that.state.eventTarget.clone());
                     }
                 });
 

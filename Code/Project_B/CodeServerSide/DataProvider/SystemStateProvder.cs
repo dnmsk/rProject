@@ -5,10 +5,12 @@ using System.Text;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType.ModerateTransport;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -30,9 +32,13 @@ namespace Project_B.CodeServerSide.DataProvider {
                     fromDate = DateTime.UtcNow.AddHours(-2);
                     toDate = fromDate.AddDays(14);
                 }
-                var rci = RawCompetitionItem.DataSource
-                    .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, fromDate, toDate, BetweenType.Inclusive)
+                var rci = Broker.DataSource
+                    .Join(JoinType.Left, typeof(RawCompetitionItem), new DaoFilterAnd(
+                            new DaoFilterEq(RawCompetitionItem.Fields.Brokerid, new DbFnEmpty(Broker.Fields.ID)),
+                            new DaoFilter(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, fromDate),
+                            new DaoFilter(RawCompetitionItem.Fields.Dateeventutc, Oper.Less, toDate)), RetrieveMode.Retrieve)
                     .AsList(
+                        Broker.Fields.ID,
                         RawCompetitionItem.Fields.ID,
                         RawCompetitionItem.Fields.Rawcompetitorid1,
                         RawCompetitionItem.Fields.Rawcompetitorid2,
@@ -44,17 +50,23 @@ namespace Project_B.CodeServerSide.DataProvider {
                     );
                 var mapResults = new Dictionary<string, SystemStateSummaryStatus>();
                 rci
-                    .GroupBy(i => i.BrokerID)
-                    .Each(item => item.GroupBy(i => i.Languagetype).Each(grouped => {
-                        var broker = item.Key;
-                        var language = grouped.Key;
-                        FillSummaryState(mapResults, broker, language, status => {
-                            status.RawCompetitionItemCount = grouped.Count();
-                            status.CompetitionItemLinkedCount = grouped.Count(g => g.CompetitionitemID != default(int));
-                        });
-                    }));
+                    .GroupBy(i => i.ID)
+                    .Each(item => item.GroupBy(i => i.GetJoinedEntity<RawCompetitionItem>()?.Languagetype ?? LanguageType.Default)
+                        .Each(grouped => {
+                            var rciGrouped = grouped.First().GetJoinedEntity<RawCompetitionItem>();
+                            var broker = rciGrouped.BrokerID;
+                            var language = rciGrouped.Languagetype;
+                            FillSummaryState(mapResults, broker, language, status => {
+                                status.RawCompetitionItemCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>().ID).Distinct().Count();
+                                status.CompetitionItemLinkedCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>()?.CompetitionitemID).Distinct().Count(g => g != default(int));
+                            });
+                        })
+                    );
 
-                FillSubData(mapResults, rci.Select(i => i.Competitoruniqueid1).Union(rci.Select(i => i.Rawcompetitorid2)).Distinct(), rci.Select(i => i.RawcompetitionID).Distinct(), rci.Select(i => i.RawcompetitionspecifyID).Distinct());
+                FillSubData(mapResults, rci.SelectMany(i => {
+                    var entity = i.GetJoinedEntity<RawCompetitionItem>();
+                    return new[] {entity.Rawcompetitorid1, entity.Rawcompetitorid2};
+                }).Distinct(), rci.Select(i => i.GetJoinedEntity<RawCompetitionItem>().RawcompetitionID).Distinct(), rci.Select(i => i.GetJoinedEntity<RawCompetitionItem>().RawcompetitionspecifyID).Distinct());
 
                 return mapResults.Values.ToList();
             }, null);
@@ -196,8 +208,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     var broker = (BrokerType) (short) grouped.Data[RawCompetitor.Fields.Brokerid];
                     var language = (LanguageType) (short) grouped.Data[RawCompetitor.Fields.Languagetype];
                     FillSummaryState(mapResults, broker, language, status => {
-                        status.RawCompetitorCount = (int) (long) grouped.Data[rcompetitorCount];
-                        status.CompetitorLinkedCount = (int) (long) grouped.Data[rcompetitorMappedCount];
+                        status.RawCompetitorCount += (int) (long) grouped.Data[rcompetitorCount];
+                        status.CompetitorLinkedCount += (int) (long) grouped.Data[rcompetitorMappedCount];
                     });
                 });
 
@@ -216,8 +228,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     var broker = (BrokerType) (short) grouped.Data[RawCompetition.Fields.Brokerid];
                     var language = (LanguageType) (short) grouped.Data[RawCompetition.Fields.Languagetype];
                     FillSummaryState(mapResults, broker, language, status => {
-                        status.RawCompetitionCount = (int) (long) grouped.Data[rcompetitionCount];
-                        status.CompetitionLinkedCount = (int) (long) grouped.Data[rcompetitionMappedCount];
+                        status.RawCompetitionCount += (int) (long) grouped.Data[rcompetitionCount];
+                        status.CompetitionLinkedCount += (int) (long) grouped.Data[rcompetitionMappedCount];
                     });
                 });
 
@@ -236,8 +248,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     var broker = (BrokerType) (short) grouped.Data[RawCompetitionSpecify.Fields.Brokerid];
                     var language = (LanguageType) (short) grouped.Data[RawCompetitionSpecify.Fields.Languagetype];
                     FillSummaryState(mapResults, broker, language, status => {
-                        status.RawCompetitionSpecifyCount = (int) (long) grouped.Data[rcompetitionSpecifyCount];
-                        status.CompetitionSpecifyLinkedCount = (int) (long) grouped.Data[rcompetitionSpecifyMappedCount];
+                        status.RawCompetitionSpecifyCount += (int) (long) grouped.Data[rcompetitionSpecifyCount];
+                        status.CompetitionSpecifyLinkedCount += (int) (long) grouped.Data[rcompetitionSpecifyMappedCount];
                     });
                 });
         }
@@ -387,7 +399,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         }.Save();
                         break;
                 }
-                EntityLinkerPost(id, type, newTargetID?.UniqueID ?? default(int));
+                EntityLinkerPost(id, type, new [] { newTargetID?.UniqueID ?? default(int) });
             });
         }
 
@@ -397,10 +409,15 @@ namespace Project_B.CodeServerSide.DataProvider {
             return entity;
         }
 
-        public void EntityLinkerPost(int id, BrokerEntityType type, int targetID) {
+        public void EntityLinkerPost(int id, BrokerEntityType type, int[] ids) {
             InvokeSafe(() => {
-                if (targetID == default(int)) {
+                var targetID = ids.FirstOrDefault();
+                var needJoin = ids?.Length > 1;
+                if (targetID == default(int) && !needJoin) {
                     return;
+                }
+                if (needJoin) {
+                    targetID = ids.Min();
                 }
                 switch (type) {
                     case BrokerEntityType.Competition:
@@ -421,6 +438,9 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .WhereEquals(RawCompetitor.Fields.ID, id)
                             .Update(RawCompetitor.Fields.CompetitoruniqueID, targetID);
                         break;
+                }
+                if (needJoin) {
+                    EntityJoin(type, targetID, ids);
                 }
             });
         }
@@ -447,9 +467,8 @@ namespace Project_B.CodeServerSide.DataProvider {
             });
         }
 
-        public void EntityJoin(BrokerEntityType type, int[] ids) {
+        private void EntityJoin(BrokerEntityType type, int targetID, int[] ids) {
             InvokeSafe(() => {
-                var targetID = ids.Min();
                 var log = new StringBuilder();
                 log.AppendLine(string.Format("{0}. {1} <= {2}", type, targetID, ids.StrJoin(", ")));
                 int stat;
@@ -467,10 +486,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .WhereIn(CompetitionItem.Fields.CompetitionuniqueID, ids)
                             .Update(CompetitionItem.Fields.CompetitionuniqueID, targetID);
                         log.AppendFormat("{0}: {1}; ", "CompetitionItem", stat);
-                        Competition.DataSource
+                        stat = Competition.DataSource
                             .WhereIn(Competition.Fields.CompetitionuniqueID, ids)
-                            .WhereNotEquals(Competition.Fields.CompetitionuniqueID, targetID)
-                            .Delete();
+                            .Update(Competition.Fields.CompetitionuniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "Competition", stat);
                         break;
                     case BrokerEntityType.CompetitionSpecify:
                         stat = RawCompetitionSpecify.DataSource
@@ -481,10 +500,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .WhereIn(CompetitionItem.Fields.CompetitionSpecifyUniqueID, ids)
                             .Update(CompetitionItem.Fields.CompetitionSpecifyUniqueID, targetID);
                         log.AppendFormat("{0}: {1}; ", "CompetitionItem", stat);
-                        CompetitionSpecify.DataSource
+                        stat = CompetitionSpecify.DataSource
                             .WhereIn(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, ids)
-                            .WhereNotEquals(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, targetID)
-                            .Delete();
+                            .Update(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "CompetitionSpecify", stat);
                         break;
                     case BrokerEntityType.Competitor:
                         stat = RawCompetitor.DataSource
@@ -499,10 +518,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .WhereIn(CompetitionItem.Fields.Competitoruniqueid2, ids)
                             .Update(CompetitionItem.Fields.Competitoruniqueid2, targetID);
                         log.AppendFormat("{0}: {1}; ", "Competitoruniqueid2", stat);
-                        Competitor.DataSource
+                        stat = Competitor.DataSource
                             .WhereIn(Competitor.Fields.CompetitoruniqueID, ids)
-                            .WhereNotEquals(Competitor.Fields.CompetitoruniqueID, targetID)
-                            .Delete();
+                            .Update(Competitor.Fields.CompetitoruniqueID, targetID);
+                        log.AppendFormat("{0}: {1}; ", "Competitor", stat);
                         break;
                 }
                 _logger.Info(log.ToString());
@@ -517,7 +536,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         named.AddRange(
                             Competition.DataSource
                                 .WhereEquals(Competition.Fields.CompetitionuniqueID, id)
-                                .AsList(Competition.Fields.Name)
+                                .AsList(Competition.Fields.Name, Competition.Fields.Gendertype)
                         );
                         break;
                     case BrokerEntityType.CompetitionSpecify:
@@ -527,7 +546,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                                                                                     .WhereEquals(CompetitionSpecify.Fields.CompetitionSpecifyUniqueID, id)
                                                                                     .AsList(CompetitionSpecify.Fields.CompetitionuniqueID)
                                                                                     .Select(cs => cs.CompetitionuniqueID).Distinct())
-                                .AsList(Competition.Fields.Name)
+                                .AsList(Competition.Fields.Name, Competition.Fields.Gendertype)
                         );
                         break;
                     case BrokerEntityType.Competitor:
@@ -540,12 +559,13 @@ namespace Project_B.CodeServerSide.DataProvider {
                                                                                     ))
                                                                                     .AsColumn<int>(CompetitionItem.Fields.CompetitionuniqueID)
                                                                                     .Distinct())
-                                .AsList(Competition.Fields.Name)
+                                .AsList(Competition.Fields.Name, Competition.Fields.Gendertype)
                         );
                         break;
                 }
                 return named
-                    .Select(n => n.Name)
+                    .Select(n => n.Name + " " + GenderDetectorHelper.Instance.GetGenderName(((IGenderTyped)n).Gendertype))
+                    .OrderBy(n => n)
                     .ToList();
             });
         }
