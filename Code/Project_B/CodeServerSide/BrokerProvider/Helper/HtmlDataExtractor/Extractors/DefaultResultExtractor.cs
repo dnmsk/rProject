@@ -18,7 +18,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             matchParsed.Result = ExtractData(container, matchParsed.SportType, s => ResultBuilder.BuildResultFromString(matchParsed.SportType, s));
         }
 
-        public override FullResult ExtractData(T arg, SportType sportType, Func<string, FullResult> customCreator) {
+        protected override FullResult ExtractData(T arg, SportType sportType, Func<string, FullResult> customCreator) {
             var obj = _customExtractor?.Invoke(arg, sportType) ?? arg;
             if (obj is string) {
                 return customCreator(arg as string);

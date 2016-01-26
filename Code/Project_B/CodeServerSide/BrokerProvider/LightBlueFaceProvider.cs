@@ -103,7 +103,9 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                             dict[competitionName] = competition;
                         }
                         var match = DefaultExtractor<Dictionary<string, object>>.CreateMatchParsed(competition.Type, map, extractors);
-                        competition.Matches.Add(match);
+                        if (match.IsValid()) {
+                            competition.Matches.Add(match);
+                        }
                     });
             } catch (Exception ex) {
                 Logger.Error(ex);

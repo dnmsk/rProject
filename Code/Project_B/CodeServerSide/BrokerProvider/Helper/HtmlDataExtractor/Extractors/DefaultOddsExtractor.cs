@@ -16,7 +16,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             matchParsed.Odds.AddRange(ExtractData(container, matchParsed.SportType));
         }
 
-        public override List<OddParsed> ExtractData(T container, SportType sportType, Func<string, List<OddParsed>> customCreator = null) {
+        protected override List<OddParsed> ExtractData(T container, SportType sportType, Func<string, List<OddParsed>> customCreator = null) {
             if (_customParser != null) {
                 return _customParser(container, sportType);
             }

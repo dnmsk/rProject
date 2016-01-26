@@ -11,7 +11,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
         private readonly DateTimeToGmtFixer _dateTimeToGmtFixer;
         private readonly Func<T, object> _customCreator;
         private readonly Func<string> _additionalDatePart;
-        public static DateTime DefaultLinuxUtc => new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 
         public DefaultDateUtcExtractor(BrokerConfiguration brokerConfiguration, DateTimeToGmtFixer dateTimeToGmtFixer, bool foo, Func<T, object> customCreator = null) : base(brokerConfiguration) {
             _dateTimeToGmtFixer = dateTimeToGmtFixer;
@@ -22,7 +21,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             _dateTimeToGmtFixer = dateTimeToGmtFixer;
             _additionalDatePart = additionalDatePart;
         }
-        
+
         private DateTime ParseDateTime(string date) {
             date = date.ToLower().Replace("мая", "май");
             var defaultDateTime = DateTime.MinValue;
@@ -40,7 +39,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             matchParsed.DateUtc = ExtractData(container, matchParsed.SportType);
         }
 
-        public override DateTime ExtractData(T arg, SportType sportType, Func<string, DateTime> customCreator = null) {
+        protected override DateTime ExtractData(T arg, SportType sportType, Func<string, DateTime> customCreator = null) {
             var obj = _customCreator?.Invoke(arg) ?? arg;
             if (obj is HtmlNode) {
                 obj = HtmlBlockHelper.ExtractBlock(arg as HtmlNode, BrokerConfiguration.XPath[SectionName.XPathToDate]).FirstOrDefault()?.InnerText;
@@ -50,7 +49,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
                 return _dateTimeToGmtFixer.FixToGmt(ParseDateTime(obj as string));
             }
             if (obj is int) {
-                return DefaultLinuxUtc.AddSeconds((int)obj);
+                return ProjectBConsts.DefaultLinuxUtc.AddSeconds((int)obj);
             }
             return DateTime.MinValue;
         }

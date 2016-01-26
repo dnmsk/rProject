@@ -1,6 +1,6 @@
 ﻿@using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
-@using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors
+@using Project_B.CodeServerSide
 @using Project_B.Models
 @model FilterModelBase
 @{
@@ -13,7 +13,7 @@
 @functions {
 
     public static long GetMillsFromUnix(DateTime dateTime) {
-        return (long) (dateTime - DefaultDateUtcExtractor<int>.DefaultLinuxUtc).TotalMilliseconds;
+        return (long) (dateTime - ProjectBConsts.DefaultLinuxUtc).TotalMilliseconds;
     }
 }
 

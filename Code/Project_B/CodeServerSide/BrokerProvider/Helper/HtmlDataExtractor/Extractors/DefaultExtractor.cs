@@ -24,6 +24,6 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
 
     public abstract class DefaultExtractor<T, K> : DefaultExtractor<K> {
         protected DefaultExtractor(BrokerConfiguration brokerConfiguration) : base(brokerConfiguration) {}
-        public abstract T ExtractData(K container, SportType sportType, Func<string, T> customCreator = null);
+        protected abstract T ExtractData(K container, SportType sportType, Func<string, T> customCreator = null);
     }
 }

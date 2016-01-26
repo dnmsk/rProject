@@ -24,14 +24,13 @@ namespace Project_B.CodeServerSide.BrokerProvider {
 
         public override BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language) {
             var data = LoadPage(FormatUrl(SectionName.UrlResultTarget, new {
-                datestamp = ((int)(DateTime.UtcNow - DefaultDateUtcExtractor<int>.DefaultLinuxUtc).TotalSeconds) / 10,
+                datestamp = ((int)(DateTime.UtcNow - ProjectBConsts.DefaultLinuxUtc).TotalSeconds) / 10,
                 date = date.ToString(CurrentConfiguration.StringSimple[SectionName.StringDateQueryFormat]),
                 lang = GetLanguageParam(language)
             }));
             var rows = data.Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
             var brokerData = new BrokerData(BrokerType, language);
             var internalCompetitionItemIDToCompetitionParsed = new Dictionary<int, MatchParsed>();
-            var competitorSplitter = new DefaultCompetitorNameExtractor<string>(CurrentConfiguration);
             var extractors = new DefaultExtractor<object[]>[] {
                 new DefaultDateUtcExtractor<object[]>(CurrentConfiguration, new DateTimeToGmtFixer(default(short)), true, objects => objects[2]),
                 new DefaultResultExtractor<object[]>(CurrentConfiguration, (objects, spType) => objects[4]),
@@ -51,12 +50,10 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                         if ((int) dataRowJson[5] != 3) {
                             continue;
                         }
-                        var competitorsName = competitorSplitter.ExtractData((string)dataRowJson[3], SportType.Unknown);
-                        if (competitorsName == null) {
-                            continue;
+                        var matchParsed = DefaultExtractor<object[]>.CreateMatchParsed(SportType.Unknown, dataRowJson, extractors);
+                        if (matchParsed.IsValid()) {
+                            internalCompetitionItemIDToCompetitionParsed[(int)dataRowJson[0]] = matchParsed;
                         }
-                        internalCompetitionItemIDToCompetitionParsed[(int) dataRowJson[0]] = DefaultExtractor<object[]>
-                            .CreateMatchParsed(SportType.Unknown, dataRowJson, extractors);
                     } else if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringCompetitionRow], StringComparison.InvariantCultureIgnoreCase)) {
                         dataRowJson = BuildJsonObject(row, firstIndex, lastIndex);
                         var formatCompetitionName = HtmlBlockDataMonada.FormatCompetitionName((string) dataRowJson[2]);
@@ -110,7 +107,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             var matchesDict = new Dictionary<int, MatchParsed>();
             var extractors = new DefaultExtractor<Dictionary<string, object>>[] {
                 new DefaultDateUtcExtractor<Dictionary<string, object>>(CurrentConfiguration, new DateTimeToGmtFixer(default(short)), true, objects => objects["startTime"]),
-                new DefaultCompetitorNameExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => new[] { objects["team1"] as string, objects["team2"] as string }),
+                new DefaultCompetitorNameExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => new[] { objects.TryGetValueOrDefault("team1") as string, objects.TryGetValueOrDefault("team2") as string }),
                 new DefaultBrokerIDExtractor<Dictionary<string, object>>(CurrentConfiguration, objects => objects["id"])
             };
             ToA(deserializedLine["sports"])
@@ -132,8 +129,10 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     CompetitionParsed competitionParsed;
                     if ((int) map["level"] == 1 && competitionsDict.TryGetValue(competitionID, out competitionParsed)) {
                         var matchParsed = DefaultExtractor<Dictionary<string, object>>.CreateMatchParsed(competitionParsed.Type, map, extractors);
-                        matchesDict[matchParsed.BrokerMatchID] = matchParsed;
-                        competitionParsed.Matches.Add(matchParsed);
+                        if (matchParsed.IsValid()) {
+                            matchesDict[matchParsed.BrokerMatchID] = matchParsed;
+                            competitionParsed.Matches.Add(matchParsed);
+                        }
                     }
                 });
             ToA(deserializedLine["customFactors"])

@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
             matchParsed.BrokerMatchID = ExtractData(container, matchParsed.SportType);
         }
 
-        public override int ExtractData(T container, SportType sportType, Func<string, int> customCreator = null) {
+        protected override int ExtractData(T container, SportType sportType, Func<string, int> customCreator = null) {
             var obj = _customExtractor?.Invoke(container) ?? container;
             if (obj is int) {
                 return (int) obj;

@@ -48,7 +48,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
             foreach (var n in competitionWithMatches.Item3) {
                 try {
                     var match = DefaultExtractor<T>.CreateMatchParsed(competitionWithMatches.Item1.Type, n, matchExtractor);
-                    if (match.CompetitorName1.SafeAny() && match.CompetitorName2.SafeAny()) {
+                    if (match.IsValid()) {
                         matches.Add(match);
                     }
                 } catch (Exception ex) {

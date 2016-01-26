@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.Enums;
 
@@ -16,6 +17,10 @@ namespace Project_B.CodeServerSide.Data {
         public MatchParsed(SportType sportType) {
             SportType = sportType;
             Odds = new List<OddParsed>();
+        }
+
+        public bool IsValid() {
+            return CompetitorName1.SafeAny() && CompetitorName2.SafeAny();
         }
     }
 }
