@@ -21,7 +21,7 @@
     @Html.Raw(vals.All(v => v) ? "active" : string.Empty)
 }
 
-@using (Html.BeginForm(Model.ActionName, Model.ControllerName, FormMethod.Get, new { @class = "row", id = "filter" })) {
+@using (Html.BeginForm(Model.ActionName, Model.ControllerName, FormMethod.Get, new { @class = "row", id = "filter", style = "display: inline-block; vertical-align: middle;"})) {
     foreach (var hiddenParam in Model.GetHiddenFilter()) {
         @Html.Hidden(hiddenParam.Key, hiddenParam.Value)
     }

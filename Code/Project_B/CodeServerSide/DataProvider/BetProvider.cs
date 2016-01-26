@@ -24,7 +24,8 @@ namespace Project_B.CodeServerSide.DataProvider {
         public SummaryProcessStat SaveBrokerState(BrokerData brokerData, GatherBehaviorMode algoMode, RunTaskMode taskMode) {
             return InvokeSafe(() => {
                 var activeCompetitionItemIDs = new List<int>();
-                var result = CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode,
+                var brokerSettings = BrokerSettingsHelper.Instance.GetSettings(brokerData.Broker);
+                var result = CompetitionProcessorStatic.ProcessCompetitionPack(_logger, brokerData, algoMode, brokerSettings,
                     (stat, type, sportType, itemRawTransport, matchParsed) => {
                         var competitionItemID = itemRawTransport.CompetitionItemID;
                         if (competitionItemID == default(int)) {

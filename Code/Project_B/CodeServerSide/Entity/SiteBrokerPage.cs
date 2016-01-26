@@ -122,22 +122,6 @@ namespace Project_B.CodeServerSide.Entity {
         }
 
         public Enum LanguageTypeField => Fields.Languagetype;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Pageurl {
-            get { return (string) this[Fields.Pageurl] ?? string.Empty; }
-            set { ForceSetData(Fields.Pageurl, value); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string TargetUrl {
-            get { return (string) this[Fields.TargetUrl] ?? string.Empty; }
-            set { ForceSetData(Fields.TargetUrl, value); }
-        }
         
         /// <summary>
         /// 

@@ -1,7 +1,7 @@
 ﻿@using CommonUtils.ExtendedTypes
 @using Project_B.CodeClientSide.Enums
-@using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType.ModerateTransport
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
 @model StaticPageBaseModel<WithFilterModel<BrokerType, List<RawCompetitionTransport>>>
@@ -9,9 +9,10 @@
 @{
     var filter = Model.ControllerModel.Filter;
     var routeValDict = filter.ToRoute();
-    var broker = BookmakerHtmlHelper.Instance.GetBroker(filter.id);
-    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
+    var broker = BrokerSettingsHelper.Instance.GetBroker(filter.id);
+    Model.AdditionHtmlAssets.Add(BrokerSettingsHelper.BOOKMAKER_S);
     var date = filter.date.ToString();
+    var rawGroupeds = Model.ControllerModel.Data.GroupBy(rci => rci.SportType).OrderBy(rci => (short)rci.Key);
 }
 
 @functions {
@@ -30,12 +31,23 @@
 <h2><span class="@broker.IconClass" style="vertical-align: middle;"></span> @broker.TargetUrl.CutWww()</h2>
 <br />
 @Html.Partial("Element/_SearchFilter", filter)
-<hr/>
-<div class="btn-group">
+<div class="btn-group" style="margin-left: 50px;">
     <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.All))">Все</a>
     <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.Linked))">Привязанные</a>
     <a class="btn btn-default" href="@Url.Action("CompetitionItem", SetParam(routeValDict, "state", StateFilter.Unlinked))">Без привязки</a>
 </div>
+<hr/>
+<div class="btn-group">
+    @foreach (var type in rawGroupeds) {
+        <button class="btn btn-default" onclick="toggleSportType('#type-@type.Key.ToString()');">@SportTypeHelper.Instance.GetSportNameForLanguage(LanguageType.Russian, type.Key)</button>
+    }
+</div>
+<script type="text/javascript">
+        function toggleSportType(target) {
+            $('#sportTypes>div').hide();
+            $(target).show();
+        }
+</script>
 
 <div id="popupLinker" class="c-popup">
     <div class="c-popup__content"></div>
@@ -57,6 +69,22 @@
                     $.each(parsMap, function (i, el) { pars.push(i + '=' + el) });
                     return '@Url.Action("EntityLinker")'.toLowerCase() + '?' + pars.join('&');
                 };
+                this.bindLinkEvent = function (container) {
+                    container.find('[data-target]').append(that.state.eventTarget.clone());
+                    container.find('[data-request]').on('click', function (eventTarget) {
+                        var pars = that.urlParamsReader($(eventTarget.currentTarget));
+                        $.ajax(that.urlFormatterFunc(pars), {
+                            type: pars['request'],
+                            traditional: true,
+                            success: function (data) {
+                                var jqData = $(data);
+                                jqData.find('[data-editor]').on('click', function () { that.show(this); });
+                                that.state.eventTarget.replaceWith(jqData);
+                                that.popup.hide();
+                            }
+                        });
+                    });
+                };
                 var that = this;
                 this.popup = new window.ninjaBag.baseObjects.Popup({
                     container: $('#popupLinker'),
@@ -65,7 +93,7 @@
                     realoadAllTimes: true,
                     requestUrlFunc: function () { return that.urlFormatterFunc(that.state.urlParams); },
                     onLoadFunc: function () {
-                        that.popup.settings.container.find('[data-target]').append(that.state.eventTarget.clone());
+                        that.bindLinkEvent(that.popup.settings.container);
                     }
                 });
 
@@ -83,33 +111,36 @@
         });
     </script>
 </div>
-
-@foreach (var rawGrouped in Model.ControllerModel.Data.GroupBy(rci => rci.SportType)) {
-    <h2>@rawGrouped.Key</h2>
-    foreach (var rawCompetition in rawGrouped.OrderBy(rci => rci.Competition.RawName)) {
-        <hr />
-        <h3>@ArrayLinkedNames(rawCompetition.Competition, date)</h3>
-        foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
-            <hr />
-            <h4>@ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify, date)</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <td class="col-sm-1"></td>
-                        <td class="col-sm-5"></td>
-                        <td class="col-sm-5"></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
-                        <tr>
-                            <td>@ArrayLinkedNames(competitionItem, competitionItem.RawName)</td>
-                            <td>@ArrayLinkedNames(competitionItem.Competitior1, competitionItem.RawName)</td>
-                            <td>@ArrayLinkedNames(competitionItem.Competitior2, competitionItem.RawName)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+<div id="sportTypes">
+    @foreach (var rawGrouped in rawGroupeds) {
+        <div id="type-@rawGrouped.Key.ToString()">
+            <h2>@rawGrouped.Key</h2>
+            @foreach (var rawCompetition in rawGrouped.OrderBy(rci => rci.Competition.RawName)) {
+                <hr />
+                <h3>@ArrayLinkedNames(rawCompetition.Competition, date)</h3>
+                foreach (var rawCompetitionSpecify in rawCompetition.CompetitionSpecifies) {
+                    <hr />
+                    <h4>@ArrayLinkedNames(rawCompetitionSpecify.CompetitionSpecify, date)</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-5"></td>
+                                <td class="col-sm-5"></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var competitionItem in rawCompetitionSpecify.CompetitionItems) {
+                                <tr>
+                                    <td>@ArrayLinkedNames(competitionItem, competitionItem.RawName)</td>
+                                    <td>@ArrayLinkedNames(competitionItem.Competitior1, competitionItem.RawName)</td>
+                                    <td>@ArrayLinkedNames(competitionItem.Competitior2, competitionItem.RawName)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            }
+        </div>
     }
-}
+</div>

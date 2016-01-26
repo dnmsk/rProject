@@ -45,7 +45,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     }
                     var funcName = row.Substring(0, firstIndex);
                     object[] dataRowJson;
-                    if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringMatchRow],StringComparison.InvariantCultureIgnoreCase)) {
+                    if (funcName.Equals(CurrentConfiguration.StringSimple[SectionName.StringMatchRow], StringComparison.InvariantCultureIgnoreCase)) {
                         dataRowJson = BuildJsonObject(row, firstIndex, lastIndex);
                         if ((int) dataRowJson[5] != 3) {
                             continue;

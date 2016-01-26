@@ -7,11 +7,12 @@ using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.Transport;
+using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class CompetitionProcessorStatic {
-        public static SummaryProcessStat ProcessCompetitionPack(LoggerWrapper logger, BrokerData brokerData, GatherBehaviorMode algoMode, Action<SummaryProcessStat, BrokerType, SportType, CompetitionItemRawTransport, MatchParsed> actionForMatchedItem) {
+        public static SummaryProcessStat ProcessCompetitionPack(LoggerWrapper logger, BrokerData brokerData, GatherBehaviorMode algoMode, BrokerCompetitionSettings brokerSettings, Action<SummaryProcessStat, BrokerType, SportType, CompetitionItemRawTransport, MatchParsed> actionForMatchedItem) {
             var stat = new SummaryProcessStat();
             var competitorProvider = ProjectProvider.Instance.CompetitorProvider;
             var competitionProvider = ProjectProvider.Instance.CompetitionProvider;
@@ -26,7 +27,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed, algoMode)
                     };
                     var creationCiMode = (matchParsed.Odds.SafeAny() || matchParsed.Result != null) ? algoMode : algoMode.FlagDrop(GatherBehaviorMode.CreateOriginalIfMatchedAll);
-                    var competitionItemRawTransport = competitionProvider.GetCompetitionItem(stat[ProcessStatType.CompetitionItemFromRaw], brokerData.Broker, competitors, competition, matchParsed.DateUtc, creationCiMode);
+                    var competitionItemRawTransport = competitionProvider.GetCompetitionItem(stat[ProcessStatType.CompetitionItemFromRaw], brokerData.Broker, competitors, competition, matchParsed.DateUtc, creationCiMode, brokerSettings);
                     if (competitionItemRawTransport != null && competitionItemRawTransport.CompetitionItemID != default(int)) {
                         if (competitionItemRawTransport.CompetitionItemID < default(int)) {
                             competitionItemRawTransport.CompetitionItemID = -competitionItemRawTransport.CompetitionItemID;

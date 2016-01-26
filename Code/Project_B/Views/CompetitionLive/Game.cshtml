@@ -1,7 +1,6 @@
 ﻿@using System.Web.Mvc.Html
 @using CommonUtils.ExtendedTypes
 @using Project_B.CodeClientSide.Enums
-@using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
 @model StaticPageBaseModel<Project_B.CodeClientSide.TransportType.CompetitionAdvancedTransport>
@@ -11,7 +10,7 @@
 @{
     var sportType = Model.ControllerModel.CompetitionTransport.SportType;
     var competition = Model.ControllerModel.CompetitionTransport;
-    Model.AdditionHtmlAssets.Add(BookmakerHtmlHelper.BOOKMAKER_S);
+    Model.AdditionHtmlAssets.Add(BrokerSettingsHelper.BOOKMAKER_S);
     var match = competition.CompetitionItems.First();
     var source = new {
         player1 = match.Competitor1.Name,

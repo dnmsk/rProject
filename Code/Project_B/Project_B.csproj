@@ -230,7 +230,6 @@
     <Compile Include="CodeClientSide\Enums\SubNavigationType.cs" />
     <Compile Include="CodeClientSide\Enums\UserPolicyLocal.cs" />
     <Compile Include="CodeClientSide\Helper\BetOddInterfaceHelper.cs" />
-    <Compile Include="CodeClientSide\Helper\BookmakerHtmlHelper.cs" />
     <Compile Include="CodeClientSide\Helper\DisplayColumnProcessor.cs" />
     <Compile Include="CodeClientSide\Helper\RedirectLinkHelper.cs" />
     <Compile Include="CodeClientSide\Helper\LanguageSiteHelper.cs" />
@@ -273,6 +272,7 @@
     <Compile Include="CodeServerSide\DataProvider\CompetitionProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitorProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\BetHelper.cs" />
+    <Compile Include="CodeServerSide\DataProvider\DataHelper\BrokerSettingsHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionBetRoiHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionHelper.cs" />
     <Compile Include="CodeServerSide\DataProvider\DataHelper\CompetitionProcessorStatic.cs" />
@@ -320,6 +320,7 @@
     <Compile Include="CodeServerSide\Entity\BrokerEntity\BetLiveAdvanced.cs" />
     <Compile Include="CodeServerSide\Entity\Broker.cs" />
     <Compile Include="CodeServerSide\Entity\BrokerEntity\CompetitionSpecifyUnique.cs" />
+    <Compile Include="CodeServerSide\Entity\BrokerCompetitionSettings.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\EntityQueryBuilder.cs" />
     <Compile Include="CodeServerSide\Entity\Interface\IRawLinkEntity.cs" />
     <Compile Include="CodeServerSide\Entity\Helper\BrokerEntityIfaceCreator.cs" />

@@ -296,6 +296,17 @@ namespace Project_B.CodeServerSide.DataProvider {
                         rawEntity = rCompetitor;
                         entity = rCompetitor.GetJoinedEntity<Competitor>();
                         break;
+                    case BrokerEntityType.CompetitionItem:
+                        var rCompetitionItem = RawCompetitionItem.DataSource
+                            .WhereEquals(RawCompetitionItem.Fields.ID, id)
+                            .First();
+                        return new RawEntityWithLink {
+                            EntityID = rCompetitionItem.CompetitionitemID,
+                            EntityName = new [] { rCompetitionItem.Dateeventutc.ToShortDateString() },
+                            BrokerEntityType = BrokerEntityType.CompetitionItem,
+                            RawName = rCompetitionItem.Dateeventutc.ToShortDateString(),
+                            RawID = rCompetitionItem.ID
+                        };
                 }
                 return new RawEntityWithLink {
                     RawID = id,
@@ -397,6 +408,25 @@ namespace Project_B.CodeServerSide.DataProvider {
                             Languagetype = rawCompetitor.Languagetype,
                             SportType = rawCompetitor.SportType
                         }.Save();
+                        break;
+                    case BrokerEntityType.CompetitionItem:
+                        var rawCompetitionItem = RawCompetitionItem.DataSource.GetByKey(id);
+                        var rawCompetitionCr = RawCompetition.DataSource.GetByKey(rawCompetitionItem.RawcompetitionID);
+                        var rawCompetitors = RawCompetitor.DataSource.WhereIn(RawCompetitor.Fields.ID, new[] {rawCompetitionItem.Rawcompetitorid1, rawCompetitionItem.Rawcompetitorid2}).AsList();
+                        if (rawCompetitionCr.CompetitionuniqueID != default(int) && rawCompetitors.All(c => c.CompetitoruniqueID != default(int))) {
+                            var firstIsFirst = rawCompetitors[0].ID == rawCompetitionItem.Rawcompetitorid1;
+                            var competition = new CompetitionItem {
+                                SportType = rawCompetitionItem.SportType,
+                                CompetitionuniqueID = rawCompetitionCr.CompetitionuniqueID,
+                                Datecreatedutc = DateTime.UtcNow,
+                                Dateeventutc = rawCompetitionItem.Datecreatedutc,
+                                Competitoruniqueid1 = (firstIsFirst ? rawCompetitors[0] : rawCompetitors[1]).CompetitoruniqueID,
+                                Competitoruniqueid2 = (firstIsFirst ? rawCompetitors[1] : rawCompetitors[0]).CompetitoruniqueID
+                            };
+                            competition.Save();
+                            rawCompetitionItem.CompetitionitemID = competition.ID;
+                            rawCompetitionItem.Save();
+                        }
                         break;
                 }
                 EntityLinkerPost(id, type, new [] { newTargetID?.UniqueID ?? default(int) });

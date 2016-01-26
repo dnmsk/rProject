@@ -9,6 +9,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
 using Project_B.CodeServerSide.DataProvider.Transport;
+using Project_B.CodeServerSide.Entity;
 using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -108,7 +109,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             return nameOrigin;
         } 
 
-        public CompetitionItemRawTransport GetCompetitionItem(ProcessStat competitorStat, BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport>[] competitors, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode) {
+        public CompetitionItemRawTransport GetCompetitionItem(ProcessStat competitorStat, BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport>[] competitors, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, GatherBehaviorMode algoMode, BrokerCompetitionSettings brokerSettings) {
             return InvokeSafeSingleCall(() => {
                 var utcNow = DateTime.UtcNow;
                 if (eventDateUtc > utcNow.AddDays(14) || competitors.Any(c => c.RawObject.ID == default(int))) {
@@ -119,7 +120,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .SetupGetRaw(() => RawCompetitionItemHelper.GetCompetitionItem(brokerType, competitors, competitionSpecifyTransport, eventDateUtc, utcNow))
                     .SetupCreateRaw(() => RawCompetitionItemHelper.CreateCompetitionItem(brokerType, competitors, competitionSpecifyTransport, eventDateUtc, utcNow))
                     .SetupTryMatchRaw(GatherBehaviorMode.TryDetectAll, item => {
-                        var ci = CompetitionItem.DataSource
+                        /*brokerSettings*/
+                        var ciDs = CompetitionItem.DataSource
                             .Where(new DaoFilterOr(
                                 new DaoFilterAnd(
                                     new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, competitors[0].Object.ID),
@@ -131,7 +133,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                                     )
                                 ))
                             .WhereEquals(CompetitionItem.Fields.Sporttype, (short)competitionSpecifyTransport.Object.SportType)
-                            .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionSpecifyTransport.Object.CompetitionUniqueID)
                             .Where(new DaoFilterOr(
                                 new DaoFilterNull(CompetitionItem.Fields.CompetitionSpecifyUniqueID, true),
                                 new DaoFilterEq(CompetitionItem.Fields.CompetitionSpecifyUniqueID, competitionSpecifyTransport.Object.ID)))
@@ -145,8 +146,12 @@ namespace Project_B.CodeServerSide.DataProvider {
                                     new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, utcNow.AddDays(1.5))
                                 )
                             )
-                            .Sort(CompetitionItem.Fields.ID, SortDirection.Desc)
-                            .First(CompetitionItem.Fields.ID);
+                            .Sort(CompetitionItem.Fields.ID, SortDirection.Desc);
+                        if (!brokerSettings.HasFlag(BrokerCompetitionSettings.NoCompareCompetitionUnique)) {
+                            ciDs = ciDs
+                                .WhereEquals(CompetitionItem.Fields.CompetitionuniqueID, competitionSpecifyTransport.Object.CompetitionUniqueID);
+                        }
+                        var ci = ciDs.First(CompetitionItem.Fields.ID);
                         if (ci != null) {
                             item.CompetitionitemID = ci.ID;
                             item.Linkstatus = LinkEntityStatus.LinkByStatistics;

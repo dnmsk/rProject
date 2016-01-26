@@ -3,6 +3,7 @@
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeClientSide.TransportType
+@using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @functions {
     private new static System.Web.Mvc.HtmlHelper Html {
@@ -25,7 +26,7 @@
 }
 
 @helper RenderOddSrcLink(BetItemTransport betItem) {
-var broker = BookmakerHtmlHelper.Instance.GetBroker(betItem.BrokerType);
+var broker = BrokerSettingsHelper.Instance.GetBroker(betItem.BrokerType);
     <a rel="nofollow" class="@broker.IconClass" title="@broker.TargetUrl" @if (!broker.PageUrl.IsNullOrEmpty()) { @Html.Raw(string.Format("href=\"{0}\"", Url.Action("Index", "Bookmaker", new { id = broker.PageUrl })))    }></a>
 }
 

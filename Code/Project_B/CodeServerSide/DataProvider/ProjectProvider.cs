@@ -26,17 +26,17 @@ namespace Project_B.CodeServerSide.DataProvider {
                 Location = s,
                 Priority = 1
             }));
-            SiteBrokerPage.DataSource
+            SiteBrokerPage.DataSource.Join(JoinType.Inner, Broker.Fields.ID, SiteBrokerPage.Fields.Brokertype, RetrieveMode.Retrieve)
                 .WhereEquals(SiteBrokerPage.Fields.Istop, true)
                 .WhereNotEquals(SiteBrokerPage.Fields.Pageurl, string.Empty)
-                .AsList(SiteBrokerPage.Fields.Pageurl, SiteBrokerPage.Fields.Datemodifiedutc)
-                .GroupBy(bp => bp.Pageurl.ToLowerInvariant())
-                .Each(brokerPages => result.Add(new SiteMapItem {
+                .AsList(Broker.Fields.InternalPage, SiteBrokerPage.Fields.Datemodifiedutc)
+                .GroupBy(bp => bp.ID)
+                .Each(brokerPages => result.AddRange(brokerPages.Select(bp => new SiteMapItem {
                     ChangeFreq = SiteMapChangeFreq.Weekly,
-                    LastMod = brokerPages.Max(bp => bp.Datemodifiedutc),
-                    Location = "/bookmaker/index/" + brokerPages.Key,
+                    LastMod = brokerPages.Max(p => p.Datemodifiedutc),
+                    Location = "/bookmaker/index/" + bp.GetJoinedEntity<Broker>().InternalPage,
                     Priority = 0.8f
-                }));
+                })));
             for (var dateTime = new DateTime(2014, 01, 01); dateTime < DateTime.Today; dateTime = dateTime.AddDays(1)) {
                 result.Add(new SiteMapItem {
                     ChangeFreq = SiteMapChangeFreq.Monthly,

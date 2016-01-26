@@ -9,7 +9,7 @@
         UrlResultTarget = 4,
         UrlKab = 5,
 
-        StringFaviconTarget = 50,
+        //StringFaviconTarget = 50,
 
         SimpleStringUserAgent = 901,
 

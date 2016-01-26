@@ -98,7 +98,8 @@ namespace Project_B.CodeServerSide.DataProvider {
         public Dictionary<string, List<BrokerPageTransport>> GetCurrentBrokerPageModels(bool onlyTop) {
             return InvokeSafe(() => {
                 var result = new Dictionary<string, List<BrokerPageTransport>>();
-                var dbDataSource = SiteBrokerPage.DataSource;
+                var dbDataSource = SiteBrokerPage.DataSource
+                .Join(JoinType.Inner, Broker.Fields.ID, SiteBrokerPage.Fields.Brokertype, RetrieveMode.Retrieve);
                 if (onlyTop) {
                     dbDataSource = dbDataSource
                         .WhereEquals(SiteBrokerPage.Fields.Istop, true);
@@ -108,7 +109,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         .AsList();
                 foreach (var staticPage in entities) {
                     List<BrokerPageTransport> list;
-                    var key = (staticPage.Pageurl ?? string.Empty).ToLowerInvariant();
+                    var key = (staticPage.GetJoinedEntity<Broker>().InternalPage ?? string.Empty).ToLowerInvariant();
                     if (!result.TryGetValue(key, out list)) {
                         list = new List<BrokerPageTransport>();
                         result[key] = list;
@@ -140,9 +141,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var entity = ModelToStaticPage(staticPage, staticPageTransport, isTop);
                 entity.Largeiconclass = staticPageTransport.Largeiconclass;
                 entity.Orderindex = staticPageTransport.Orderindex;
-                entity.Pageurl = staticPageTransport.Pageurl;
                 entity.Brokertype = staticPage.Brokertype;
-                entity.TargetUrl = staticPage.TargetUrl;
                 return BuildBrokerPageModel(entity);
             }, null);
         }
@@ -151,9 +150,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             var staticPageToModel = StaticPageToModel<BrokerPageTransport>(staticPage);
             staticPageToModel.Largeiconclass = staticPage.Largeiconclass;
             staticPageToModel.Orderindex = staticPage.Orderindex;
-            staticPageToModel.Pageurl = staticPage.Pageurl;
             staticPageToModel.BrokerType = staticPage.Brokertype;
-            staticPageToModel.TargetUrl = staticPage.TargetUrl;
             return staticPageToModel;
         }
 

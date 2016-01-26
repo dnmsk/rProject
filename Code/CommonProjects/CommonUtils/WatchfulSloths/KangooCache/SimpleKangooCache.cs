@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Config;
 using CommonUtils.Core.Logger;
 
@@ -72,5 +73,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         public bool ContainsKey(K key) {
             return Cache.ContainsKey(key);
         }
+
+        public K[] Keys => Cache.Keys.ToArray();
     }
 }

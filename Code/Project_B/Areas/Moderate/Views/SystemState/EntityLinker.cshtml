@@ -33,7 +33,7 @@
 </script>
 <hr />
 <div id="byName">
-    <input type="text" id="liveSearchName" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 250px;">
+    <input type="text" id="liveSearchName" placeholder="Search" value="@Model.Item1.RawName" style="padding-right: 24px; margin-right: -24px; width: 500px; max-width: 500px;">
     <span class="glyphicon glyphicon-search" style="vertical-align: text-top;" onclick=""></span>
     <script>
         $(function() {
@@ -56,8 +56,7 @@
         $(function () {
             $('#formJoinEntity').ajaxForm(function (data) {
                 var jqData = $(data);
-                window.ninjaBag.documentObjects.linker.state.eventTarget.replaceWith(jqData);
-                jqData.find('[data-editor]').on('click', function () { window.ninjaBag.documentObjects.linker.show(jqData); });
+                window.ninjaBag.documentObjects.linker.bindLinkEvent(jqData);
                 window.ninjaBag.documentObjects.linker.popup.hide();
             });
         });
