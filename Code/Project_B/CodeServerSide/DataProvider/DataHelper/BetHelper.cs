@@ -102,7 +102,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
             if (newBet != null) {
                 var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null;
-                var createNewBet = !betDb?.IsActive ?? !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+                var createNewBet = (!betDb?.IsActive ?? !betDb.IsEqualsTo(newBet)) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
                 if (createNewBet) {
                     processStat.CreateOriginalCount++;
                     newBet.CompetitionitemID = competitionItemID;
