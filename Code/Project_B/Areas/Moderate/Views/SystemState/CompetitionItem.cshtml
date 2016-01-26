@@ -76,12 +76,7 @@
                         $.ajax(that.urlFormatterFunc(pars), {
                             type: pars['request'],
                             traditional: true,
-                            success: function (data) {
-                                var jqData = $(data);
-                                jqData.find('[data-editor]').on('click', function () { that.show(this); });
-                                that.state.eventTarget.replaceWith(jqData);
-                                that.popup.hide();
-                            }
+                            success: that.hide
                         });
                     });
                 };
@@ -105,7 +100,13 @@
                     that.state.eventTarget = $(eventTarget).closest('[data-type]');
                     that.state.urlParams = that.urlParamsReader(that.state.eventTarget);
                     that.popup.show();
-                }
+                };
+                this.hide = function (obj) {
+                    var jqData = $(obj);
+                    jqData.find('[data-editor]').on('click', function () { that.show(this); });
+                    that.state.eventTarget.replaceWith(jqData);
+                    that.popup.hide();
+                };
                 $('[data-editor').on('click', function(){that.show(this);});
             })();
         });

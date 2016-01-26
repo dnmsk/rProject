@@ -54,11 +54,7 @@
         <button type="submit" class="btn btn-primary">Соединить и привязать</button>
         <script>
         $(function () {
-            $('#formJoinEntity').ajaxForm(function (data) {
-                var jqData = $(data);
-                window.ninjaBag.documentObjects.linker.bindLinkEvent(jqData);
-                window.ninjaBag.documentObjects.linker.popup.hide();
-            });
+            $('#formJoinEntity').ajaxForm(window.ninjaBag.documentObjects.linker.hide);
         });
         </script>
     </form>
