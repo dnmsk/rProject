@@ -108,6 +108,9 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PinnacleWrapper">
+      <HintPath>..\..\Externals\PinApi\PinnacleWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="React.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
       <HintPath>..\packages\React.Core.2.0.0\lib\net40\React.Core.dll</HintPath>
       <Private>True</Private>
@@ -247,6 +250,7 @@
     <Compile Include="CodeClientSide\TransportType\ModerateTransport\SystemStateSummaryStatusTransport.cs" />
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\ASportApiProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultBrokerIDExtractor.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultCompetitorNameExtractor.cs" />

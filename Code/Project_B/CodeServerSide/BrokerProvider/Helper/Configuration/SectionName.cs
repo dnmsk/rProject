@@ -10,6 +10,8 @@
         UrlKab = 5,
 
         //StringFaviconTarget = 50,
+        ApiLogin = 900,
+        ApiPassword = 901,
 
         SimpleStringUserAgent = 901,
 

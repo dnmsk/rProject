@@ -53,9 +53,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .GroupBy(i => i.ID)
                     .Each(item => item.GroupBy(i => i.GetJoinedEntity<RawCompetitionItem>()?.Languagetype ?? LanguageType.Default)
                         .Each(grouped => {
-                            var rciGrouped = grouped.First().GetJoinedEntity<RawCompetitionItem>();
-                            var broker = rciGrouped.BrokerID;
-                            var language = rciGrouped.Languagetype;
+                            var broker = item.First().BrokerType;
+                            var language = grouped.FirstOrDefault()?.GetJoinedEntity<RawCompetitionItem>().Languagetype ?? LanguageType.English;
                             FillSummaryState(mapResults, broker, language, status => {
                                 status.RawCompetitionItemCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>().ID).Distinct().Count();
                                 status.CompetitionItemLinkedCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>()?.CompetitionitemID).Distinct().Count(g => g != default(int));
