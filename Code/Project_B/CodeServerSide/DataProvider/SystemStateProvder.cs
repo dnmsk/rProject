@@ -56,8 +56,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                             var broker = item.First().BrokerType;
                             var language = grouped.FirstOrDefault()?.GetJoinedEntity<RawCompetitionItem>().Languagetype ?? LanguageType.English;
                             FillSummaryState(mapResults, broker, language, status => {
-                                status.RawCompetitionItemCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>().ID).Distinct().Count();
-                                status.CompetitionItemLinkedCount = grouped.Select(g => g.GetJoinedEntity<RawCompetitionItem>()?.CompetitionitemID).Distinct().Count(g => g != default(int));
+                                status.RawCompetitionItemCount = grouped.Select(g => g?.GetJoinedEntity<RawCompetitionItem>().ID).Distinct().Count();
+                                status.CompetitionItemLinkedCount = grouped.Select(g => g?.GetJoinedEntity<RawCompetitionItem>()?.CompetitionitemID).Distinct().Count(g => g != default(int));
                             });
                         })
                     );
