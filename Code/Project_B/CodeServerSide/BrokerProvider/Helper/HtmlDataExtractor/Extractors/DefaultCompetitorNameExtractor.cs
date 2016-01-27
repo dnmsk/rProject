@@ -37,7 +37,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
         protected override void SetToMatchParsed(MatchParsed matchParsed, T container) {
             var data = ExtractData(container, matchParsed.SportType);
             if (data == null) {
-                throw new Exception(BrokerConfiguration.BrokerType + ": " + (TryGetDataFromHtmlNode(container) ?? "NULL"));
+                return;
             }
             matchParsed.CompetitorName1 = data.Item1;
             matchParsed.CompetitorName2 = data.Item2;

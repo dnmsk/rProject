@@ -3,6 +3,7 @@
         Default = 0,
         RedBlue = 1,
         GrayBlue = 2,
-        LightBlue = 3
+        LightBlue = 3,
+        ZeusRed = 4,
     }
 }

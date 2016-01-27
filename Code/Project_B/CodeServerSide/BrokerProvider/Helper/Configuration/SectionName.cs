@@ -38,6 +38,7 @@
         StringOddCompetitorsShortName = 10006,
         StringMatchRow = 10007,
         StringCompetitionRow = 10008,
+        StringCompetitionIDQuery = 10009,
 
         //Array Reserve from 15000 to 19999
         ArrayCompetitorSplitter = 15000,
@@ -46,6 +47,7 @@
         ArrayDateTimeFormat = 15003,
         //ArrayBadStartCompetitor = 15004,
         ArrayBadNameCompetitor = 15005,
+        ArrayAddParamOdds = 15006,
 
         //Map Reserve from 30000 to Max
         MapStringsOddsParam = 30000,

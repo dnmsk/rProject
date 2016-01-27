@@ -23,7 +23,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extra
         }
 
         private DateTime ParseDateTime(string date) {
-            date = date.ToLower().Replace("мая", "май");
+            date = date.Trim().ToLower().Replace("мая", "май");
             var defaultDateTime = DateTime.MinValue;
             foreach (var dateTimeFormat in BrokerConfiguration.StringArray[SectionName.ArrayDateTimeFormat]
                                            ?? ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default].StringArray[SectionName.ArrayDateTimeFormat]) {

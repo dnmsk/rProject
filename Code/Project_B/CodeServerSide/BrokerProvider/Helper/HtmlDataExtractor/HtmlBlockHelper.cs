@@ -5,6 +5,10 @@ using HtmlAgilityPack;
 namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
     public class HtmlBlockHelper {
         private readonly HtmlDocument _htmlDoc;
+
+        static HtmlBlockHelper() {
+            HtmlNode.ElementsFlags["form"] = HtmlElementFlag.CanOverlap;
+        }
         public HtmlBlockHelper(string html) {
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(html);
@@ -25,6 +29,13 @@ namespace Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor {
         
         private static List<HtmlNode> NodesToList(HtmlNodeCollection nodes) {
             return (nodes != null && nodes.Any()) ? nodes.ToList() : new List<HtmlNode>();
+        }
+        public static HtmlNode RemoveComments(HtmlNode node) {
+            foreach (var n in node.ChildNodes.ToArray())
+                RemoveComments(n);
+            if (node.NodeType == HtmlNodeType.Comment)
+                node.Remove();
+            return node;
         }
     }
 }

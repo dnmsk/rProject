@@ -33,10 +33,14 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         }
 
         private static int _tries = 2;
-        protected string LoadPage(string url, string postData = null, string contentType = null) {
+        protected string LoadPage(string url, List<string> postData = null, string contentType = "application/x-www-form-urlencoded") {
             for (var i = 0; i < _tries; i++) {
                 try {
-                    var loadResult = RequestHelper.GetContent(url, postData, contentType);
+                    string post = null;
+                    if (postData != null) {
+                        post = postData.StrJoin("&");
+                    }
+                    var loadResult = RequestHelper.GetContent(url, post, contentType);
                     if (loadResult.Item1 != HttpStatusCode.OK) {
                         Logger.Error("status = " + loadResult.Item1);
                     }

@@ -268,6 +268,7 @@
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\HtmlBlockHelper.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\XPathQuery.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\SubData\GrayBlueOddTypeProvider.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\ZeusRedFaceProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\BetProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitionProvider.cs" />
     <Compile Include="CodeServerSide\DataProvider\CompetitorProvider.cs" />
