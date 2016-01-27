@@ -12,7 +12,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         private readonly PinnacleClient _pinnacleClient;
 
         public ASportApiProvider(WebRequestHelper requestHelper) : base(requestHelper) {
-            _pinnacleClient = new PinnacleClient(CurrentConfiguration.StringSimple[SectionName.ApiLogin], CurrentConfiguration.StringSimple[SectionName.ApiPassword], "RUR", OddsFormat.DECIMAL);
+            //_pinnacleClient = new PinnacleClient(CurrentConfiguration.StringSimple[SectionName.ApiLogin], CurrentConfiguration.StringSimple[SectionName.ApiPassword], "EUR", OddsFormat.DECIMAL);
         }
 
         public override BrokerType BrokerType => BrokerType.ASport;

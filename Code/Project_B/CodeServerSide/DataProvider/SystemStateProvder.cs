@@ -54,18 +54,18 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Each(item => item.GroupBy(i => i.GetJoinedEntity<RawCompetitionItem>()?.Languagetype ?? LanguageType.Default)
                         .Each(grouped => {
                             var broker = item.First().BrokerType;
-                            var language = grouped.FirstOrDefault()?.GetJoinedEntity<RawCompetitionItem>().Languagetype ?? LanguageType.English;
+                            var language = grouped.FirstOrDefault()?.GetJoinedEntity<RawCompetitionItem>()?.Languagetype ?? LanguageType.English;
                             FillSummaryState(mapResults, broker, language, status => {
-                                status.RawCompetitionItemCount = grouped.Select(g => g?.GetJoinedEntity<RawCompetitionItem>().ID).Distinct().Count();
+                                status.RawCompetitionItemCount = grouped.Select(g => g?.GetJoinedEntity<RawCompetitionItem>()?.ID).Distinct().Count();
                                 status.CompetitionItemLinkedCount = grouped.Select(g => g?.GetJoinedEntity<RawCompetitionItem>()?.CompetitionitemID).Distinct().Count(g => g != default(int));
                             });
                         })
                     );
 
                 FillSubData(mapResults, rci.SelectMany(i => {
-                    var entity = i.GetJoinedEntity<RawCompetitionItem>();
-                    return new[] {entity.Rawcompetitorid1, entity.Rawcompetitorid2};
-                }).Distinct(), rci.Select(i => i.GetJoinedEntity<RawCompetitionItem>().RawcompetitionID).Distinct(), rci.Select(i => i.GetJoinedEntity<RawCompetitionItem>().RawcompetitionspecifyID).Distinct());
+                    var entity = i?.GetJoinedEntity<RawCompetitionItem>();
+                    return new[] {entity?.Rawcompetitorid1 ?? default(int), entity?.Rawcompetitorid2 ?? default(int) };
+                }).Distinct(), rci.Select(i => i?.GetJoinedEntity<RawCompetitionItem>()?.RawcompetitionID ?? default(int)).Distinct(), rci.Select(i => i?.GetJoinedEntity<RawCompetitionItem>()?.RawcompetitionspecifyID ?? default(int)).Distinct());
 
                 return mapResults.Values.ToList();
             }, null);

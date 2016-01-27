@@ -102,7 +102,8 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                 new DefaultCompetitorNameExtractor<HtmlNode[]>(CurrentConfiguration, nodes => {
                     var node = HtmlBlockHelper.ExtractBlock(nodes[0], new XPathQuery(".//font[@class='m']"));
                     if (node.Any()) {
-                        return node[0].InnerText;
+                        var innerText = node[0].InnerText.Split(new[] {'\r', '\n', '\t'}, StringSplitOptions.RemoveEmptyEntries);
+                        return innerText[0];
                     }
                     return null;
                 }),
