@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -33,13 +34,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                         }
                         switch (taskMode) {
                             case RunTaskMode.RunLiveOddsTask:
-                                ProcessOdds<BetLive, long>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds);
                                 ProcessLiveResult(competitionItemID, sportType, matchParsed.Result);
-                                activeCompetitionItemIDs.Add(competitionItemID);
+                                if (ProcessOdds<BetLive, long>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds)) {
+                                    activeCompetitionItemIDs.Add(competitionItemID);
+                                }
                                 break;
                             case RunTaskMode.RunRegularOddsTask:
-                                ProcessOdds<Bet, int>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds);
-                                activeCompetitionItemIDs.Add(competitionItemID);
+                                if (ProcessOdds<Bet, int>(stat[ProcessStatType.Bet], competitionItemID, type, sportType, matchParsed.Odds)) {
+                                    activeCompetitionItemIDs.Add(competitionItemID);
+                                }
                                 break;
                             case RunTaskMode.RunPastDateHistoryTask:
                             case RunTaskMode.RunTodayHistoryTask:
@@ -50,7 +53,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                                 break;
                         }
                     });
-                if (activeCompetitionItemIDs.SafeAny()) {
+                if (activeCompetitionItemIDs.Any()) {
                     switch (taskMode) {
                         case RunTaskMode.RunRegularOddsTask:
                             Bet.DataSource.FilterByBroker(brokerData.Broker)
@@ -70,10 +73,10 @@ namespace Project_B.CodeServerSide.DataProvider {
             }, null);
         }
         
-        private static void ProcessOdds<T, V>(ProcessStat processStat, int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> odds) where T : IBet<V>, new() {
+        private static bool ProcessOdds<T, V>(ProcessStat processStat, int competitionItemID, BrokerType brokerType, SportType sportType, List<OddParsed> odds) where T : IBet<V>, new() {
             processStat.TotalCount++;
             if (odds == null || odds.Count == 0) {
-                return;
+                return false;
             }
             var betTemplate = new T();
 
@@ -83,8 +86,11 @@ namespace Project_B.CodeServerSide.DataProvider {
             var bet = BetHelper.GetBetFromOdds(betTemplate, odds);
             var betAdvanced = BetHelper.GetBetFromOdds(betTemplate.CreateAdvancedBet(), odds);
 
-            BetHelper.SaveBetIfChanged(processStat, competitionItemID, brokerType, sportType, bet, betAdvanced, betWithAdvancedDb, betAdvancedDb);
-            processStat.FinallySuccessCount++;
+            if (BetHelper.SaveBetIfChanged(processStat, competitionItemID, brokerType, sportType, bet, betAdvanced, betWithAdvancedDb, betAdvancedDb)) {
+                processStat.FinallySuccessCount++;
+                return true;
+            }
+            return false;
         }
 
         private void ProcessLiveResult(int competitionItemID, SportType sportType, FullResult result) {

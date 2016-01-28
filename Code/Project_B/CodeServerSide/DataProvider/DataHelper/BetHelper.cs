@@ -98,25 +98,32 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return hasAnyFactor ? newBet : null;
         }
 
-        public static void SaveBetIfChanged<T>(ProcessStat processStat, int competitionItemID, BrokerType brokerType, SportType sportType,
+        public static bool SaveBetIfChanged<T>(ProcessStat processStat, int competitionItemID, BrokerType brokerType, SportType sportType,
             IBet<T> newBet, IBetAdvanced<T> newBetAdvanced, IBet<T> betDb, IBetAdvanced<T> betAdvancedDb) {
-            if (newBet != null) {
-                var canCreateNewBetAdvanced = _sportWithAdvancedDetail.Contains(sportType) && newBetAdvanced != null;
-                var createNewBet = (!betDb?.IsActive ?? !betDb.IsEqualsTo(newBet)) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
-                if (createNewBet) {
-                    processStat.CreateOriginalCount++;
-                    newBet.CompetitionitemID = competitionItemID;
-                    newBet.BrokerID = brokerType;
-                } else {
-                    newBet = betDb;
-                }
-                newBet.Datecreatedutc = DateTime.UtcNow;
-                newBet.Save();
-                if (canCreateNewBetAdvanced && createNewBet) {
-                    newBetAdvanced.ID = newBet.ID;
-                    newBetAdvanced.Insert();
-                }
+            if (newBet == null) {
+                return false;
             }
+            var mustHaveBetAdvanced = _sportWithAdvancedDetail.Contains(sportType);
+            if (!mustHaveBetAdvanced && newBetAdvanced != null) {
+                return false;
+            }
+            var canCreateNewBetAdvanced = mustHaveBetAdvanced && newBetAdvanced != null;
+            var createNewBet = (!betDb?.IsActive ?? !betDb.IsEqualsTo(newBet)) ||
+                               canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+            if (createNewBet) {
+                processStat.CreateOriginalCount++;
+                newBet.CompetitionitemID = competitionItemID;
+                newBet.BrokerID = brokerType;
+            } else {
+                newBet = betDb;
+            }
+            newBet.Datecreatedutc = DateTime.UtcNow;
+            newBet.Save();
+            if (canCreateNewBetAdvanced && createNewBet) {
+                newBetAdvanced.ID = newBet.ID;
+                newBetAdvanced.Insert();
+            }
+            return true;
         }
 
         private static readonly BetOddType[] _standartOdds = {
