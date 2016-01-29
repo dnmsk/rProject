@@ -27,7 +27,10 @@ namespace Project_B.CodeServerSide.DataProvider {
             return InvokeSafeSingleCall(() => {
                 names = names
                     .Where(name => !string.IsNullOrWhiteSpace(name))
-                    .Select(name => name.Trim(_trimChars))
+                    .Select(name => {
+                        var indexOf = name.IndexOf("(", StringComparison.InvariantCultureIgnoreCase);
+                        return (indexOf > 0 ? name.Substring(0, indexOf) : name).Trim(_trimChars);
+                    })
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .ToArray();
                 if (!names.Any()) {
