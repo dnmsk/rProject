@@ -98,26 +98,18 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public List<RawCompetitionTransport> GetCompetitionItems(BrokerType brokerid, LanguageType languagetype, DateTime date, StateFilter state) {
             return InvokeSafe(() => {
-                var rawCompetitionDs = RawCompetitionItem.DataSource.FilterByBroker(brokerid).FilterByLanguage(languagetype);
+                var dateTo = date >= DateTime.UtcNow.Date ? DateTime.Today.AddDays(14) : date.AddDays(1);
+                var rawCompetitionDs = RawCompetitionItem.DataSource.FilterByBroker(brokerid).FilterByLanguage(languagetype)
+                    .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, dateTo, BetweenType.Inclusive);
                 switch (state) {
                     case StateFilter.Linked:
-                        rawCompetitionDs = rawCompetitionDs.WhereNotNull(RawCompetitionItem.Fields.CompetitionitemID)
-                            .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
+                        rawCompetitionDs = rawCompetitionDs.WhereNotNull(RawCompetitionItem.Fields.CompetitionitemID);
                         break;
                     case StateFilter.Unlinked:
                         rawCompetitionDs = rawCompetitionDs.WhereNull(RawCompetitionItem.Fields.CompetitionitemID);
-                        if (date >= DateTime.UtcNow.Date) {
-                            rawCompetitionDs = rawCompetitionDs.Where(RawCompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, DateTime.UtcNow.AddHours(-2));
-                        } else {
-                            rawCompetitionDs = rawCompetitionDs
-                                .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
-                        }
-                        break;
-                    default:
-                        rawCompetitionDs = rawCompetitionDs
-                            .WhereBetween(RawCompetitionItem.Fields.Dateeventutc, date, date.AddDays(1), BetweenType.Inclusive);
                         break;
                 }
+
 
                 var rCompetitionItems = rawCompetitionDs
                     .AsList();
