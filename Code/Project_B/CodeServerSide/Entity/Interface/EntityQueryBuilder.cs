@@ -33,7 +33,7 @@ namespace Project_B.CodeServerSide.Entity.Interface {
         public static DbDataSource<T, K> FilterByName<T, K>(this DbDataSource<T, K> ds, string name, bool containsAll) where T : class, INamedEntity, IKeyedAbstractEntity<K>, new() where K : struct, IComparable<K> {
             var searchPhrase = name
                 .Split(new[] { ' ', '.', ',', ')', '(', '/', '-', '&' }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(s => s.Length > 1)
+                .Union(containsAll && name.Contains("/") ? new[] {"/"} : new string[0])
                 .ToArray();
             return searchPhrase.Any() 
                 ? (containsAll ? 

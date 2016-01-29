@@ -110,7 +110,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                         break;
                 }
 
-
                 var rCompetitionItems = rawCompetitionDs
                     .AsList();
                 var competitionItems = CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, rCompetitionItems.Select(rci => rci.CompetitionitemID).Distinct())
