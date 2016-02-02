@@ -62,7 +62,11 @@ namespace Project_B.CodeClientSide.Helper {
             { BetOddType.Handicap2, SiteTextType.GridOddTitleHcap2 },
             { BetOddType.TotalUnder, SiteTextType.GridOddTitleUnder },
             { BetOddType.TotalOver, SiteTextType.GridOddTitleOver }, 
-        }; 
+        };
+
+        internal static float GetOddValue(SportType sportType, BetOddType win1, List<Dictionary<BetOddType, BetItemTransport>> list) {
+            throw new NotImplementedException();
+        }
 
         public static readonly Dictionary<RoiType, SiteTextType> RoiTexts = new Dictionary<RoiType, SiteTextType> {
             {RoiType.Roi1X2, SiteTextType.GameRoi1X2 },
@@ -73,15 +77,16 @@ namespace Project_B.CodeClientSide.Helper {
             {RoiType.RoiTotal, SiteTextType.GameRoiTotal },
         };
 
-        public static float GetAverageOddValue(SportType sportType, BetOddType betOddType, List<Dictionary<BetOddType, BetItemTransport>> bets) {
+        public static float GetOddValue(SportType sportType, BetOddType betOddType, List<Dictionary<BetOddType, BetItemTransport>> bets, Func<IEnumerable<Dictionary<BetOddType, BetItemTransport>>, Func<Dictionary<BetOddType, BetItemTransport>, float>, float> func = null) {
             if (bets == null || !BetHelper.SportTypeWithOdds[sportType].Contains(betOddType)) {
                 return default(int);
             }
+            func = func ?? Enumerable.Average;
             var betsToCalc = bets.Where(b => {
                 BetItemTransport betItem;
                 return b.TryGetValue(betOddType, out betItem) && betItem.Odd != default(float);
             }).ToArray();
-            return betsToCalc.Any() ? betsToCalc.Average(b => b[betOddType].Odd) : default(float);
+            return betsToCalc.Any() ? func(betsToCalc, b => b[betOddType].Odd) : default(float);
         }
 
         public static float GetMaxBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {

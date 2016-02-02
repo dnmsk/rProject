@@ -187,7 +187,11 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetition(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
-                return BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Minute);
+                var buildOddsByDateByBroker = BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive), sportType, competitionItemID, DateRoundType.Minute);
+                if (CompetitionItem.DataSource.GetByKey(competitionItemID, CompetitionItem.Fields.Dateeventutc).Dateeventutc > DateTime.UtcNow) {
+                    buildOddsByDateByBroker[DateTime.UtcNow] = buildOddsByDateByBroker[buildOddsByDateByBroker.Keys.Max()];
+                }
+                return buildOddsByDateByBroker;
             }, null);
         }
 
@@ -203,6 +207,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 return null;
             }
 
+            //Скаладываем значения коэффициентов по времени последнего актуального значения с округлением.
             var mapBetsByDates = new Dictionary<DateTime, List<IBet<T>>>();
             var mapByBrokers = new Dictionary<BrokerType, List<KeyValuePair<DateTime, IBet<T>>>>();
             foreach (var ibet in betMap.Values.First()) {
@@ -220,8 +225,10 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 listBets.Add(ibet);
             }
-            var totalDeltaMinutes = (mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes;
             //minimum interpolation area for each broker
+            var totalDeltaMinutes = (mapBetsByDates.Min(mb => mb.Key) - mapBetsByDates.Max(mb => mb.Key)).TotalMinutes;
+
+            //Формируем отсечки времени для каждого изменения
             var minDateForBroker = mapByBrokers
                 .Select(byBroker => {
                     var keyValuePairs = byBroker.Value.OrderBy(kv => kv.Key).ToArray();
@@ -242,16 +249,18 @@ namespace Project_B.CodeServerSide.DataProvider {
                 })
                 .ToDictionary(byBroker => byBroker.Key, byBroker => byBroker.Value.Min(ibet => ibet.Key));
 
-            var orderByDescending = mapBetsByDates.OrderByDescending(mb => mb.Key);
-            var previousList = orderByDescending.First();
+            //Добавляем недостающих точек брокеров на каждое значение времени, по предыдущему значению.
+            var orderByDescending = mapBetsByDates.OrderBy(mb => mb.Key).ToArray();
+            var previousList = orderByDescending[0].Value;
             foreach (var ibetsForTime in orderByDescending.Skip(1)) {
-                mapBetsByDates[ibetsForTime.Key.AddSeconds(1)] = previousList.Value;
-                ibetsForTime.Value.AddRange(previousList.Value
+                mapBetsByDates[ibetsForTime.Key.AddSeconds(-1)] = previousList;
+                ibetsForTime.Value.AddRange(previousList
                     .Where(prev => minDateForBroker[prev.BrokerID] < ibetsForTime.Key)
                     .Where(prev => ibetsForTime.Value.All(i => i.BrokerID != prev.BrokerID)));
-                previousList = ibetsForTime;
+                previousList = ibetsForTime.Value;
             }
 
+            //Преобразуем запись в базе в системное значение. тут оптимизировать, сделав это до добавления недостающих точек. Логически понятнее здесь.
             var betOddTypes = BetHelper.SportTypeWithOdds[sportType];
             var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
             foreach (var mapBets in mapBetsByDates) {

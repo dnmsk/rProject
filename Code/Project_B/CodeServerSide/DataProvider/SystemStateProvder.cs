@@ -439,11 +439,15 @@ namespace Project_B.CodeServerSide.DataProvider {
                 if (needJoin) {
                     targetID = ids.Min();
                 }
+                var bitwiseStatus = (short)(LinkEntityStatus.Linked | LinkEntityStatus.ManualConfirmed);
                 switch (type) {
                     case BrokerEntityType.Competition:
                         RawCompetition.DataSource
                             .WhereEquals(RawCompetition.Fields.ID, id)
-                            .Update(RawCompetition.Fields.CompetitionuniqueID, targetID);
+                            .Update(new Dictionary<Enum, DbFunction> {
+                                {RawCompetition.Fields.CompetitionuniqueID, new DbFnConst(targetID) },
+                                {RawCompetition.Fields.Linkstatus, new DbFnSimpleOp(RawCompetition.Fields.Linkstatus, FnMathOper.BitwiseOr, bitwiseStatus) }
+                            });
                         RawCompetitionSpecify.DataSource
                             .WhereEquals(RawCompetitionSpecify.Fields.RawCompetitionID, id)
                             .Update(RawCompetitionSpecify.Fields.CompetitionuniqueID, targetID);
@@ -451,12 +455,18 @@ namespace Project_B.CodeServerSide.DataProvider {
                     case BrokerEntityType.CompetitionSpecify:
                         RawCompetitionSpecify.DataSource
                             .WhereEquals(RawCompetitionSpecify.Fields.ID, id)
-                            .Update(RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID, targetID);
+                            .Update(new Dictionary<Enum, DbFunction> {
+                                {RawCompetitionSpecify.Fields.CompetitionspecifyuniqueID, new DbFnConst(targetID) },
+                                {RawCompetitionSpecify.Fields.Linkstatus, new DbFnSimpleOp(RawCompetitionSpecify.Fields.Linkstatus, FnMathOper.BitwiseOr, bitwiseStatus) }
+                            });
                         break;
                     case BrokerEntityType.Competitor:
                         RawCompetitor.DataSource
                             .WhereEquals(RawCompetitor.Fields.ID, id)
-                            .Update(RawCompetitor.Fields.CompetitoruniqueID, targetID);
+                            .Update(new Dictionary<Enum, DbFunction> {
+                                {RawCompetitor.Fields.CompetitoruniqueID, new DbFnConst(targetID) },
+                                {RawCompetitor.Fields.Linkstatus, new DbFnSimpleOp(RawCompetitor.Fields.Linkstatus, FnMathOper.BitwiseOr, bitwiseStatus) }
+                            });
                         break;
                 }
                 if (needJoin) {
