@@ -34,7 +34,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .SetupCreateRaw(() => RawCompetitionHelper.CreateCompetitionSpecify(competitionStat, brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode))
                     .SetupTryMatchRaw(algoMode, specify => {
                         if (false) {
-                            specify.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                            specify.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
                         }
                         return specify;
                     })
@@ -60,7 +60,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                             _logger.Error("{0} != {1}. {2}. SKIP", competitionSpecify.CompetitionuniqueID, specify.CompetitionuniqueID, CompetitionHelper.ListStringToName(nameOrigin));
                             return null;
                         }
-                        specify.Linkstatus = LinkEntityStatus.Original;
+                        specify.Linkstatus = LinkEntityStatus.Original | LinkEntityStatus.Linked;
                         return specify;
                     })
                     .SetupFinally(specify => {
@@ -154,7 +154,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         var ci = ciDs.First(CompetitionItem.Fields.ID);
                         if (ci != null) {
                             item.CompetitionitemID = ci.ID;
-                            item.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                            item.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
                         }
                         return item;
                     })
@@ -215,7 +215,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 ci.CompetitionSpecifyUniqueID = competitionSpecifyTransport.Object.ID;
             }
             ci.Save();
-            item.Linkstatus = LinkEntityStatus.Original;
+            item.Linkstatus = LinkEntityStatus.Original | LinkEntityStatus.Linked;
             item.CompetitionitemID = ci.ID;
         }
     }

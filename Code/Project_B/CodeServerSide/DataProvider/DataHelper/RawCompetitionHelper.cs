@@ -54,12 +54,12 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         .FilterByNameCompetition(nameOriginShort)
                         .FilterByGender(genderDetected, RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Linkstatus).FirstOrDefault();
                 })
-                .SetupCreateRaw(() => BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOriginShort))
+                .SetupCreateRaw(() => BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.Unlinked, nameOriginShort))
                 .SetupTryMatchRaw(algoMode, entity => {
                     var competitionUnique = CompetitionHelper.TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
                     if (competitionUnique != null) {
                         entity.CompetitionuniqueID = competitionUnique.ID;
-                        entity.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                        entity.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
                     }
                     return entity;
                 })
@@ -84,7 +84,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         competition.Save();
                     }
                     rawCompetition.CompetitionuniqueID = competition.CompetitionuniqueID;
-                    rawCompetition.Linkstatus = LinkEntityStatus.Original;
+                    rawCompetition.Linkstatus = LinkEntityStatus.Original | LinkEntityStatus.Linked;
                     return rawCompetition;
                 })
                 .SetupFinally(rawCompetition => {
@@ -108,7 +108,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 })
                 .MakeObject();
             
-            return BrokerEntityIfaceCreator.CreateEntity<RawCompetitionSpecify>(brokerType, language, sportType, genderDetected, LinkEntityStatus.ToLink, nameOrigin, specify => {
+            return BrokerEntityIfaceCreator.CreateEntity<RawCompetitionSpecify>(brokerType, language, sportType, genderDetected, LinkEntityStatus.Unlinked, nameOrigin, specify => {
                 specify.RawCompetitionID = competitionRaw.ID;
                 if (specify.CompetitionuniqueID == default(int) && competitionRaw.CompetitionuniqueID != default(int)) {
                     specify.CompetitionuniqueID = competitionRaw.CompetitionuniqueID;

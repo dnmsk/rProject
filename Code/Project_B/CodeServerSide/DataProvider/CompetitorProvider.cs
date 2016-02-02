@@ -54,7 +54,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                             Gendertype = genderType
                         };
                         competitor.Save();
-                        list.Each(el => el.Linkstatus = LinkEntityStatus.Original);
+                        list.Each(el => el.Linkstatus = LinkEntityStatus.Original | LinkEntityStatus.Linked);
                         return list;
                     })
                     .SetupFinally(list => {

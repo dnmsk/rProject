@@ -9,7 +9,7 @@ namespace Project_B.CodeServerSide.Entity.Helper {
         public static readonly Dictionary<BetOddType, Func<IBet<T>, BetItemTransport>> OddsGetterMap = new Dictionary<BetOddType, Func<IBet<T>, BetItemTransport>> {
             {BetOddType.Win1, bet => FillBetItem(BuildBetItem(bet), bet.Win1, null) },
             {BetOddType.Win2, bet => FillBetItem(BuildBetItem(bet), bet.Win2, null) },
-            {BetOddType.Handicap1, bet => FillBetItem(BuildBetItem(bet), bet.Hcap1, bet.Hcapdetail) },
+            {BetOddType.Handicap1, bet => FillBetItem(BuildBetItem(bet), bet.Hcap1, -bet.Hcapdetail) },
             {BetOddType.Handicap2, bet => FillBetItem(BuildBetItem(bet), bet.Hcap2, bet.Hcapdetail) },
             {BetOddType.TotalUnder, bet => FillBetItem(BuildBetItem(bet), bet.Totalunder, bet.Totaldetail) },
             {BetOddType.TotalOver, bet => FillBetItem(BuildBetItem(bet), bet.Totalover, bet.Totaldetail) },

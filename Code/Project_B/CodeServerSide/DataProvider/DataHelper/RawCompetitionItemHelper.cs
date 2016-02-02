@@ -51,7 +51,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             RawCompetitionItem competitionItemRaw = null;
             if (competitionSpecifyTransport.RawObject.ID != default(int) && competitors[0].RawObject.ID != default(int) && competitors[0].RawObject.ID != default(int)) {
                 competitionItemRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitionItem>(brokerType, competitionSpecifyTransport.Object.LanguageType, competitionSpecifyTransport.Object.SportType,
-                    LinkEntityStatus.ToLink, item => {
+                    LinkEntityStatus.Unlinked, item => {
                         item.RawcompetitionID = competitionSpecifyTransport.RawObject.ParentID;
                         item.RawcompetitionspecifyID = competitionSpecifyTransport.RawObject.ID;
                         item.Rawcompetitorid1 = competitors[0].RawObject.ID;

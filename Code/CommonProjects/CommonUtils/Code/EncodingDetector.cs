@@ -345,11 +345,13 @@ namespace CommonUtils.Code {
         /// <summary>
         /// Кодировки для которых будем определять похожесть
         /// </summary>
-        private static readonly Encoding[] _encodings = {
+        private static Encoding[] _encodingsArr;
+
+        private static Encoding[] _encodings => _encodingsArr ?? (_encodingsArr = new[] {
             Encoding.GetEncoding(1251),
             Encoding.GetEncoding("koi8-r"),
             Encoding.UTF8
-        };
+        });
 
         /// <summary>
         /// Получает 255 байт, начиная с первого не ascii символа

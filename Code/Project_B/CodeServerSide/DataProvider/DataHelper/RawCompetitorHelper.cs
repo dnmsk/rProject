@@ -57,11 +57,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 names
                     .Where(name => !raw.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                     .Each(name => {
-                        var competitorRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitor>(brokerType, languageType, sportType, genderType, LinkEntityStatus.ToLink, new[] {name},
+                        var competitorRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitor>(brokerType, languageType, sportType, genderType, LinkEntityStatus.Unlinked, new[] {name},
                             competitor => {
                                 if (lastCompetitorUniqueID != default(int)) {
                                     competitor.CompetitoruniqueID = lastCompetitorUniqueID;
-                                    competitor.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                                    competitor.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
                                 }
                             });
                         competitorRaw.Save();
@@ -78,7 +78,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (uniqueID != null) {
                 competitorFromRaw.Each(raw => {
                     raw.CompetitoruniqueID = uniqueID.ID;
-                    raw.Linkstatus = LinkEntityStatus.LinkByStatistics;
+                    raw.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
                 });
             }
             return competitorFromRaw;

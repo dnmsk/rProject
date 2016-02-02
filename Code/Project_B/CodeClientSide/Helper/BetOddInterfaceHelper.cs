@@ -98,27 +98,79 @@ namespace Project_B.CodeClientSide.Helper {
             }
             var dataIsGood = roiOdds.All(rodd => bets.All(b => b.ContainsKey(rodd)));
             if (dataIsGood) {
-                return bets
-                    .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd])))
-                    .GroupBy(kv => kv.Value.AdvancedParam)
-                    .Select(gi => {
-                        var oddInternal = new float[roiOdds.Length];
-                        var internalDataGood = true;
-                        var vals = gi.ToArray();
-                        for (var i = 0; i < roiOdds.Length; i++) {
-                            var roiOdd = roiOdds[i];
-                            var odd = vals.Where(v => v.Key == roiOdd).MaxOrDefault(v => v.Value.Odd, default(float));
-                            if (odd == default(float)) {
-                                internalDataGood = false;
-                                continue;
+                var mapByAdvancedParam = new Dictionary<float, List<KeyValuePair<BetOddType, BetItemTransport>>>();
+                switch (roiType) {
+                    case RoiType.RoiHandicap:/*
+                        bets
+                            .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd])))
+                            .Each(bet => {
+                                List<KeyValuePair<BetOddType, BetItemTransport>> odds;
+                                if (!mapByAdvancedParam.TryGetValue(bet.Value.AdvancedParam, out odds)) {
+                                    odds = new List<KeyValuePair<BetOddType, BetItemTransport>>();
+                                    mapByAdvancedParam[bet.Value.AdvancedParam] = odds;
+                                }
+                                odds.Add(bet);
+                            });
+                        var oddsByParam = new List<KeyValuePair<float, List<KeyValuePair<BetOddType, BetItemTransport>>>>();
+                        var orderedTotal = mapByAdvancedParam.OrderByDescending(odd => odd.Key).ToArray();
+                        for (var i = 0; i < orderedTotal.Length; i++) {
+                            for (var j = i; j < orderedTotal.Length; j++) {
+                                
                             }
-                            oddInternal[i] = 1 / (odd);
+                        }*/
+                        return bets
+                            .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd])))
+                            .GroupBy(bet => Math.Abs(bet.Value.AdvancedParam))
+                            .MaxOrDefault(grouped => BetOddRoi(roiOdds, grouped.ToList()), default(float));
+                    case RoiType.RoiTotal:
+                        bets
+                            .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd])))
+                            .Each(bet => {
+                                List<KeyValuePair<BetOddType, BetItemTransport>> odds;
+                                if (!mapByAdvancedParam.TryGetValue(bet.Value.AdvancedParam, out odds)) {
+                                    odds = new List<KeyValuePair<BetOddType, BetItemTransport>>();
+                                    mapByAdvancedParam[bet.Value.AdvancedParam] = odds;
+                                }
+                                odds.Add(bet);
+                            });
+                        var currentMaxRoi = float.MinValue;
+                        List<KeyValuePair<BetOddType, BetItemTransport>> prevItem = null;
+                        var ordered = mapByAdvancedParam.OrderBy(odd => odd.Key).ToArray();
+                        for (var i = 0; i < ordered.Length; i++) {
+                            var currentItem = ordered[i].Value;
+                            currentMaxRoi = Math.Max(currentMaxRoi, BetOddRoi(roiOdds, currentItem));
+                            if (prevItem != null) {
+                                currentMaxRoi = Math.Max(currentMaxRoi, BetOddRoi(roiOdds, prevItem
+                                    .Where(pi => pi.Key == BetOddType.TotalOver)
+                                    .Union(currentItem.Where(ci => ci.Key == BetOddType.TotalUnder)).ToList()));
+                            }
+                            prevItem = currentItem;
                         }
-                        return internalDataGood ? (100 / oddInternal.Sum() - 100) : default(float);
-                    })
-                    .MaxOrDefault(v => v, default(float));
+                        return currentMaxRoi;
+                    case RoiType.Roi12_X:
+                    case RoiType.Roi1X2:
+                    case RoiType.Roi1X_2:
+                    case RoiType.Roi1_X2:
+                        return BetOddRoi(roiOdds, bets
+                            .SelectMany(bet => roiOdds.Select(odd => new KeyValuePair<BetOddType, BetItemTransport>(odd, bet[odd]))).ToList());
+                }
             }
             return default(float);
+        }
+
+        private static float BetOddRoi(BetOddType[] roiOdds, List<KeyValuePair<BetOddType, BetItemTransport>> vals) {
+            var internalDataGood = true;
+            var oddInternal = new float[roiOdds.Length];
+            for (var i = 0; i < roiOdds.Length; i++) {
+                var roiOdd = roiOdds[i];
+                var odd = vals.Where(v => v.Key == roiOdd).MaxOrDefault(v => v.Value.Odd, default(float));
+                if (odd == default(float)) {
+                    internalDataGood = false;
+                    continue;
+                }
+                oddInternal[i] = 1/(odd);
+            }
+            return internalDataGood ? (100/oddInternal.Sum() - 100) : default(float);
         }
 
         public static float GetBetOddRoi(RoiType roiType, SportType sportType, Dictionary<BetOddType, BetItemTransport> bets) {

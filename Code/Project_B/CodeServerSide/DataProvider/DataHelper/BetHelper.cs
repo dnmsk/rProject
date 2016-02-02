@@ -156,15 +156,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             {SportType.Volleyball, _standartOdds },
         };
 
-        public static Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive, bool onlyActive) {
+        public static Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(Bet.Fields.CompetitionitemID, competitionItemIDs);
+                .WhereIn(Bet.Fields.CompetitionitemID, competitionItemIDs)
+                .WhereTrue(Bet.Fields.IsActive);
             if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
                 bets = bets.WhereIn(Bet.Fields.BrokerID, brokerTypesToRetreive);
-            }
-            if (onlyActive) {
-                bets = bets.WhereTrue(Bet.Fields.IsActive);
             }
             return bets
                 .AsList()
@@ -173,13 +171,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .OrderByDescending(t => t.ID)
                 .ToList());
         }
-        public static Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> betIDs, bool onlyActive) {
+        public static Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> betIDs) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(Bet.Fields.ID, betIDs);
-            if (onlyActive) {
-                bets = bets.WhereTrue(Bet.Fields.IsActive);
-            }
+                .WhereIn(Bet.Fields.ID, betIDs)
+                .WhereTrue(Bet.Fields.IsActive);
             return bets
                 .AsList()
                 .GroupBy(e => e.CompetitionitemID)
@@ -188,15 +184,13 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .ToList());
         }
 
-        public static Dictionary<int, List<IBet<long>>> GetLiveBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive, bool onlyActive) {
+        public static Dictionary<int, List<IBet<long>>> GetLiveBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
             var bets = BetLive.DataSource
                 .Join(JoinType.Left, BetLiveAdvanced.Fields.ID, BetLive.Fields.ID, RetrieveMode.Retrieve)
-                .WhereIn(BetLive.Fields.CompetitionitemID, competitionItemIDs);
+                .WhereIn(BetLive.Fields.CompetitionitemID, competitionItemIDs)
+                .WhereTrue(BetLive.Fields.IsActive);
             if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
                 bets = bets.WhereIn(BetLive.Fields.BrokerID, brokerTypesToRetreive);
-            }
-            if (onlyActive) {
-                bets = bets.WhereTrue(BetLive.Fields.IsActive);
             }
             return bets
                 .AsList()

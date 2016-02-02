@@ -32,7 +32,6 @@ var broker = BrokerSettingsHelper.Instance.GetBroker(betItem.BrokerType);
 
 @helper RenderAdvancedParam(BetOddType oddType, float advanced) {
 if (DisplayColumnProcessor.OddsWithAdvanced.Contains(oddType)) {
-    advanced = DisplayColumnProcessor.OddsToInvertAdvanced.Contains(oddType) ? -advanced : advanced;
     if (DisplayColumnProcessor.OddsWithSymbol.Contains(oddType)) {
         @Html.Raw(string.Format("({0}{1})", advanced > 0 ? "+" : advanced < 0 ? "-" : string.Empty, Math.Abs(advanced)))
     } else {

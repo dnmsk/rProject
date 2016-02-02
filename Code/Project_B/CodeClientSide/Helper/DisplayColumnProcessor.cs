@@ -57,9 +57,7 @@ namespace Project_B.CodeClientSide.Helper {
             { BetOddType.TotalUnder, DisplayColumnType.TotalOdds},
             { BetOddType.TotalOver, DisplayColumnType.TotalOdds},
         };
-
-        public static readonly BetOddType[] OddsToInvertAdvanced = { BetOddType.Handicap1 };
-
+        
         public static bool NeedDrawCell(BetOddType betOddType, DisplayColumnType displayColumn) {
             DisplayColumnType displayColumnType;
             return _displayColumnOddMap.TryGetValue(betOddType, out displayColumnType) && displayColumn.HasFlag(displayColumnType);
