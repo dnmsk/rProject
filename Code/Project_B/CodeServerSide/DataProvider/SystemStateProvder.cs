@@ -517,30 +517,32 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .AsMapByField<int>(Competitor.Fields.CompetitoruniqueID, Competitor.Fields.NameFull);
 
                 var linkedIds = new HashSet<int>();
-                foreach (var rawCompetitionItem in rawCompetitionItems) {
-                    var targetCompetitor = rawCompetitorsToProcess.TryGetValueOrDefault(rawCompetitionItem.Rawcompetitorid1 == targetId 
-                        ? rawCompetitionItem.Competitoruniqueid2 : rawCompetitionItem.Competitoruniqueid1, false);
-                    if (targetCompetitor == null || linkedIds.Contains(targetCompetitor.ID)) {
+                foreach (var rawCompetitionItem in rawCompetitionItems.GroupBy(rci => rci.Competitoruniqueid1 == targetId ? rci.Competitoruniqueid2 : rci.Competitoruniqueid1)) {
+                    var mapMatches = new Dictionary<int, int>();
+                    foreach (var oneCompetition in rawCompetitionItem) {
+                        var nearByTime = competitionItems.Where(ci => Math.Abs((ci.Dateeventutc - oneCompetition.Dateeventutc).TotalHours) <= 1).ToArray();
+                        if (!nearByTime.Any() || nearByTime.Length > 1) {
+                            continue;
+                        }
+                        var idToSet = nearByTime[0].Competitoruniqueid1 == rawCompetitor.CompetitoruniqueID
+                            ? nearByTime[0].Competitoruniqueid2 : nearByTime[0].Competitoruniqueid1;
+                        mapMatches[idToSet] = mapMatches.TryGetValueOrDefault(idToSet) + 1;
+                    }
+                    var targetCompetitor = rawCompetitorsToProcess.TryGetValueOrDefault(rawCompetitionItem.Key, false);
+                    if (!mapMatches.Any() || targetCompetitor == null) {
                         continue;
                     }
-                    var nearByTime = competitionItems.Where(ci => Math.Abs((ci.Dateeventutc - rawCompetitionItem.Dateeventutc).TotalHours) <= 1).ToArray();
-                    if (!nearByTime.SafeAny()) {
-                        continue;
+                    var sorted = mapMatches.OrderByDescending(m => m.Value).ToArray();
+                    if (sorted[0].Value / (float) rawCompetitionItem.Count() > 0.7) {
+                        if (targetCompetitor.CompetitoruniqueID != sorted[0].Key) {
+                            targetCompetitor.CompetitoruniqueID = sorted[0].Key;
+                            _logger.Info("Link: {0} ({1}) to {2} ({3})", targetCompetitor.ID, targetCompetitor.Name, targetCompetitor.CompetitoruniqueID,
+                                nameCompetitors[targetCompetitor.CompetitoruniqueID][0].Name);
+                        }
+                        targetCompetitor.Linkstatus |= LinkEntityStatus.LinkByRelinker;
+                        targetCompetitor.Save();
+                        linkedIds.Add(targetCompetitor.ID);
                     }
-                    if (nearByTime.Length > 1) {
-                        _logger.Info("NEAR TIME WRONG! rci: {0}, ci: {1}", rawCompetitionItem.ID, nearByTime.Select(ci => ci.ID).StrJoin(", "));
-                        continue;
-                    }
-                    var idToSet = nearByTime[0].Competitoruniqueid1 == rawCompetitor.CompetitoruniqueID
-                        ? nearByTime[0].Competitoruniqueid2 : nearByTime[0].Competitoruniqueid1;
-                    if (targetCompetitor.CompetitoruniqueID != idToSet) {
-                        targetCompetitor.CompetitoruniqueID = idToSet;
-                        _logger.Info("Link: {0} ({1}) to {2} ({3})", targetCompetitor.ID, targetCompetitor.Name, targetCompetitor.CompetitoruniqueID,
-                            nameCompetitors[targetCompetitor.CompetitoruniqueID][0].Name);
-                    }
-                    targetCompetitor.Linkstatus |= LinkEntityStatus.LinkByRelinker;
-                    targetCompetitor.Save();
-                    linkedIds.Add(targetCompetitor.ID);
                 }
                 foreach (var linkedId in linkedIds) {
                     ApplyLinker(linkedId, type);
