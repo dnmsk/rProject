@@ -16,7 +16,7 @@ namespace CommonUtils.ExtendedTypes {
         protected SafeInvokerBase(LoggerWrapper logger) {
             _logger = logger;
         }
-
+        
         /// <summary>
         /// Обертка для методов АПИ, для безопасного вызова.
         /// </summary>
@@ -28,7 +28,7 @@ namespace CommonUtils.ExtendedTypes {
                 LogError(action.Method.Name, action.Target, e);
             }
         }
-
+        
         /// <summary>
         /// Обертка для методов АПИ, для безопасного вызова, одна функция выполняется в одно время.
         /// </summary>
@@ -36,7 +36,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <param name="action">Функция.</param>
         /// <param name="defValue">Значение по умолчанию, если было брошено исключение.</param>
         /// <returns>Возвращает значение функции, или <see cref="defValue"/> если было брошено исключение.</returns>
-        protected T InvokeSafeSingleCall<T>(Func<T> action, T defValue) {
+        protected T InvokeSafeSingleCall<T>(Func<T> action, T defValue = default(T)) {
             var methodName = action.Method.Name;
 
             object myLocker;
@@ -64,7 +64,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <param name="action">Функция.</param>
         /// <param name="defValue">Значение по умолчанию, если было брошено исключение.</param>
         /// <returns>Возвращает значение функции, или <see cref="defValue"/> если было брошено исключение.</returns>
-        protected T InvokeSafeSingleCallForAccount<T>(long accountID, Func<T> action, T defValue) {
+        protected T InvokeSafeSingleCallForAccount<T>(long accountID, Func<T> action, T defValue = default(T)) {
             var methodName = action.Method.Name;
             var lockKey = string.Format("{0}.{1}", accountID, methodName);
 
@@ -91,7 +91,7 @@ namespace CommonUtils.ExtendedTypes {
         /// <param name="action">Функция.</param>
         /// <param name="defValue">Значение по умолчанию, если было брошено исключение.</param>
         /// <returns>Возвращает значение функции, или <see cref="defValue"/> если было брошено исключение.</returns>
-        protected T InvokeSafe<T>(Func<T> action, T defValue) {
+        protected T InvokeSafe<T>(Func<T> action, T defValue = default(T)) {
             return ExecuteAction(action, new object(), defValue);
         }
 
@@ -110,7 +110,7 @@ namespace CommonUtils.ExtendedTypes {
             string formatString = null;
             try {
                 var parsStr = parsObj != null
-                    ? new JavaScriptSerializer() {RecursionLimit = 200}.Serialize(parsObj)
+                    ? new JavaScriptSerializer {RecursionLimit = 200}.Serialize(parsObj)
                     : "empty";
                 formatString = string.Format("Ошибка при вызове метода {0}. Параметры: {1} {2}{3}", actionMethod, parsStr, Environment.NewLine, e);
             } catch (Exception ex) {
@@ -118,37 +118,6 @@ namespace CommonUtils.ExtendedTypes {
             } finally {
                 _logger.Error(formatString);
             }
-        }
-
-        /// <summary>
-        /// Обертка для методов АПИ, для безопасного вызова.
-        /// </summary>
-        /// <typeparam name="T">Тип возвращаемого значения.</typeparam>
-        /// <param name="action">Метод.</param>
-        /// <returns>Возвращает значение функции, или null если было брошено исключение.</returns>
-        protected T InvokeSafe<T>(Func<T> action) where T : class {
-            return InvokeSafe(action, null);
-        }
-
-        /// <summary>
-        /// Обертка для методов АПИ, для безопасного вызова, одна функция выполняется в одно время.
-        /// </summary>
-        /// <typeparam name="T">Тип возвращаемого значения.</typeparam>
-        /// <param name="action">Метод.</param>
-        /// <returns>Возвращает значение функции, или null если было брошено исключение.</returns>
-        protected T InvokeSafeSingleCall<T>(Func<T> action) where T : class {
-            return InvokeSafeSingleCall(action, null);
-        }
-
-        /// <summary>
-        /// Обертка для методов АПИ, для безопасного вызова, одна функция выполняется в одно время.
-        /// </summary>
-        /// <typeparam name="T">Тип возвращаемого значения.</typeparam>
-        /// <param name="accountID">Аккаунт для которого лочим</param>
-        /// <param name="action">Метод.</param>
-        /// <returns>Возвращает значение функции, или null если было брошено исключение.</returns>
-        protected T InvokeSafeSingleCallForAccount<T>(long accountID, Func<T> action) where T : class {
-            return InvokeSafeSingleCallForAccount(accountID, action, null);
         }
     }
 }

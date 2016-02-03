@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths.WatchfulThreads;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType.ModerateTransport;
@@ -52,9 +53,11 @@ namespace Project_B.Areas.Moderate.Controllers {
                     return PartialView(new Tuple<RawEntityWithLink>(_provider.GetEntity(filter.id, type)));
                 case "PUT":
                     _provider.EntityLinkerPut(filter.id, type);
+                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type));
                     break;
                 case "POST":
                     _provider.EntityLinkerPost(filter.id, type, ids);
+                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type));
                     break;
                 case "DELETE":
                     _provider.EntityLinkerDelete(filter.id, type);

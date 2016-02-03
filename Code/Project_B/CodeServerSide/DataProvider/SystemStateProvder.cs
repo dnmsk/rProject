@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
@@ -165,7 +166,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     result.Add(rowResult);
                 }
                 return result;
-            }, null);
+            });
         }
 
         private static RawEntityWithLink BuildEntityWithLink<TK, T>(int rawCompetitionItemID, TK raw, Dictionary<int, List<T>> entityMap) where TK : IRawLinkEntity, INamedEntity, IKeyBrokerEntity where T : INamedEntity, IUniqueID, IGenderTyped {
@@ -305,7 +306,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     EntityName = new [] {entity?.Name ?? string.Empty},
                     BrokerEntityType = entityType
                 };
-            }, null);
+            });
         }
         
         public List<RawEntityWithLink> LiveSearch(BrokerEntityType type, int id, string search, bool all) {
@@ -355,7 +356,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     })
                     .OrderBy(e => e.EntityName[0])
                     .ToList();
-            }, null);
+            });
         }
 
         public void EntityLinkerPut(int id, BrokerEntityType type) {
@@ -475,6 +476,78 @@ namespace Project_B.CodeServerSide.DataProvider {
             });
         }
 
+        public void ApplyLinker(int targetId, BrokerEntityType type) {
+            InvokeSafe(() => {
+                if (type != BrokerEntityType.Competitor) {
+                    return;
+                }
+                var rawCompetitor = RawCompetitor.DataSource.GetByKey(targetId, RawCompetitor.Fields.Linkstatus, RawCompetitor.Fields.CompetitoruniqueID);
+                if (rawCompetitor.Linkstatus.HasFlag(LinkEntityStatus.LinkByRelinkerSub) || rawCompetitor.CompetitoruniqueID == default(int)) {
+                    return;
+                }
+                rawCompetitor.Linkstatus |= LinkEntityStatus.LinkByRelinkerSub;
+                rawCompetitor.Save();
+
+                var rawCompetitionItems = RawCompetitionItem.DataSource.Where(new DaoFilterOr(
+                        new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid1, targetId),
+                        new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid2, targetId)
+                    ))
+                    .Sort(RawCompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
+                    .AsList(
+                        RawCompetitionItem.Fields.Rawcompetitorid1,
+                        RawCompetitionItem.Fields.Rawcompetitorid2,
+                        RawCompetitionItem.Fields.Dateeventutc
+                    );
+                var rawCompetitorsToProcess = RawCompetitor.DataSource
+                    .WhereIn(RawCompetitor.Fields.ID, rawCompetitionItems.Select(rci => rci.Competitoruniqueid1).Union(rawCompetitionItems.Select(rci => rci.Competitoruniqueid2)).Distinct())
+                    .Where(new DaoFilter(new DbFnSimpleOp(RawCompetitor.Fields.Linkstatus, FnMathOper.BitwiseAnd, (short)(LinkEntityStatus.LinkByRelinker | LinkEntityStatus.ManualConfirmed)), Oper.Eq, default(int)))
+                    .AsMapByIds(RawCompetitor.Fields.CompetitoruniqueID, RawCompetitor.Fields.Linkstatus, RawCompetitor.Fields.Name);
+
+                var competitionItems = CompetitionItem.DataSource.Where(new DaoFilterOr(
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid1, rawCompetitor.CompetitoruniqueID),
+                        new DaoFilterEq(CompetitionItem.Fields.Competitoruniqueid2, rawCompetitor.CompetitoruniqueID)
+                    ))
+                    .Sort(CompetitionItem.Fields.Dateeventutc, SortDirection.Desc)
+                    .AsList(
+                        CompetitionItem.Fields.Competitoruniqueid1,
+                        CompetitionItem.Fields.Competitoruniqueid2,
+                        CompetitionItem.Fields.Dateeventutc
+                    );
+                var nameCompetitors = Competitor.DataSource.WhereIn(Competitor.Fields.CompetitoruniqueID, competitionItems.Select(ci => ci.Competitoruniqueid1).Union(competitionItems.Select(ci => ci.Competitoruniqueid2)).Distinct())
+                    .AsMapByField<int>(Competitor.Fields.CompetitoruniqueID, Competitor.Fields.NameFull);
+
+                var linkedIds = new HashSet<int>();
+                foreach (var rawCompetitionItem in rawCompetitionItems) {
+                    var targetCompetitor = rawCompetitorsToProcess.TryGetValueOrDefault(rawCompetitionItem.Rawcompetitorid1 == targetId 
+                        ? rawCompetitionItem.Competitoruniqueid2 : rawCompetitionItem.Competitoruniqueid1, false);
+                    if (targetCompetitor == null || linkedIds.Contains(targetCompetitor.ID)) {
+                        continue;
+                    }
+                    var nearByTime = competitionItems.Where(ci => Math.Abs((ci.Dateeventutc - rawCompetitionItem.Dateeventutc).TotalHours) <= 1).ToArray();
+                    if (!nearByTime.SafeAny()) {
+                        continue;
+                    }
+                    if (nearByTime.Length > 1) {
+                        _logger.Info("NEAR TIME WRONG! rci: {0}, ci: {1}", rawCompetitionItem.ID, nearByTime.Select(ci => ci.ID).StrJoin(", "));
+                        continue;
+                    }
+                    var idToSet = nearByTime[0].Competitoruniqueid1 == rawCompetitor.CompetitoruniqueID
+                        ? nearByTime[0].Competitoruniqueid2 : nearByTime[0].Competitoruniqueid1;
+                    if (targetCompetitor.CompetitoruniqueID != idToSet) {
+                        targetCompetitor.CompetitoruniqueID = idToSet;
+                        _logger.Info("Link: {0} ({1}) to {2} ({3})", targetCompetitor.ID, targetCompetitor.Name, targetCompetitor.CompetitoruniqueID,
+                            nameCompetitors[targetCompetitor.CompetitoruniqueID][0].Name);
+                    }
+                    targetCompetitor.Linkstatus |= LinkEntityStatus.LinkByRelinker;
+                    targetCompetitor.Save();
+                    linkedIds.Add(targetCompetitor.ID);
+                }
+                foreach (var linkedId in linkedIds) {
+                    ApplyLinker(linkedId, type);
+                }
+            });
+        }
+
         public void EntityLinkerDelete(int id, BrokerEntityType type) {
             InvokeSafe(() => {
                 switch (type) {
@@ -497,8 +570,8 @@ namespace Project_B.CodeServerSide.DataProvider {
             });
         }
 
-        private void EntityJoin(BrokerEntityType type, int targetID, int[] ids) {
-            InvokeSafe(() => {
+        private int EntityJoin(BrokerEntityType type, int targetID, int[] ids) {
+            return InvokeSafe(() => {
                 var log = new StringBuilder();
                 log.AppendLine(string.Format("{0}. {1} <= {2}", type, targetID, ids.StrJoin(", ")));
                 int stat;
@@ -555,6 +628,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                         break;
                 }
                 _logger.Info(log.ToString());
+                return targetID;
             });
         }
 
