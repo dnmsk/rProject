@@ -29,7 +29,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .Select(name => {
                         var indexOf = name.IndexOf("(", StringComparison.InvariantCultureIgnoreCase);
-                        return (indexOf > 0 ? name.Substring(0, indexOf) : name).Trim(_trimChars);
+                        var cleanedName = (indexOf > 0 ? name.Substring(0, indexOf) : name).Trim(_trimChars);
+                        return cleanedName.RemoveDiacritics();
                     })
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .ToArray();

@@ -103,7 +103,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     _badSymbols.Each(ch => {
                         name = name.Replace(ch.ToString(), string.Empty);
                     });
-                    return name;
+                    return name.RemoveDiacritics();
                 })
                 .ToArray();
             return nameOrigin;
