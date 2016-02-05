@@ -63,9 +63,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData {
             if (!_funcValidateSuccess(res) && _funcMatchRaw != null) {
                 res = _funcMatchRaw(res);
                 _processStat.TryMatchedCount++;
-                if (_funcValidateSuccess(res)) {
-                    _processStat.MatchedCount++;
-                }
             }
             if (!_funcValidateSuccess(res) && _funcCreateOriginal != null) {
                 res = _funcCreateOriginal(res);
