@@ -11,16 +11,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionItemHelper {
         public static RawCompetitionItem GetCompetitionItem(BrokerType brokerType, RawTemplateObj<CompetitorParsedTransport>[] competitors, RawTemplateObj<CompetitionSpecifyTransport> competitionSpecifyTransport, DateTime eventDateUtc, DateTime utcNow) {
             var competitionItem = RawCompetitionItem.DataSource
-                        .Where(new DaoFilterOr(
-                            new DaoFilterAnd(
-                                new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid1, competitors[0].RawObject.ID),
-                                new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid2, competitors[1].RawObject.ID)
-                                ),
-                            new DaoFilterAnd(
-                                new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid2, competitors[0].RawObject.ID),
-                                new DaoFilterEq(RawCompetitionItem.Fields.Rawcompetitorid1, competitors[1].RawObject.ID)
-                                )
-                            ))
+                        .WhereEquals(RawCompetitionItem.Fields.Rawcompetitorid1, competitors[0].RawObject.ID)
+                        .WhereEquals(RawCompetitionItem.Fields.Rawcompetitorid2, competitors[1].RawObject.ID)
                         .WhereEquals(RawCompetitionItem.Fields.Sporttype, (short)competitionSpecifyTransport.Object.SportType)
                         .WhereEquals(RawCompetitionItem.Fields.Brokerid, (short)brokerType)
                         .WhereEquals(RawCompetitionItem.Fields.Languagetype, (short)competitionSpecifyTransport.Object.LanguageType)

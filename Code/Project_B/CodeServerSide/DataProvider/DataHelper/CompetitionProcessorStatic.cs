@@ -72,14 +72,14 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 };
             }
             if (matchParsed.Odds != null && matchParsed.Odds.Any()) {
-                var hcapDetail = (int) (matchParsed.Odds.Where(o => o.Type == BetOddType.Handicap2).MaxOrDefault(o => o.AdvancedParam, null) ?? default(int));
+                var hcapDetail = (matchParsed.Odds.FirstOrDefault(o => o.Type == BetOddType.Handicap2)?.AdvancedParam ?? default(float));
                 matchParsed.Odds.Each(odds => {
                     BetOddType newOddType;
                     if (_inversionMap.TryGetValue(odds.Type, out newOddType)) {
                         odds.Type = newOddType;
                         switch (newOddType) {
                             case BetOddType.Handicap2:
-                                odds.AdvancedParam = hcapDetail;
+                                odds.AdvancedParam = -hcapDetail;
                                 break;
                         }
                     }
