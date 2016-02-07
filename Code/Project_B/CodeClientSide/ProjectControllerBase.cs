@@ -25,16 +25,19 @@ namespace Project_B.CodeClientSide {
                 return _gmtDeltaMinutes.Value;
             }
         }
-        public void FixToUserTime(CompetitionTransport competitionTransport) {
+        public void FixToUserTime(CompetitionTransport<CompetitionItemBetTransport> competitionTransport) {
             var delta = GmtDeltaMinutes;
             competitionTransport.CompetitionItems.Each(ci => {
-                ci.DateUtc = ci.DateUtc.AddMinutes(_gmtDeltaMinutes.Value);
+                ci.DateUtc = ci.DateUtc.AddMinutes(delta);
                 ci.CurrentBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
                 ci.HistoryMaxBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
                 ci.HistoryMinBets?.Values.Each(cb => cb.DateTimeUtc = cb.DateTimeUtc.AddMinutes(delta));
             });
         }
         
+        public DateTime FixSystemTimeToUser(DateTime dateTime) {
+            return dateTime.AddMinutes(GmtDeltaMinutes);
+        }
         public DateTime FixUserTimeToSystem(DateTime dateTime) {
             return dateTime.AddMinutes(-GmtDeltaMinutes);
         }
@@ -62,7 +65,7 @@ namespace Project_B.CodeClientSide {
 
         public virtual SubNavigationType SubNavigationType => SubNavigationType.None;
         
-        protected DateTime TryGetNotModifiedResultForItems(List<CompetitionTransport> competitions, DateTime minModifiedDate) {
+        protected DateTime TryGetNotModifiedResultForItems(List<CompetitionTransport<CompetitionItemBetTransport>> competitions, DateTime minModifiedDate) {
             var utcNow = DateTime.UtcNow;
             return competitions.MaxOrDefault(c =>
                 c.CompetitionItems.SelectMany(ci => new[] { ci.DateUtc }.Union(ci.CurrentBets?.Select(b => b.Value.DateTimeUtc) ?? new DateTime[0])).Where(d => d < utcNow && d > minModifiedDate).MaxOrDefault(d => d, minModifiedDate), minModifiedDate);

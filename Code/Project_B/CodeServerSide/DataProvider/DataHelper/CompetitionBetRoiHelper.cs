@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using CommonUtils;
@@ -48,25 +49,19 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             var result = new CompetitionItemRoiRow[data.Count];
             for (var i = 0; i < result.Length; i++) {
                 var row = data[i];
+                var betData = (int[])row[1];
+                var betIDs = new Dictionary<BetOddType, int>();
+                for (var j = 0; j < betData.Length; j+=2) {
+                    betIDs[(BetOddType) (short) betData[j]] = betData[j + 1];
+                }
                 result[i] = new CompetitionItemRoiRow {
                     ID = (int)row[0],
-                    Roi1X2 = CastSafe(row[1], -100f),
-                    RoiHcap = CastSafe(row[2], -100f),
-                    RoiTotal = CastSafe(row[3], -100f),
-                    Roi1_X2 = CastSafe(row[4], -100f),
-                    Roi1X_2 = CastSafe(row[5], -100f),
-                    BetIDs = (int[])row[6],
-                    RoiMax = CastSafe(row[7], -100f)
+                    BetIDs = betIDs,
+                    Roi = (float) row[2],
+                    RoiType = (RoiType) (short) row[3]
                 };
             }
             return result;
-        }
-
-        private static T CastSafe<T>(object val, T def) {
-            if (val is DBNull) {
-                return def;
-            }
-            return (T) val;
         }
     }
 }

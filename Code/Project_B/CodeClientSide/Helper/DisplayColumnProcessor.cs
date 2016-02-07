@@ -42,7 +42,7 @@ namespace Project_B.CodeClientSide.Helper {
             { SiteTextType.GridOddTitleUnder, DisplayColumnType.TotalOdds},
             { SiteTextType.GridOddTitleOver, DisplayColumnType.TotalOdds},
             { SiteTextType.GridOddResult, DisplayColumnType.Result},
-            { SiteTextType.GridOddRoi, DisplayColumnType.MaxRoi},
+            { SiteTextType.GridOddRoi, DisplayColumnType.Roi},
         };
 
         private static readonly Dictionary<BetOddType, DisplayColumnType> _displayColumnOddMap = new Dictionary<BetOddType, DisplayColumnType> {
@@ -75,6 +75,20 @@ namespace Project_B.CodeClientSide.Helper {
                 {SportType.IceHockey, _fullHeaders},
                 {SportType.Tennis, _shortHeaders},
                 {SportType.Volleyball, _shortHeaders}
+            };
+
+        public static readonly Dictionary<BetOddType, SiteTextType> TableHeader =
+            new Dictionary<BetOddType, SiteTextType> {
+                {BetOddType.Win1, SiteTextType.GridOddTitleWin1 },
+                {BetOddType.Win2, SiteTextType.GridOddTitleWin2 },
+                {BetOddType.Draw, SiteTextType.GridOddTitleDraw },
+                {BetOddType.Win1Draw, SiteTextType.GridOddTitleWin1Draw },
+                {BetOddType.Win1Win2, SiteTextType.GridOddTitleWin1Win2 },
+                {BetOddType.DrawWin2, SiteTextType.GridOddTitleDrawWin2 },
+                {BetOddType.Handicap1, SiteTextType.GridOddTitleHcap1 },
+                {BetOddType.Handicap2, SiteTextType.GridOddTitleHcap2 },
+                {BetOddType.TotalUnder, SiteTextType.GridOddTitleUnder },
+                {BetOddType.TotalOver, SiteTextType.GridOddTitleOver }
             };
 
         public static readonly BetOddType[] OddsWithSymbol = {

@@ -20,10 +20,10 @@ namespace Project_B.Controllers {
             var maxDateDef = dateDef.AddDays(14);
             filter.FixDates(dateDef, maxDateDef);
             var itemData = FrontCompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, filter.all ? null : (DateTime?)FixUserTimeToSystem(filter.from), null, null, filter.id);
-            var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+            var model = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
                     LimitToDisplayInGroup = 4,
-                    DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
+                    DisplayColumn = DisplayColumnType.TraditionalOdds
                 }) {
                     Competitions = itemData,
                     Filter = new FilterModel<SportType>("Index", "Competition", CurrentLanguage, FilterSettings.BtnAll | FilterSettings.FromDate, filter)
@@ -43,9 +43,9 @@ namespace Project_B.Controllers {
         public ActionResult Item(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageCompetitionUniqueIDConcrete, filter.id);
             var itemData = FrontCompetitionProvider.GetCompetitionItemsFuturedNew(CurrentLanguage, null, null, null, null, new[] {filter.id});
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
-                    DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
+                    DisplayColumn = DisplayColumnType.TraditionalOdds
                 }) {
                     Competitions = itemData
                 }
@@ -80,10 +80,10 @@ namespace Project_B.Controllers {
         [ActionProfile(ProjectBActions.PageCompetitionProfitable)]
         public ActionResult Profitable(FilterModel<SportType> filter) {
             var itemData = FrontCompetitionProvider.GetCompetitionItemsFuturedProfitable(CurrentLanguage, null, null, filter.id);
-            var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+            var model = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemRoiTransport>>(this) {
+                ControllerModel = new CompetitionRegularModel<CompetitionItemRoiTransport>(new PageDisplaySettings {
                         LimitToDisplayInGroup = 4,
-                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds
+                        DisplayColumn = DisplayColumnType.Roi
                     }) {
                     Competitions = itemData,
                     Filter = new FilterModel<SportType>(null, null, CurrentLanguage, FilterSettings.Default, filter)
@@ -93,7 +93,14 @@ namespace Project_B.Controllers {
                 true,
                 () => DateTime.MinValue,
                 () => {
-                    itemData.Each(FixToUserTime);
+                    itemData.Each(d => d.CompetitionItems.Each(ci => {
+                        ci.DateUtc = FixSystemTimeToUser(ci.DateUtc);
+                        ci.Roi.Each(r => {
+                            r.Odds.Each(o => {
+                                o.Value.DateTimeUtc = FixSystemTimeToUser(o.Value.DateTimeUtc);
+                            });
+                        });
+                    }));
                     return View(model);
                 });
         }

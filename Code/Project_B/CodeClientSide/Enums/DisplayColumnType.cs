@@ -4,7 +4,7 @@ namespace Project_B.CodeClientSide.Enums {
     [Flags]
     public enum DisplayColumnType : short {
         None = 0,
-        All = BaseOdds | AdditionalOdds | HandicapOdds | TotalOdds | MaximalOdds | MinimalOdds | Result | MaxRoi,
+        All = BaseOdds | AdditionalOdds | HandicapOdds | TotalOdds | MaximalOdds | MinimalOdds | Result | Roi,
         TraditionalOdds = BaseOdds | HandicapOdds | TotalOdds,
         AllOdds = TraditionalOdds | AdditionalOdds,
         BaseOdds = 0x001,
@@ -14,6 +14,6 @@ namespace Project_B.CodeClientSide.Enums {
         MaximalOdds = 0x010,
         MinimalOdds = 0x020,
         Result = 0x040,
-        MaxRoi = 0x080
+        Roi = 0x080
     }
 }

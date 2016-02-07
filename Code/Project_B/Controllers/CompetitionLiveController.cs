@@ -16,8 +16,8 @@ namespace Project_B.Controllers {
         public ActionResult Index(FilterModel<SportType> filter) {
             LogAction(ProjectBActions.PageLiveIndexConcrete, (short)filter.id);
             var itemData = FrontCompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, filter.all, null, null, filter.id);
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                    ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
@@ -38,8 +38,8 @@ namespace Project_B.Controllers {
         public ActionResult Item(FilterModel<int> filter) {
             LogAction(ProjectBActions.PageLiveCompetitionUniqueIDConcrete, filter.id);
             var itemData = FrontCompetitionProvider.GetCompetitionItemsLive(CurrentLanguage, true, null, null, null, new[] { filter.id });
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
                         DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData

@@ -3,7 +3,7 @@
 @using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.Models
-@model StaticPageBaseModel<CompetitionRegularModel>
+@model StaticPageBaseModel<CompetitionRegularModel<Project_B.CodeClientSide.TransportType.CompetitionItemBetTransport>>
 @{
     var currentController = ViewContext.RouteData.Values["controller"].ToString();
     Model.AdditionHtmlAssets.Add(BrokerSettingsHelper.BOOKMAKER_S);

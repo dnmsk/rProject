@@ -2,7 +2,7 @@
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
-@model StaticPageBaseModel<CompetitionRegularModel>
+@model StaticPageBaseModel<CompetitionRegularModel<Project_B.CodeClientSide.TransportType.CompetitionItemBetTransport>>
 @{
     var filterModel = Model.ControllerModel.Filter as FilterModel<SportType>;
     var source = new {

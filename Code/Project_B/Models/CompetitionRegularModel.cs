@@ -12,10 +12,14 @@ namespace Project_B.Models {
         }
 
     }
-    public class CompetitionRegularModel {
-        public List<CompetitionTransport> Competitions { get; set; } 
 
+    public class CompetitionRegularModel {
         public FilterModelBase Filter { get; set; }
+    }
+
+    public class CompetitionRegularModel<T> : CompetitionRegularModel where T : CompetitionItemShortTransport {
+        public List<CompetitionTransport<T>> Competitions { get; set; } 
+
         public PageDisplaySettings DisplaySettings { get; }
 
         public CompetitionRegularModel(PageDisplaySettings displaySettings) {

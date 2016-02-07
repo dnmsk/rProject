@@ -5,6 +5,7 @@ using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
+using Project_B.CodeClientSide.TransportType;
 using Project_B.CodeServerSide.Enums;
 using Project_B.Models;
 
@@ -21,9 +22,9 @@ namespace Project_B.Controllers {
             filter.FixDates(_minDateTime, MaxDateTime);
             var fromDate = FixUserTimeToSystem(filter.date);
             var itemData = FrontCompetitionProvider.GetCompetitionItemsHistory(CurrentLanguage, null, new[] {BrokerType.Default}, fromDate, fromDate.AddDays(1), filter.id);
-            var model = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
-                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+            var model = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
                     Filter = new FilterModel<SportType>("Index", "History" , CurrentLanguage, FilterSettings.ToDate, filter)
@@ -45,9 +46,9 @@ namespace Project_B.Controllers {
             filter.FixDates(_minDateTime, MaxDateTime);
             var itemData = FrontCompetitionProvider
                 .GetCompetitionItemsHistory(CurrentLanguage, null, new[] { BrokerType.Default }, filter.from, filter.date, null, new [] { filter.id });
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
-                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                    ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
                         Filter = new FilterModel<int>("Item", "History", CurrentLanguage, FilterSettings.FromDate | FilterSettings.ToDate, filter)
@@ -69,9 +70,9 @@ namespace Project_B.Controllers {
             filter.FixDates(_minDateTime, MaxDateTime);
             var itemData = FrontCompetitionProvider
                 .GetCompetitionItemsRegularBetForCompetitor(CurrentLanguage, null, new[] { BrokerType.Default }, filter.from, filter.date, filter.id);
-            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel>(this) {
-                    ControllerModel = new CompetitionRegularModel(new PageDisplaySettings {
-                        DisplayColumn = DisplayColumnType.MaxRoi | DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
+            var staticPageBaseModel = new StaticPageBaseModel<CompetitionRegularModel<CompetitionItemBetTransport>>(this) {
+                    ControllerModel = new CompetitionRegularModel<CompetitionItemBetTransport>(new PageDisplaySettings {
+                        DisplayColumn = DisplayColumnType.TraditionalOdds | DisplayColumnType.Result
                     }) {
                     Competitions = itemData,
                     Filter = new FilterModel<int>("Competitor", "History", CurrentLanguage, FilterSettings.FromDate | FilterSettings.ToDate, filter)

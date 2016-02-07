@@ -17,12 +17,45 @@
             return ((WebViewPage)WebPageContext.Current.Page).Url;
         }
     }
+
+}
+
+@helper RenderRoi(IEnumerable<RoiTransport> rois, LanguageType languageType) {
+foreach (var roi in rois) {
+    <table class="table" style="width: 300px; margin: 0;">
+        <tr>
+            <td class="@if (roi.Roi > default(float)) {@Html.Raw("success")
+                                    } text-center" style="vertical-align: middle; width: 60px;">
+                <b title="ROI">@roi.Roi.ToString("#0.#'%'")</b>
+            </td>
+            <td class="text-right" style="padding: 0 0 0 10px; width: 80px;">
+                @foreach (var oddType in BetHelper.RoiOdds[roi.RoiType]) {
+                    var odd = roi.Odds.TryGetValueOrDefault(oddType, false);
+                    if (odd != null) {
+                        @Html.Raw(LanguageSiteHelper.Instance.GetText(languageType, DisplayColumnProcessor.TableHeader[oddType]))
+                        <br />
+                    }
+                }
+            </td>
+            <td class="text-right" style="padding: 0; width: 100px;">
+                @foreach (var oddType in BetHelper.RoiOdds[roi.RoiType]) {
+                    var odd = roi.Odds.TryGetValueOrDefault(oddType, false);
+                    if (odd != null) {
+                        @RenderBetOdd(oddType, odd)
+                        <br />
+                    }
+                }
+            </td>
+            <td>calc</td>
+        </tr>
+    </table>
+}
 }
 
 @helper RenderBetOdd(BetOddType oddType, BetItemTransport currentBet, string additionalText = null) {
-<div title="@(currentBet.DateTimeUtc.ToString("dd'/'MM HH:") + (currentBet.DateTimeUtc.Minute / 10))0">
+<span title="@(currentBet.DateTimeUtc.ToString("dd'/'MM HH:") + (currentBet.DateTimeUtc.Minute / 10))0">
     @RenderAdvancedParam(oddType, currentBet.AdvancedParam)<b>@currentBet.Odd</b>@RenderOddSrcLink(currentBet) @Html.Raw(additionalText ?? string.Empty)
-</div>
+</span>
 }
 
 @helper RenderOddSrcLink(BetItemTransport betItem) {
@@ -40,7 +73,7 @@ if (DisplayColumnProcessor.OddsWithAdvanced.Contains(oddType)) {
 }
 }
 
-@helper RenderRoiTable(LanguageType language, SportType sportType, CompetitionTransport competition) {
+@helper RenderRoiTable(LanguageType language, SportType sportType, CompetitionTransport<CompetitionItemBetTransport> competition) {
 var hasAnyRoi = false;
 <div class="col-sm-5">
     <h4>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.GameRoiWidgetHeader)</h4>
@@ -81,7 +114,7 @@ var hasAnyRoi = false;
     </table>
 </div>
 }
-@helper RenderRoiGraph(string dataSource, LanguageType language, CompetitionItemBetShortTransport match) {
+@helper RenderRoiGraph(string dataSource, LanguageType language, CompetitionItemBetTransport match) {
     <div class="col-sm-7">
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <h4>@LanguageSiteHelper.Instance.GetText(language, SiteTextType.ChartTitle)</h4>

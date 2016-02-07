@@ -24,6 +24,9 @@
     Model.StaticPageTransport.Description = Model.StaticPageTransport.Description.HaackFormatSafe(source);
     Model.StaticPageTransport.Keywords = Model.StaticPageTransport.Keywords.HaackFormatSafe(source);
     Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
+    /*
+    @BetOddRenderHelper.RenderRoiTable(Model.CurrentLanguage, sportType, competition)
+    */
 }
 
 @CompetitionDetailHelper.SportTypeNameHelper("Competition", sportType, Model.CurrentLanguage)
@@ -34,9 +37,8 @@
         <a href="@Url.Action("Game", "CompetitionLive", new { id = competition.CompetitionItems.First().CompetitionItemID})">Live</a>
     }
 </div>
-@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All.FlagDrop(DisplayColumnType.MaxRoi)))
+@Html.Partial("Element/_ListCompetitionUniqueWriter", Tuple.Create(competition, DisplayColumnType.All.FlagDrop(DisplayColumnType.Roi)))
 
 <div class="row">
-    @BetOddRenderHelper.RenderRoiTable(Model.CurrentLanguage, sportType, competition)
     @BetOddRenderHelper.RenderRoiGraph(Url.Action("CompetitionItemGraph", "Data", new { id = match.CompetitionItemID, sportType = sportType }), Model.CurrentLanguage, match)
 </div>

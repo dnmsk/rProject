@@ -1,15 +1,14 @@
-﻿namespace Project_B.CodeServerSide.Entity.Data {
+﻿using System.Collections.Generic;
+using Project_B.CodeServerSide.Enums;
+
+namespace Project_B.CodeServerSide.Entity.Data {
     public class CompetitionItemRoiRow {
         public int ID { get; set; }
-        public float RoiMax { get; set; }
-        public float Roi1X2 { get; set; }
-        public float RoiHcap { get; set; }
-        public float RoiTotal { get; set; }
-        public float Roi1X_2 { get; set; }
-        public float Roi1_X2 { get; set; }
+        public float Roi { get; set; }
+        public RoiType RoiType { get; set; }
         /// <summary>
-        /// Order: [1, 2, X], [Hcap1, Hcap2, ], [TotalUnder, TotalOver, ]. Max 3 values. 
+        /// Order: [1, 2, X], [Hcap1, Hcap2], [TotalUnder, TotalOver], [1, X2], [12, X], [1X, 2]. 
         /// </summary>
-        public int[] BetIDs { get; set; }
+        public Dictionary<BetOddType, int> BetIDs { get; set; }
     }
 }

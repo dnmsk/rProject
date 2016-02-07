@@ -4,7 +4,7 @@
 @using Project_B.CodeClientSide.TransportType
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
-@model Tuple<CompetitionTransport, DisplayColumnType>
+@model Tuple<CompetitionTransport<CompetitionItemBetTransport>, DisplayColumnType>
 
 @functions{
     const string timeFormat = "dd'/'MM HH:00";
@@ -38,29 +38,21 @@
     }
 }
 
-@helper RenderRoiCell(DisplayColumnType displayColumnType, SportType sportType, Dictionary<BetOddType, BetItemTransport> maxBet, Dictionary<BetOddType, BetItemTransport> currentBet, Dictionary<BetOddType, BetItemTransport> minBet) {
+@helper RenderRoiCell(DisplayColumnType displayColumnType, SportType sportType, Dictionary<BetOddType, BetItemTransport> currentBet) {
     if (!DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddRoi, displayColumnType)) {
         return;
     }
     var currentPercentile = BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, currentBet);
     if (currentPercentile != default(int)) {
         <td class="small @if(currentPercentile > default(float)) {@Html.Raw("success")}" title="ROI">
-            @if (displayColumnType.HasFlag(DisplayColumnType.MaximalOdds)) {
-                @BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, maxBet).ToString("#0.#'%'")
-                <br/>
-            }
             <b>@currentPercentile.ToString("#0.#'%'")</b>
-            @if (displayColumnType.HasFlag(DisplayColumnType.MinimalOdds)) {
-                <br />
-                @BetOddInterfaceHelper.GetMaxBetOddRoi(RoiType.All, sportType, minBet).ToString("#0.#'%'")
-            }
         </td>
     } else {
         <td>&mdash;</td>
     }
 }
 
-@helper RenderResultCell(DisplayColumnType displayMode, CompetitionItemBetShortTransport competition) {
+@helper RenderResultCell(DisplayColumnType displayMode, CompetitionItemBetTransport competition) {
     if (DisplayColumnProcessor.NeedDrawCell(SiteTextType.GridOddResult, displayMode)) {
         <td class="small text-center">
             @if (competition.Result != null) {
@@ -114,7 +106,7 @@
                 <br />
                 2. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})" title="@competition.Competitor2.Name">@competition.Competitor2.Name</a>
             </td>
-            @RenderRoiCell(displayMode, data.SportType, competition.HistoryMaxBets, competition.CurrentBets, competition.HistoryMinBets)
+            @RenderRoiCell(displayMode, data.SportType, competition.CurrentBets)
             @foreach (var oddType in BetHelper.SportTypeWithOdds[data.SportType]) {
                 @RenderOddCell(displayMode, oddType, successActs.Contains(oddType),
                     competition.HistoryMaxBets.TryGetValueOrDefault(oddType),

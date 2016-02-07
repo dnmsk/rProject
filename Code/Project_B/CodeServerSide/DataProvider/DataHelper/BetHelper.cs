@@ -156,6 +156,15 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             {SportType.Volleyball, _standartOdds },
         };
 
+        public static readonly  Dictionary<RoiType, BetOddType[]> RoiOdds = new Dictionary<RoiType, BetOddType[]> {
+            { RoiType.Roi1X2, new[] { BetOddType.Win1, BetOddType.Draw, BetOddType.Win2 } },
+            { RoiType.RoiHandicap, new[] { BetOddType.Handicap1, BetOddType.Handicap2 } },
+            { RoiType.RoiTotal, new[] { BetOddType.TotalUnder, BetOddType.TotalOver} },
+            { RoiType.Roi1_X2, new[] { BetOddType.Win1, BetOddType.DrawWin2} },
+            { RoiType.Roi12_X, new[] { BetOddType.Win1Win2, BetOddType.Draw} },
+            { RoiType.Roi1X_2, new[] { BetOddType.Win1Draw, BetOddType.Win2} },
+        }; 
+
         public static Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
@@ -171,6 +180,15 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .OrderByDescending(t => t.ID)
                 .ToList());
         }
+
+        public static Dictionary<int, IBet<int>> GetBetByIDs(IEnumerable<int> betIDs) {
+            return Bet.DataSource
+                .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
+                .WhereIn(Bet.Fields.ID, betIDs)
+                .AsMapByIds()
+                .ToDictionary(kv => kv.Key, kv => (IBet<int>) kv.Value);
+        }
+
         public static Dictionary<int, List<IBet<int>>> GetBetMapNew(IEnumerable<int> betIDs) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)

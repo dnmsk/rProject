@@ -1,8 +1,9 @@
 ﻿@using CommonUtils.ExtendedTypes
+@using Project_B.CodeClientSide.Helper
 @using Project_B.CodeServerSide.DataProvider.DataHelper
 @using Project_B.CodeServerSide.Enums
 @using Project_B.Models
-@model StaticPageBaseModel<CompetitionRegularModel>
+@model StaticPageBaseModel<CompetitionRegularModel<Project_B.CodeClientSide.TransportType.CompetitionItemRoiTransport>>
 @section Metatags{
     <meta name="document-state" content="Dynamic" />
 }
@@ -18,4 +19,53 @@
     Model.StaticPageTransport.Content = Model.StaticPageTransport.Content.HaackFormatSafe(source);
 }
 
-@Html.Partial("Element/_ListCompetitionWriter", Model)
+@{
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    Model.AdditionHtmlAssets.Add(BrokerSettingsHelper.BOOKMAKER_S);
+}
+
+<style type="text/css">
+    table.gridOdds {
+        margin-bottom: 0;
+        table-layout: fixed;
+        min-width: 500px;
+    }
+
+        table.gridOdds > tbody > tr > td, table.gridOdds > thead > tr > td {
+            line-height: 1.2;
+            padding: 2px 4px;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+
+    h5.lowHeader {
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+</style>
+<div class="col-sm-7">
+    @foreach (var bySportTypes in Model.ControllerModel.Competitions.GroupBy(c => c.SportType).OrderBy(c => (short)c.Key)) {
+        @CompetitionDetailHelper.SportTypeNameHelper(currentController, bySportTypes.Key, Model.CurrentLanguage)
+        <table class="table table-bordered text-nowrap gridOdds">
+            @foreach (var competition in bySportTypes.SelectMany(cm => cm.CompetitionItems).OrderBy(ci => ci.DateUtc)) {
+                foreach (var roi in competition.Roi) {
+                    <tr>
+                        <td class="text-right" style="width: 90px;">
+                            <a href="@Url.Action("Game", "Competition", new {id = competition.CompetitionItemID})">
+                                @competition.DateUtc.ToString("dd'/'MM HH:00")
+                            </a>
+                        </td>
+                        <td>
+                            1. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})" title="@competition.Competitor1.Name">@competition.Competitor1.Name</a>
+                            <br />
+                            2. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor2.ID})" title="@competition.Competitor2.Name">@competition.Competitor2.Name</a>
+                        </td>
+                        <td style="width: 300px;">
+                            @BetOddRenderHelper.RenderRoi(new[] { roi }, Model.CurrentLanguage)
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    }
+</div>
