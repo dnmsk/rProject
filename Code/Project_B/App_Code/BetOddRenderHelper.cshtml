@@ -29,21 +29,15 @@ foreach (var roi in rois) {
                 <b title="ROI">@roi.Roi.ToString("#0.#'%'")</b>
             </td>
             <td class="text-right" style="padding: 0 0 0 10px; width: 80px;">
-                @foreach (var oddType in BetHelper.RoiOdds[roi.RoiType]) {
-                    var odd = roi.Odds.TryGetValueOrDefault(oddType, false);
-                    if (odd != null) {
-                        @Html.Raw(LanguageSiteHelper.Instance.GetText(languageType, DisplayColumnProcessor.TableHeader[oddType]))
-                        <br />
-                    }
+                @foreach (var odd in roi.Odds) {
+                    @Html.Raw(LanguageSiteHelper.Instance.GetText(languageType, DisplayColumnProcessor.TableHeader[odd.Key]))
+                    <br />
                 }
             </td>
             <td class="text-right" style="padding: 0; width: 100px;">
-                @foreach (var oddType in BetHelper.RoiOdds[roi.RoiType]) {
-                    var odd = roi.Odds.TryGetValueOrDefault(oddType, false);
-                    if (odd != null) {
-                        @RenderBetOdd(oddType, odd)
-                        <br />
-                    }
+                @foreach (var odd in roi.Odds) {
+                    @RenderBetOdd(odd.Key, odd.Value)
+                    <br />
                 }
             </td>
             <td>calc</td>
