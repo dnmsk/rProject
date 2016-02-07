@@ -476,7 +476,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             });
         }
 
-        public void ApplyLinker(int targetId, BrokerEntityType type) {
+        public void ApplyLinker(int targetId, BrokerEntityType type, bool ignoreRelinked = true) {
             InvokeSafe(() => {
                 if (type != BrokerEntityType.Competitor) {
                     return;
@@ -500,7 +500,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     );
                 var rawCompetitorsToProcess = RawCompetitor.DataSource
                     .WhereIn(RawCompetitor.Fields.ID, rawCompetitionItems.Select(rci => rci.Competitoruniqueid1).Union(rawCompetitionItems.Select(rci => rci.Competitoruniqueid2)).Distinct())
-                    .Where(new DaoFilter(new DbFnSimpleOp(RawCompetitor.Fields.Linkstatus, FnMathOper.BitwiseAnd, (short)(LinkEntityStatus.LinkByRelinker | LinkEntityStatus.ManualConfirmed)), Oper.Eq, default(int)))
+                    .Where(new DaoFilter(new DbFnSimpleOp(RawCompetitor.Fields.Linkstatus, FnMathOper.BitwiseAnd, 
+                        (short)((ignoreRelinked ? LinkEntityStatus.LinkByRelinker : LinkEntityStatus.Unlinked) | LinkEntityStatus.ManualConfirmed)), Oper.Eq, default(int)))
                     .AsMapByIds(RawCompetitor.Fields.CompetitoruniqueID, RawCompetitor.Fields.Linkstatus, RawCompetitor.Fields.Name);
 
                 var competitionItems = CompetitionItem.DataSource.Where(new DaoFilterOr(

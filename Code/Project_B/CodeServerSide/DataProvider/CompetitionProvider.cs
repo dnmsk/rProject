@@ -32,12 +32,6 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .SetupValidateObject(specify => true/*NOTE!! && specify.CompetitionSpecifyUniqueID != default(int)*/)
                     .SetupGetRaw(() => RawCompetitionHelper.GetRawCompetitionSpecify(brokerType, language, sportType, genderDetected, nameOrigin))
                     .SetupCreateRaw(() => RawCompetitionHelper.CreateCompetitionSpecify(competitionStat, brokerType, language, sportType, genderDetected, nameOrigin, competitionToSave, algoMode))
-                    .SetupTryMatchRaw(algoMode, specify => {
-                        if (false) {
-                            specify.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
-                        }
-                        return specify;
-                    })
                     .SetupCreateOriginal(algoMode, specify => {
                         if (specify.CompetitionSpecifyUniqueID == default(int)) {
                             var competitionSpecifyUnique = new CompetitionSpecifyUnique {

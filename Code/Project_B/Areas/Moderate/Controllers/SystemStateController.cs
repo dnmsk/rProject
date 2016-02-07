@@ -53,11 +53,11 @@ namespace Project_B.Areas.Moderate.Controllers {
                     return PartialView(new Tuple<RawEntityWithLink>(_provider.GetEntity(filter.id, type)));
                 case "PUT":
                     _provider.EntityLinkerPut(filter.id, type);
-                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type));
+                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type, false));
                     break;
                 case "POST":
                     _provider.EntityLinkerPost(filter.id, type, ids);
-                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type));
+                    TaskRunner.Instance.AddAction(() => _provider.ApplyLinker(filter.id, type, false));
                     break;
                 case "DELETE":
                     _provider.EntityLinkerDelete(filter.id, type);

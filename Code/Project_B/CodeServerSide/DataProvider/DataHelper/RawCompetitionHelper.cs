@@ -13,11 +13,6 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionHelper {
-        /// <summary>
-        /// Логгер.
-        /// </summary>
-        private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitionHelper).FullName);
-        
         public static RawCompetitionSpecify GetRawCompetitionSpecify(BrokerType brokerType, LanguageType language,
             SportType sportType, GenderType genderDetected, string[] nameOrigin) {
             return RawCompetitionSpecify.DataSource.FilterByBroker(brokerType).FilterByLanguage(language).FilterBySportType(sportType)
@@ -55,14 +50,6 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         .FilterByGender(genderDetected, RawCompetition.Fields.CompetitionuniqueID, RawCompetition.Fields.Linkstatus).FirstOrDefault();
                 })
                 .SetupCreateRaw(() => BrokerEntityIfaceCreator.CreateEntity<RawCompetition>(brokerType, language, sportType, genderDetected, LinkEntityStatus.Unlinked, nameOriginShort))
-                .SetupTryMatchRaw(algoMode, entity => {
-                    var competitionUnique = CompetitionHelper.TryDetectCompetitionUniqueFromMatches(sportType, nameOrigin, competitionToSave);
-                    if (competitionUnique != null) {
-                        entity.CompetitionuniqueID = competitionUnique.ID;
-                        entity.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
-                    }
-                    return entity;
-                })
                 .SetupCreateOriginal(algoMode, rawCompetition => {
                     var competition = Competition.DataSource.FilterByLanguage(language).FilterBySportType(sportType)
                         .FilterByNameCompetition(nameOriginShort)
