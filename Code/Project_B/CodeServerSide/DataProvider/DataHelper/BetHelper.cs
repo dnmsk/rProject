@@ -16,6 +16,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
 
         public static bool IsEqualsTo<T>(this IBet<T> t, IBet<T> bet) {
             return t != null
+                   && t.IsActive
                    && bet != null
                    && t.Win1 == bet.Win1
                    && t.Win2 == bet.Win2
@@ -154,16 +155,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             {SportType.Tennis, _standartOdds },
             {SportType.Volleyball, _standartOdds },
         };
-
-        public static readonly  Dictionary<RoiType, BetOddType[]> RoiOdds = new Dictionary<RoiType, BetOddType[]> {
-            { RoiType.Roi1X2, new[] { BetOddType.Win1, BetOddType.Draw, BetOddType.Win2 } },
-            { RoiType.RoiHandicap, new[] { BetOddType.Handicap1, BetOddType.Handicap2 } },
-            { RoiType.RoiTotal, new[] { BetOddType.TotalUnder, BetOddType.TotalOver} },
-            { RoiType.Roi1_X2, new[] { BetOddType.Win1, BetOddType.DrawWin2} },
-            { RoiType.Roi12_X, new[] { BetOddType.Win1Win2, BetOddType.Draw} },
-            { RoiType.Roi1X_2, new[] { BetOddType.Win1Draw, BetOddType.Win2} },
-        }; 
-
+        
         public static Dictionary<int, List<IBet<int>>> GetBetMap(IEnumerable<int> competitionItemIDs, BrokerType[] brokerTypesToRetreive) {
             var bets = Bet.DataSource
                 .Join(JoinType.Left, BetAdvanced.Fields.ID, Bet.Fields.ID, RetrieveMode.Retrieve)
