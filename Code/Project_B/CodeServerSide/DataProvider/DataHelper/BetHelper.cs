@@ -108,8 +108,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 return false;
             }
             var canCreateNewBetAdvanced = mustHaveBetAdvanced && newBetAdvanced != null;
-            var createNewBet = (!betDb?.IsActive ?? !betDb.IsEqualsTo(newBet)) ||
-                               canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
+            var createNewBet = !betDb.IsEqualsTo(newBet) || canCreateNewBetAdvanced && !betAdvancedDb.IsEqualsTo(newBetAdvanced);
             if (createNewBet) {
                 processStat.CreateOriginalCount++;
                 newBet.CompetitionitemID = competitionItemID;
