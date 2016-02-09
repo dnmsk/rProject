@@ -8,6 +8,7 @@ using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.Transport;
 using Project_B.CodeServerSide.Entity;
+using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
@@ -26,6 +27,12 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         competitorProvider
                         .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed, algoMode)
                     };
+                    if (competitors.Any(c => c.Object.ID == default(int)) && competitors.Any(c => c.Object.ID != default(int))) {
+                        var linker = new SystemStateProvder();
+                        linker.ApplyLinker(competitors.First(c => c.Object.ID != default(int)).RawObject.ID, BrokerEntityType.Competitor, false);
+                        var unlikedCompetitor = competitors.First(c => c.Object.ID == default(int));
+                        unlikedCompetitor.Object.ID = Competitor.DataSource.GetByKey(unlikedCompetitor.RawObject.ID).CompetitoruniqueID;
+                    }
                     var creationCiMode = (matchParsed.Odds.SafeAny() || matchParsed.Result != null) ? algoMode : algoMode.FlagDrop(GatherBehaviorMode.CreateOriginalIfMatchedAll);
                     var competitionItemRawTransport = competitionProvider.GetCompetitionItem(stat[ProcessStatType.CompetitionItemFromRaw], brokerData.Broker, competitors, competition, matchParsed.DateUtc, creationCiMode, brokerSettings);
                     if (competitionItemRawTransport != null && competitionItemRawTransport.CompetitionItemID != default(int)) {
