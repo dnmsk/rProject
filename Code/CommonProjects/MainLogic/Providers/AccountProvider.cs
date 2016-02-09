@@ -78,15 +78,16 @@ namespace MainLogic.Providers {
                     .WhereEquals(AccountIdentity.Fields.ID, account)
                     .First(
                         AccountIdentity.Fields.Email,
-                        AccountIdentity.Fields.GuestID
+                        AccountIdentity.Fields.GuestID,
+                        AccountIdentity.Fields.Datelastlogin
                     );
 
                 return new AccountDetailsTransport {
                     Email = identity.Email,
                     GuestId = (int)identity.GuestID,
-                    AccountId = identity.ID
+                    DateLastLogin = identity.Datelastlogin ?? DateTime.MinValue
                 };
-            }, null);
+            });
         }
 
         public AccountDetailsTransport GetAccountDescription(string email) {
@@ -105,7 +106,7 @@ namespace MainLogic.Providers {
                     GuestId = (int) identity.GuestID,
                     AccountId = identity.ID
                 };
-            }, null);
+            });
         }
     }
 }

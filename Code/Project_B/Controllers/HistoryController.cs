@@ -32,7 +32,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 true,
-                () => TryGetNotModifiedResultForItems(itemData, model.StaticPageTransport.LastModifyDateUtc),
+                model.GetLastModifiedFunc(() => TryGetNotModifiedResultForItems(itemData, model.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(model);
@@ -56,7 +56,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 itemData.Any(),
-                () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
+                staticPageBaseModel.GetLastModifiedFunc(() => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(staticPageBaseModel);
@@ -80,7 +80,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 itemData.Any(),
-                () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
+                staticPageBaseModel.GetLastModifiedFunc(() => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(staticPageBaseModel);

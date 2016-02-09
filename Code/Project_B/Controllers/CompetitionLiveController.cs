@@ -26,7 +26,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 true,
-                () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
+                staticPageBaseModel.GetLastModifiedFunc(() => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(staticPageBaseModel);
@@ -47,7 +47,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 itemData != null && itemData.Count > 0,
-                () => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc),
+                staticPageBaseModel.GetLastModifiedFunc(() => TryGetNotModifiedResultForItems(itemData, staticPageBaseModel.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     itemData.Each(FixToUserTime);
                     return View(staticPageBaseModel);
@@ -64,7 +64,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 itemData?.CompetitionTransport != null,
-                () => TryGetNotModifiedResultForGame(itemData, model.StaticPageTransport.LastModifyDateUtc),
+                model.GetLastModifiedFunc(() => TryGetNotModifiedResultForGame(itemData, model.StaticPageTransport.LastModifyDateUtc)),
                 () => {
                     FixToUserTime(itemData.CompetitionTransport);
                     return View(model);

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using MainLogic.Transport;
 using MainLogic.WebFiles;
+using MainLogic.WebFiles.UserPolicy;
 using Project_B.CodeClientSide;
 using Project_B.CodeClientSide.Enums;
 using Project_B.CodeClientSide.TransportType;
@@ -16,7 +19,7 @@ namespace Project_B.Models {
             type => type);
 
         public LanguageType CurrentLanguage { get; }
-        public List<string> AdditionHtmlAssets { get; set; }
+        public List<string> AdditionHtmlAssets { get; }
         public StaticPageBaseModel(ProjectControllerBase projectController) : base(projectController.GetBaseModel()) {
             StaticPageTransport = (StaticPageTransport) (_staticPagesCache.GetPage(
                     CurrentLanguage = projectController.CurrentLanguage, 
@@ -31,6 +34,14 @@ namespace Project_B.Models {
             StaticPageTransport = new StaticPageTransport();
             SubNavigationType = SubNavigationType.None;
         }
+
+        public Func<DateTime> GetLastModifiedFunc(Func<DateTime> dataDateFunc) {
+            return () => {
+                var accountDetailsDate = GetUserPolicyState<AccountDetailsTransport>(UserPolicyGlobal.AccountDetails)?.DateLastLogin ?? DateTime.MinValue;
+                var dataDate = dataDateFunc();
+                return accountDetailsDate > dataDate ? accountDetailsDate : dataDate;
+            };
+        } 
     }
 
     public class StaticPageBaseModel<T> : StaticPageBaseModel {

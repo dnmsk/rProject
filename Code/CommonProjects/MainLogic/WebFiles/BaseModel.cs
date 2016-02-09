@@ -4,6 +4,7 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.WatchfulSloths.KangooCache;
 using MainLogic.Code;
+using MainLogic.Transport;
 using MainLogic.WebFiles.UserPolicy;
 
 namespace MainLogic.WebFiles {
@@ -21,12 +22,12 @@ namespace MainLogic.WebFiles {
                 var configurationProperty = SiteConfiguration.GetConfigurationProperty<int[]>("AccountIDsDisabledStatistic");
                 return configurationProperty != null && configurationProperty.Contains(sessionModule.AccountID);
             });
-            ConfigurePolicyStore(UserPolicyGlobal.AccountEmail, (sessionModule, mainLogicProvider) => {
+            ConfigurePolicyStore(UserPolicyGlobal.AccountDetails, (sessionModule, mainLogicProvider) => {
                 if (sessionModule.IsAuthenticated()) {
                     var accountDetails = mainLogicProvider.AccountProvider.GetAccountDescription(sessionModule.AccountID);
-                    return accountDetails.Email;
+                    return accountDetails;
                 }
-                return string.Empty;
+                return new AccountDetailsTransport();
             });
         }
 

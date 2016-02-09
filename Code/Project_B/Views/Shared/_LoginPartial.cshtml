@@ -1,4 +1,5 @@
-﻿@using MainLogic.WebFiles.UserPolicy
+﻿@using MainLogic.Transport
+@using MainLogic.WebFiles.UserPolicy
 @using Project_B.CodeClientSide.Enums
 @using Project_B.CodeClientSide.Helper
 @model Project_B.Models.StaticPageBaseModel
@@ -10,7 +11,7 @@
     @Html.AntiForgeryToken()
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.GetUserPolicyState<string>(UserPolicyGlobal.AccountEmail) + "!", "Index", "Manage", routeValues, new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
+            @Html.ActionLink(LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLoginHello) + " " + Model.GetUserPolicyState<AccountDetailsTransport>(UserPolicyGlobal.AccountDetails).Email + "!", "Index", "Manage", routeValues, new { title = LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderAccountManageTitle) })
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">@LanguageSiteHelper.Instance.GetText(Model.CurrentLanguage, SiteTextType.HeaderLogOff)</a></li>
     </ul>

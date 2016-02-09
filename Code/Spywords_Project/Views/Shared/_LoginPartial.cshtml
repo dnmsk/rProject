@@ -1,4 +1,5 @@
-﻿@using MainLogic.WebFiles.UserPolicy
+﻿@using MainLogic.Transport
+@using MainLogic.WebFiles.UserPolicy
 @model MainLogic.WebFiles.BaseModel
 
 @if (Model.IsAuthenticated()) {
@@ -7,7 +8,7 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a>Ола, @Html.Raw(Model.GetUserPolicyState<string>(UserPolicyGlobal.AccountEmail))!</a>
+                <a>Ола, @Html.Raw(Model.GetUserPolicyState<AccountDetailsTransport>(UserPolicyGlobal.AccountDetails).Email)!</a>
             </li>
             <li>
                 <a href="javascript:document.getElementById('logoutForm').submit()">Выход</a>

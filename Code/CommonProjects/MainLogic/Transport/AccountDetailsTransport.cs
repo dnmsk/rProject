@@ -1,7 +1,10 @@
-﻿namespace MainLogic.Transport {
+﻿using System;
+
+namespace MainLogic.Transport {
     public class AccountDetailsTransport {
         public string Email { get; set; }
         public int GuestId { get; set; }
         public int AccountId { get; set; }
+        public DateTime DateLastLogin { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -55,6 +56,9 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         
         protected string FormatUrl(SectionName urlTargetSection, object obj) {
             return CurrentConfiguration.StringSimple[urlTargetSection].HaackFormat(obj);
+        }
+        protected static IEnumerable<SportType> GetSportSimpleTypes(SportType sportType) {
+            return sportType.GetFlags<SportType>().Where(f => f != SportType.All && f != SportType.Unknown);
         }
 
         protected string GetLanguageParam(LanguageType language) {

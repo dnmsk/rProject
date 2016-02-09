@@ -18,7 +18,7 @@ namespace Project_B.Controllers {
             var model = new StaticPageBaseModel(this);
             return new ActionResultCached(
                 true,
-                () => model.StaticPageTransport.LastModifyDateUtc,
+                model.GetLastModifiedFunc(() => model.StaticPageTransport.LastModifyDateUtc),
                 () => View(model));
         }
 

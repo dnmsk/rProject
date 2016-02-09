@@ -68,9 +68,6 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             return new BrokerData(BrokerType, language, result);
         }
 
-        private static IEnumerable<SportType> GetSportSimpleTypes(SportType sportType) {
-            return sportType.GetFlags<SportType>().Where(f => f != SportType.All && f != SportType.Unknown);
-        }
         
         private List<CompetitionParsed> ParseFromJson(SportType simpleSportType, SectionName sectionUrlName) {
             var content = LoadPage(FormatUrl(sectionUrlName, new {
