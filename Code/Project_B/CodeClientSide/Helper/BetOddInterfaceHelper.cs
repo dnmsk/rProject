@@ -214,7 +214,7 @@ namespace Project_B.CodeClientSide.Helper {
             }
             if (currentBets != null) {
                 BetItemTransport betItemTransport;
-                if (currentBets.TryGetValue(BetOddType.Handicap1, out betItemTransport)) {
+                if (currentBets.TryGetValue(BetOddType.Handicap2, out betItemTransport)) {
                     var advancedParam = betItemTransport.AdvancedParam;
                     successActs.Add(advancedParam < totalScore.Item1 - totalScore.Item2 
                         ? BetOddType.Handicap1 

@@ -27,6 +27,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                         competitorProvider
                         .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed, algoMode)
                     };
+                    if (competitors.Any(c => c.RawObject.ID == default(int))) {
+                        continue;
+                    }
                     if (competitors.Any(c => c.Object.ID == default(int)) && competitors.Any(c => c.Object.ID != default(int))) {
                         var linker = new SystemStateProvder();
                         linker.ApplyLinker(competitors.First(c => c.Object.ID != default(int)).RawObject.ID, BrokerEntityType.Competitor, false);

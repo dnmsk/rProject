@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using IDEV.Hydra.DAO;
-using Project_B.CodeClientSide.TransportType;
-using Project_B.CodeClientSide.TransportType.SubData;
-using Project_B.CodeServerSide.Data;
-using Project_B.CodeServerSide.Entity.BrokerEntity;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Helper;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -31,7 +25,8 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             if (competitorsRaw.Count > 1) {
                 var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
                 if (groupBy.Length > 1) {
-                    _logger.Error("{0} {1} {2} {3} {4} {5} <=> {6}", brokerType, languageType, sportType, genderType, competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Select(g => g.Select(ge => ge.Name)).StrJoin(", "));
+                    _logger.Error("{0} {1} {2} {3} {4} <=> {5}", brokerType, sportType, genderType, 
+                        competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Select(g => g.SelectMany(ge => ge.Name)).StrJoin(", "));
                     return groupBy.First().ToList();
                 }
                 if (groupBy.Length == 1) {
