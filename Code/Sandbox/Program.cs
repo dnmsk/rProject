@@ -21,16 +21,20 @@ using CommonUtils.ExtendedTypes;
 using CommonUtils.WatchfulSloths.SlothMoveRules;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbConfig;
+using IDEV.Hydra.DAO.DbFunctions;
+using IDEV.Hydra.DAO.Filters;
 using MainLogic.WebFiles;
 using MainLogic.Wrapper;
 using Project_B.CodeClientSide.Helper;
 using Project_B.CodeServerSide;
 using Project_B.CodeServerSide.Algorithm;
 using Project_B.CodeServerSide.BrokerProvider;
+using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
+using Project_B.CodeServerSide.Entity.Interface;
 using Project_B.CodeServerSide.Enums;
 using Spywords_Project.Code;
 using Spywords_Project.Code.Algorithms;
@@ -39,10 +43,29 @@ namespace Sandbox {
     class Program {
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(Program).FullName);
         private static readonly ConcurrentQueue<Action> _actionsToExecute = new ConcurrentQueue<Action>();
+        
         static void Main(string[] args) {
             try {
                 RegisterDB();
 
+                var dataResult = BookPage.Instance.GetBrokerProvider(BrokerType.ASport)
+                                   .LoadRegular(SportType.All, LanguageType.English);
+                /*
+                var betProvider = new BetProvider();
+                var lastRunTime = DateTime.MinValue;
+                var delay = TimeSpan.FromSeconds(40);
+                for (DateTime date = new DateTime(2015, 11, 24); date > new DateTime(2015, 01, 01); date = date.AddDays(-1)) {
+                    while (DateTime.Now - lastRunTime < delay) {
+                        Thread.Sleep(1000);
+                    }
+                    lastRunTime = DateTime.Now;
+                    var dataResult = BookPage.Instance.GetBrokerProvider(BrokerType.LightBlue)
+                                       .LoadResult(date, SportType.All, LanguageType.English);
+                    var stat = betProvider.SaveBrokerState(dataResult, GatherBehaviorMode.TryDetectAll, RunTaskMode.RunPastDateHistoryTask);
+                    Console.WriteLine("{0}: {1} RawCompetitionItem = {2}", DateTime.Now, date.ToString("dd-MM-yyyy"), stat[ProcessStatType.CompetitionItemFromRaw].TotalCount);
+                }
+                //*/
+                //var types = BrokerSettingsHelper.Instance.GetBrokerTypes;
                 Console.WriteLine("End: " + DateTime.Now);
                 while (true) {
                     Thread.Sleep(1000);
@@ -58,21 +81,7 @@ namespace Sandbox {
             Console.WriteLine("Success");
             //Console.ReadLine();
         }
-
-        private static void CollectAndWriteToArray(string s, string[] fileContent, int index) {
-            fileContent[index] = s = s.Trim();
-            Tuple<HttpStatusCode, string> siteContent;
-            try {
-                siteContent = WebRequestHelper.GetContentWithStatus("http://" + DomainExtension.PunycodeDomain(s));
-            } catch (Exception ex) {
-                fileContent[index] = new[] { s, "не ответил" }.StrJoin(";");
-                return;
-            }
-            var emails = CollectEmailPhoneFromDomain.GetEmailFromContent(siteContent.Item2);
-            var phones = CollectEmailPhoneFromDomain.GetPhoneFromContent(siteContent.Item2);
-            fileContent[index] = new[] { s, (phones ?? new string[0]).StrJoin(","), (emails ?? new string[0]).StrJoin(",") }.StrJoin(";");
-        }
-
+        
         static void RegisterDB() {
             ConfigHelper.RegisterConfigTarget("Application.xml", xml => {
                 var xmlDoc = (XmlDocument)xml;
