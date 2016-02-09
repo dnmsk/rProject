@@ -26,7 +26,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 var groupBy = competitorsRaw.Where(c => c.CompetitoruniqueID != default(int)).GroupBy(c => c.CompetitoruniqueID).ToArray();
                 if (groupBy.Length > 1) {
                     _logger.Error("{0} {1} {2} {3} {4} <=> {5}", brokerType, sportType, genderType, 
-                        competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Select(g => g.SelectMany(ge => ge.Name)).StrJoin(", "));
+                        competitorsRaw.Select(cr => cr.ID).StrJoin(", "), names.StrJoin(", "), groupBy.Select(g => g.Select(ge => ge.Name).StrJoin(", ")).StrJoin(" | "));
                     return groupBy.First().ToList();
                 }
                 if (groupBy.Length == 1) {
