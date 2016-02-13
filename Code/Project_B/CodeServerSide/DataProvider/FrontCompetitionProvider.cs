@@ -186,7 +186,7 @@ namespace Project_B.CodeServerSide.DataProvider {
         public Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> GetRowDataForGraphCompetition(BrokerType[] brokerTypesToRetreive, SportType sportType, int competitionItemID) {
             return InvokeSafe(() => {
                 var buildOddsByDateByBroker = BuildOddsByDateByBroker(ints => BetHelper.GetBetMap(ints, brokerTypesToRetreive, false), sportType, competitionItemID, DateRoundType.Minute);
-                if (CompetitionItem.DataSource.GetByKey(competitionItemID, CompetitionItem.Fields.Dateeventutc).Dateeventutc > DateTime.UtcNow) {
+                if (buildOddsByDateByBroker.Any() && CompetitionItem.DataSource.GetByKey(competitionItemID, CompetitionItem.Fields.Dateeventutc).Dateeventutc > DateTime.UtcNow) {
                     buildOddsByDateByBroker[DateTime.UtcNow] = buildOddsByDateByBroker[buildOddsByDateByBroker.Keys.Max()];
                 }
                 return buildOddsByDateByBroker;
@@ -200,9 +200,10 @@ namespace Project_B.CodeServerSide.DataProvider {
         }
 
         private static Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> BuildOddsByDateByBroker<T>(Func<int[], Dictionary<int, List<IBet<T>>>> getBetMap, SportType sportType, int competitionItemID, DateRoundType resolution) {
+            var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
             var betMap = getBetMap(new[] { competitionItemID });
             if (betMap == null || !betMap.Any()) {
-                return null;
+                return oddsByDateByBroker;
             }
 
             //Скаладываем значения коэффициентов по времени последнего актуального значения с округлением.
@@ -260,7 +261,6 @@ namespace Project_B.CodeServerSide.DataProvider {
 
             //Преобразуем запись в базе в системное значение. тут оптимизировать, сделав это до добавления недостающих точек. Логически понятнее здесь.
             var betOddTypes = BetHelper.SportTypeWithOdds[sportType];
-            var oddsByDateByBroker = new Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>>();
             foreach (var mapBets in mapBetsByDates) {
                 var forDate = new List<Dictionary<BetOddType, BetItemTransport>>();
                 foreach (var ibet in mapBets.Value) {

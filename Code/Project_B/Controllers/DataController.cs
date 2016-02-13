@@ -27,10 +27,9 @@ namespace Project_B.Controllers {
             return BuildActionResult(sportType, data);
         }
 
-        private ActionResult BuildActionResult(SportType sportType,
-            Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> data) {
-            return new ActionResultCached(data != null && data.Any(),
-                () => data.Max(d => d.Key),
+        private ActionResult BuildActionResult(SportType sportType, Dictionary<DateTime, List<Dictionary<BetOddType, BetItemTransport>>> data) {
+            return new ActionResultCached(data != null,
+                () => data.MaxOrDefault(d => d.Key, DateTime.MinValue),
                 () => {
                     var res = new List<Dictionary<string, float>>();
                     var addDraw = BetHelper.SportTypeWithOdds[sportType].Contains(BetOddType.Draw);
