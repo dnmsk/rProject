@@ -205,10 +205,11 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 .WhereIn(BetLive.Fields.CompetitionitemID, competitionItemIDs);
             if (brokerTypesToRetreive != null && brokerTypesToRetreive.Any()) {
                 bets = bets
-                    .WhereTrue(BetLive.Fields.IsActive);
+                    .WhereIn(BetLive.Fields.BrokerID, brokerTypesToRetreive);
             }
             if (onlyActive) {
-                bets = bets.WhereIn(BetLive.Fields.BrokerID, brokerTypesToRetreive);
+                bets = bets
+                    .WhereTrue(BetLive.Fields.IsActive);
             }
             return bets
                 .AsList()
