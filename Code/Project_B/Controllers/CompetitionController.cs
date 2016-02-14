@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using CommonUtils.ExtendedTypes;
 using MainLogic.WebFiles;
@@ -91,7 +92,7 @@ namespace Project_B.Controllers {
             };
             return new ActionResultCached(
                 true,
-                model.GetLastModifiedFunc(() => DateTime.MinValue),
+                model.GetLastModifiedFunc(() => itemData.MaxOrDefault(i => i.CompetitionItems.Max(c => c.Roi.Max(r => r.Odds.Max(o => o.Value.DateTimeUtc))), DateTime.MinValue)),
                 () => {
                     itemData.Each(d => d.CompetitionItems.Each(ci => {
                         ci.DateUtc = FixSystemTimeToUser(ci.DateUtc);
