@@ -10,8 +10,8 @@
     const string timeFormat = "dd'/'MM HH:00";
 }
 
-@helper RenderDateTime(int currentYear, DateTime dateTime, int competitionID) {
-    <a href="@Url.Action("Game", "Competition", new {id = competitionID})">
+@helper RenderDateTime(int currentYear, DateTime dateTime, int competitionID, bool isLive) {
+    <a href="@Url.Action("Game", isLive ? "CompetitionLive" : "Competition", new {id = competitionID})">
         @if (dateTime.Year != currentYear) {
             @dateTime.ToString("dd.MM.yyyy")<br />@dateTime.ToString("HH:mm")
         } else {
@@ -99,7 +99,7 @@
         }
         <tr @if (competition.Result != null) { @Html.Raw("class=\"active\"")}>
             <td>
-                @RenderDateTime(currentYear, competition.DateUtc, competition.CompetitionItemID)
+                @RenderDateTime(currentYear, competition.DateUtc, competition.CompetitionItemID, competition.IsLiveData)
             </td>
             <td class="text-left">
                 1. <a href="@Url.Action("Competitor", "History", new {id = competition.Competitor1.ID})" title="@competition.Competitor1.Name">@competition.Competitor1.Name</a>

@@ -120,6 +120,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .Select(g => (int)g[CompetitionItem.Fields.ID]);
 
                 var competitionTransports = GetCompetitionItemShortModel<CompetitionItemBetTransport>(languageType, CompetitionItem.DataSource.WhereIn(CompetitionItem.Fields.ID, competitionItemIDs));
+                competitionTransports.Each(ct => ct.CompetitionItems.Each(ci => { ci.IsLiveData = true; }));
                 PostProcessCompetition(languageType, competitionUniqueIDs, competitionTransports);
                 BuildCompetitiontItemFullModel(competitionTransports, ci => BetHelper.GetLiveBetMap(ci, brokerTypesToRetreive, true), ProjectProvider.Instance.ResultProvider.GetResultLiveForCompetitions);
                 ProcessBrokerType(brokerTypesToDisplay, competitionTransports);

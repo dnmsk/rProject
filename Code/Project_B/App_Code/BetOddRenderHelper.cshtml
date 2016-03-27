@@ -122,16 +122,17 @@ var hasAnyRoi = false;
         <script type="text/javascript">
             google.load('visualization', '1.1', { packages: ['line'] });
             google.setOnLoadCallback(function () {
-                window.ninjaBag.functions.append({drawChart: function(key) {
-                    var col = window.ninjaBag.documentObjects.chartColumn[key].col();
-                    var rows = window.ninjaBag.documentObjects.chartColumn[key].data();
-                    col.addRows(rows);
-                    var chart = new google.charts.Line(document.getElementById('linechart_material'));
-                    chart.draw(col, {
-                        width: 650,
-                        height: 400
-                    });
-                }});
+                window.ninjaBag.functions.append({
+                    drawChart: function (key) {
+                        var col = window.ninjaBag.documentObjects.chartColumn[key].col();
+                        var rows = window.ninjaBag.documentObjects.chartColumn[key].data();
+                        col.addRows(rows);
+                        var chart = new google.charts.Line(document.getElementById('linechart_material'));
+                        chart.draw(col, {
+                            width: 650,
+                            height: 400
+                        });
+                    }});
                 window.ninjaBag.documentObjects.append({
                     chartColumn: {
                         arr: {
@@ -188,14 +189,19 @@ var hasAnyRoi = false;
                         }
                     }
                 });
-                $.ajax('@dataSource', {
-                    dataType: 'json',
-                    type: 'POST',
-                    success: function(jsResult) {
-                        window.ninjaBag.documentObjects.append({ chartData: jsResult });
-                        window.ninjaBag.functions.drawChart('arr');
-                    }
-                });
+                var refreshChart = function () {
+                    $.ajax('@dataSource', {
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (jsResult) {
+                            window.ninjaBag.documentObjects.chartData = {};
+                            window.ninjaBag.documentObjects.append({ chartData: jsResult });
+                            window.ninjaBag.functions.drawChart('arr');
+                        }
+                    });
+                }
+                setInterval(refreshChart, 30 * 1000);
+                refreshChart();
             });
         </script>
     </div>
