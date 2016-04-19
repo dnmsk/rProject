@@ -121,6 +121,7 @@ namespace Spywords_Project.Code.Algorithms {
             var phrases = Phrase.DataSource
                 .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Phrase.Fields.ID, RetrieveMode.NotRetrieve)
                 .WhereEquals(Phrase.Fields.Status, (short)PhraseStatus.NotCollected)
+                .WhereEquals(Phrase.Fields.CollectionIdentity, (short) CollectionIdentity)
                 .AsList(
                     fieldsToRetrive
                 );
@@ -128,6 +129,7 @@ namespace Spywords_Project.Code.Algorithms {
                 ? phrases 
                 : Phrase.DataSource
                          .WhereEquals(Phrase.Fields.Status, (short) PhraseStatus.NotCollected)
+                         .WhereEquals(Phrase.Fields.CollectionIdentity, (short) CollectionIdentity)
                          .AsList(0, 20, fieldsToRetrive);
         }
     }

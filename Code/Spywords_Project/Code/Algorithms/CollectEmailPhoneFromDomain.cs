@@ -37,7 +37,8 @@ namespace Spywords_Project.Code.Algorithms {
                     domainInfo.Emails.Select(e => new Domainemail {
                         DomainID = domainEntity.ID,
                         Datecreated = DateTime.UtcNow,
-                        Email = e
+                        Email = e,
+                        CollectionIdentity = CollectionIdentity
                     })
                                 .ToList()
                                 .Save<Domainemail, int>();
@@ -47,7 +48,8 @@ namespace Spywords_Project.Code.Algorithms {
                     domainInfo.Phones.Select(ph => new Domainphone {
                         DomainID = domainEntity.ID,
                         Datecreated = DateTime.UtcNow,
-                        Phone = ph
+                        Phone = ph,
+                        CollectionIdentity = CollectionIdentity
                     })
                                 .ToList()
                                 .Save<Domainphone, int>();
@@ -79,6 +81,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short) DomainStatus.Loaded), Oper.Eq, 0)
+                .WhereEquals(DomainEntity.Fields.CollectionIdentity, (short) CollectionIdentity)
                 .AsList();
         }
         

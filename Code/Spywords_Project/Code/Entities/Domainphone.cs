@@ -5,6 +5,7 @@ using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using MainLogic.Consts;
+using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Entities {
         /// <summary>
@@ -13,7 +14,7 @@ namespace Spywords_Project.Code.Entities {
     [Serializable]
     [DBTable("Domainphone")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class Domainphone : AbstractEntityTemplateKey<Domainphone, int> {
+    public sealed class Domainphone : CollectionIdentityEntity<Domainphone> {
 
         public enum Fields {
         /// <summary>
@@ -35,6 +36,9 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
             [DBField(DbType.DateTime)] Datecreated,
+
+            [DBField(DbType.Int16)]
+            CollectionIdentity,
 
         }
 
@@ -82,6 +86,11 @@ namespace Spywords_Project.Code.Entities {
 
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
+        }
+
+        public override CollectionIdentity CollectionIdentity {
+            get { return (CollectionIdentity) (short) this[Fields.CollectionIdentity]; }
+            set { ForceSetData(Fields.CollectionIdentity, (short) value); }
         }
     }
 }

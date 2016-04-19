@@ -40,6 +40,7 @@ namespace Spywords_Project.Code.Algorithms {
                                 phrase = new Phrase {
                                     Datecreated = DateTime.UtcNow,
                                     Status = PhraseStatus.NotCollected,
+                                    CollectionIdentity = CollectionIdentity,
                                     Text = word
                                 };
                                 phrase.Save();
@@ -52,7 +53,8 @@ namespace Spywords_Project.Code.Algorithms {
                                 var domainphrase = new Domainphrase {
                                     DomainID = entity.ID,
                                     PhraseID = phrase.ID,
-                                    SourceType = SourceType.Context
+                                    SourceType = SourceType.Context,
+                                    CollectionIdentity = CollectionIdentity
                                 };
                                 listLinksToInsert.Add(domainphrase);
                             } else {
@@ -80,6 +82,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.PhrasesCollected), Oper.Eq, 0)
+                .WhereEquals(DomainEntity.Fields.CollectionIdentity, (short) CollectionIdentity)
                 .AsList(0, 15,
                     DomainEntity.Fields.ID,
                     DomainEntity.Fields.Status,

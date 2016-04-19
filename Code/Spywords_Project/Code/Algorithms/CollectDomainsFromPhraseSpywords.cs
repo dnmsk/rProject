@@ -46,6 +46,7 @@ namespace Spywords_Project.Code.Algorithms {
         private static List<DomainEntity> GetEntitiesToProcess() {
             return DomainEntity.DataSource
                 .Where(new DbFnSimpleOp(DomainEntity.Fields.Status, FnMathOper.BitwiseAnd, (short)DomainStatus.SpywordsCollected), Oper.Eq, 0)
+                .WhereEquals(DomainEntity.Fields.CollectionIdentity, (short) CollectionIdentity)
                 .AsList(0, 20,
                     DomainEntity.Fields.ID,
                     DomainEntity.Fields.Domain,

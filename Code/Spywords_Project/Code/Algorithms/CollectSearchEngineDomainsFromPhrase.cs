@@ -36,6 +36,10 @@ namespace Spywords_Project.Code.Algorithms {
                 var processGoogle = false;
                 var processYandex = false;
 
+                if (phrase.Text.Trim().IsNullOrWhiteSpace()) {
+                    continue;
+                }
+
                 TaskRunner.Instance.AddAction(() => {
                     try {
                         SaveDomains(phrase, GetGoogleDomains(phrase), SearchEngine.Google);

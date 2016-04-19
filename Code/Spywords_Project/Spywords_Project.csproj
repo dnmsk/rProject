@@ -146,6 +146,7 @@
     <Compile Include="Code\Algorithms\CollectSearchEngineDomainsFromPhrase.cs" />
     <Compile Include="Code\Algorithms\CollectShowsDomainYadro.cs" />
     <Compile Include="Code\AppsWorldVisitorsParser.cs" />
+    <Compile Include="Code\Entities\CollectionIdentityEntity.cs" />
     <Compile Include="Code\Entities\DomainEntity.cs" />
     <Compile Include="Code\Entities\Domainemail.cs" />
     <Compile Include="Code\Entities\Domainphone.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Code\QueryProcessor.cs" />
     <Compile Include="Code\SpywordsActions.cs" />
     <Compile Include="Code\SpywordsQueryWrapper.cs" />
+    <Compile Include="Code\Statuses\CollectionIdentity.cs" />
     <Compile Include="Code\Statuses\DomainStatus.cs" />
     <Compile Include="Code\Statuses\PhraseStatus.cs" />
     <Compile Include="Code\Statuses\SearchEngine.cs" />

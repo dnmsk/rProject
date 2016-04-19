@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Data;
 using CommonUtils;
-using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
 using MainLogic.Consts;
+using Spywords_Project.Code.Statuses;
 
 namespace Spywords_Project.Code.Entities {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Spywords_Project.Code.Entities {
     [Serializable]
     [DBTable("Domainemail")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class Domainemail : AbstractEntityTemplateKey<Domainemail, int> {
+    public sealed class Domainemail : CollectionIdentityEntity<Domainemail> {
 
         public enum Fields {
         /// <summary>
@@ -35,6 +35,8 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
             [DBField(DbType.DateTime)] Datecreated,
+
+            [DBField(DbType.Int16)] CollectionIdentity,
 
         }
 
@@ -82,6 +84,11 @@ namespace Spywords_Project.Code.Entities {
 
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
+        }
+
+        public override CollectionIdentity CollectionIdentity {
+            get { return (CollectionIdentity) (short) this[Fields.CollectionIdentity]; }
+            set { ForceSetData(Fields.CollectionIdentity, (short) value); }
         }
     }
 }

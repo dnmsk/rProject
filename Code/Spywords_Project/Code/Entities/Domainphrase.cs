@@ -13,7 +13,7 @@ namespace Spywords_Project.Code.Entities {
     [Serializable]
     [DBTable("Domainphrase")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class Domainphrase : AbstractEntityTemplateKey<Domainphrase, int> {
+    public sealed class Domainphrase : CollectionIdentityEntity<Domainphrase> {
 
         public enum Fields {
             /// <summary>
@@ -40,6 +40,9 @@ namespace Spywords_Project.Code.Entities {
             /// </summary>
             [Nullable]
             [DBField(DbType.Int16)] SourceType,
+
+            [DBField(DbType.Int16)]
+            CollectionIdentity,
 
         }
 
@@ -95,6 +98,11 @@ namespace Spywords_Project.Code.Entities {
 
         public override Enum[] KeyFields {
             get { return new Enum[] {Fields.ID}; }
+        }
+
+        public override CollectionIdentity CollectionIdentity {
+            get { return (CollectionIdentity) (short) this[Fields.CollectionIdentity]; }
+            set { ForceSetData(Fields.CollectionIdentity, (short) value); }
         }
     }
 }

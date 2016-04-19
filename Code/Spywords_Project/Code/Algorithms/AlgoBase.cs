@@ -20,6 +20,8 @@ namespace Spywords_Project.Code.Algorithms {
         /// Логгер.
         /// </summary>
         protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof(AlgoBase).FullName);
+
+        public static CollectionIdentity CollectionIdentity = CollectionIdentity.April2016;
         protected static readonly SpywordsQueryWrapper SpywordsQueryWrapper;
         private static readonly WebRequestHelper _webRequestHelper;
 
@@ -79,12 +81,14 @@ namespace Spywords_Project.Code.Algorithms {
             lock (_domainLocker) {
                 var domainEntity = DomainEntity.DataSource
                                                .WhereEquals(DomainEntity.Fields.Domain, d)
+                                               .WhereEquals(DomainEntity.Fields.CollectionIdentity, (short) CollectionIdentity)
                                                .First();
                 if (domainEntity == null) {
                     domainEntity = new DomainEntity {
                         Datecreated = DateTime.UtcNow,
                         Domain = d,
-                        Status = DomainStatus.Default
+                        Status = DomainStatus.Default,
+                        CollectionIdentity = CollectionIdentity
                     };
                     domainEntity.Save();
                 }
@@ -96,13 +100,15 @@ namespace Spywords_Project.Code.Algorithms {
             var firstDomainPhrase = Domainphrase.DataSource
                                                 .WhereEquals(Domainphrase.Fields.DomainID, domainEntity.ID)
                                                 .WhereEquals(Domainphrase.Fields.PhraseID, phrase.ID)
+                                                .WhereEquals(Domainphrase.Fields.CollectionIdentity, (short) CollectionIdentity)
                                                 .First();
             if (firstDomainPhrase == null) {
                 var domainphrase = new Domainphrase {
                     DomainID = domainEntity.ID,
                     PhraseID = phrase.ID,
                     SourceType = sourceType,
-                    SE = seType
+                    SE = seType,
+                    CollectionIdentity = CollectionIdentity
                 };
                 domainphrase.Save();
             } else {

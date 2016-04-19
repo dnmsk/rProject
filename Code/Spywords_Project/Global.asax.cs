@@ -15,11 +15,11 @@ namespace Spywords_Project {
             if (SiteConfiguration.NeedRunTask) {
                 _phraseAlgos = new[] {
                     (AlgoBase) 
-                    //new CollectDomainInfoSpywords(),
-                    //new CollectDomainsFromPhraseSpywords(),
+                    new CollectDomainInfoSpywords(),
+                    new CollectDomainsFromPhraseSpywords(),
                     new CollectEmailPhoneFromDomain(),
                     new CollectShowsDomainYadro(),
-                    //new CollectPhrasesForDomainSpywords(),
+                    new CollectPhrasesForDomainSpywords(),
                     new CollectSearchEngineDomainsFromPhrase(),
                 };
             }

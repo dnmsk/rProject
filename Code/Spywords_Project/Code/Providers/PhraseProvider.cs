@@ -6,6 +6,7 @@ using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using Spywords_Project.Code.Algorithms;
 using Spywords_Project.Code.Entities;
 using Spywords_Project.Code.Statuses;
 using Spywords_Project.Models.EntityModel;
@@ -23,25 +24,29 @@ namespace Spywords_Project.Code.Providers {
                 text = text.ToLower();
                 var phrase = Phrase.DataSource
                     .WhereEquals(Phrase.Fields.Text, text)
+                    .WhereEquals(Phrase.Fields.CollectionIdentity, (short)AlgoBase.CollectionIdentity)
                     .First();
                 if (phrase == null) {
                     phrase = new Phrase {
                         Datecreated = DateTime.UtcNow,
                         Text = text,
                         Status = PhraseStatus.NotCollected,
+                        CollectionIdentity = AlgoBase.CollectionIdentity,
                     };
                     phrase.Save();
                 }
                 var phraseAccount = Phraseaccount.DataSource
                     .WhereEquals(Phraseaccount.Fields.AccountidentityID, accountID)
                     .WhereEquals(Phraseaccount.Fields.PhraseID, phrase.ID)
+                    .WhereEquals(Phraseaccount.Fields.CollectionIdentity, (short)AlgoBase.CollectionIdentity)
                     .First();
                 if (phraseAccount == null) {
                     phraseAccount = new Phraseaccount {
                         Datecreated = DateTime.UtcNow,
                         AccountidentityID = accountID,
                         PhraseID = phrase.ID,
-                        SourceType = sourceType
+                        SourceType = sourceType,
+                        CollectionIdentity = AlgoBase.CollectionIdentity
                     };
                 } else {
                     phraseAccount.SourceType |= sourceType;

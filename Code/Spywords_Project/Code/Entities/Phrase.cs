@@ -14,7 +14,7 @@ namespace Spywords_Project.Code.Entities {
     [Serializable]
     [DBTable("Phrase")]
     [TargetDb(TargetDB.MASTER)]
-    public sealed class Phrase : AbstractEntityTemplateKey<Phrase, int> {
+    public sealed class Phrase : CollectionIdentityEntity<Phrase> {
 
         public enum Fields {
         /// <summary>
@@ -71,6 +71,9 @@ namespace Spywords_Project.Code.Entities {
             /// </summary>
             [Nullable]
             [DBField(DbType.DateTime)] Datecollected,
+
+            [DBField(DbType.Int16)]
+            CollectionIdentity,
 
         }
 
@@ -169,6 +172,11 @@ namespace Spywords_Project.Code.Entities {
 
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
+        }
+
+        public override CollectionIdentity CollectionIdentity {
+            get { return (CollectionIdentity) (short) this[Fields.CollectionIdentity]; }
+            set { ForceSetData(Fields.CollectionIdentity, (short) value); }
         }
     }
 }
