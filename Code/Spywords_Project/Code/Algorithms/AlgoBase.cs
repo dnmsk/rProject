@@ -62,7 +62,7 @@ namespace Spywords_Project.Code.Algorithms {
                 cookiesInit,
                 (userAgent, cookies) => {
                     var res = new Dictionary<string, string>();
-                    foreach (Cookie c in cookies.GetCookies(new Uri("http://" + cookiesConfigRow))) {
+                    foreach (Cookie c in cookies.GetCookies(new Uri("http://" + targetCookiesDomain))) {
                         res[c.Name] = c.Value;
                     }
                     SiteConfiguration.ModifyConfigurationProperty(new Dictionary<string, string> {

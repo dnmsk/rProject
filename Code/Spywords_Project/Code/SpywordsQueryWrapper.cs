@@ -34,7 +34,7 @@ namespace Spywords_Project.Code {
 
         /*http://spywords.ru/sword.php?do=advSite&word=%EF%EB%E0%F1%F2%E8%EA%EE%E2%FB%E5%20%EE%EA%ED%E0&tot=200*/
         public string GetDomainsForPhraseYandex(string phrase) {
-            return LoadSpywordsContent("http://spywords.ru/sword.php?do=advSite&tot=200&?word=" + HttpUtility.UrlEncode(phrase, _encoding));
+            return LoadSpywordsContent("http://spywords.ru/sword.php?do=advSite&tot=200&word=" + HttpUtility.UrlEncode(phrase, _encoding));
         }
 
         public string GetDomainInfo(string domain) {

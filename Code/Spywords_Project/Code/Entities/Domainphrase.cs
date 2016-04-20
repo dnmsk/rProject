@@ -93,7 +93,7 @@ namespace Spywords_Project.Code.Entities {
         /// </summary>
         public SourceType SourceType {
             get { return (SourceType) ((short?) this[Fields.SourceType] ?? default(short)); }
-            set { ForceSetData(Fields.SourceType, value); }
+            set { ForceSetData(Fields.SourceType, (short) value); }
         }
 
         public override Enum[] KeyFields {
