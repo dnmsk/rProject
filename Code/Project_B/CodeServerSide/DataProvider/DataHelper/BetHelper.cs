@@ -34,25 +34,26 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 if (odd.Factor == default(float)) {
                     continue;
                 }
+                var factor = Math.Abs(odd.Factor);
                 switch (odd.Type) {
                     case BetOddType.Win1:
-                        newBet.Win1 = odd.Factor;
+                        newBet.Win1 = factor;
                         break;
                     case BetOddType.Win2:
-                        newBet.Win2 = odd.Factor;
+                        newBet.Win2 = factor;
                         break;
                     case BetOddType.Handicap1:
-                        newBet.Hcap1 = odd.Factor;
+                        newBet.Hcap1 = factor;
                         break;
                     case BetOddType.Handicap2:
-                        newBet.Hcap2 = odd.Factor;
+                        newBet.Hcap2 = factor;
                         newBet.Hcapdetail = (odd.AdvancedParam ?? default(float));
                         break;
                     case BetOddType.TotalUnder:
-                        newBet.Totalunder = odd.Factor;
+                        newBet.Totalunder = factor;
                         break;
                     case BetOddType.TotalOver:
-                        newBet.Totalover = odd.Factor;
+                        newBet.Totalover = factor;
                         newBet.Totaldetail = odd.AdvancedParam ?? default(float);
                         break;
                     default:
@@ -78,18 +79,19 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 if (odd.Factor == default(int)) {
                     continue;
                 }
+                var factor = Math.Abs(odd.Factor);
                 switch (odd.Type) {
                     case BetOddType.Win1Win2:
-                        newBet.Win1win2 = odd.Factor;
+                        newBet.Win1win2 = factor;
                         break;
                     case BetOddType.DrawWin2:
-                        newBet.Drawwin2 = odd.Factor;
+                        newBet.Drawwin2 = factor;
                         break;
                     case BetOddType.Win1Draw:
-                        newBet.Win1draw = odd.Factor;
+                        newBet.Win1draw = factor;
                         break;
                     case BetOddType.Draw:
-                        newBet.Draw = odd.Factor;
+                        newBet.Draw = factor;
                         break;
                     default:
                         continue;
