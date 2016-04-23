@@ -10,7 +10,7 @@ using CommonUtils.Code.WebRequestData;
 using CommonUtils.ExtendedTypes;
 
 namespace CommonUtils.Code {
-    public class WebRequestHelper : IDisposable {
+    public class WebRequestHelper : IDisposable, ICloneable {
         /// <summary>
         ///     Юзер-агенты для подставновкив запросы
         /// </summary>
@@ -226,6 +226,21 @@ namespace CommonUtils.Code {
 
         public void Dispose() {
             PushToConfigurationFile();
+        }
+
+        public object Clone() {
+            var newObject = new WebRequestHelper(
+                null,
+                null,
+                (Action<string, CookieContainer>) _onDispose?.Clone()
+            ) {
+                MinRequestDelay = MinRequestDelay
+            };
+            _webRequestParams.Each(param => {
+                newObject._webRequestParams[param.Key] = param.Value;
+            });
+
+            return newObject;
         }
     }
 }

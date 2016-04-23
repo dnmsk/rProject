@@ -67,6 +67,9 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
                     if (Cache[key].LastActualDate < now) {
                         KangooCacheElement<V> val;
                         Cache.TryRemove(key, out val);
+                        if (val != null && val.Element != null && val.Element is IDisposable) {
+                            ((IDisposable) val.Element).Dispose();
+                        }
                         cleanedKeys++;
                     }
                 } catch (Exception ex) {

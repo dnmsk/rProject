@@ -6,6 +6,7 @@ using CommonUtils.WatchfulSloths.WatchfulThreads;
 using IDEV.Hydra.DAO;
 using MainLogic;
 using Project_B.CodeServerSide.BrokerProvider;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
@@ -137,6 +138,6 @@ namespace Project_B.CodeServerSide.Algorithm {
             });
         }
         
-        private BrokerBase GetBroker(BrokerType brokerType) => BookPage.Instance.GetBrokerProvider(brokerType);
+        private IBrokerBase GetBroker(BrokerType brokerType) => BookPage.Instance.GetBrokerProvider(brokerType);
     }
 }

@@ -1,57 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using System.Web.Script.Serialization;
 using CommonUtils.Code;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public abstract class BrokerBase {
+    public abstract class BrokerBase<T> : IBrokerBase where T : IQueryableWrapper {
+        private readonly IQueryableWrapper _queryableWrapper;
+
         /// <summary>
         /// Логгер.
         /// </summary>
-        protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof (BrokerBase).FullName);
+        protected static readonly LoggerWrapper Logger = LoggerManager.GetLogger(typeof (BrokerBase<T>).FullName);
         protected static readonly JavaScriptSerializer JavaScriptSerializer = new JavaScriptSerializer {
             MaxJsonLength = 99999999,
             RecursionLimit = 9999
         };
-        
-        public WebRequestHelper RequestHelper { get; }
+
+        public WebRequestHelper RequestHelper => _queryableWrapper.RequestHelper;
+
         public abstract BrokerType BrokerType { get; }
         public abstract BrokerData LoadResult(DateTime date, SportType sportType, LanguageType language);
         public abstract BrokerData LoadLive(SportType sportType, LanguageType language);
         public abstract BrokerData LoadRegular(SportType sportType, LanguageType language);
         public BrokerConfiguration CurrentConfiguration => ConfigurationContainer.Instance.BrokerConfiguration[BrokerType];
 
-        protected BrokerBase(WebRequestHelper requestHelper) {
-            RequestHelper = requestHelper;
+        protected BrokerBase(IQueryableWrapper queryableWrapper) {
+            _queryableWrapper = queryableWrapper;
+            _queryableWrapper?.ProcessConfig(CurrentConfiguration);
         }
 
-        private static int _tries = 2;
         protected string LoadPage(string url, List<string> postData = null, string contentType = "application/x-www-form-urlencoded") {
-            for (var i = 0; i < _tries; i++) {
-                try {
-                    string post = null;
-                    if (postData != null) {
-                        post = postData.StrJoin("&");
-                    }
-                    var loadResult = RequestHelper.GetContent(url, post, contentType);
-                    if (loadResult.Item1 != HttpStatusCode.OK) {
-                        Logger.Error("status = " + loadResult.Item1);
-                    }
-                    return loadResult.Item2;
-                } catch (Exception ex) {
-                    Logger.Error("url: {0} \r\n" + ex, url);
-                }
-                Thread.Sleep(5*1000);
-            }
-            return null;
+            return _queryableWrapper.LoadPage(url, postData, contentType);
         }
         
         protected string FormatUrl(SectionName urlTargetSection, object obj) {
@@ -77,5 +63,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
         protected static object[] ToA(object obj) {
             return (object[])obj;
         }
+
+        public T QuerySender { get; set; }
     }
 }

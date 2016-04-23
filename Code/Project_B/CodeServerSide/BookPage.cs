@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using CommonUtils.Code;
-using CommonUtils.Code.WebRequestData;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using Project_B.CodeServerSide.BrokerProvider;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide {
@@ -17,7 +17,7 @@ namespace Project_B.CodeServerSide {
         /// Логгер.
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (BookPage).FullName);
-        private readonly Dictionary<BrokerType, BrokerBase> _brokerProviders = new Dictionary<BrokerType, BrokerBase>(); 
+        private readonly Dictionary<BrokerType, IBrokerBase> _brokerProviders = new Dictionary<BrokerType, IBrokerBase>(); 
 
         public BookPage() {
             var currentBrokerProviderTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -35,45 +35,41 @@ namespace Project_B.CodeServerSide {
                     }
                     return null;
                 })
-                .Where(type => type != null && typeof(BrokerBase).IsAssignableFrom(type) && !type.IsAbstract)
+                .Where(type => type != null && typeof(IBrokerBase).IsAssignableFrom(type) && !type.IsAbstract)
                 .Distinct();
 
             var globalConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[BrokerType.Default];
-            var webRequestHelper = new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]);
-            webRequestHelper.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(globalConfiguration.StringArray[SectionName.ArrayProxy].FirstOrDefault()));
+            var proxy = globalConfiguration.StringArray[SectionName.ArrayProxy].FirstOrDefault();
+            var typeInitilizers = new IQueryableWrapper[] {
+                new WebRequestWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent])),
+                new BrowserWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]), proxy)
+            }
+                .ToDictionary(item => item.GetType(), item => item);
 
             foreach (var brokerProviderType in currentBrokerProviderTypes) {
                 try {
-                    var instance = (BrokerBase) Activator.CreateInstance(brokerProviderType, webRequestHelper);
+                    IQueryableWrapper queryableWrapper = null;
+                    brokerProviderType.BaseType?.GenericTypeArguments.Each(type => {
+                        typeInitilizers.TryGetValue(type, out queryableWrapper);
+                    });
+                    if (queryableWrapper == null) {
+                        continue;
+                    }
+                    var instance = (IBrokerBase) Activator.CreateInstance(brokerProviderType, (queryableWrapper = (IQueryableWrapper) queryableWrapper.Clone()));
                     if (instance.BrokerType == BrokerType.Default) {
                         continue;
                     }
+                    queryableWrapper.SetProxy(proxy);
+                    var brokerConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[instance.BrokerType];
+                     queryableWrapper.SetCookies(brokerConfiguration.StringSimple[SectionName.Domain], brokerConfiguration.StringArray[SectionName.ArrayCookie]);
                     _brokerProviders.Add(instance.BrokerType, instance);
                 } catch (Exception ex) {
                     _logger.Error(ex);
                 }
             }
-            var cookieContainer = webRequestHelper.GetParam<CookieContainer>(WebRequestParamType.CookieContainer);
-            foreach (var brokerType in _brokerProviders.Keys) {
-                var brokerConfiguration = ConfigurationContainer.Instance.BrokerConfiguration[brokerType];
-                var domain = brokerConfiguration.StringSimple[SectionName.Domain];
-                var cookies = brokerConfiguration.StringArray[SectionName.ArrayCookie];
-                if (domain != default(string) && cookies != default(string[])) {
-                    foreach (var cookie in cookies) {
-                        var splittedCookie = cookie.Split('=');
-                        if (splittedCookie.Length != 2) {
-                            _logger.Error("Cookies " + cookie);
-                            continue;
-                        }
-                        cookieContainer.Add(new Cookie(splittedCookie[0], splittedCookie[1], "/", "." + domain) {
-                            Expires = DateTime.UtcNow.AddYears(1)
-                        });
-                    }
-                }
-            }
         }
         
-        public BrokerBase GetBrokerProvider(BrokerType brokerType) {
+        public IBrokerBase GetBrokerProvider(BrokerType brokerType) {
             return brokerType == BrokerType.Default ? null : _brokerProviders[brokerType];
         }
     }

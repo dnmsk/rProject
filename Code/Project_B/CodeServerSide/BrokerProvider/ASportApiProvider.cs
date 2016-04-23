@@ -10,13 +10,15 @@ using CommonUtils.ExtendedTypes;
 using PinnacleWrapper;
 using PinnacleWrapper.Data;
 using PinnacleWrapper.Enums;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public class ASportApiProvider : BrokerBase {
+    public class ASportApiProvider : BrokerBase<WebRequestWrapper> {
         private readonly PinnacleClient _pinnacleClient;
         private static Dictionary<SportType, int> _mapSports = new Dictionary<SportType, int> {
             {SportType.Basketball, 4 },
@@ -26,7 +28,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             {SportType.Volleyball, 34 },
         };
 
-        public ASportApiProvider(WebRequestHelper requestHelper) : base(requestHelper) {
+        public ASportApiProvider(IQueryableWrapper requestHelper) : base(requestHelper) {
             _pinnacleClient = new PinnacleClient(CurrentConfiguration.StringSimple[SectionName.ApiLogin], CurrentConfiguration.StringSimple[SectionName.ApiPassword], "EUR", OddsFormat.DECIMAL, new HttpClientHandler{
                 Proxy = new WebProxy(RequestHelper.GetParam<string>(WebRequestParamType.ProxyString)) {
                     UseDefaultCredentials = false

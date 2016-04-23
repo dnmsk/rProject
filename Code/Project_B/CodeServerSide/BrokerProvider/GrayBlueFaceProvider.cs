@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.BrokerProvider.SubData;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public class GrayBlueFaceProvider : BrokerBase {
+    public class GrayBlueFaceProvider : BrokerBase<WebRequestWrapper> {
         private readonly GrayBlueOddTypeProvider _blueOddTypeProvider;
 
-        public GrayBlueFaceProvider(WebRequestHelper requestHelper) : base(requestHelper) {
-            _blueOddTypeProvider = new GrayBlueOddTypeProvider(CurrentConfiguration.StringSimple[SectionName.UrlKab], requestHelper, JavaScriptSerializer, ToA, ToD);
+        public GrayBlueFaceProvider(IQueryableWrapper requestHelper) : base(requestHelper) {
+            _blueOddTypeProvider = new GrayBlueOddTypeProvider(CurrentConfiguration.StringSimple[SectionName.UrlKab], requestHelper.RequestHelper, JavaScriptSerializer, ToA, ToD);
         }
 
         public override BrokerType BrokerType => BrokerType.GrayBlue;

@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.DbFunctions;
 using IDEV.Hydra.DAO.Filters;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public class DbBrokerProvider : BrokerBase {
-        public DbBrokerProvider(WebRequestHelper requestHelper) : base(null) {}
+    public class DbBrokerProvider : BrokerBase<WebRequestWrapper> {
+        public DbBrokerProvider(IQueryableWrapper requestHelper) : base(null) {}
 
         public DbBrokerProvider(BrokerType brokerType) : base(null) {
             BrokerType = brokerType;

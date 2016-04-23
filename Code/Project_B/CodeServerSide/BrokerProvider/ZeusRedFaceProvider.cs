@@ -4,17 +4,19 @@ using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
 using HtmlAgilityPack;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public class ZeusRedFaceProvider : BrokerBase {
-        public ZeusRedFaceProvider(WebRequestHelper requestHelper) : base(requestHelper) {
+    public class ZeusRedFaceProvider : BrokerBase<WebRequestWrapper> {
+        public ZeusRedFaceProvider(IQueryableWrapper requestHelper) : base(requestHelper) {
         }
 
         public override BrokerType BrokerType => BrokerType.ZeusRed;

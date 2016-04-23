@@ -50,6 +50,7 @@
         //ArrayBadStartCompetitor = 15004,
         ArrayBadNameCompetitor = 15005,
         ArrayAddParamOdds = 15006,
+        ArrayManagedByBrowserUrl = 15007,
 
         //Map Reserve from 30000 to Max
         MapStringsOddsParam = 30000,

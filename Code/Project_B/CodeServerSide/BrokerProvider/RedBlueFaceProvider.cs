@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommonUtils.Code;
 using HtmlAgilityPack;
+using Project_B.CodeServerSide.BrokerProvider.Common;
 using Project_B.CodeServerSide.BrokerProvider.Helper;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor;
 using Project_B.CodeServerSide.BrokerProvider.Helper.HtmlDataExtractor.Extractors;
+using Project_B.CodeServerSide.BrokerProvider.Interfaces;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public sealed class RedBlueFaceProvider : BrokerBase {
+    public sealed class RedBlueFaceProvider : BrokerBase<BrowserWrapper> {
         private static readonly Regex _numberExtractorRegex = new Regex(".*?\\((?<number>.*?)\\).*?", RegexOptions.Compiled);
         private static readonly Dictionary<SportType, BetOddType[]> _typeWithOrderInLine = new Dictionary<SportType, BetOddType[]> {
             { SportType.Football, new[] {BetOddType.Win1, BetOddType.Draw, BetOddType.Win2, BetOddType.Win1Draw, BetOddType.Win1Win2, BetOddType.DrawWin2, BetOddType.Handicap1, BetOddType.Handicap2, BetOddType.TotalUnder, BetOddType.TotalOver } },
@@ -23,7 +25,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
             { SportType.IceHockey, new[] {BetOddType.Win1, BetOddType.Draw, BetOddType.Win2, BetOddType.Win1Draw, BetOddType.Win1Win2, BetOddType.DrawWin2, BetOddType.Handicap1, BetOddType.Handicap2, BetOddType.TotalUnder, BetOddType.TotalOver } },
         };
 
-        public RedBlueFaceProvider(WebRequestHelper requestHelper) : base(requestHelper) { }
+        public RedBlueFaceProvider(IQueryableWrapper requestHelper) : base(requestHelper) { }
 
         public override BrokerType BrokerType => BrokerType.RedBlue;
 

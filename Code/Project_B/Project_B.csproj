@@ -253,6 +253,8 @@
     <Compile Include="CodeServerSide\Algorithm\BrokerAlgoLauncher.cs" />
     <Compile Include="CodeServerSide\BookPage.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\ASportApiProvider.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Common\BrowserWrapper.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Common\WebRequestWrapper.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultBrokerIDExtractor.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultCompetitorNameExtractor.cs" />
@@ -262,6 +264,8 @@
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultResultExtractor.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\HtmlBlockData.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\HtmlBlockDataMonada.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Interfaces\IBrokerBase.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Interfaces\IQueryableWrapper.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\LightBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\RedBlueFaceProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\BrokerBase.cs" />
@@ -583,6 +587,10 @@
     <ProjectReference Include="..\CommonProjects\MainLogic\MainLogic.csproj">
       <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
       <Name>MainLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonProjects\VirtualBrowser\VirtualBrowser.csproj">
+      <Project>{DD24A809-47AC-4D8D-BFA3-08242C4E99E5}</Project>
+      <Name>VirtualBrowser</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
