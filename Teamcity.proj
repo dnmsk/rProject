@@ -21,7 +21,7 @@
     <!-- Misc Settings -->
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
         <ConnStr>Server=localhost%3BUser ID=sa%3BPassword=miss</ConnStr>
     </PropertyGroup>
 	
