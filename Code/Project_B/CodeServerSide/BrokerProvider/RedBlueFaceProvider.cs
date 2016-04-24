@@ -139,7 +139,7 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     odds.Add(new OddParsed());
                     continue;
                 }
-                var dataDict = JavaScriptSerializer.Deserialize<Dictionary<string, object>>(attrValue.Value);
+                var dataDict = JavaScriptSerializer.Deserialize<Dictionary<string, object>>(ReplaceHtmlLiterals(attrValue.Value));
                 var prices = ((Dictionary<string, object>)dataDict["prices"]);
                 string confirmation = null;
                 var oddsConfirmation = HtmlBlockHelper.ExtractBlock(betBlock, CurrentConfiguration.XPath[SectionName.XPathToOddsConfirmation]);
@@ -174,6 +174,12 @@ namespace Project_B.CodeServerSide.BrokerProvider {
                     odds[i].Type = oddTypesForCompetition[i];
                 }
             }
+        }
+
+        private static string ReplaceHtmlLiterals(string text) {
+            return text
+                .Replace("&nbsp;", " ")
+                .Replace("&quot;", "\"");
         }
     }
 }
