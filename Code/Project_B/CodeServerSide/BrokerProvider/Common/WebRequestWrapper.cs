@@ -14,13 +14,12 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
         private static int _tries = 2;
 
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof(WebRequestWrapper).FullName);
-        public WebRequestHelper QuerySender { get; }
 
         public WebRequestWrapper(WebRequestHelper webRequestHelper) {
-            QuerySender = webRequestHelper;
+            RequestHelper = webRequestHelper;
         }
 
-        public WebRequestHelper RequestHelper => QuerySender;
+        public WebRequestHelper RequestHelper { get; }
 
         public string LoadPage(string url, List<string> postData = null, string contentType = "application/x-www-form-urlencoded") {
             for (var i = 0; i < _tries; i++) {
@@ -29,7 +28,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
                     if (postData != null) {
                         post = postData.StrJoin("&");
                     }
-                    var loadResult = QuerySender.GetContent(url, post, contentType);
+                    var loadResult = RequestHelper.GetContent(url, post, contentType);
                     if (loadResult.Item1 != HttpStatusCode.OK) {
                         _logger.Error("status = " + loadResult.Item1);
                     }
@@ -43,14 +42,14 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
         }
 
         public void SetProxy(string proxy) {
-            QuerySender.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(proxy));
+            RequestHelper.SetParam(WebRequestParamType.ProxyString, new WebRequestParamString(proxy));
         }
 
         public void SetCookies(string domain, string[] cookies) {
             if (domain.IsNullOrWhiteSpace() || cookies == default(string[])) {
                 return;
             }
-            var cookieContainer = QuerySender.GetParam<CookieContainer>(WebRequestParamType.CookieContainer);
+            var cookieContainer = RequestHelper.GetParam<CookieContainer>(WebRequestParamType.CookieContainer);
             foreach (var cookie in cookies) {
                 var splittedCookie = cookie.Split('=');
                 if (splittedCookie.Length != 2) {
@@ -66,7 +65,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
         public void ProcessConfig(BrokerConfiguration currentConfiguration) {}
 
         public object Clone() {
-            return new WebRequestWrapper((WebRequestHelper) QuerySender.Clone());
+            return new WebRequestWrapper((WebRequestHelper)RequestHelper.Clone());
         }
     }
 }

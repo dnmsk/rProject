@@ -5,14 +5,22 @@ using Awesomium.Core;
 
 namespace VirtualBrowser {
     public class BrowserTab : IDisposable {
-        private readonly WebSession _session;
         private WebView _webView;
+        private readonly Thread _reloadThread;
         internal BrowserTab(BrowserSettings browserSettings, WebSession session) {
-            _session = session;
             WebCore.DoWork(() => {
                 _webView = WebCore.CreateWebView(browserSettings.WindowWidth, browserSettings.WindowHeight, session, WebViewType.Offscreen);
                 return default(int);
             });
+            _reloadThread = new Thread(() => {
+                while (true) {
+                    Thread.Sleep(TimeSpan.FromHours(1));
+                    WebCore.QueueWork(() => {
+                        _webView.Reload(true);
+                    });
+                }
+            });
+            _reloadThread.Start();
         }
 
         public void OpenPage(string url) {
@@ -38,6 +46,7 @@ namespace VirtualBrowser {
         public void Dispose() {
             WebCore.QueueWork(() => {
                 try {
+                    _reloadThread.Abort();
                     _webView.Stop();
                     _webView?.Dispose();
                     var process = Process.GetProcessById(_webView?.RenderProcess?.Id ?? default(int));

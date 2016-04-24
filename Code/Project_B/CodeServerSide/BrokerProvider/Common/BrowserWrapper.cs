@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Code;
 using CommonUtils.ExtendedTypes;
-using CommonUtils.WatchfulSloths;
 using CommonUtils.WatchfulSloths.KangooCache;
 using Project_B.CodeServerSide.BrokerProvider.Helper.Configuration;
 using Project_B.CodeServerSide.BrokerProvider.Interfaces;
@@ -13,7 +12,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
     public class BrowserWrapper : WebRequestWrapper, IQueryableWrapper {
         private Browser _browserSender;
         private readonly BrowserSettings _browserSettings;
-        private readonly KangarooCache<string, BrowserTab> _currentTabs;
+        private readonly SimpleKangooCache<string, BrowserTab> _currentTabs;
         private readonly List<string> _managedByBrowserUrls = new List<string>();
 
         public BrowserWrapper(WebRequestHelper webRequestHelper, string proxy) : base(webRequestHelper) {
@@ -22,12 +21,11 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
                 WindowWidth = 1920,
                 Proxy = proxy
             });
-            _currentTabs = new KangarooCache<string, BrowserTab>(WatchfulSloth.Instance,
-                s => {
-                    var tab = _browserSender.GetNewTab();
-                    tab.OpenPage(s);
-                    return tab;
-                }, TimeSpan.FromHours(1));
+            _currentTabs = new SimpleKangooCache<string, BrowserTab>(s => {
+                var tab = _browserSender.GetNewTab();
+                tab.OpenPage(s);
+                return tab;
+            });
         }
 
         public new void SetCookies(string domain, string[] cookies) {
