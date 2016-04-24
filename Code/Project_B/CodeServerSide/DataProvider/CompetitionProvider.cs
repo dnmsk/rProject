@@ -132,12 +132,12 @@ namespace Project_B.CodeServerSide.DataProvider {
                                 new DaoFilterEq(CompetitionItem.Fields.CompetitionSpecifyUniqueID, competitionSpecifyTransport.Object.ID)))
                             .Where(eventDateUtc > DateTime.MinValue
                                 ? new DaoFilterAnd(
-                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-1.5)),
-                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(1.5))
+                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, eventDateUtc.AddDays(-0.7)),
+                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, eventDateUtc.AddDays(0.7))
                                 )
                                 : new DaoFilterAnd(
-                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, utcNow.AddDays(-1.5)),
-                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, utcNow.AddDays(1.5))
+                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.GreaterOrEq, utcNow.AddDays(-0.7)),
+                                    new DaoFilter(CompetitionItem.Fields.Dateeventutc, Oper.LessOrEq, utcNow.AddDays(0.7))
                                 )
                             )
                             .Sort(CompetitionItem.Fields.ID, SortDirection.Desc);
