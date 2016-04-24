@@ -31,14 +31,14 @@ namespace Project_B.Controllers {
             return new ActionResultCached(data != null,
                 () => data.MaxOrDefault(d => d.Key, DateTime.MinValue),
                 () => {
-                    var res = new List<Dictionary<string, float>>();
+                    var res = new List<Dictionary<string, double>>();
                     var addDraw = BetHelper.SportTypeWithOdds[sportType].Contains(BetOddType.Draw);
                     data
                         .OrderBy(d => d.Key)
                         .Each(betItems => {
                             var list = betItems.Value;
-                            var dict = new Dictionary<string, float> {
-                                {"d", (float) (betItems.Key - ProjectBConsts.DefaultLinuxUtc).TotalMilliseconds},
+                            var dict = new Dictionary<string, double> {
+                                {"d", (betItems.Key - ProjectBConsts.DefaultLinuxUtc).TotalMilliseconds},
                                 {"w1", BetOddInterfaceHelper.GetOddValue(sportType, BetOddType.Win1, list, Enumerable.Max)},
                                 {"w2", BetOddInterfaceHelper.GetOddValue(sportType, BetOddType.Win2, list, Enumerable.Max)},
                                 {"r1x2", BetOddInterfaceHelper.GetBetOddRoi(RoiType.Roi1X2, sportType, list)},

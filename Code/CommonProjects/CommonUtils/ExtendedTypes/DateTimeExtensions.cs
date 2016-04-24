@@ -18,13 +18,13 @@ namespace CommonUtils.ExtendedTypes {
             divider = divider == 0 ? 1 : divider;
             switch (roundType) {
                 case DateRoundType.Day:
-                    return new DateTime(dateTime.Year, dateTime.Month, (dateTime.Day / divider) * 10);
+                    return new DateTime(dateTime.Year, dateTime.Month, (dateTime.Day / divider) * divider);
                 case DateRoundType.Hour:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, (dateTime.Hour / divider) * 10, 0, 0);
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, (dateTime.Hour / divider) * divider, 0, 0);
                 case DateRoundType.Minute:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, (dateTime.Minute / divider) * 10, 0);
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, (dateTime.Minute / divider) * divider, 0);
                 case DateRoundType.Second:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, (dateTime.Second / divider) * 10);
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, (dateTime.Second / divider) * divider);
             }
             return dateTime;
         }

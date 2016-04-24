@@ -39,8 +39,11 @@ namespace AutoPublication.Code {
                 ClearTempFolder();
             }
             CmdCommandExecutor.Run("cmd.exe", string.Format("/c mkdir {0}", _tempFolder));
-            CmdCommandExecutor.Run("cmd.exe", string.Format("/c copy \"{0}\" {1} /Y /Z", targetZipLocation, _tempFolder));
-            return targetZipLocation.Substring(targetZipLocation.LastIndexOf('\\') + 1);
+            var fileName = Path.GetFileName(targetZipLocation);
+            File.Copy(targetZipLocation, string.Format("{0}\\{1}", _tempFolder, fileName));
+            //CmdCommandExecutor.Run("cmd.exe", string.Format("/c copy \"{0}\" {1} /Y /Z", targetZipLocation, _tempFolder));
+            //CmdCommandExecutor.Run("cmd.exe", string.Format("/c xcopy \"{0}\" {1} /Y /Z", _tempFolder, targetZipLocation));
+            return fileName;
         }
 
         private static void UnpuckBuild(string pathToArchive) {
