@@ -65,7 +65,7 @@ namespace Project_B.CodeServerSide.BrokerProvider.Common {
         public void ProcessConfig(BrokerConfiguration currentConfiguration) {}
 
         public object Clone() {
-            return new WebRequestWrapper((WebRequestHelper)RequestHelper.Clone());
+            return new WebRequestWrapper((WebRequestHelper) RequestHelper.Clone());
         }
     }
 }

@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using CommonUtils;
 using IDEV.Hydra.DAO;
 using IDEV.Hydra.DAO.Attributes;
+using IDEV.Hydra.DAO.MassTools;
+using Project_B.CodeServerSide.Data.Result;
+using Project_B.CodeServerSide.DataProvider.DataHelper;
+using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.Entity.Interface.NameConstraint;
 using Project_B.CodeServerSide.Enums;
 
@@ -96,6 +101,45 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
 
         public override Enum[] KeyFields {
             get { return new[] { (Enum) Fields.ID }; }
+        }
+
+        public static CompetitionResult ProcessResult(ProcessStat processStat, int competitionItemID, SportType sportType, FullResult fullResult) {
+            var result = DataSource
+                            .WhereEquals(Fields.CompetitionitemID, competitionItemID)
+                            .First();
+            if (result != null &&
+                result.ScoreID != ScoreHelper.Instance.GenerateScoreID(fullResult.CompetitorResultOne, fullResult.CompetitorResultTwo)) {
+                CompetitionResultAdvanced.DataSource
+                    .WhereEquals(CompetitionResultAdvanced.Fields.CompetitionresultID, result.ID)
+                    .Delete();
+                result.Delete();
+                result = null;
+            }
+            if (result == null) {
+                result = new CompetitionResult {
+                    CompetitionitemID = competitionItemID,
+                    Datecreatedutc = DateTime.UtcNow,
+                    ScoreID = ScoreHelper.Instance.GenerateScoreID(fullResult.CompetitorResultOne, fullResult.CompetitorResultTwo),
+                    Resulttype = ScoreHelper.Instance.GetResultType(fullResult.CompetitorResultOne, fullResult.CompetitorResultTwo)
+                };
+                result.Save();
+                if (fullResult.SubResult != null && fullResult.SubResult.Count > 0) {
+                    var listSubResult = new List<CompetitionResultAdvanced>();
+                    for (var subResultIndex = 0; subResultIndex < fullResult.SubResult.Count; subResultIndex++) {
+                        var subResult = fullResult.SubResult[subResultIndex];
+                        listSubResult.Add(new CompetitionResultAdvanced {
+                            CompetitionitemID = competitionItemID,
+                            Resulttype = result.Resulttype,
+                            CompetitionresultID = result.ID,
+                            ScoreID = ScoreHelper.Instance.GenerateScoreID(subResult.CompetitorResultOne, subResult.CompetitorResultTwo),
+                            Resultmodetype = ScoreHelper.Instance.GetResultModeType(sportType, subResultIndex, subResult.ModeTypeString)
+                        });
+                    }
+                    listSubResult.Save<CompetitionResultAdvanced, int>();
+                }
+                processStat.CreateOriginalCount++;
+            }
+            return result;
         }
     }
 }
