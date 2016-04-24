@@ -50,7 +50,7 @@ namespace Project_B.CodeServerSide.Algorithm {
             var utcNow = DateTime.UtcNow;
             foreach (var brokerSchedule in schedule) {
                 foreach (var brokerTask in brokerSchedule.RepeatSchedule) {
-                    if ((int) brokerTask.Value.TotalSeconds <= 15) {
+                    if ((int) brokerTask.Value.TotalSeconds <= 9) {
                         continue; //idiot-safety mode
                     }
                     DateTime lastRunDateTime;

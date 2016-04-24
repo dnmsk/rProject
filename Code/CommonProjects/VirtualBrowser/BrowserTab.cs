@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using Awesomium.Core;
 
@@ -18,7 +19,7 @@ namespace VirtualBrowser {
             WebCore.QueueWork(() => {
                 _webView.Source = new Uri(url);
             });
-            Thread.Sleep(5000);
+            Thread.Sleep(2500);
         }
 
         private const int _triesToGetContent = 10;
@@ -36,7 +37,16 @@ namespace VirtualBrowser {
 
         public void Dispose() {
             WebCore.QueueWork(() => {
-                _webView?.Dispose();
+                try {
+                    _webView.Stop();
+                    _webView?.Dispose();
+                    var process = Process.GetProcessById(_webView?.RenderProcess?.Id ?? default(int));
+                    if (process.Id > 0) {
+                        process.Kill();
+                    }
+                } catch (Exception ex) {
+                    Console.WriteLine(ex);
+                }
             });
         }
     }
