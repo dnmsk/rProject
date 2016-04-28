@@ -231,6 +231,10 @@
       <Project>{5F99D873-C79A-4AFB-8802-2B2C5AD45EEE}</Project>
       <Name>MainLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommonProjects\VirtualBrowser\VirtualBrowser.csproj">
+      <Project>{dd24a809-47ac-4d8d-bfa3-08242c4e99e5}</Project>
+      <Name>VirtualBrowser</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\UnderConstruction.cshtml" />

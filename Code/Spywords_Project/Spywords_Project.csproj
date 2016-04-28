@@ -179,6 +179,7 @@
     <Compile Include="Models\EntityModel\DomainStatsEntityModel.cs" />
     <Compile Include="Models\EntityModel\PhraseEntityModel.cs" />
     <Compile Include="Models\EntityModel\ProgressStatusSummary.cs" />
+    <Compile Include="Models\NearPhraseStatsModel.cs" />
     <Compile Include="Models\PhraseModel.cs" />
     <Compile Include="Models\StatusModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -221,6 +222,7 @@
     <Content Include="Views\SearchPhrase\Index.cshtml" />
     <Content Include="Views\SearchPhrase\PhraseDomains.cshtml" />
     <Content Include="Views\Domain\Index.cshtml" />
+    <Content Include="Views\ContextPhrase\NearPhrases.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

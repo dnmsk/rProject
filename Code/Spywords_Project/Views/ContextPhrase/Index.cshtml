@@ -26,6 +26,7 @@
         <th>Сайтов в Яндекс</th>
         <th>Сайтов в Google</th>
         <th>Статистика сбора</th>
+        <th>Похожие запросы</th>
     </tr>
     @foreach (var phrase in Model.PhraseEntities) {
         <tr>
@@ -33,6 +34,7 @@
             <td>@phrase.AdvertsYandex</td>
             <td>@phrase.AdvertsGoogle</td>
             <td>@phrase.CollectedDomainsCount / @phrase.DomainsCount</td>
+            <td><a href="@Url.Action("NearPhrases", "ContextPhrase", new { @id=phrase.PhraseAccountID })">Собрать</a></td>
         </tr>
     }
 </table>

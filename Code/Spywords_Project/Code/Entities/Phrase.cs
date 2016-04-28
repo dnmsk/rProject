@@ -110,7 +110,7 @@ namespace Spywords_Project.Code.Entities {
         /// 
         /// </summary>
         public string Textbaseform {
-            get { return (string) this[Fields.Textbaseform]; }
+            get { return (string) this[Fields.Textbaseform] ?? QueryProcessor.Instance.ProcessQuery(Text).ToString(); }
             set { ForceSetData(Fields.Textbaseform, CropString(value, DbRestrictions.STRING_FIELD_LENGTH_512)); }
         }
 

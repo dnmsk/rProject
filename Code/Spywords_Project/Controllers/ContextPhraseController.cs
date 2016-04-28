@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
 using MainLogic.WebFiles;
 using Spywords_Project.Code;
 using Spywords_Project.Code.Providers;
@@ -28,6 +29,13 @@ namespace Spywords_Project.Controllers {
             var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Context);
             var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Context);
             return View(new DomainStatsModel(GetBaseModel(), phraseDomains, phrase));
+        }
+
+        public ActionResult NearPhrases(int id) {
+            var phraseProvider = new PhraseProvider();
+            var phrases = phraseProvider.GetNearPhrasesEntityModel(CurrentUser.AccountID, id, SourceType.Context);
+            var phraseDomains = phraseProvider.GetDomainsStatsForPhraseIds(phrases.Select(ph => ph.PhraseID).ToArray());
+            return View(new NearPhraseStatsModel(GetBaseModel(), phraseDomains, phrases));
         }
     }
 }
