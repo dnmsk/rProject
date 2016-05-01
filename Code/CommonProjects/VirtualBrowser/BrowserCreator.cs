@@ -3,7 +3,7 @@ using Awesomium.Core;
 
 namespace VirtualBrowser {
     public static class BrowserCreator {
-        private static Thread _updater;
+        private static readonly Thread _updater;
         static BrowserCreator() {
             _updater = new Thread(() => {
                 WebCore.Initialize(new WebConfig {
