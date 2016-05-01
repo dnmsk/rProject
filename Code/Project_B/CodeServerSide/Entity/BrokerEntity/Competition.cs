@@ -103,7 +103,7 @@ namespace Project_B.CodeServerSide.Entity.BrokerEntity {
         /// 
         /// </summary>
         public SportType SportType {
-            get { return (SportType) (short) this[Fields.Sporttype]; }
+            get { return (SportType) (((short?) this[Fields.Sporttype]) ?? default(short)); }
             set { ForceSetData(Fields.Sporttype, value); }
         }
         public Enum SportTypeField => Fields.Sporttype;

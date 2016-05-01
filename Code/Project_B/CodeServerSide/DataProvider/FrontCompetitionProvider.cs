@@ -390,7 +390,7 @@ namespace Project_B.CodeServerSide.DataProvider {
             return new CompetitionTransport<T> {
                 ID = competitionID,
                 Name = competition.Name,
-                SportType = competition?.SportType ?? SportType.Unknown,
+                SportType = competition.SportType,
                 Language = languageType
             };
         }
