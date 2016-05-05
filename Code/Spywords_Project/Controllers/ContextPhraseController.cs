@@ -31,11 +31,26 @@ namespace Spywords_Project.Controllers {
             return View(new DomainStatsModel(GetBaseModel(), phraseDomains, phrase));
         }
 
+        public ActionResult ExportPhraseDomains(int id) {
+            LogAction(SpywordsActions.ContextPhrasePhraseDomains, id);
+            var phraseProvider = new PhraseProvider();
+            var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Context);
+            var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Context);
+            return SearchPhraseController.BuildExportCsv(phraseDomains, phrase.Text);
+        }
+
         public ActionResult NearPhrases(int id) {
             var phraseProvider = new PhraseProvider();
             var phrases = phraseProvider.GetNearPhrasesEntityModel(CurrentUser.AccountID, id, SourceType.Context);
             var phraseDomains = phraseProvider.GetDomainsStatsForPhraseIds(phrases.Select(ph => ph.PhraseID).ToArray());
             return View(new NearPhraseStatsModel(GetBaseModel(), phraseDomains, phrases));
+        }
+
+        public ActionResult ExportNearPhrases(int id) {
+            var phraseProvider = new PhraseProvider();
+            var phrases = phraseProvider.GetNearPhrasesEntityModel(CurrentUser.AccountID, id, SourceType.Context);
+            var phraseDomains = phraseProvider.GetDomainsStatsForPhraseIds(phrases.Select(ph => ph.PhraseID).ToArray());
+            return SearchPhraseController.BuildExportCsv(phraseDomains, phrases.FirstOrDefault()?.Text ?? "empty");
         }
     }
 }

@@ -11,7 +11,7 @@
 @Html.ActionLink("<< Назад", "Index")
 <br />
 <br />
-
+<a href="@Url.Action("ExportPhraseDomains", new { id = Request.Url.AbsolutePath.Split('/').Last()})">Скачать CSV</a>
 <table class="table table-hover">
     <tr>
         <th>Сайт</th>

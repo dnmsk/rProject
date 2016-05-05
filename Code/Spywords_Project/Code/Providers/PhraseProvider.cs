@@ -188,7 +188,6 @@ namespace Spywords_Project.Code.Providers {
             return InvokeSafe(() => {
                 var domainEntityDs = DomainEntity.DataSource
                     .Join(JoinType.Inner, Domainphrase.Fields.DomainID, DomainEntity.Fields.ID, RetrieveMode.Retrieve)
-                    .Join(JoinType.Inner, Phraseaccount.Fields.PhraseID, Domainphrase.Fields.PhraseID, RetrieveMode.Retrieve)
                     .WhereIn(Domainphrase.Fields.PhraseID, phraseIDs.Distinct());
                 return GetDomainsStats(domainEntityDs);
             }, new List<DomainStatsEntityModel>());

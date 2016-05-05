@@ -42,13 +42,11 @@ namespace Spywords_Project.Controllers {
             var phraseDomains = phraseProvider.GetDomainsStatsForAccountPhrase(CurrentUser.AccountID, id, SourceType.Search);
             var phrase = phraseProvider.GetPhraseEntityModel(CurrentUser.AccountID, id, SourceType.Search);
 
-            return new FileContentResult(Encoding.GetEncoding(1251).GetBytes(BuildExportCsv(phraseDomains)), "text/css") {
-                FileDownloadName = string.Format("Фраза_{0}.csv", phrase.Text.Replace(" ", "_"))
-            };
+            return BuildExportCsv(phraseDomains, phrase.Text);
         }
 
-        private static string BuildExportCsv(List<DomainStatsEntityModel> domainStats) {
-            return domainStats
+        public static ActionResult BuildExportCsv(List<DomainStatsEntityModel> domainStats, string phrase) {
+            var str = domainStats
                 .Select(ds => new [] {
                     ds.Domain,
                     (ds.Phones ?? new string[0]).StrJoin(","),
@@ -56,6 +54,9 @@ namespace Spywords_Project.Controllers {
                     ds.SearchEngine.ToString().Replace(" ", "")
                 }.StrJoin(";"))
                 .StrJoin(Environment.NewLine);
+            return new FileContentResult(Encoding.GetEncoding(1251).GetBytes(str), "text/css") {
+                FileDownloadName = string.Format("Фраза_{0}.csv", phrase.Replace(" ", "_"))
+            };
         }
     }
 }
