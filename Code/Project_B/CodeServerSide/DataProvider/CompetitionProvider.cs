@@ -27,6 +27,9 @@ namespace Project_B.CodeServerSide.DataProvider {
         public RawTemplateObj<CompetitionSpecifyTransport> GetCompetitionSpecify(ProcessStat competitionStat, ProcessStat competitionSpecifyStat, BrokerType brokerType, LanguageType language, SportType sportType, string[] nameOrigin, CompetitionParsed competitionToSave, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 var genderDetected = GenderDetectorHelper.Instance[nameOrigin];
+                if (genderDetected == GenderType.Unknown) {
+                    _logger.Error("{0}: {1}", nameOrigin, genderDetected);
+                }
                 nameOrigin = CleanCompetitionName(nameOrigin);
                 var rawCompetitionSpecify = new BrokerEntityBuilder<RawCompetitionSpecify>(competitionSpecifyStat)
                     .SetupValidateObject(specify => true/*NOTE!! && specify.CompetitionSpecifyUniqueID != default(int)*/)
