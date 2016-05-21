@@ -94,6 +94,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                             raw.Add(competitorRaw);
                         } catch (Exception ex) {
                             _logger.Error("{0}\r\n{1}", competitorRaw?.ToString(), ex);
+                            throw;
                         }
                     });
             }
