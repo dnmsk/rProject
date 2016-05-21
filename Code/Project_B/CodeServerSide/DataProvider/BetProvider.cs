@@ -69,7 +69,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                             BetLive.DataSource.FilterByBroker(brokerData.Broker)
                                 .WhereTrue(BetLive.Fields.IsActive)
                                 .WhereNotIn(BetLive.Fields.CompetitionitemID, activeCompetitionItemIDs)
-                                .Where(Bet.Fields.ID, Oper.Greater, ((long)(BetLive.DataSource.Max(BetLive.Fields.ID) ?? decimal.MaxValue)) - LOOK_BEHIND)
+                                .Where(BetLive.Fields.ID, Oper.Greater, ((long)(BetLive.DataSource.Max(BetLive.Fields.ID) ?? decimal.MaxValue)) - LOOK_BEHIND)
                                 .Update(BetLive.Fields.IsActive, false);
                             break;
                     }
