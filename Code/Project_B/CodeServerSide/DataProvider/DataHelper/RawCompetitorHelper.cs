@@ -81,15 +81,20 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                 names
                     .Where(name => !raw.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                     .Each(name => {
-                        var competitorRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitor>(brokerType, languageType, sportType, genderType, LinkEntityStatus.Unlinked, new[] {name},
-                            competitor => {
-                                if (lastCompetitorUniqueID != default(int)) {
-                                    competitor.CompetitoruniqueID = lastCompetitorUniqueID;
-                                    competitor.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
-                                }
-                            });
-                        competitorRaw.Save();
-                        raw.Add(competitorRaw);
+                        RawCompetitor competitorRaw = null;
+                        try {
+                            competitorRaw = BrokerEntityIfaceCreator.CreateEntity<RawCompetitor>(brokerType, languageType, sportType, genderType, LinkEntityStatus.Unlinked, new[] { name },
+                                competitor => {
+                                    if (lastCompetitorUniqueID != default(int)) {
+                                        competitor.CompetitoruniqueID = lastCompetitorUniqueID;
+                                        competitor.Linkstatus = LinkEntityStatus.LinkByStatistics | LinkEntityStatus.Linked;
+                                    }
+                                });
+                            competitorRaw.Save();
+                            raw.Add(competitorRaw);
+                        } catch (Exception ex) {
+                            _logger.Error("{0}\r\n{1}", competitorRaw?.ToString(), ex);
+                        }
                     });
             }
 
