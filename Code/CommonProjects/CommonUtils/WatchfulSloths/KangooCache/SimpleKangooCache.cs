@@ -15,18 +15,13 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         private readonly Func<K, V> _valueGetter;
         protected ConcurrentDictionary<K, V> Cache { get; private set; }
 
-        public SimpleKangooCache(Func<K, V> valueGetter) {
+        public SimpleKangooCache(Func<K, V> valueGetter, IEqualityComparer<K> comparer = null) {
             _valueGetter = valueGetter;
-            var comparer = GetComparer();
             Cache = comparer == null
                 ? new ConcurrentDictionary<K, V>()
                 : new ConcurrentDictionary<K, V>(comparer);
         }
-
-        protected virtual IEqualityComparer<K> GetComparer() {
-            return null;
-        }
-
+        
         protected virtual bool NeedUpdate(V inCache) {
             return false;
         }

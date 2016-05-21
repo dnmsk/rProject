@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace CommonUtils.WatchfulSloths.KangooCache {
     public class HashCodeQualityComparer<K> : IEqualityComparer<K> {
