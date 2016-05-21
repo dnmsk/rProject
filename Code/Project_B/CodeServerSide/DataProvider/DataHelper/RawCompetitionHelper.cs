@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using CommonUtils.Core.Logger;
+using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths;
+using CommonUtils.WatchfulSloths.KangooCache;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
@@ -13,7 +16,36 @@ using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.DataProvider.DataHelper {
     public static class RawCompetitionHelper {
-        public static RawCompetitionSpecify GetRawCompetitionSpecify(BrokerType brokerType, LanguageType language,
+        internal class RawCompetitorSpecifyKey {
+            public BrokerType BrokerType { get; }
+            public LanguageType Language { get; }
+            public SportType SportType { get; }
+            public GenderType GenderDetected { get; }
+            public string[] NameOrigin { get; }
+
+            public RawCompetitorSpecifyKey(BrokerType brokerType, LanguageType language, SportType sportType,
+                GenderType genderDetected, string[] nameOrigin) {
+                BrokerType = brokerType;
+                Language = language;
+                SportType = sportType;
+                GenderDetected = genderDetected;
+                NameOrigin = nameOrigin;
+            }
+
+            public override int GetHashCode() {
+                return (string.Empty + BrokerType + Language + SportType + GenderDetected + NameOrigin.StrJoin(string.Empty)).GetHashCode();
+            }
+        }
+
+        internal static readonly KangarooCache<RawCompetitorSpecifyKey, RawCompetitionSpecify> GetRawCompetitionSpecify = new KangarooCache<RawCompetitorSpecifyKey, RawCompetitionSpecify>(
+            WatchfulSloth.Instance,
+            key => GetRawCompetitionSpecifyInt(key.BrokerType, key.Language, key.SportType, key.GenderDetected, key.NameOrigin),
+            TimeSpan.FromHours(2),
+            new HashCodeQualityComparer<RawCompetitorSpecifyKey>()
+        );
+
+
+        private static RawCompetitionSpecify GetRawCompetitionSpecifyInt(BrokerType brokerType, LanguageType language,
             SportType sportType, GenderType genderDetected, string[] nameOrigin) {
             return RawCompetitionSpecify.DataSource.FilterByBroker(brokerType).FilterByLanguage(language).FilterBySportType(sportType)
                 .FilterByNameCompetition(nameOrigin)

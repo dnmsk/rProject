@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
+using CommonUtils.WatchfulSloths;
+using CommonUtils.WatchfulSloths.KangooCache;
 using Project_B.CodeServerSide.Entity.BrokerEntity.RawEntity;
 using Project_B.CodeServerSide.Entity.Helper;
 using Project_B.CodeServerSide.Entity.Interface;
@@ -15,7 +17,34 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger(typeof (RawCompetitorHelper).FullName);
 
-        public static List<RawCompetitor> GetRawCompetitor(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
+        internal class RawCompetitorCacheKey {
+            internal BrokerType BrokerType { get; }
+            internal LanguageType LanguageType { get; }
+            internal SportType SportType { get; }
+            internal GenderType GenderType { get; }
+            internal string[] Names { get; }
+
+            public RawCompetitorCacheKey(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
+                BrokerType = brokerType;
+                LanguageType = languageType;
+                SportType = sportType;
+                GenderType = genderType;
+                Names = names;
+            }
+
+            public override int GetHashCode() {
+                return (string.Empty + BrokerType + LanguageType + SportType + GenderType + Names.StrJoin("")).ToLower().GetHashCode();
+            }
+        }
+
+        internal static readonly KangarooCache<RawCompetitorCacheKey, List<RawCompetitor>> GetRawCompetitor = new KangarooCache<RawCompetitorCacheKey, List<RawCompetitor>>(
+            WatchfulSloth.Instance, 
+            key => GetRawCompetitorInt(key.BrokerType, key.LanguageType, key.SportType, key.GenderType, key.Names),
+            TimeSpan.FromHours(2),
+            new HashCodeQualityComparer<RawCompetitorCacheKey>()
+        );
+
+        private static List<RawCompetitor> GetRawCompetitorInt(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
             var competitorsRaw = RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
                                                 .FilterByNameCompetitor(names)
                                                 .FilterByGender(genderType, 
@@ -39,7 +68,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
             return CreateRawCompetitor(names, competitorsRaw, brokerType, languageType, sportType, genderType);
         }
 
-        public static List<RawCompetitor> CreateRawCompetitor(string[] names, List<RawCompetitor> competitorsRaw, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType) {
+        private static List<RawCompetitor> CreateRawCompetitor(string[] names, List<RawCompetitor> competitorsRaw, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType) {
             var existNames = competitorsRaw.Select(cr => cr.Name).ToList();
             names = names
                 .Where(name => !existNames.Contains(name))

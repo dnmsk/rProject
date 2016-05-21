@@ -23,9 +23,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
                     var competitorStat = stat[ProcessStatType.CompetitorFromRaw];
                     var competitors = new[] {
                         competitorProvider
-                        .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName1, competition.Object.CompetitionUniqueID, matchParsed, algoMode),
+                        .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName1, algoMode),
                         competitorProvider
-                        .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, competition.Object.CompetitionUniqueID, matchParsed, algoMode)
+                        .GetCompetitor(competitorStat, brokerData.Broker, brokerData.Language, competitionParsed.Type, competition.Object.GenderType, matchParsed.CompetitorName2, algoMode)
                     };
                     if (competitors.Any(c => c.RawObject.ID == default(int))) {
                         continue;

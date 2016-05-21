@@ -142,6 +142,7 @@
     <Compile Include="TargetDB.cs" />
     <Compile Include="WatchfulSloths\IWatch.cs" />
     <Compile Include="WatchfulSloths\IWatchfulSloth.cs" />
+    <Compile Include="WatchfulSloths\KangooCache\HashCodeQualityComparer.cs" />
     <Compile Include="WatchfulSloths\KangooCache\KangarooCache.cs" />
     <Compile Include="WatchfulSloths\KangooCache\KangooCacheElement.cs" />
     <Compile Include="WatchfulSloths\KangooCache\MultipleKangooCache.cs" />

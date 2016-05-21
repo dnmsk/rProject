@@ -442,6 +442,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 var bitwiseStatus = (short)(LinkEntityStatus.Linked | LinkEntityStatus.ManualConfirmed);
                 switch (type) {
                     case BrokerEntityType.Competition:
+                        RawCompetitionHelper.GetRawCompetitionSpecify.Clear();
                         RawCompetition.DataSource
                             .WhereEquals(RawCompetition.Fields.ID, id)
                             .Update(new Dictionary<Enum, DbFunction> {
@@ -453,6 +454,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                             .Update(RawCompetitionSpecify.Fields.CompetitionuniqueID, targetID);
                         break;
                     case BrokerEntityType.CompetitionSpecify:
+                        RawCompetitionHelper.GetRawCompetitionSpecify.Clear();
                         RawCompetitionSpecify.DataSource
                             .WhereEquals(RawCompetitionSpecify.Fields.ID, id)
                             .Update(new Dictionary<Enum, DbFunction> {
@@ -461,6 +463,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                             });
                         break;
                     case BrokerEntityType.Competitor:
+                        RawCompetitorHelper.GetRawCompetitor.Clear();
                         RawCompetitor.DataSource
                             .WhereEquals(RawCompetitor.Fields.ID, id)
                             .Update(new Dictionary<Enum, DbFunction> {

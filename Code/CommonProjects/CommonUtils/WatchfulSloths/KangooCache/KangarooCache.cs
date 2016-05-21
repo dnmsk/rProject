@@ -11,6 +11,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
     public class KangarooCache<K, V> : SimpleKangooCache<K, KangooCacheElement<V>> {
+        private readonly IEqualityComparer<K> _equalityComparer;
         private readonly TimeSpan _keyActualTime;
 
         /// <summary>
@@ -18,12 +19,13 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         /// </summary>
         private static readonly LoggerWrapper _logger = LoggerManager.GetLogger("KangarooCache");
 
-        public KangarooCache(IWatchfulSloth sloth, Func<K, V> valueGetter, TimeSpan? keyActualTime = null) 
+        public KangarooCache(IWatchfulSloth sloth, Func<K, V> valueGetter, TimeSpan? keyActualTime = null, IEqualityComparer<K> equalityComparer = null) 
                                                                             : base (
                                                                                 k => new KangooCacheElement<V> {
                                                                                     Element = valueGetter(k),
                                                                                     LastActualDate = DateTime.UtcNow.Add(keyActualTime ?? TimeSpan.FromMinutes(30))
                                                                             }) {
+            _equalityComparer = equalityComparer;
             _keyActualTime = keyActualTime ?? TimeSpan.FromMinutes(30);
             if (sloth != null) {
                 sloth.SetMove(new SlothMoveByTimeSingle<object>(SelfClean, new TimeSpan(0, 5, 0), null));
@@ -51,7 +53,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         }
 
         protected override IEqualityComparer<K> GetComparer() {
-            return null;
+            return _equalityComparer;
         }
 
         protected override bool NeedUpdate(KangooCacheElement<V> inCache) {

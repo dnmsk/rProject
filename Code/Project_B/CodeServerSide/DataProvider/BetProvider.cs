@@ -4,6 +4,8 @@ using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
 using IDEV.Hydra.DAO;
+using IDEV.Hydra.DAO.DbFunctions;
+using IDEV.Hydra.DAO.Filters;
 using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.Data.Result;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
@@ -54,17 +56,20 @@ namespace Project_B.CodeServerSide.DataProvider {
                         }
                     });
                 if (activeCompetitionItemIDs.Any()) {
+                    const int LOOK_BEHIND = 10000;
                     switch (taskMode) {
                         case RunTaskMode.RunRegularOddsTask:
                             Bet.DataSource.FilterByBroker(brokerData.Broker)
                                 .WhereTrue(Bet.Fields.IsActive)
                                 .WhereNotIn(Bet.Fields.CompetitionitemID, activeCompetitionItemIDs)
+                                .Where(Bet.Fields.ID, Oper.Greater, ((int) (Bet.DataSource.Max(Bet.Fields.ID) ?? decimal.MaxValue)) - LOOK_BEHIND)
                                 .Update(Bet.Fields.IsActive, false);
                             break;
                         case RunTaskMode.RunLiveOddsTask:
                             BetLive.DataSource.FilterByBroker(brokerData.Broker)
                                 .WhereTrue(BetLive.Fields.IsActive)
                                 .WhereNotIn(BetLive.Fields.CompetitionitemID, activeCompetitionItemIDs)
+                                .Where(Bet.Fields.ID, Oper.Greater, ((long)(BetLive.DataSource.Max(BetLive.Fields.ID) ?? decimal.MaxValue)) - LOOK_BEHIND)
                                 .Update(BetLive.Fields.IsActive, false);
                             break;
                     }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonUtils.Core.Logger;
 using CommonUtils.ExtendedTypes;
-using Project_B.CodeServerSide.Data;
 using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.DataProvider.DataHelper.ProcessData;
 using Project_B.CodeServerSide.DataProvider.DataHelper.RawData;
@@ -23,7 +22,7 @@ namespace Project_B.CodeServerSide.DataProvider {
 
         public CompetitorProvider() : base(_logger) { }
 
-        public RawTemplateObj<CompetitorParsedTransport> GetCompetitor(ProcessStat competitorStat, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, int competitionUnique, MatchParsed matchParsed, GatherBehaviorMode algoMode) {
+        public RawTemplateObj<CompetitorParsedTransport> GetCompetitor(ProcessStat competitorStat, BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names, GatherBehaviorMode algoMode) {
             return InvokeSafeSingleCall(() => {
                 names = names
                     .Where(name => !string.IsNullOrWhiteSpace(name))
@@ -39,7 +38,7 @@ namespace Project_B.CodeServerSide.DataProvider {
                 }
                 var competitors = new BrokerEntityBuilder<List<RawCompetitor>>(competitorStat)
                     .SetupValidateObject(competitorsRaw => competitorsRaw.SafeAny() && competitorsRaw.All(c => c.CompetitoruniqueID != default(int)))
-                    .SetupGetRaw(() => RawCompetitorHelper.GetRawCompetitor(brokerType, languageType, sportType, genderType, names))
+                    .SetupGetRaw(() => RawCompetitorHelper.GetRawCompetitor[new RawCompetitorHelper.RawCompetitorCacheKey(brokerType, languageType, sportType, genderType, names)])
                     .SetupCreateOriginal(algoMode, list => {
                         var uniqueID = new CompetitorUnique {
                             IsUsed = true
