@@ -45,6 +45,9 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         );
 
         private static List<RawCompetitor> GetRawCompetitorInt(BrokerType brokerType, LanguageType languageType, SportType sportType, GenderType genderType, string[] names) {
+            if (genderType == GenderType.Unknown) {
+                _logger.Error("{0}: {1}", names.StrJoin(", "), genderType);
+            }
             var competitorsRaw = RawCompetitor.DataSource.FilterByLanguage(languageType).FilterBySportType(sportType).FilterByBroker(brokerType)
                                                 .FilterByNameCompetitor(names)
                                                 .FilterByGender(genderType, 
