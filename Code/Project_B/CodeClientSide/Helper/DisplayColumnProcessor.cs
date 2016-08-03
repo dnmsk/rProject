@@ -70,6 +70,7 @@ namespace Project_B.CodeClientSide.Helper {
 
         public static readonly Dictionary<SportType, SiteTextType[]> TableHeaders =
             new Dictionary<SportType, SiteTextType[]> {
+                {SportType.Unknown, _shortHeaders },
                 {SportType.Basketball, _shortHeaders},
                 {SportType.Football, _fullHeaders},
                 {SportType.IceHockey, _fullHeaders},

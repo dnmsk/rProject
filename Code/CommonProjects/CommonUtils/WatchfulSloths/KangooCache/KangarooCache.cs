@@ -51,7 +51,7 @@ namespace CommonUtils.WatchfulSloths.KangooCache {
         }
         
         protected override bool NeedUpdate(KangooCacheElement<V> inCache) {
-            return inCache == null || inCache.LastActualDate < DateTime.UtcNow || inCache.Element.Equals(default(V));
+            return inCache == null || inCache.LastActualDate < DateTime.UtcNow || inCache.Element == null || inCache.Element.Equals(default(V));
         }
 
         private object SelfClean() {

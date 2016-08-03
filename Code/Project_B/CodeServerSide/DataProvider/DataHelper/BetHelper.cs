@@ -151,6 +151,7 @@ namespace Project_B.CodeServerSide.DataProvider.DataHelper {
         };
 
         public static readonly Dictionary<SportType, BetOddType[]> SportTypeWithOdds = new Dictionary<SportType, BetOddType[]> {
+            {SportType.Unknown, _standartOdds },
             {SportType.Basketball, _standartOdds },
             {SportType.IceHockey, _advancedOdds },
             {SportType.Football, _advancedOdds },

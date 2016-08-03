@@ -384,7 +384,8 @@ namespace Project_B.CodeServerSide.DataProvider {
                     .WhereEquals(Competition.Fields.CompetitionuniqueID, competitionID)
                     .First();
                 competition = competition ?? new Competition {
-                    Name = "DELETED"
+                    Name = "DELETED",
+                    SportType = SportType.Unknown
                 };
             }
             return new CompetitionTransport<T> {
