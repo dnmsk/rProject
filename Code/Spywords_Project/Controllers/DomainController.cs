@@ -39,7 +39,7 @@ namespace Spywords_Project.Controllers {
         }
 
         private static ActionResult BuildFileResult(string domains) {
-            var splitted = domains.Split(new[] {"\r"}, StringSplitOptions.None).ToArray();
+            var splitted = domains.Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).ToArray();
             var cnt = 0;
             for (var index = 0; index < splitted.Length; index++) {
                 var domainRow = splitted[index].Trim();
