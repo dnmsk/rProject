@@ -42,7 +42,8 @@ namespace Project_B.CodeServerSide {
             var proxy = globalConfiguration.StringArray[SectionName.ArrayProxy].FirstOrDefault();
             var typeInitilizers = new IQueryableWrapper[] {
                 new WebRequestWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent])),
-                new BrowserWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]), proxy)
+                new BrowserWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]), proxy),
+                new WrDnmskWrapper(new WebRequestHelper(globalConfiguration.StringSimple[SectionName.SimpleStringUserAgent]))
             }
                 .ToDictionary(item => item.GetType(), item => item);
 

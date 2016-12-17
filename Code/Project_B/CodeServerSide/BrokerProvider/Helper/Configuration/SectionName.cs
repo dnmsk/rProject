@@ -51,6 +51,10 @@
         ArrayBadNameCompetitor = 15005,
         ArrayAddParamOdds = 15006,
         ArrayManagedByBrowserUrl = 15007,
+        ArrayManagedByBrowserPollUrl = 15008,
+
+        ArrayWrTargetUrl = 15009,
+        ArrayWrTargetToken = 15010,
 
         //Map Reserve from 30000 to Max
         MapStringsOddsParam = 30000,

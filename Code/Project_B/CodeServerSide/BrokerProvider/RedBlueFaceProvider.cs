@@ -15,7 +15,7 @@ using Project_B.CodeServerSide.DataProvider.DataHelper;
 using Project_B.CodeServerSide.Enums;
 
 namespace Project_B.CodeServerSide.BrokerProvider {
-    public sealed class RedBlueFaceProvider : BrokerBase<BrowserWrapper> {
+    public sealed class RedBlueFaceProvider : BrokerBase<WrDnmskWrapper> {
         private static readonly Regex _numberExtractorRegex = new Regex(".*?\\((?<number>.*?)\\).*?", RegexOptions.Compiled);
         private static readonly Dictionary<SportType, BetOddType[]> _typeWithOrderInLine = new Dictionary<SportType, BetOddType[]> {
             { SportType.Football, new[] {BetOddType.Win1, BetOddType.Draw, BetOddType.Win2, BetOddType.Win1Draw, BetOddType.Win1Win2, BetOddType.DrawWin2, BetOddType.Handicap1, BetOddType.Handicap2, BetOddType.TotalUnder, BetOddType.TotalOver } },

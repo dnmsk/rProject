@@ -260,6 +260,7 @@
     <Compile Include="CodeServerSide\BrokerProvider\ASportApiProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Common\BrowserWrapper.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Common\WebRequestWrapper.cs" />
+    <Compile Include="CodeServerSide\BrokerProvider\Common\WrDnmskWrapper.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\DbBrokerProvider.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultBrokerIDExtractor.cs" />
     <Compile Include="CodeServerSide\BrokerProvider\Helper\HtmlDataExtractor\Extractors\DefaultCompetitorNameExtractor.cs" />
